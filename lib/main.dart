@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Маршруты'),
+      home: new MyHomePage(title: 'Маршруты и инкассации'),
     );
   }
 }
@@ -46,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
+  
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -60,6 +60,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
+    final BottomNavigationBar botNavBar = new BottomNavigationBar(
+      items: [new BottomNavigationBarItem(         
+                    icon: const Icon(Icons.airline_seat_recline_extra),
+                    title: const Text('Доставка'),
+                    backgroundColor: Theme.of(context).primaryColor,
+              ),
+              new BottomNavigationBarItem(         
+                    icon: const Icon(Icons.account_box),
+                    title: const Text('Учетная запись'),
+                    backgroundColor: Colors.deepOrange,
+              ),
+      ],
+      currentIndex: 0,
+      type: BottomNavigationBarType.shifting,
+      //fixedColor: Theme.of(context).primaryColor,
+    );
+    
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -101,6 +119,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      
+      bottomNavigationBar: botNavBar,
+      
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
