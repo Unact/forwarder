@@ -24,6 +24,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
+  final TextEditingController _controller = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     
@@ -54,14 +55,50 @@ class _MyHomePageState extends State<MyHomePage> {
               offstage: _currentIndex != 0,
               child: new TickerMode(
                 enabled: _currentIndex == 0,
-                child: new MainScreen(),
+                child: new Scaffold(
+                  appBar: new AppBar(
+                    title: new Text("Маршруты и инкассации")
+                  ),
+                  body: new Container(
+                    padding: const EdgeInsets.all(32.0),
+                    child: new Column(
+                      children: <Widget>[
+                        new Text('Hello world!!!'),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
             new Offstage(
               offstage: _currentIndex != 1,
               child: new TickerMode(
                 enabled: _currentIndex == 1,
-                child: new ConfigScreen(),
+                child: new Scaffold(
+                  appBar: new AppBar(
+                    title: new Text("Настройки подключения")
+                  ),
+                  body: new Container(
+                    padding: const EdgeInsets.all(32.0),
+                    child: new Column(
+                      children: <Widget>[
+                        new Text('Телефон или e-mail или имя'),
+                        new TextField(
+                          decoration: new InputDecoration(
+                            hintText: 'Введите телефон или e-mail или имя',
+                          ),
+                        ),
+                        new Text('Пароль'),
+                        new TextField(
+                          controller: _controller,
+                          decoration: new InputDecoration(
+                            hintText: 'Введите пароль',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),          
           ],
@@ -71,92 +108,4 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-typedef void CfgChangedCallback();
-  
-class ConfigScreen extends StatefulWidget {
-//  MyConfig cfg;
-  final CfgChangedCallback onCfgChanged;
-//  ConfigScreen({Key key, this.cfg, this.onCfgChanged}) : super(key: key);
-
-  @override                                                         
-  State createState() => new ConfigScreenState();                    
-}
-
-class ConfigScreenState extends State<ConfigScreen> {
-  
-  final TextEditingController _controller = new TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-//  _controller.text = widget.cfg.apiCode;
-//    _controller.addListener(() {
-//      widget.cfg.apiCode = _controller.text;
-//      widget.onCfgChanged();
-//    });
-  }
-  
-  @override                                                         
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Настройки подключения")
-      ),
-      body: new Container(
-        padding: const EdgeInsets.all(32.0),
-        child: new Column(
-          children: <Widget>[
-            new Text('Телефон или e-mail или имя'),
-            new TextField(
-              decoration: new InputDecoration(
-                hintText: 'Введите телефон или e-mail или имя',
-              ),
-            ),
-            new Text('Пароль'),
-            new TextField(
-              controller: _controller,
-              decoration: new InputDecoration(
-                hintText: 'Введите пароль',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class MainScreen extends StatefulWidget {
-  @override                                                         
-  State createState() => new MainScreenState();                    
-}
-
-class MainScreenState extends State<MainScreen> {
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
-  
-  @override                                                         
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Маршруты и инкассации")
-      ),
-      body: new Container(
-        padding: const EdgeInsets.all(32.0),
-        child: new Column(
-          children: <Widget>[
-            new Text('Hello world!!!'),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
