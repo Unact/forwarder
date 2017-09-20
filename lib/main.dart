@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'db_synch.dart';
+
 void main() {
   runApp(new MyApp());
 }
@@ -24,7 +26,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
+  DbSynch cfg = new DbSynch();
   final TextEditingController _controller = new TextEditingController();
+  
+  @override
+  void initState() {
+    super.initState();
+    cfg.initDB();
+  }
+  
   @override
   Widget build(BuildContext context) {
     
