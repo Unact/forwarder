@@ -27,13 +27,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   DbSynch cfg = new DbSynch();
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _ctlLogin = new TextEditingController();
+  final TextEditingController _ctlPwd = new TextEditingController();
   
   @override
   void initState() {
     super.initState();
     cfg.initDB().then((Database db){
       print('Connected to db!!!');
+      _ctlLogin.text = cfg.login;
+      _ctlPwd.text = cfg.password;
+    });
+    _ctlLogin.addListener(() {
+      cfg.updateLogin(_ctlLogin.text);
+    });
+    _ctlPwd.addListener(() {
+      cfg.updatePwd(_ctlPwd.text);
     });
   }
   
@@ -96,16 +105,38 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         new Text('Телефон или e-mail или имя'),
                         new TextField(
+                          controller: _ctlLogin,
                           decoration: new InputDecoration(
                             hintText: 'Введите телефон или e-mail или имя',
                           ),
                         ),
                         new Text('Пароль'),
                         new TextField(
-                          controller: _controller,
+                          controller: _ctlPwd,
                           decoration: new InputDecoration(
                             hintText: 'Введите пароль',
                           ),
+                        ),
+                        new RaisedButton(
+                          onPressed: () {
+                            cfg.makeConnection().then((String s) {
+                              var alert;
+                              if (s != null) {
+                                alert = new AlertDialog(
+                                  title: new Text("Ошибка подключения"),
+                                  content: new Text("$s"),
+                                );
+                              }
+                              else {
+                                alert = new AlertDialog(
+                                  title: new Text("Подключение"),
+                                  content: new Text("Успешно"),
+                                );
+                              };
+                              showDialog(context: context, child: alert);
+                            });
+                          },
+                          child: new Text('Подключиться'),
                         ),
                       ],
                     ),

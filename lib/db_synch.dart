@@ -7,6 +7,12 @@ import 'package:flutter/services.dart';
 
 class DbSynch {
   Database db;
+  String login;
+  String password;
+  String clientId;
+  String server;
+  String token;
+  
   Future<Database> initDB() async {
     // Get a location using path_provider
     String dir = (await getApplicationDocumentsDirectory()).path;
@@ -44,6 +50,41 @@ class DbSynch {
         await deleteDatabase(path);
       }
     } while (isUpgrage);
+
+    List<Map> list = await db.rawQuery("""
+      select (select value from info where name = 'login') login,
+             (select value from info where name = 'password') password,
+             (select value from info where name = 'client_id') client_id,
+             (select value from info where name = 'server') server,
+             (select value from info where name = 'token') token
+    """);
+    login = list[0]['login'];
+    password = list[0]['password'];
+    clientId = list[0]['client_id'];
+    server = list[0]['server'];
+    token = list[0]['token'];
     return db;
+  }
+  
+  Future<Null> updateLogin(String s) async {
+    login = s;
+    await db.execute("UPDATE info SET value = '$login' WHERE name = 'login'");
+  }
+  
+  Future<Null> updatePwd(String s) async {
+    password = s;
+    await db.execute("UPDATE info SET value = '$password' WHERE name = 'password'");
+  }
+  
+  Future<String> makeConnection() async {
+    var httpClient = createHttpClient();
+    String url = server + "/api/v1/authenticate";
+    var response = await httpClient.post(url,
+      headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
+    );
+    Map data = JSON.decode(response.body);
+    token = data["token"];
+    await db.execute("UPDATE info SET value = '$token' WHERE name = 'token'");
+    return data["error"];
   }
 }
