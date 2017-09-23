@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'db_synch.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() {
   runApp(new MyApp());
@@ -32,7 +32,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    cfg.initDB();
+    cfg.initDB().then((Database db){
+      print('Connected to db!!!');
+    });
   }
   
   @override
