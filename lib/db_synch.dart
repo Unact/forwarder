@@ -63,21 +63,22 @@ class DbSynch {
     clientId = list[0]['client_id'];
     server = list[0]['server'];
     token = list[0]['token'];
+    await makeConnection();
     return db;
   }
   
   Future<Null> updateLogin(String s) async {
-    login = s;
+    login = s.trim();
     await db.execute("UPDATE info SET value = '$login' WHERE name = 'login'");
   }
   
   Future<Null> updatePwd(String s) async {
-    password = s;
+    password = s.trim();
     await db.execute("UPDATE info SET value = '$password' WHERE name = 'password'");
   }
   
   Future<Null> updateSrv(String s) async {
-    server = s;
+    server = s.trim();
     await db.execute("UPDATE info SET value = '$server' WHERE name = 'server'");
   }
   
