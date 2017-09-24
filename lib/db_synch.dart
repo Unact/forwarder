@@ -84,10 +84,20 @@ class DbSynch {
   Future<String> makeConnection() async {
     var httpClient = createHttpClient();
     String url = server + "authenticate";
-    var response = await httpClient.post(url,
-      headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
-    );
-    Map data = JSON.decode(response.body);
+    var response;
+    try {
+      response = await httpClient.post(url,
+        headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
+      );
+    } catch(exception, stackTrace) {
+      return 'Сервер $server недоступен!\n${exception}';
+    }
+    Map data;
+    try {
+      data = JSON.decode(response.body);
+    } catch(exception, stackTrace) {
+      return 'Ответ сервера: ${response.body}\n${exception}';
+    }
     token = data["token"];
     await db.execute("UPDATE info SET value = '$token' WHERE name = 'token'");
     return data["error"];
@@ -95,10 +105,20 @@ class DbSynch {
   Future<String> resetPassword() async {
     var httpClient = createHttpClient();
     String url = server + "reset_password";
-    var response = await httpClient.post(url,
-      headers: {"Authorization": "RApi login=$login,client_id=$clientId"}
-    );
-    Map data = JSON.decode(response.body);
+    var response;
+    try {
+      response = await httpClient.post(url,
+        headers: {"Authorization": "RApi login=$login,client_id=$clientId"}
+      );
+    } catch(exception, stackTrace) {
+      return 'Сервер $server недоступен!\n${exception}';
+    }
+    Map data;
+    try {
+      data = JSON.decode(response.body);
+    } catch(exception, stackTrace) {
+      return 'Ответ сервера: ${response.body}\n${exception}';
+    }
     return data["error"];
   }
 }
