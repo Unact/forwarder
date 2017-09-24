@@ -32,7 +32,7 @@ class DbSynch {
               ts DATETIME DEFAULT CURRENT_TIMESTAMP
             )"""
           );
-          await d.insert("info", {"name":"server", "value":"https://rapi.unact.ru"});
+          await d.insert("info", {"name":"server", "value":"https://rapi.unact.ru/api/v1/"});
           await d.insert("info", {"name":"client_id", "value":"forwarder"});
           await d.insert("info", {"name":"login"});
           await d.insert("info", {"name":"password"});
@@ -78,13 +78,22 @@ class DbSynch {
   
   Future<String> makeConnection() async {
     var httpClient = createHttpClient();
-    String url = server + "/api/v1/authenticate";
+    String url = server + "authenticate";
     var response = await httpClient.post(url,
       headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
     );
     Map data = JSON.decode(response.body);
     token = data["token"];
     await db.execute("UPDATE info SET value = '$token' WHERE name = 'token'");
+    return data["error"];
+  }
+  Future<String> resetPassword() async {
+    var httpClient = createHttpClient();
+    String url = server + "reset_password";
+    var response = await httpClient.post(url,
+      headers: {"Authorization": "RApi login=$login,client_id=$clientId"}
+    );
+    Map data = JSON.decode(response.body);
     return data["error"];
   }
 }

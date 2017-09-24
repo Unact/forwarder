@@ -117,26 +117,50 @@ class _MyHomePageState extends State<MyHomePage> {
                             hintText: 'Введите пароль',
                           ),
                         ),
+                        new Container(
+                          padding: const EdgeInsets.all(32.0),
+                          child: new RaisedButton(
+                                    onPressed: () {
+                                      cfg.makeConnection().then((String s) {
+                                        var alert;
+                                        if (s != null) {
+                                          alert = new AlertDialog(
+                                            title: new Text("Ошибка подключения"),
+                                            content: new Text("$s"),
+                                          );
+                                        }
+                                        else {
+                                          alert = new AlertDialog(
+                                            title: new Text("Подключение"),
+                                            content: new Text("Успешно"),
+                                          );
+                                        };
+                                        showDialog(context: context, child: alert);
+                                      });
+                                    },
+                                    child: new Text('Подключиться'),
+                          ),
+                        ),
                         new RaisedButton(
                           onPressed: () {
-                            cfg.makeConnection().then((String s) {
+                            cfg.resetPassword().then((String s) {
                               var alert;
                               if (s != null) {
                                 alert = new AlertDialog(
-                                  title: new Text("Ошибка подключения"),
+                                  title: new Text("Ошибка сброса пароля"),
                                   content: new Text("$s"),
                                 );
                               }
                               else {
                                 alert = new AlertDialog(
-                                  title: new Text("Подключение"),
+                                  title: new Text("Сброс пароля"),
                                   content: new Text("Успешно"),
                                 );
                               };
                               showDialog(context: context, child: alert);
                             });
                           },
-                          child: new Text('Подключиться'),
+                          child: new Text('Сброс пароля'),
                         ),
                       ],
                     ),
