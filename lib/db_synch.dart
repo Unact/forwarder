@@ -76,6 +76,11 @@ class DbSynch {
     await db.execute("UPDATE info SET value = '$password' WHERE name = 'password'");
   }
   
+  Future<Null> updateSrv(String s) async {
+    server = s;
+    await db.execute("UPDATE info SET value = '$server' WHERE name = 'server'");
+  }
+  
   Future<String> makeConnection() async {
     var httpClient = createHttpClient();
     String url = server + "authenticate";

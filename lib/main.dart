@@ -29,7 +29,8 @@ class _MyHomePageState extends State<MyHomePage> {
   DbSynch cfg = new DbSynch();
   final TextEditingController _ctlLogin = new TextEditingController();
   final TextEditingController _ctlPwd = new TextEditingController();
-  
+  final TextEditingController _ctlSrv = new TextEditingController();
+  int _srvVisible = 0;
   @override
   void initState() {
     super.initState();
@@ -37,12 +38,16 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Connected to db!!!');
       _ctlLogin.text = cfg.login;
       _ctlPwd.text = cfg.password;
+      _ctlSrv.text = cfg.server;
     });
     _ctlLogin.addListener(() {
       cfg.updateLogin(_ctlLogin.text);
     });
     _ctlPwd.addListener(() {
       cfg.updatePwd(_ctlPwd.text);
+    });
+    _ctlSrv.addListener(() {
+      cfg.updateSrv(_ctlSrv.text);
     });
   }
   
@@ -103,7 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(32.0),
                     child: new Column(
                       children: <Widget>[
-                        new Text('Телефон или e-mail или имя'),
+                        new GestureDetector(
+                          onTap: () {
+                            setState(() { _srvVisible += 1; });
+                          },
+                          child: new Text('Телефон или e-mail или имя'),
+                        ),
                         new TextField(
                           controller: _ctlLogin,
                           decoration: new InputDecoration(
@@ -118,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         new Container(
-                          padding: const EdgeInsets.all(32.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
                                     onPressed: () {
                                       cfg.makeConnection().then((String s) {
@@ -141,27 +151,31 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: new Text('Подключиться'),
                           ),
                         ),
-                        new RaisedButton(
-                          onPressed: () {
-                            cfg.resetPassword().then((String s) {
-                              var alert;
-                              if (s != null) {
-                                alert = new AlertDialog(
-                                  title: new Text("Ошибка сброса пароля"),
-                                  content: new Text("$s"),
-                                );
-                              }
-                              else {
-                                alert = new AlertDialog(
-                                  title: new Text("Сброс пароля"),
-                                  content: new Text("Успешно"),
-                                );
-                              };
-                              showDialog(context: context, child: alert);
-                            });
-                          },
-                          child: new Text('Сброс пароля'),
+                        new Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: new RaisedButton(
+                            onPressed: () {
+                              cfg.resetPassword().then((String s) {
+                                var alert;
+                                if (s != null) {
+                                  alert = new AlertDialog(
+                                    title: new Text("Ошибка сброса пароля"),
+                                    content: new Text("$s"),
+                                  );
+                                }
+                                else {
+                                  alert = new AlertDialog(
+                                    title: new Text("Сброс пароля"),
+                                    content: new Text("Успешно"),
+                                  );
+                                };
+                                showDialog(context: context, child: alert);
+                              });
+                            },
+                            child: new Text('Сброс пароля'),
+                          ),
                         ),
+                        ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
                       ],
                     ),
                   ),
