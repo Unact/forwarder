@@ -89,7 +89,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(32.0),
                     child: new Column(
                       children: <Widget>[
-                        new Text('Hello world!!!'),
+                        new Text('Points'),
+                        new Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: new RaisedButton(
+                                    onPressed: () {
+                                      cfg.fillDB().then((String s) {
+                                        var alert;
+                                        if (s != null) {
+                                          alert = new AlertDialog(
+                                            title: new Text("Ошибка обновления базы"),
+                                            content: new Text("$s"),
+                                          );
+                                          showDialog(context: context, child: alert);
+                                        }
+                                        else {
+                                          // setState(() { ... });
+                                        }
+                                      });
+                                    },
+                                    child: new Text('Обновить'),
+                          ),
+                        ),
                       ],
                     ),
                   ),

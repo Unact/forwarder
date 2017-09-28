@@ -22,13 +22,35 @@ class DbSynch {
     do {
       isUpgrage = false;
       // open the database
-      db = await openDatabase(path, version: 1,
+      db = await openDatabase(path, version: 2,
         onCreate: (Database d, int version) async {
           await d.execute("""
             CREATE TABLE info(
               id INTEGER PRIMARY KEY,
               name TEXT,
               value TEXT,
+              ts DATETIME DEFAULT CURRENT_TIMESTAMP
+            )"""
+          );
+          await d.execute("""
+            CREATE TABLE clients(
+              id INTEGER,
+              partner_id INTEGER,
+              name TEXT,
+              address TEXT,
+              ts DATETIME DEFAULT CURRENT_TIMESTAMP
+            )"""
+          );
+          await d.execute("""
+            CREATE TABLE sale_orders(
+              client INTEGER,
+              ord INTEGER,
+              r_ndoc TEXT,
+              so_ndoc TEXT,
+              info TEXT,
+              goods_cnt INTEGER,
+              need_incassation INTEGER,
+              mc DECIMAL(18,2),
               ts DATETIME DEFAULT CURRENT_TIMESTAMP
             )"""
           );
@@ -122,4 +144,46 @@ class DbSynch {
     }
     return data["error"];
   }
+  
+  Future<String> fillDB() async {
+    String s;
+    int i = 0;
+    var data;
+    var response;
+    
+    do {
+      if (token==null) {
+        s = (await makeConnection());
+        if (s != null) {
+          return s;
+        }
+      }
+      var httpClient = createHttpClient();
+      String url = server + "forwarder";
+      try {
+        print("url = $url");
+        print("RApi client_id=$clientId,token=$token");
+        response = await httpClient.get(url,
+          headers: {"Authorization": "RApi client_id=$clientId,token=$token"}
+        );
+      } catch(exception, stackTrace) {
+        return 'Сервер $server недоступен!\n${exception}';
+      }
+      try {
+        data = JSON.decode(response.body);
+        if (data["error"] != null) {
+          if (i == 1) {
+            return data["error"];
+          }
+          token = null;
+          i++;
+        }
+      } catch(exception, stackTrace) {
+        return 'Ответ сервера: ${response.body}\n${exception}';
+      }
+    } while (i == 1);
+    print("$data");
+    return 'test';
+  }
+  
 }
