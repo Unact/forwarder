@@ -22,7 +22,7 @@ class DbSynch {
     do {
       isUpgrage = false;
       // open the database
-      db = await openDatabase(path, version: 2,
+      db = await openDatabase(path, version: 3,
         onCreate: (Database d, int version) async {
           await d.execute("""
             CREATE TABLE info(
@@ -52,6 +52,28 @@ class DbSynch {
               need_incassation INTEGER,
               mc DECIMAL(18,2),
               ts DATETIME DEFAULT CURRENT_TIMESTAMP
+            )"""
+          );
+          await d.execute("""
+            CREATE TABLE debt(
+              client INTEGER,
+              partner INTEGER,
+              ndoc TEXT,
+              ddate DATETIME,
+              ischeck INTEGER,
+              debt DECIMAL(18,2),
+              summ DECIMAL(18,2),              
+              ts DATETIME DEFAULT CURRENT_TIMESTAMP
+            )"""
+          );
+          await d.execute("""
+            CREATE TABLE repayment(
+              repayment_id  INTEGER,
+              client_id     INTEGER,
+              debt_id       INTEGER,
+              summ          DECIMAL(18,2),
+              ddate         DATETIME,           
+              ts            DATETIME DEFAULT CURRENT_TIMESTAMP
             )"""
           );
           await d.insert("info", {"name":"server", "value":"https://rapi.unact.ru/api/v1/"});
@@ -182,7 +204,59 @@ class DbSynch {
         return 'Ответ сервера: ${response.body}\n${exception}';
       }
     } while (i == 1);
-    print("$data");
+    
+    await db.execute("DELETE FROM clients");
+    await db.execute("DELETE FROM sale_orders");
+    await db.execute("DELETE FROM debt");
+    await db.execute("DELETE FROM repayment WHERE repayment_id IS NOT NULL");
+    
+    for (var client in data["clients"]) {
+      await db.execute("""
+        INSERT INTO clients (id, partner_id, name, address)
+        VALUES(${client["id"]},
+               ${client["partner_id"]},
+               '${client["partner_id"]}',
+               '${client["address"]}')
+      """);
+    }
+    
+    for (var so in data["sale_orders"]) {
+      await db.execute("""
+        INSERT INTO sale_orders(client, ord, r_ndoc, so_ndoc, info, goods_cnt, mc)
+        VALUES(${so["client"]},
+               ${so["ord"]},
+               '${so["r_ndoc"]}',
+               '${so["so_ndoc"]}',
+               '${so["info"]}',
+               ${so["goods_cnt"]},
+               ${so["mc"]})
+      """);
+    }
+    
+    for (var debt in data["debt"]) {
+      await db.execute("""
+        INSERT INTO debt(client, partner, ndoc, ddate, ischeck, debt, summ)
+        VALUES(${debt["client"]},
+               ${debt["partner"]},
+               '${debt["ndoc"]}',
+               '${debt["ddate"]}',
+               ${debt["ischeck"]},
+               ${debt["debt"]},
+               ${debt["summ"]})
+      """);
+    }
+    
+    for (var r in data["repayment"]) {
+      await db.execute("""
+        INSERT INTO repayment(repayment_id, client_id, debt_id, summ, ddate)
+        VALUES(${r["repayment_id"]},
+               ${r["client_id"]},
+               ${r["debt_id"]},
+               ${r["summ"]},
+               '${r["ddate"]}')
+      """);
+    }
+    
     return 'test';
   }
   
