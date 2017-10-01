@@ -28,24 +28,49 @@ class _ClientsPageState extends State<ClientsPage> {
         title: new Text("Точки маршрута")
       ),
       body: new Container(
-        padding: const EdgeInsets.all(2.0),
+        padding: const EdgeInsets.all(8.0),
         child: new ListView(
           children: _clients.map((var a) {
-            return new ListTile(
-              title: new Row(
-                children: [
-                  new Expanded(
-                    child: new Text(a["name"])
-                  ),
-                  new Text("${a["cnt"]}"),
-                  new Container(
-                    child: new Text("${a["need_incassation"]==1?' инк':''}"),
-                    width: 36.0,
+            return new Column(
+              children: [
+                new Row(
+                  children: [
+                    new Expanded(
+                      child: new Text(
+                        a["name"],
+                        style: new TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0
+                        )
+                      )
+                    ),
+                    new Text(
+                      "${a["cnt"]}",
+                      style: new TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      )
+                    ),
+                    new Container(
+                      child: new Text(
+                        "${a["need_incassation"]==1?' инк':''}",
+                        style: new TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),
+                      width: 36.0,
+                    )
+                  ]
+                ),
+                new Text(
+                  a["address"],
+                  style: new TextStyle(
+                    fontSize: 12.0
                   )
-                ]
-              ),
-              subtitle: new Text(a["address"]),
-            );
+                ),
+                new Divider()
+              ]);
           }).toList(),
         ),
       ),
