@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     return new Scaffold(
       body: new Stack(
-          children: <Widget>[
+          children: [
             new Offstage(
               offstage: _currentIndex != 0,
               child: new TickerMode(
@@ -106,54 +106,64 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                      children: [
                         new Card(
-                          child: new Row(
-                            children: [
-                              new Container(
-                                padding: const EdgeInsets.all(8.0),
-                                child:
-                                  new Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      new Text("Маршрут"),
-                                      new Text(
-                                        "Адресов: $_cntAddresses",
-                                        style: new TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0
-                                        ),
-                                      ),
-                                      new Text("Заказов: $_cntOrders Инкассаций: $_cntInc"),
-                                    ]
-                                  )
+                          child: new Container(
+                            padding: const EdgeInsets.all(8.0),
+                            child: new Row (
+                              children: [ new Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  new Text("Маршрут"),
+                                  new Text(
+                                    "Адресов: $_cntAddresses",
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0
+                                    ),
+                                  ),
+                                  new Text("Заказов: $_cntOrders Инкассаций: $_cntInc"),
+                                ]
                               )
-                            ]
+                            ])
                           )
                         ),
                         new Card(
-                          child: new Row(
-                            children: [
-                              new Container(
-                                padding: const EdgeInsets.all(8.0),
-                                child:
+                          child:
+                            new Container(
+                              padding: const EdgeInsets.all(8.0),
+                              child: new Row(
+                                children: [
                                   new Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
+                                    children: [
                                       new Text("Инкассации"),
                                       new Text(
-                                        "Всего: ${numFormat.format(_sumTotal)}",
+                                        "Всего:",
                                         style: new TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16.0
                                         ),
                                       ),
-                                      new Text("по ККМ: ${numFormat.format(_sumKkm)}"),
+                                      new Text("по ККМ:"),
                                     ]
-                                  )
+                                  ),
+                                  new Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      new Text(" "),
+                                      new Text(
+                                        "${numFormat.format(_sumTotal)}",
+                                        style: new TextStyle(
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      new Text("${numFormat.format(_sumKkm)}"),
+                                    ]
+                                  ),
+                                ]
                               )
-                            ]
-                          )
+                            )
                         ),
                         new Container(
                           padding: const EdgeInsets.all(16.0),
@@ -206,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   body: new Container(
                     padding: const EdgeInsets.all(32.0),
                     child: new Column(
-                      children: <Widget>[
+                      children: [
                         new GestureDetector(
                           onTap: () {
                             setState(() { _srvVisible += 1; });
