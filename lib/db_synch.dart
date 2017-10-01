@@ -215,7 +215,7 @@ class DbSynch {
         INSERT INTO clients (id, partner_id, name, address)
         VALUES(${client["id"]},
                ${client["partner_id"]},
-               '${client["partner_id"]}',
+               '${client["name"]}',
                '${client["address"]}')
       """);
     }
@@ -275,6 +275,24 @@ class DbSynch {
           IFNULL((SELECT sum(summ)  FROM repayment),0.0) total,
           IFNULL((SELECT sum(summ)  FROM repayment WHERE kkmprinted = 1),0.0) kkm
         """);
+    return list;
+  }
+
+  Future<List<Map>> getClients() async {
+    List<Map> list;
+    list = await db.rawQuery("""
+      select
+        id, name, address,
+        ifnull((select min(ord) from sale_orders so where so.client = c.id),999) ord,
+        (select count(*) from sale_orders so where so.client = c.id) cnt,
+        case when ((select count(*) from sale_orders so where so.client = c.id
+                    and need_incassation=1)>0 or
+                   (select count(*) from sale_orders so where so.client = c.id) = 0) then 1
+        else 0
+        end need_incassation
+     from clients c
+     order by ord, name,address,id
+    """);
     return list;
   }
 

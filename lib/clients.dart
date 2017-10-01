@@ -11,6 +11,16 @@ class ClientsPage extends StatefulWidget {
 class _ClientsPageState extends State<ClientsPage> {
   DbSynch cfg;
   _ClientsPageState({this.cfg});
+  List<Map> _clients=[];
+  @override
+  void initState() {
+    super.initState();
+    cfg.getClients().then((List<Map> list){
+      setState((){
+        _clients = list;
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -18,8 +28,26 @@ class _ClientsPageState extends State<ClientsPage> {
         title: new Text("Точки маршрута")
       ),
       body: new Container(
-        padding: const EdgeInsets.all(32.0),
-        child: new Text("Маршрут"),
+        padding: const EdgeInsets.all(2.0),
+        child: new ListView(
+          children: _clients.map((var a) {
+            return new ListTile(
+              title: new Row(
+                children: [
+                  new Expanded(
+                    child: new Text(a["name"])
+                  ),
+                  new Text("${a["cnt"]}"),
+                  new Container(
+                    child: new Text("${a["need_incassation"]==1?' инк':''}"),
+                    width: 36.0,
+                  )
+                ]
+              ),
+              subtitle: new Text(a["address"]),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
