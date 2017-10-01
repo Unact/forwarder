@@ -22,7 +22,7 @@ class DbSynch {
     do {
       isUpgrage = false;
       // open the database
-      db = await openDatabase(path, version: 1,
+      db = await openDatabase(path, version: 2,
         onCreate: (Database d, int version) async {
           await d.execute("""
             CREATE TABLE info(
@@ -73,7 +73,8 @@ class DbSynch {
               client_id     INTEGER,
               debt_id       INTEGER,
               summ          DECIMAL(18,2),
-              ddate         DATETIME,           
+              ddate         DATETIME,
+              kkmprinted    INTEGER,
               ts            DATETIME DEFAULT CURRENT_TIMESTAMP
             )"""
           );
@@ -223,12 +224,13 @@ class DbSynch {
     
     for (var so in data["sale_orders"]) {
       await db.execute("""
-        INSERT INTO sale_orders(client, ord, r_ndoc, so_ndoc, info, goods_cnt, mc)
+        INSERT INTO sale_orders(client, ord, r_ndoc, so_ndoc, info, need_incassation, goods_cnt, mc)
         VALUES(${so["client"]},
                ${so["ord"]},
                '${so["r_ndoc"]}',
                '${so["so_ndoc"]}',
                '${so["info"]}',
+               ${so["need_incassation"]},
                ${so["goods_cnt"]},
                ${so["mc"]})
       """);
@@ -250,16 +252,32 @@ class DbSynch {
     
     for (var r in data["repayment"]) {
       await db.execute("""
-        INSERT INTO repayment(repayment_id, client_id, debt_id, summ, ddate)
+        INSERT INTO repayment(repayment_id, client_id, debt_id, summ, ddate, kkmprinted)
         VALUES(${r["repayment_id"]},
                ${r["client_id"]},
                ${r["debt_id"]},
                ${r["summ"]},
-               '${r["ddate"]}')
+               '${r["ddate"]}',
+               ${r["kkmprinted"]})
       """);
     }
-    
-    return 'test';
+    return null;
+  }
+  
+  Future<List<Map>> getCnt() async {
+    List<Map> list;
+    list = await db.rawQuery("""
+        SELECT 
+          (SELECT COUNT(*)  FROM clients) c,
+          (SELECT COUNT(*)  FROM sale_orders) so,
+          (SELECT COUNT(*)  FROM sale_orders WHERE  need_incassation = 1) +
+          (SELECT COUNT(*)  FROM clients WHERE id NOT IN 
+          (SELECT client FROM sale_orders)
+          )  inc,
+          IFNULL((SELECT sum(summ)  FROM repayment),0.0) total,
+          IFNULL((SELECT sum(summ)  FROM repayment WHERE kkmprinted = 1),0.0) kkm
+        """);   
+    return list;
   }
   
 }

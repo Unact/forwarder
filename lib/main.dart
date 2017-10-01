@@ -26,6 +26,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
+  int _cntAddresses = 0;
+  int _cntOrders = 0;
+  int _cntInc = 0;
+  double _sumTotal = 0.0;
+  double _sumKkm = 0.0;
   DbSynch cfg = new DbSynch();
   final TextEditingController _ctlLogin = new TextEditingController();
   final TextEditingController _ctlPwd = new TextEditingController();
@@ -39,6 +44,15 @@ class _MyHomePageState extends State<MyHomePage> {
       _ctlLogin.text = cfg.login;
       _ctlPwd.text = cfg.password;
       _ctlSrv.text = cfg.server;
+      cfg.getCnt().then((List<Map> list){
+        setState((){
+          _cntAddresses = list[0]["c"];
+          _cntOrders = list[0]["so"];
+          _cntInc = list[0]["inc"];
+          _sumTotal = list[0]["total"];
+          _sumKkm = list[0]["kkm"];
+        });
+      });
     });
     _ctlLogin.addListener(() {
       cfg.updateLogin(_ctlLogin.text);
@@ -86,13 +100,62 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: new Text("Маршруты и инкассации")
                   ),
                   body: new Container(
-                    padding: const EdgeInsets.all(32.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        new Text('Points'),
+                        new Card(
+                          child: new Row(
+                            children: [
+                              new Container(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                  new Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      new Text("Маршрут"),
+                                      new Text(
+                                        "Адресов: $_cntAddresses",
+                                        style: new TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0
+                                        ),
+                                      ),
+                                      new Text("Заказов: $_cntOrders Инкассаций: $_cntInc"),
+                                    ]
+                                  )
+                              )
+                            ]
+                          )
+                        ),
+                        new Card(
+                          child: new Row(
+                            children: [
+                              new Container(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                  new Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      new Text("Инкассации"),
+                                      new Text(
+                                        "Всего: ${_sumTotal.toStringAsFixed(2)}",
+                                        style: new TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0
+                                        ),
+                                      ),
+                                      new Text("по ККМ: ${_sumKkm.toStringAsFixed(2)}"),
+                                    ]
+                                  )
+                              )
+                            ]
+                          )
+                        ),                        
                         new Container(
                           padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
+                                    color: Colors.blue,
                                     onPressed: () {
                                       cfg.fillDB().then((String s) {
                                         var alert;
@@ -101,14 +164,26 @@ class _MyHomePageState extends State<MyHomePage> {
                                             title: new Text("Ошибка обновления базы"),
                                             content: new Text("$s"),
                                           );
-                                          showDialog(context: context, child: alert);
                                         }
                                         else {
-                                          // setState(() { ... });
+                                          cfg.getCnt().then((List<Map> list){
+                                            setState((){
+                                              _cntAddresses = list[0]["c"];
+                                              _cntOrders = list[0]["so"];
+                                              _cntInc = list[0]["inc"];
+                                              _sumTotal = list[0]["total"];
+                                              _sumKkm = list[0]["kkm"];
+                                            });
+                                          });
+                                          alert = new AlertDialog(
+                                            title: new Text("Обновление базы"),
+                                            content: new Text("Успешно!"),
+                                          );
                                         }
+                                        showDialog(context: context, child: alert);
                                       });
                                     },
-                                    child: new Text('Обновить'),
+                                    child: new Text('Обновить', style: new TextStyle(color: Colors.white)),
                           ),
                         ),
                       ],
