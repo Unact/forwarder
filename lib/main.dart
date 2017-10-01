@@ -2,14 +2,35 @@ import 'package:flutter/material.dart';
 import 'db_synch.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:intl/intl.dart';
+import 'clients.dart';
+import 'repayments.dart';
 
 final numFormat = new NumberFormat("#,##0.00", "ru_RU");
+const String clientsRoute = "/clients";
+const String repaymentsRoute = "/repayments";
 
 void main() {
   runApp(new MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  // This widget is the root of your application.
+  @override
+  _MyAppState createState() => new _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final DbSynch cfg = new DbSynch();
+  var routes;
+  @override
+  void initState() {
+    super.initState();
+    routes = <String, WidgetBuilder>{
+        clientsRoute: (BuildContext context) => new ClientsPage(cfg: cfg),
+        repaymentsRoute: (BuildContext context) => new RepaymentsPage(cfg: cfg),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -17,24 +38,28 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(),
+      home: new MyHomePage(cfg: cfg),
+      routes: routes,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.cfg}) : super(key: key);
+  final DbSynch cfg;
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => new _MyHomePageState(cfg: cfg);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  _MyHomePageState({this.cfg});
   int _currentIndex = 0;
   int _cntAddresses = 0;
   int _cntOrders = 0;
   int _cntInc = 0;
   double _sumTotal = 0.0;
   double _sumKkm = 0.0;
-  DbSynch cfg = new DbSynch();
+  DbSynch cfg;
   final TextEditingController _ctlLogin = new TextEditingController();
   final TextEditingController _ctlPwd = new TextEditingController();
   final TextEditingController _ctlSrv = new TextEditingController();
@@ -43,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     cfg.initDB().then((Database db){
-      print('Connected to db!!!');
+      print('Connected to db!');
       _ctlLogin.text = cfg.login;
       _ctlPwd.text = cfg.password;
       _ctlSrv.text = cfg.server;
@@ -107,7 +132,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        new Card(
+                        new GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(clientsRoute);
+                          },
+                          child: new Card(
                           child: new Container(
                             padding: const EdgeInsets.all(8.0),
                             child: new Row (
@@ -127,8 +156,12 @@ class _MyHomePageState extends State<MyHomePage> {
                               )
                             ])
                           )
-                        ),
-                        new Card(
+                        )),
+                        new GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(repaymentsRoute);
+                          },
+                          child: new Card(
                           child:
                             new Container(
                               padding: const EdgeInsets.all(8.0),
@@ -164,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ]
                               )
                             )
-                        ),
+                        )),
                         new Container(
                           padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
@@ -219,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         new GestureDetector(
                           onTap: () {
-                            setState(() { _srvVisible += 1; });
+                            setState(() { _srvVisible++; });
                           },
                           child: new Text('Телефон или e-mail или имя'),
                         ),
