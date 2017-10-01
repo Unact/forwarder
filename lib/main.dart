@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'db_synch.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:intl/intl.dart';
+
+final numFormat = new NumberFormat("#,##0.00", "ru_RU");
 
 void main() {
   runApp(new MyApp());
@@ -64,17 +67,17 @@ class _MyHomePageState extends State<MyHomePage> {
       cfg.updateSrv(_ctlSrv.text);
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
+
     final BottomNavigationBar botNavBar = new BottomNavigationBar(
-      items: [new BottomNavigationBarItem(         
+      items: [new BottomNavigationBarItem(
                     icon: const Icon(Icons.airline_seat_recline_extra),
                     title: const Text('Доставка'),
                     backgroundColor: Theme.of(context).primaryColor,
               ),
-              new BottomNavigationBarItem(         
+              new BottomNavigationBarItem(
                     icon: const Icon(Icons.account_box),
                     title: const Text('Настройки'),
                     backgroundColor: Theme.of(context).primaryColor,
@@ -89,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
     return new Scaffold(
-      body: new Stack(        
+      body: new Stack(
           children: <Widget>[
             new Offstage(
               offstage: _currentIndex != 0,
@@ -139,19 +142,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: <Widget>[
                                       new Text("Инкассации"),
                                       new Text(
-                                        "Всего: ${_sumTotal.toStringAsFixed(2)}",
+                                        "Всего: ${numFormat.format(_sumTotal)}",
                                         style: new TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16.0
                                         ),
                                       ),
-                                      new Text("по ККМ: ${_sumKkm.toStringAsFixed(2)}"),
+                                      new Text("по ККМ: ${numFormat.format(_sumKkm)}"),
                                     ]
                                   )
                               )
                             ]
                           )
-                        ),                        
+                        ),
                         new Container(
                           padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
@@ -240,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             title: new Text("Подключение"),
                                             content: new Text("Успешно"),
                                           );
-                                        };
+                                        }
                                         showDialog(context: context, child: alert);
                                       });
                                     },
@@ -264,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     title: new Text("Сброс пароля"),
                                     content: new Text("Успешно"),
                                   );
-                                };
+                                }
                                 showDialog(context: context, child: alert);
                               });
                             },
@@ -277,12 +280,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-            ),          
+            ),
           ],
       ),
       bottomNavigationBar: botNavBar,
     );
   }
 }
-
-

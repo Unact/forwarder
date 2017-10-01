@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
@@ -12,9 +11,8 @@ class DbSynch {
   String clientId;
   String server;
   String token;
-  
+
   Future<Database> initDB() async {
-    // Get a location using path_provider
     String dir = (await getApplicationDocumentsDirectory()).path;
     String path = "$dir/forwarder_db.db";
     print ("$path");
@@ -22,7 +20,7 @@ class DbSynch {
     do {
       isUpgrage = false;
       // open the database
-      db = await openDatabase(path, version: 2,
+      db = await openDatabase(path, version: 1,
         onCreate: (Database d, int version) async {
           await d.execute("""
             CREATE TABLE info(
@@ -63,7 +61,7 @@ class DbSynch {
               ddate DATETIME,
               ischeck INTEGER,
               debt DECIMAL(18,2),
-              summ DECIMAL(18,2),              
+              summ DECIMAL(18,2),
               ts DATETIME DEFAULT CURRENT_TIMESTAMP
             )"""
           );
@@ -112,22 +110,22 @@ class DbSynch {
     await makeConnection();
     return db;
   }
-  
+
   Future<Null> updateLogin(String s) async {
     login = s.trim();
     await db.execute("UPDATE info SET value = '$login' WHERE name = 'login'");
   }
-  
+
   Future<Null> updatePwd(String s) async {
     password = s.trim();
     await db.execute("UPDATE info SET value = '$password' WHERE name = 'password'");
   }
-  
+
   Future<Null> updateSrv(String s) async {
     server = s.trim();
     await db.execute("UPDATE info SET value = '$server' WHERE name = 'server'");
   }
-  
+
   Future<String> makeConnection() async {
     var httpClient = createHttpClient();
     String url = server + "authenticate";
@@ -136,13 +134,13 @@ class DbSynch {
       response = await httpClient.post(url,
         headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
       );
-    } catch(exception, stackTrace) {
+    } catch(exception) {
       return 'Сервер $server недоступен!\n${exception}';
     }
     Map data;
     try {
       data = JSON.decode(response.body);
-    } catch(exception, stackTrace) {
+    } catch(exception) {
       return 'Ответ сервера: ${response.body}\n${exception}';
     }
     token = data["token"];
@@ -157,24 +155,24 @@ class DbSynch {
       response = await httpClient.post(url,
         headers: {"Authorization": "RApi login=$login,client_id=$clientId"}
       );
-    } catch(exception, stackTrace) {
+    } catch(exception) {
       return 'Сервер $server недоступен!\n${exception}';
     }
     Map data;
     try {
       data = JSON.decode(response.body);
-    } catch(exception, stackTrace) {
+    } catch(exception) {
       return 'Ответ сервера: ${response.body}\n${exception}';
     }
     return data["error"];
   }
-  
+
   Future<String> fillDB() async {
     String s;
     int i = 0;
     var data;
     var response;
-    
+
     do {
       if (token==null) {
         s = (await makeConnection());
@@ -190,7 +188,7 @@ class DbSynch {
         response = await httpClient.get(url,
           headers: {"Authorization": "RApi client_id=$clientId,token=$token"}
         );
-      } catch(exception, stackTrace) {
+      } catch(exception) {
         return 'Сервер $server недоступен!\n${exception}';
       }
       try {
@@ -202,16 +200,16 @@ class DbSynch {
           token = null;
           i++;
         }
-      } catch(exception, stackTrace) {
+      } catch(exception) {
         return 'Ответ сервера: ${response.body}\n${exception}';
       }
     } while (i == 1);
-    
+
     await db.execute("DELETE FROM clients");
     await db.execute("DELETE FROM sale_orders");
     await db.execute("DELETE FROM debt");
     await db.execute("DELETE FROM repayment WHERE repayment_id IS NOT NULL");
-    
+
     for (var client in data["clients"]) {
       await db.execute("""
         INSERT INTO clients (id, partner_id, name, address)
@@ -221,7 +219,7 @@ class DbSynch {
                '${client["address"]}')
       """);
     }
-    
+
     for (var so in data["sale_orders"]) {
       await db.execute("""
         INSERT INTO sale_orders(client, ord, r_ndoc, so_ndoc, info, need_incassation, goods_cnt, mc)
@@ -235,7 +233,7 @@ class DbSynch {
                ${so["mc"]})
       """);
     }
-    
+
     for (var debt in data["debt"]) {
       await db.execute("""
         INSERT INTO debt(client, partner, debt_id, ndoc, ddate, ischeck, debt, summ)
@@ -249,7 +247,7 @@ class DbSynch {
                ${debt["summ"]})
       """);
     }
-    
+
     for (var r in data["repayment"]) {
       await db.execute("""
         INSERT INTO repayment(repayment_id, client_id, debt_id, summ, ddate, kkmprinted)
@@ -263,21 +261,21 @@ class DbSynch {
     }
     return null;
   }
-  
+
   Future<List<Map>> getCnt() async {
     List<Map> list;
     list = await db.rawQuery("""
-        SELECT 
+        SELECT
           (SELECT COUNT(*)  FROM clients) c,
           (SELECT COUNT(*)  FROM sale_orders) so,
           (SELECT COUNT(*)  FROM sale_orders WHERE  need_incassation = 1) +
-          (SELECT COUNT(*)  FROM clients WHERE id NOT IN 
+          (SELECT COUNT(*)  FROM clients WHERE id NOT IN
           (SELECT client FROM sale_orders)
           )  inc,
           IFNULL((SELECT sum(summ)  FROM repayment),0.0) total,
           IFNULL((SELECT sum(summ)  FROM repayment WHERE kkmprinted = 1),0.0) kkm
-        """);   
+        """);
     return list;
   }
-  
+
 }
