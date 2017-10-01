@@ -22,7 +22,7 @@ class DbSynch {
     do {
       isUpgrage = false;
       // open the database
-      db = await openDatabase(path, version: 3,
+      db = await openDatabase(path, version: 1,
         onCreate: (Database d, int version) async {
           await d.execute("""
             CREATE TABLE info(
@@ -58,6 +58,7 @@ class DbSynch {
             CREATE TABLE debt(
               client INTEGER,
               partner INTEGER,
+              debt_id INTEGER,
               ndoc TEXT,
               ddate DATETIME,
               ischeck INTEGER,
@@ -235,9 +236,10 @@ class DbSynch {
     
     for (var debt in data["debt"]) {
       await db.execute("""
-        INSERT INTO debt(client, partner, ndoc, ddate, ischeck, debt, summ)
+        INSERT INTO debt(client, partner, debt_id, ndoc, ddate, ischeck, debt, summ)
         VALUES(${debt["client"]},
                ${debt["partner"]},
+               ${debt["debt_id"]},
                '${debt["ndoc"]}',
                '${debt["ddate"]}',
                ${debt["ischeck"]},
