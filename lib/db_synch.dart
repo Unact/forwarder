@@ -296,4 +296,18 @@ class DbSynch {
     return list;
   }
 
+  Future<List<Map>> getRepayment() async {
+    List<Map> list;
+    list = await db.rawQuery("""
+      select
+        c.name,
+        c.address,
+        r.summ,
+        r.kkmprinted
+     from repayment r
+          left outer join clients c on r.client_id = c.id
+     order by 1, 2
+    """);
+    return list;
+  }
 }
