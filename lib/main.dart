@@ -77,8 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
           _cntAddresses = list[0]["c"];
           _cntOrders = list[0]["so"];
           _cntInc = list[0]["inc"];
-          _sumTotal = list[0]["total"];
-          _sumKkm = list[0]["kkm"];
+          _sumTotal = list[0]["total"].toDouble();
+          _sumKkm = list[0]["kkm"].toDouble();
         });
       });
     });
@@ -217,8 +217,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                               _cntAddresses = list[0]["c"];
                                               _cntOrders = list[0]["so"];
                                               _cntInc = list[0]["inc"];
-                                              _sumTotal = list[0]["total"];
-                                              _sumKkm = list[0]["kkm"];
+                                              _sumTotal = list[0]["total"].toDouble();
+                                              _sumKkm = list[0]["kkm"].toDouble();;
                                             });
                                           });
                                           alert = new AlertDialog(
