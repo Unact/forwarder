@@ -3,6 +3,12 @@ import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
+const String clientsRoute = "/clients";
+const String repaymentsRoute = "/repayments";
+const String sorderRoute = "/sorder";
+final numFormat = new NumberFormat("#,##0.00", "ru_RU");
 
 class DbSynch {
   Database db;
@@ -11,6 +17,7 @@ class DbSynch {
   String clientId;
   String server;
   String token;
+  int dbClientId=0;
 
   Future<Database> initDB() async {
     String dir = (await getApplicationDocumentsDirectory()).path;
@@ -310,4 +317,22 @@ class DbSynch {
     """);
     return list;
   }
+  Future<List<Map>> getClient() async {
+    List<Map> list;
+    list = await db.rawQuery("""
+      select
+            c.name,
+            c.address,
+            ifnull((select sum(debt) from debt where client=c.id),0.0) debt,
+    		ifnull((select sum(summ) from repayment where client_id=c.id),0.0) inc,
+    		case when ((select count(*) from sale_orders so where so.client = c.id
+                        and need_incassation=1)>0 or
+                       (select count(*) from sale_orders so where so.client = c.id) = 0) then 1
+            else 0
+            end need_incassation
+         from clients c where c.id=${dbClientId}
+         order by 1, 2
+      """);
+      return list;
+    }
 }

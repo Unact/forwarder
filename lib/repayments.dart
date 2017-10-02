@@ -54,7 +54,7 @@ class _RepaymentsPageState extends State<RepaymentsPage> {
                       )
                     ),
                     new Text(
-                      "${a["summ"]}",
+                      numFormat.format(a["summ"]),
                       style: new TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,

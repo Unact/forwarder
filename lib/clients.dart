@@ -31,46 +31,52 @@ class _ClientsPageState extends State<ClientsPage> {
         padding: const EdgeInsets.all(8.0),
         child: new ListView(
           children: _clients.map((var a) {
-            return new Column(
-              children: [
-                new Row(
-                  children: [
-                    new Expanded(
-                      child: new Text(
-                        a["name"],
-                        style: new TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0
+            return new GestureDetector(
+              onTap: () {
+                cfg.dbClientId = a["id"];
+                Navigator.of(context).pushNamed(sorderRoute);
+              },
+              child: new Column(
+                children: [
+                  new Row(
+                    children: [
+                      new Expanded(
+                        child: new Text(
+                          a["name"],
+                          style: new TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0
+                          )
                         )
-                      )
-                    ),
-                    new Text(
-                      "${a["cnt"]}",
-                      style: new TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      )
-                    ),
-                    new Container(
-                      child: new Text(
-                        "${a["need_incassation"]==1?' инк':''}",
+                      ),
+                      new Text(
+                        "${a["cnt"]}",
                         style: new TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
                         )
                       ),
-                      width: 36.0,
+                      new Container(
+                        child: new Text(
+                          "${a["need_incassation"]==1?' инк':''}",
+                          style: new TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          )
+                        ),
+                        width: 36.0,
+                      )
+                    ]
+                  ),
+                  new Text(
+                    a["address"],
+                    style: new TextStyle(
+                      fontSize: 12.0
                     )
-                  ]
-                ),
-                new Text(
-                  a["address"],
-                  style: new TextStyle(
-                    fontSize: 12.0
-                  )
-                ),
-                new Divider()
-              ]);
+                  ),
+                  new Divider()
+                ])
+            );
           }).toList(),
         ),
       ),

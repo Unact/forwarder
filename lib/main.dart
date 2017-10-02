@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'db_synch.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:intl/intl.dart';
 import 'clients.dart';
 import 'repayments.dart';
-
-final numFormat = new NumberFormat("#,##0.00", "ru_RU");
-const String clientsRoute = "/clients";
-const String repaymentsRoute = "/repayments";
+import 'sorder.dart';
 
 void main() {
   runApp(new MyApp());
@@ -28,6 +24,7 @@ class _MyAppState extends State<MyApp> {
     routes = <String, WidgetBuilder>{
         clientsRoute: (BuildContext context) => new ClientsPage(cfg: cfg),
         repaymentsRoute: (BuildContext context) => new RepaymentsPage(cfg: cfg),
+        sorderRoute: (BuildContext context) => new SorderPage(cfg: cfg),
     };
   }
 
