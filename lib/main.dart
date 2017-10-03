@@ -183,12 +183,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: [
                                       new Text(" "),
                                       new Text(
-                                        "${numFormat.format(_sumTotal)}",
+                                        numFormat.format(_sumTotal),
                                         style: new TextStyle(
                                           fontWeight: FontWeight.bold
                                         ),
                                       ),
-                                      new Text("${numFormat.format(_sumKkm)}"),
+                                      new Text(numFormat.format(_sumKkm)),
                                     ]
                                   ),
                                 ]

@@ -335,4 +335,21 @@ class DbSynch {
       """);
       return list;
     }
+
+    Future<List<Map>> getSorders() async {
+      List<Map> list;
+      list = await db.rawQuery("""
+        select
+          so_ndoc,
+          info,
+          mc,
+          goods_cnt
+        from
+          sale_orders
+        where
+          client=${dbClientId}
+        order by 1, 2
+        """);
+        return list;
+      }
 }

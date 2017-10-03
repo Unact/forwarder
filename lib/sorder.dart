@@ -15,7 +15,7 @@ class _SorderPageState extends State<SorderPage> {
   double _debt=0.0;
   double _inc=0.0;
   int _needInc=0;
-  //List<Map> _orders=[];
+  List<Map> _orders=[];
 
   _SorderPageState({this.cfg});
   @override
@@ -30,6 +30,11 @@ class _SorderPageState extends State<SorderPage> {
         _needInc=list[0]["need_incassation"];
       });
     });
+    cfg.getSorders().then((List<Map> list){
+      setState((){
+        _orders = list;
+      });
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -40,6 +45,7 @@ class _SorderPageState extends State<SorderPage> {
       body: new Container(
         padding: const EdgeInsets.all(8.0),
         child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             new Text(
               _clientName,
@@ -53,11 +59,119 @@ class _SorderPageState extends State<SorderPage> {
             new Divider(),
             new Text("Долг: ${numFormat.format(_debt)} Получено: ${numFormat.format(_inc)}"),
             new Divider(),
-            new Text("Инкассация ${_needInc==1?"":"не "}требуется",
+            new Container(
+              alignment: FractionalOffset.center,
+              child: new Text(
+              _needInc==1?"Требуется инкассация":"Инкассация не требуется",
               style: new TextStyle(
+                color: Colors.blue,
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0
-            )),
+            ))),
+            new Divider(),
+            new Text("Заказы"),
+            new Text(" ", style: new TextStyle(fontSize: 6.0)),
+            new Row(
+              children: [
+                new Expanded(
+                  flex: 18,
+                  child: new Text(
+                    "Номер",
+                    textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    )
+                  )
+                ),
+                new Expanded(
+                  flex: 50,
+                  child: new Text(
+                    "Комментарий",
+                    textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.0
+                    )
+                  )
+                ),
+                new Expanded(
+                  flex: 13,
+                  child: new Text(
+                    "Кор.",
+                    textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    )
+                  )
+                ),
+                new Expanded(
+                  flex: 13,
+                  child: new Text(
+                    "Тов.",
+                    textAlign: TextAlign.center,
+                    style: new TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                    )
+                  ),
+                ),
+              ]
+            ),
+            new Divider(),
+            new Expanded(
+              child: new ListView(
+                children: _orders.map((var a) {
+                  return new Column(
+                    children: [
+                      new Row(
+                                children: [
+                                  new Expanded(
+                                    flex: 18,
+                                    child: new Text(
+                                      a["so_ndoc"],
+                                      style: new TextStyle(
+                                        fontSize: 12.0,
+                                      )
+                                    )
+                                  ),
+                                  new Expanded(
+                                    flex: 50,
+                                    child: new Text(
+                                      a["info"],
+                                      style: new TextStyle(
+                                        fontSize: 12.0
+                                      )
+                                    )
+                                  ),
+                                  new Expanded(
+                                    flex: 13,
+                                    child: new Text(
+                                      numFormat.format(a["mc"]),
+                                      textAlign: TextAlign.right,
+                                      style: new TextStyle(
+                                        fontSize: 12.0,
+                                      )
+                                    )
+                                  ),
+                                  new Expanded(
+                                    flex: 13,
+                                    child: new Text(
+                                      a["goods_cnt"].toString(),
+                                      textAlign: TextAlign.right,
+                                      style: new TextStyle(
+                                        fontSize: 12.0,
+                                      )
+                                    ),
+                                  ),
+                                ]
+                              ),
+                              new Divider(),
+                            ]);
+                }).toList()
+              )
+            )
           ],
         )
       ),
