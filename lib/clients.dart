@@ -34,6 +34,7 @@ class _ClientsPageState extends State<ClientsPage> {
             return new GestureDetector(
               onTap: () {
                 cfg.dbClientId = a["id"];
+                cfg.clientName = a["name"];
                 Navigator.of(context).pushNamed(sorderRoute);
               },
               child: new Column(

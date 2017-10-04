@@ -59,15 +59,20 @@ class _SorderPageState extends State<SorderPage> {
             new Divider(),
             new Text("Долг: ${numFormat.format(_debt)} Получено: ${numFormat.format(_inc)}"),
             new Divider(),
-            new Container(
-              alignment: FractionalOffset.center,
-              child: new Text(
-              _needInc==1?"Требуется инкассация":"Инкассация не требуется",
-              style: new TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0
-            ))),
+            new GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(debtRoute);
+              },
+              child: new Container(
+                alignment: FractionalOffset.center,
+                child: new Text(
+                _needInc==1?"Требуется инкассация":"Инкассация не требуется",
+                style: new TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0
+              ))),
+            ),
             new Divider(),
             new Text("Заказы"),
             new Text(" ", style: new TextStyle(fontSize: 6.0)),

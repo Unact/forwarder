@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 const String clientsRoute = "/clients";
 const String repaymentsRoute = "/repayments";
 const String sorderRoute = "/sorder";
+const String debtRoute = "/debt";
 final numFormat = new NumberFormat("#,##0.00", "ru_RU");
+final dateFormat = new DateFormat("dd.MM.yy") ;
 
 class DbSynch {
   Database db;
@@ -18,6 +20,7 @@ class DbSynch {
   String server;
   String token;
   int dbClientId=0;
+  String clientName="";
 
   Future<Database> initDB() async {
     String dir = (await getApplicationDocumentsDirectory()).path;
@@ -351,5 +354,20 @@ class DbSynch {
         order by 1, 2
         """);
         return list;
-      }
+    }
+
+    Future<List<Map>> getDebt() async {
+      List<Map> list;
+      list = await db.rawQuery("""
+        select
+          d.debt_id, d.ndoc, d.ddate, d.summ, d.debt, d.ischeck, r.summ r_summ
+        from
+          debt d
+          left outer join repayment r on r.debt_id = d.debt_id
+        where
+          client=${dbClientId}
+        order by 3 DESC, 2 DESC
+        """);
+        return list;
+    }
 }

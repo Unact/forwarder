@@ -4,13 +4,13 @@ import 'package:sqflite/sqflite.dart';
 import 'clients.dart';
 import 'repayments.dart';
 import 'sorder.dart';
+import 'debt.dart';
 
 void main() {
   runApp(new MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
   @override
   _MyAppState createState() => new _MyAppState();
 }
@@ -25,6 +25,7 @@ class _MyAppState extends State<MyApp> {
         clientsRoute: (BuildContext context) => new ClientsPage(cfg: cfg),
         repaymentsRoute: (BuildContext context) => new RepaymentsPage(cfg: cfg),
         sorderRoute: (BuildContext context) => new SorderPage(cfg: cfg),
+        debtRoute: (BuildContext context) => new DebtPage(cfg: cfg),
     };
   }
 
@@ -269,6 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         new Container(
                           padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
+                                    color: Colors.blue,
                                     onPressed: () {
                                       cfg.makeConnection().then((String s) {
                                         var alert;
@@ -287,12 +289,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                         showDialog(context: context, child: alert);
                                       });
                                     },
-                                    child: new Text('Подключиться'),
+                                    child: new Text('Подключиться', style: new TextStyle(color: Colors.white)),
                           ),
                         ),
                         new Container(
                           padding: const EdgeInsets.all(16.0),
                           child: new RaisedButton(
+                            color: Colors.blue,
                             onPressed: () {
                               cfg.resetPassword().then((String s) {
                                 var alert;
@@ -311,7 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 showDialog(context: context, child: alert);
                               });
                             },
-                            child: new Text('Сброс пароля'),
+                            child: new Text('Сброс пароля', style: new TextStyle(color: Colors.white)),
                           ),
                         ),
                         ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
