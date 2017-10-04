@@ -360,7 +360,7 @@ class DbSynch {
       List<Map> list;
       list = await db.rawQuery("""
         select
-          d.debt_id, d.ndoc, d.ddate, d.summ, d.debt, d.ischeck, r.summ r_summ
+          d.debt_id, d.ndoc, d.ddate, d.summ, d.debt, d.ischeck, r.summ r_summ, r.repayment_id
         from
           debt d
           left outer join repayment r on r.debt_id = d.debt_id
@@ -369,5 +369,25 @@ class DbSynch {
         order by 3 DESC, 2 DESC
         """);
         return list;
+    }
+
+    Future<String> saveDb(List<Map> debt) async {
+      for (var d in debt){
+        List<Map> r = await db.rawQuery("select debt_id from repayment where debt_id=${d["debt_id"]}");
+
+        if (r.length == 0 && d["r_summ"] != null) {
+          await db.execute("""
+            INSERT INTO repayment(client_id, debt_id, summ, ddate, kkmprinted)
+            VALUES(${dbClientId},
+                   ${d["debt_id"]},
+                   ${d["r_summ"]},
+                   '${new DateTime.now()}',
+                   ${d["ischeck"]})
+          """);
+        } else if (r.length > 0) {
+          await db.execute("UPDATE repayment SET summ = ${d["r_summ"]} WHERE debt_id=${d["debt_id"]}");
+        }
+      }
+      return null;
     }
 }
