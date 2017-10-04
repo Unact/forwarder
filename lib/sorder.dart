@@ -60,8 +60,14 @@ class _SorderPageState extends State<SorderPage> {
             new Text("Долг: ${numFormat.format(_debt)} Получено: ${numFormat.format(_inc)}"),
             new Divider(),
             new GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed(debtRoute);
+              onTap: () async {
+                bool isSave = await Navigator.of(context).pushNamed(debtRoute);
+                if (isSave == true){
+                  List<Map> list = await cfg.getClient();
+                  setState((){
+                    _inc=list[0]["inc"].toDouble();
+                  });
+                }
               },
               child: new Container(
                 alignment: FractionalOffset.center,

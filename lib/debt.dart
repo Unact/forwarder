@@ -99,10 +99,7 @@ class _DebtPageState extends State<DebtPage> {
                   onPressed: () {
                     cfg.saveDb(_debt).then((String s) {
                       var alert;
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushNamed(sorderRoute);
-                      Navigator.of(context).pushNamed(debtRoute);
+                      Navigator.of(context).pop(true);
                       if (s != null) {
                         alert = new AlertDialog(
                           title: new Text("Ошибка"),
