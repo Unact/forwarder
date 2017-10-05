@@ -14,6 +14,9 @@ class _DebtPageState extends State<DebtPage> {
   List<Map> _debt=[];
   double _sum = 0.0;
   double _sumKkm = 0.0;
+  double _dx = 0.0;
+  int _direction = 1;
+
   @override
   void initState() {
     super.initState();
@@ -124,7 +127,27 @@ class _DebtPageState extends State<DebtPage> {
                 children: _debt.map((var a) {
                   return new Column(
                     children: [
-                      new Row(
+                      new GestureDetector(
+                        onHorizontalDragUpdate: (DragUpdateDetails details) {
+                          if (_dx == 0.0) {
+                            _dx = details.globalPosition.dx;
+                          } else if (_dx > details.globalPosition.dx) {
+                            _direction = -1;
+                          } else if (_dx < details.globalPosition.dx) {
+                            _direction = 1;
+                          }
+                        },
+                        onHorizontalDragEnd: (_) {
+                          _dx = 0.0;
+                          if (a["ischeck"] == 0 || a["repayment_id"] == null) {
+                            if(_direction == -1){
+                              a["tc"].clear();
+                            } else if(_direction == 1) {
+                              a["tc"].text = a["debt"].toString();
+                            }
+                          }
+                        },
+                        child: new Row(
                                 children: [
                                   new Expanded(
                                     flex: 20,
@@ -184,6 +207,7 @@ class _DebtPageState extends State<DebtPage> {
                                   )
                                 ]
                               ),
+                            ),
                               new Divider(),
                             ]);
                 }).toList()
