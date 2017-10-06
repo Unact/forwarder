@@ -21,6 +21,7 @@ class DbSynch {
   String token;
   int dbClientId=0;
   String clientName="";
+  int closed=0;
 
   Future<Database> initDB() async {
     String dir = (await getApplicationDocumentsDirectory()).path;
@@ -215,6 +216,8 @@ class DbSynch {
         return 'Ответ сервера: ${response.body}\n${exception}';
       }
     } while (i == 1);
+
+    closed = data["closed"];
 
     await db.execute("DELETE FROM clients");
     await db.execute("DELETE FROM sale_orders");
@@ -436,7 +439,56 @@ class DbSynch {
         return 'Ответ сервера: ${response.body}\n${exception}';
       }
     } while (i == 1);
+
+    for (var i = 0; i < list.length; i++) {
+      list[i]["repayment_id"] = data["repayment"][i];
+      await db.execute("""
+        UPDATE repayment
+        SET repayment_id = ${list[i]["repayment_id"]}
+        WHERE debt_id=${list[i]["debt_id"]}
+      """);
+    }
     return null;
   }
+  Future<String> putClosed() async {
+    String s;
+    int i = 0;
+    var data;
+    var response;
 
+    do {
+      if (token==null) {
+        s = (await makeConnection());
+        if (s != null) {
+          return s;
+        }
+      }
+      var httpClient = createHttpClient();
+      String url = server + "forwarder/closed";
+      try {
+        print("url = $url");
+        print("RApi client_id=$clientId,token=$token");
+        response = await httpClient.post(url,
+          headers: {"Authorization": "RApi client_id=$clientId,token=$token",
+                    "Accept": "application/json", "Content-Type": "application/json"},
+        );
+      } catch(exception) {
+        return 'Сервер $server недоступен!\n${exception}';
+      }
+      try {
+        data = JSON.decode(response.body);
+        if (data["error"] != null) {
+          if (i == 1) {
+            return data["error"];
+          }
+          token = null;
+          i++;
+        }
+      } catch(exception) {
+        return 'Ответ сервера: ${response.body}\n${exception}';
+      }
+    } while (i == 1);
+
+    return null;
+  }
 }

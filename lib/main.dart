@@ -201,6 +201,22 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: new RaisedButton(
                                     color: Colors.blue,
                                     onPressed: () {
+                                      setState((){
+                                        cfg.closed = (cfg.closed + 1) % 2;
+                                        cfg.putClosed();
+                                      });
+                                    },
+                                    child: new Text(
+                                      cfg.closed == 1?'Открыть день':'Завершить день',
+                                      style: new TextStyle(color: Colors.white)
+                                    ),
+                          ),
+                        ),
+                        new Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: new RaisedButton(
+                                    color: Colors.blue,
+                                    onPressed: () {
                                       cfg.fillDB().then((String s) {
                                         var alert;
                                         if (s != null) {

@@ -39,7 +39,7 @@ class _RepaymentsPageState extends State<RepaymentsPage> {
                   children: [
                     new Expanded(
                       child: new Text(
-                        a["name"],
+                        "${a["name"]}",
                         style: new TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.0
@@ -63,7 +63,7 @@ class _RepaymentsPageState extends State<RepaymentsPage> {
                   ]
                 ),
                 new Text(
-                  a["address"],
+                  "${a["address"]}",
                   style: new TextStyle(
                     fontSize: 12.0
                   )
