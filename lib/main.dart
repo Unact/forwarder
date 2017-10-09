@@ -115,17 +115,10 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
     return new Scaffold(
-      body: new Stack(
-          children: [
-            new Offstage(
-              offstage: _currentIndex != 0,
-              child: new TickerMode(
-                enabled: _currentIndex == 0,
-                child: new Scaffold(
                   appBar: new AppBar(
                     title: new Text("Маршруты и инкассации")
                   ),
-                  body: new Container(
+                  body: _currentIndex==0?(new Container(
                     padding: const EdgeInsets.all(16.0),
                     child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,19 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-            ),
-            new Offstage(
-              offstage: _currentIndex != 1,
-              child: new TickerMode(
-                enabled: _currentIndex == 1,
-                child: new Scaffold(
-                  appBar: new AppBar(
-                    title: new Text("Настройки подключения")
-                  ),
-                  body: new Container(
+                  )):( new Container(
                     padding: const EdgeInsets.all(32.0),
                     child: new Column(
                       children: [
@@ -336,13 +317,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
                       ],
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-      ),
-      bottomNavigationBar: botNavBar,
-    );
+                  )),
+                  bottomNavigationBar: botNavBar,
+                );
   }
 }
