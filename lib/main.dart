@@ -243,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )):( new Container(
                     padding: const EdgeInsets.all(32.0),
-                    child: new Column(
+                    child: new SingleChildScrollView( child: new Column(
                       children: [
                         new GestureDetector(
                           onTap: () {
@@ -316,7 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
                       ],
-                    ),
+                    ),)
                   )),
                   bottomNavigationBar: botNavBar,
                 );
