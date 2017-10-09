@@ -115,210 +115,218 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
     return new Scaffold(
-                  appBar: new AppBar(
-                    title: new Text("Маршруты и инкассации")
-                  ),
-                  body: _currentIndex==0?(new Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        new GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(clientsRoute);
-                          },
-                          child: new Card(
-                          child: new Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: new Row (
-                              children: [ new Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  new Text("Маршрут"),
-                                  new Text(
-                                    "Адресов: $_cntAddresses",
-                                    style: new TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.0
-                                    ),
-                                  ),
-                                  new Text("Заказов: $_cntOrders Инкассаций: $_cntInc"),
-                                ]
-                              )
-                            ])
-                          )
-                        )),
-                        new GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(repaymentsRoute);
-                          },
-                          child: new Card(
-                          child:
-                            new Container(
-                              padding: const EdgeInsets.all(8.0),
-                              child: new Row(
-                                children: [
-                                  new Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      new Text("Инкассации"),
-                                      new Text(
-                                        "Всего:",
-                                        style: new TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0
-                                        ),
-                                      ),
-                                      new Text("по ККМ:"),
-                                    ]
-                                  ),
-                                  new Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      new Text(" "),
-                                      new Text(
-                                        numFormat.format(_sumTotal),
-                                        style: new TextStyle(
-                                          fontWeight: FontWeight.bold
-                                        ),
-                                      ),
-                                      new Text(numFormat.format(_sumKkm)),
-                                    ]
-                                  ),
-                                ]
-                              )
-                            )
-                        )),
-                        new Container(
-                          padding: const EdgeInsets.all(16.0),
-                          child: new RaisedButton(
-                                    color: Colors.blue,
-                                    onPressed: () {
-                                      setState((){
-                                        cfg.closed = (cfg.closed + 1) % 2;
-                                        cfg.putClosed();
-                                      });
-                                    },
-                                    child: new Text(
-                                      cfg.closed == 1?'Открыть день':'Завершить день',
-                                      style: new TextStyle(color: Colors.white)
-                                    ),
+      appBar: new AppBar(
+        title: new Text("Маршруты и инкассации")
+      ),
+      body: _currentIndex==0?(new Container(
+        padding: const EdgeInsets.all(16.0),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            new GestureDetector(
+              onTap: () async {
+                await Navigator.of(context).pushNamed(clientsRoute);
+                List<Map> list = await cfg.getCnt();
+                setState((){
+                  _cntAddresses = list[0]["c"];
+                  _cntOrders = list[0]["so"];
+                  _cntInc = list[0]["inc"];
+                  _sumTotal = list[0]["total"].toDouble();
+                  _sumKkm = list[0]["kkm"].toDouble();
+                });
+              },
+              child: new Card(
+              child: new Container(
+                padding: const EdgeInsets.all(8.0),
+                child: new Row (
+                  children: [ new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      new Text("Маршрут"),
+                      new Text(
+                        "Адресов: $_cntAddresses",
+                        style: new TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0
+                        ),
+                      ),
+                      new Text("Заказов: $_cntOrders Инкассаций: $_cntInc"),
+                    ]
+                  )
+                ])
+              )
+            )),
+            new GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(repaymentsRoute);
+              },
+              child: new Card(
+              child:
+                new Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: new Row(
+                    children: [
+                      new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          new Text("Инкассации"),
+                          new Text(
+                            "Всего:",
+                            style: new TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0
+                            ),
                           ),
-                        ),
-                        new Container(
-                          padding: const EdgeInsets.all(16.0),
-                          child: new RaisedButton(
-                                    color: Colors.blue,
-                                    onPressed: () {
-                                      cfg.fillDB().then((String s) {
-                                        var alert;
-                                        if (s != null) {
-                                          alert = new AlertDialog(
-                                            title: new Text("Ошибка обновления базы"),
-                                            content: new Text("$s"),
-                                          );
-                                        }
-                                        else {
-                                          cfg.getCnt().then((List<Map> list){
-                                            setState((){
-                                              _cntAddresses = list[0]["c"];
-                                              _cntOrders = list[0]["so"];
-                                              _cntInc = list[0]["inc"];
-                                              _sumTotal = list[0]["total"].toDouble();
-                                              _sumKkm = list[0]["kkm"].toDouble();
-                                            });
-                                          });
-                                          alert = new AlertDialog(
-                                            title: new Text("Обновление базы"),
-                                            content: new Text("Успешно!"),
-                                          );
-                                        }
-                                        showDialog(context: context, child: alert);
-                                      });
-                                    },
-                                    child: new Text('Обновить', style: new TextStyle(color: Colors.white)),
+                          new Text("по ККМ:"),
+                        ]
+                      ),
+                      new Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          new Text(" "),
+                          new Text(
+                            numFormat.format(_sumTotal),
+                            style: new TextStyle(
+                              fontWeight: FontWeight.bold
+                            ),
                           ),
+                          new Text(numFormat.format(_sumKkm)),
+                        ]
+                      ),
+                    ]
+                  )
+                )
+            )),
+            new Container(
+              padding: const EdgeInsets.all(16.0),
+              child: new RaisedButton(
+                        color: Colors.blue,
+                        onPressed: () {
+                          setState((){
+                            cfg.closed = (cfg.closed + 1) % 2;
+                            cfg.putClosed();
+                          });
+                        },
+                        child: new Text(
+                          cfg.closed == 1?'Открыть день':'Завершить день',
+                          style: new TextStyle(color: Colors.white)
                         ),
-                      ],
-                    ),
-                  )):( new Container(
-                    padding: const EdgeInsets.all(32.0),
-                    child: new SingleChildScrollView( child: new Column(
-                      children: [
-                        new GestureDetector(
-                          onTap: () {
-                            setState(() { _srvVisible++; });
-                          },
-                          child: new Text('Телефон или e-mail или имя'),
-                        ),
-                        new TextField(
-                          controller: _ctlLogin,
-                          decoration: new InputDecoration(
-                            hintText: 'Введите телефон или e-mail или имя',
-                          ),
-                        ),
-                        new Text('Пароль'),
-                        new TextField(
-                          controller: _ctlPwd,
-                          decoration: new InputDecoration(
-                            hintText: 'Введите пароль',
-                          ),
-                        ),
-                        new Container(
-                          padding: const EdgeInsets.all(16.0),
-                          child: new RaisedButton(
-                                    color: Colors.blue,
-                                    onPressed: () {
-                                      cfg.makeConnection().then((String s) {
-                                        var alert;
-                                        if (s != null) {
-                                          alert = new AlertDialog(
-                                            title: new Text("Ошибка подключения"),
-                                            content: new Text("$s"),
-                                          );
-                                        }
-                                        else {
-                                          alert = new AlertDialog(
-                                            title: new Text("Подключение"),
-                                            content: new Text("Успешно"),
-                                          );
-                                        }
-                                        showDialog(context: context, child: alert);
-                                      });
-                                    },
-                                    child: new Text('Подключиться', style: new TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                        new Container(
-                          padding: const EdgeInsets.all(16.0),
-                          child: new RaisedButton(
-                            color: Colors.blue,
-                            onPressed: () {
-                              cfg.resetPassword().then((String s) {
-                                var alert;
-                                if (s != null) {
-                                  alert = new AlertDialog(
-                                    title: new Text("Ошибка сброса пароля"),
-                                    content: new Text("$s"),
-                                  );
-                                }
-                                else {
-                                  alert = new AlertDialog(
-                                    title: new Text("Сброс пароля"),
-                                    content: new Text("Успешно"),
-                                  );
-                                }
-                                showDialog(context: context, child: alert);
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.all(16.0),
+              child: new RaisedButton(
+                        color: Colors.blue,
+                        onPressed: () {
+                          cfg.fillDB().then((String s) {
+                            var alert;
+                            if (s != null) {
+                              alert = new AlertDialog(
+                                title: new Text("Ошибка обновления базы"),
+                                content: new Text("$s"),
+                              );
+                            }
+                            else {
+                              cfg.getCnt().then((List<Map> list){
+                                setState((){
+                                  _cntAddresses = list[0]["c"];
+                                  _cntOrders = list[0]["so"];
+                                  _cntInc = list[0]["inc"];
+                                  _sumTotal = list[0]["total"].toDouble();
+                                  _sumKkm = list[0]["kkm"].toDouble();
+                                });
                               });
-                            },
-                            child: new Text('Сброс пароля', style: new TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                        ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
-                      ],
-                    ),)
-                  )),
-                  bottomNavigationBar: botNavBar,
-                );
+                              alert = new AlertDialog(
+                                title: new Text("Обновление базы"),
+                                content: new Text("Успешно!"),
+                              );
+                            }
+                            showDialog(context: context, child: alert);
+                          });
+                        },
+                        child: new Text('Обновить', style: new TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      )):( new Container(
+        padding: const EdgeInsets.all(32.0),
+        child: new SingleChildScrollView( child: new Column(
+          children: [
+            new GestureDetector(
+              onTap: () {
+                setState(() { _srvVisible++; });
+              },
+              child: new Text('Телефон или e-mail или имя'),
+            ),
+            new TextField(
+              controller: _ctlLogin,
+              decoration: new InputDecoration(
+                hintText: 'Введите телефон или e-mail или имя',
+              ),
+            ),
+            new Text('Пароль'),
+            new TextField(
+              controller: _ctlPwd,
+              decoration: new InputDecoration(
+                hintText: 'Введите пароль',
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.all(16.0),
+              child: new RaisedButton(
+                        color: Colors.blue,
+                        onPressed: () {
+                          cfg.makeConnection().then((String s) {
+                            var alert;
+                            if (s != null) {
+                              alert = new AlertDialog(
+                                title: new Text("Ошибка подключения"),
+                                content: new Text("$s"),
+                              );
+                            }
+                            else {
+                              alert = new AlertDialog(
+                                title: new Text("Подключение"),
+                                content: new Text("Успешно"),
+                              );
+                            }
+                            showDialog(context: context, child: alert);
+                          });
+                        },
+                        child: new Text('Подключиться', style: new TextStyle(color: Colors.white)),
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.all(16.0),
+              child: new RaisedButton(
+                color: Colors.blue,
+                onPressed: () {
+                  cfg.resetPassword().then((String s) {
+                    var alert;
+                    if (s != null) {
+                      alert = new AlertDialog(
+                        title: new Text("Ошибка сброса пароля"),
+                        content: new Text("$s"),
+                      );
+                    }
+                    else {
+                      alert = new AlertDialog(
+                        title: new Text("Сброс пароля"),
+                        content: new Text("Успешно"),
+                      );
+                    }
+                    showDialog(context: context, child: alert);
+                  });
+                },
+                child: new Text('Сброс пароля', style: new TextStyle(color: Colors.white)),
+              ),
+            ),
+            ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
+          ],
+        ),)
+      )),
+      bottomNavigationBar: botNavBar,
+    );
   }
 }
