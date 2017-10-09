@@ -223,6 +223,9 @@ class DbSynch {
     await db.execute("DELETE FROM sale_orders");
     await db.execute("DELETE FROM debt");
     await db.execute("DELETE FROM repayment WHERE repayment_id IS NOT NULL");
+    await db.execute("DELETE FROM info WHERE name = 'closed'");
+
+    await db.insert("info", {"name": "closed", "value":"$closed"});
 
     for (var client in data["clients"]) {
       await db.execute("""
@@ -287,8 +290,10 @@ class DbSynch {
           (SELECT client FROM sale_orders)
           )  inc,
           IFNULL((SELECT sum(summ)  FROM repayment),0.0) total,
-          IFNULL((SELECT sum(summ)  FROM repayment WHERE kkmprinted = 1),0.0) kkm
+          IFNULL((SELECT sum(summ)  FROM repayment WHERE kkmprinted = 1),0.0) kkm,
+          IFNULL((SELECT value FROM info WHERE name = 'closed'),'0') closed
         """);
+    closed = int.parse(list[0]["closed"]);
     return list;
   }
 
@@ -320,6 +325,8 @@ class DbSynch {
         r.kkmprinted
      from repayment r
           left outer join clients c on r.client_id = c.id
+     where
+        r.summ IS NOT NULL
      order by 1, 2
     """);
     return list;
@@ -488,6 +495,10 @@ class DbSynch {
         return 'Ответ сервера: ${response.body}\n${exception}';
       }
     } while (i == 1);
+
+    closed = (closed + 1) % 2;
+    await db.execute("DELETE FROM info WHERE name = 'closed'");
+    await db.insert("info", {"name": "closed", "value":"$closed"});
 
     return null;
   }

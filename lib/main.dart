@@ -200,17 +200,26 @@ class _MyHomePageState extends State<MyHomePage> {
             new Container(
               padding: const EdgeInsets.all(16.0),
               child: new RaisedButton(
-                        color: Colors.blue,
-                        onPressed: () {
-                          setState((){
-                            cfg.closed = (cfg.closed + 1) % 2;
-                            cfg.putClosed();
-                          });
-                        },
-                        child: new Text(
-                          cfg.closed == 1?'Открыть день':'Завершить день',
-                          style: new TextStyle(color: Colors.white)
-                        ),
+                color: Colors.blue,
+                onPressed: () {
+                  cfg.putClosed().then((String s){
+                    var alert;
+                    if (s != null) {
+                      alert = new AlertDialog(
+                        title: new Text("Ошибка закрытия"),
+                        content: new Text("$s"),
+                      );
+                      showDialog(context: context, child: alert);
+                    }
+                    else {
+                      setState((){ });
+                    }
+                  });
+                },
+                child: new Text(
+                  cfg.closed == 1?'Открыть день':'Завершить день',
+                  style: new TextStyle(color: Colors.white)
+                ),
               ),
             ),
             new Container(
