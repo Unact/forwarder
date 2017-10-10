@@ -61,13 +61,11 @@ class _SorderPageState extends State<SorderPage> {
             new Divider(),
             new GestureDetector(
               onTap: () async {
-                bool isSave = await Navigator.of(context).pushNamed(debtRoute);
-                if (isSave == true){
-                  List<Map> list = await cfg.getClient();
-                  setState((){
-                    _inc=list[0]["inc"].toDouble();
-                  });
-                }
+                await Navigator.of(context).pushNamed(debtRoute);
+                List<Map> list = await cfg.getClient();
+                setState((){
+                  _inc=list[0]["inc"].toDouble();
+                });
               },
               child: new Container(
                 alignment: FractionalOffset.center,

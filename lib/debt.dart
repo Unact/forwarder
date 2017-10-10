@@ -16,6 +16,7 @@ class _DebtPageState extends State<DebtPage> {
   double _sumKkm = 0.0;
   double _dx = 0.0;
   int _direction = 1;
+  bool sendingSave = false;
 
   @override
   void initState() {
@@ -97,12 +98,13 @@ class _DebtPageState extends State<DebtPage> {
                     ),
                   ]
                 ),),
-                new RaisedButton(
+                sendingSave? new CircularProgressIndicator() : new RaisedButton(
                   color: Colors.blue,
                   onPressed: () {
+                    setState(()=>sendingSave=true);
                     cfg.saveDb(_debt).then((String s) {
                       var alert;
-                      Navigator.of(context).pop(true);
+                      setState(()=>sendingSave=false);
                       if (s != null) {
                         alert = new AlertDialog(
                           title: new Text("Ошибка"),

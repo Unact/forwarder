@@ -57,6 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _cntInc = 0;
   double _sumTotal = 0.0;
   double _sumKkm = 0.0;
+  bool sendingClose = false;
+  bool sendingInit = false;
+  bool sendingConnect = false;
+  bool sendingPwd = false;
   DbSynch cfg;
   final TextEditingController _ctlLogin = new TextEditingController();
   final TextEditingController _ctlPwd = new TextEditingController();
@@ -123,7 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // new LinearProgressIndicator(),
             new GestureDetector(
               onTap: () async {
                 await Navigator.of(context).pushNamed(clientsRoute);
@@ -200,10 +203,12 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             new Container(
               padding: const EdgeInsets.all(16.0),
-              child: new RaisedButton(
+              child: sendingClose? new CircularProgressIndicator() : new RaisedButton(
                 color: Colors.blue,
                 onPressed: () {
+                  setState(()=>sendingClose=true);
                   cfg.putClosed().then((String s){
+                    setState(()=>sendingClose=false);
                     var alert;
                     if (s != null) {
                       alert = new AlertDialog(
@@ -225,11 +230,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Container(
               padding: const EdgeInsets.all(16.0),
-              child: new RaisedButton(
+              child: sendingInit? new CircularProgressIndicator(): new RaisedButton(
                         color: Colors.blue,
                         onPressed: () {
+                          setState(()=>sendingInit=true);
                           cfg.fillDB().then((String s) {
                             var alert;
+                            setState(()=>sendingInit=false);
                             if (s != null) {
                               alert = new AlertDialog(
                                 title: new Text("Ошибка обновления базы"),
@@ -284,11 +291,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [new RaisedButton(
+              children: [ sendingConnect? new CircularProgressIndicator() : new RaisedButton(
                         color: Colors.blue,
                         onPressed: () {
+                          setState(()=>sendingConnect=true);
                           cfg.makeConnection().then((String s) {
                             var alert;
+                            setState(()=>sendingConnect=false);
                             if (s != null) {
                               alert = new AlertDialog(
                                 title: new Text("Ошибка подключения"),
@@ -306,11 +315,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         child: new Text('Подключиться', style: new TextStyle(color: Colors.white)),
               ),
-              new RaisedButton(
+              sendingPwd? new CircularProgressIndicator() : new RaisedButton(
                 color: Colors.blue,
                 onPressed: () {
+                  setState(()=>sendingPwd=true);
                   cfg.resetPassword().then((String s) {
                     var alert;
+                    setState(()=>sendingPwd=false);
                     if (s != null) {
                       alert = new AlertDialog(
                         title: new Text("Ошибка сброса пароля"),
