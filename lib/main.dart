@@ -259,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       )):( new Container(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(8.0),
         child: new SingleChildScrollView( child: new Column(
           children: [
             new GestureDetector(
@@ -281,9 +281,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 hintText: 'Введите пароль',
               ),
             ),
-            new Container(
-              padding: const EdgeInsets.all(16.0),
-              child: new RaisedButton(
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [new RaisedButton(
                         color: Colors.blue,
                         onPressed: () {
                           cfg.makeConnection().then((String s) {
@@ -305,10 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         child: new Text('Подключиться', style: new TextStyle(color: Colors.white)),
               ),
-            ),
-            new Container(
-              padding: const EdgeInsets.all(16.0),
-              child: new RaisedButton(
+              new RaisedButton(
                 color: Colors.blue,
                 onPressed: () {
                   cfg.resetPassword().then((String s) {
@@ -321,18 +318,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                     else {
                       alert = new AlertDialog(
-                        title: new Text("Сброс пароля"),
+                        title: new Text("Получение пароля"),
                         content: new Text("Успешно"),
                       );
                     }
                     showDialog(context: context, child: alert);
                   });
                 },
-                child: new Text('Сброс пароля', style: new TextStyle(color: Colors.white)),
-              ),
+                child: new Text('Получить пароль', style: new TextStyle(color: Colors.white)),
+              )
+            ]
             ),
             ((_srvVisible > 5)?(new TextField(controller: _ctlSrv)):(new Container())),
-          ],
+          ]
         ),)
       )),
       bottomNavigationBar: botNavBar,
