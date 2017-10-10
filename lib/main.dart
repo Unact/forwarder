@@ -123,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // new LinearProgressIndicator(),
             new GestureDetector(
               onTap: () async {
                 await Navigator.of(context).pushNamed(clientsRoute);
