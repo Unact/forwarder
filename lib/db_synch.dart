@@ -146,13 +146,13 @@ class DbSynch {
         headers: {"Authorization": "RApi login=$login,client_id=$clientId,password=$password"}
       );
     } catch(exception) {
-      return 'Сервер $server недоступен!\n${exception}';
+      return 'Сервер $server недоступен!\n$exception';
     }
     Map data;
     try {
       data = JSON.decode(response.body);
     } catch(exception) {
-      return 'Ответ сервера: ${response.body}\n${exception}';
+      return 'Ответ сервера: ${response.body}\n$exception';
     }
     token = data["token"];
     await db.execute("UPDATE info SET value = '$token' WHERE name = 'token'");
@@ -168,13 +168,13 @@ class DbSynch {
         headers: {"Authorization": "RApi login=$login,client_id=$clientId"}
       );
     } catch(exception) {
-      return 'Сервер $server недоступен!\n${exception}';
+      return 'Сервер $server недоступен!\n$exception';
     }
     Map data;
     try {
       data = JSON.decode(response.body);
     } catch(exception) {
-      return 'Ответ сервера: ${response.body}\n${exception}';
+      return 'Ответ сервера: ${response.body}\n$exception';
     }
     return data["error"];
   }
@@ -195,13 +195,13 @@ class DbSynch {
       var httpClient = createHttpClient();
       String url = server + "forwarder";
       try {
-        print("url = $url");
+        print("url = $url i = $i");
         print("RApi client_id=$clientId,token=$token");
         response = await httpClient.get(url,
           headers: {"Authorization": "RApi client_id=$clientId,token=$token"}
         );
       } catch(exception) {
-        return 'Сервер $server недоступен!\n${exception}';
+        return 'Сервер $server недоступен!\n$exception';
       }
       try {
         data = JSON.decode(response.body);
@@ -211,9 +211,11 @@ class DbSynch {
           }
           token = null;
           i++;
+        } if(data["closed"] == null) {
+          return 'Ответ сервера: ${response.body}';
         }
       } catch(exception) {
-        return 'Ответ сервера: ${response.body}\n${exception}';
+        return 'Ответ сервера: ${response.body}\n$exception';
       }
     } while (i == 1);
 
@@ -344,7 +346,7 @@ class DbSynch {
                        (select count(*) from sale_orders so where so.client = c.id) = 0) then 1
             else 0
             end need_incassation
-         from clients c where c.id=${dbClientId}
+         from clients c where c.id=$dbClientId
          order by 1, 2
       """);
     return list;
@@ -361,7 +363,7 @@ class DbSynch {
       from
         sale_orders
       where
-        client=${dbClientId}
+        client=$dbClientId
       order by 1, 2
       """);
       return list;
@@ -376,7 +378,7 @@ class DbSynch {
         debt d
         left outer join repayment r on r.debt_id = d.debt_id
       where
-        d.client=${dbClientId}
+        d.client=$dbClientId
       order by 3 DESC, 2 DESC
       """);
       return list;
@@ -390,7 +392,7 @@ class DbSynch {
       if (r.length == 0 && d["r_summ"] != null) {
         await db.execute("""
           INSERT INTO repayment(client_id, debt_id, summ, ddate, kkmprinted)
-          VALUES(${dbClientId},
+          VALUES($dbClientId,
                  ${d["debt_id"]},
                  ${d["r_summ"]},
                  '${new DateTime.now()}',
@@ -431,7 +433,7 @@ class DbSynch {
           body: JSON.encode(list)
         );
       } catch(exception) {
-        return 'Сервер $server недоступен!\n${exception}';
+        return 'Сервер $server недоступен!\n$exception';
       }
       try {
         data = JSON.decode(response.body);
@@ -443,7 +445,7 @@ class DbSynch {
           i++;
         }
       } catch(exception) {
-        return 'Ответ сервера: ${response.body}\n${exception}';
+        return 'Ответ сервера: ${response.body}\n$exception';
       }
     } while (i == 1);
 
@@ -457,44 +459,38 @@ class DbSynch {
     }
     return null;
   }
+
   Future<String> putClosed() async {
     String s;
-    int i = 0;
     var data;
     var response;
-
-    do {
-      if (token==null) {
-        s = (await makeConnection());
-        if (s != null) {
-          return s;
-        }
+    s = await synchDB();
+    if (s != null) {
+      return s;
+    }
+    if (token==null) {
+          return 'Сервер $server недоступен!';
+    }
+    var httpClient = createHttpClient();
+    String url = server + "forwarder/closed";
+    try {
+      print("url = $url");
+      print("RApi client_id=$clientId,token=$token");
+      response = await httpClient.post(url,
+        headers: {"Authorization": "RApi client_id=$clientId,token=$token",
+                  "Accept": "application/json", "Content-Type": "application/json"},
+      );
+    } catch(exception) {
+      return 'Сервер $server недоступен!\n$exception';
+    }
+    try {
+      data = JSON.decode(response.body);
+      if (data["error"] != null) {
+          return data["error"];
       }
-      var httpClient = createHttpClient();
-      String url = server + "forwarder/closed";
-      try {
-        print("url = $url");
-        print("RApi client_id=$clientId,token=$token");
-        response = await httpClient.post(url,
-          headers: {"Authorization": "RApi client_id=$clientId,token=$token",
-                    "Accept": "application/json", "Content-Type": "application/json"},
-        );
-      } catch(exception) {
-        return 'Сервер $server недоступен!\n${exception}';
-      }
-      try {
-        data = JSON.decode(response.body);
-        if (data["error"] != null) {
-          if (i == 1) {
-            return data["error"];
-          }
-          token = null;
-          i++;
-        }
-      } catch(exception) {
-        return 'Ответ сервера: ${response.body}\n${exception}';
-      }
-    } while (i == 1);
+    } catch(exception) {
+      return 'Ответ сервера: ${response.body}\n$exception';
+    }
 
     closed = (closed + 1) % 2;
     await db.execute("DELETE FROM info WHERE name = 'closed'");

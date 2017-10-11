@@ -98,7 +98,8 @@ class _DebtPageState extends State<DebtPage> {
                     ),
                   ]
                 ),),
-                sendingSave? new CircularProgressIndicator() : new RaisedButton(
+                (cfg.closed == 1)? new Container() : sendingSave? new CircularProgressIndicator() :
+                new RaisedButton(
                   color: Colors.blue,
                   onPressed: () {
                     setState(()=>sendingSave=true);
@@ -163,8 +164,8 @@ class _DebtPageState extends State<DebtPage> {
                                           )
                                         ),
                                         new Wrap(
-                                          spacing: 4.0, // gap between adjacent chips
-                                          runSpacing: 2.0, // gap between lines
+                                          spacing: 4.0,
+                                          runSpacing: 2.0,
                                           crossAxisAlignment: WrapCrossAlignment.end,
                                           children: [
                                             new Text(
@@ -194,9 +195,9 @@ class _DebtPageState extends State<DebtPage> {
                                   ),
                                   new Expanded(
                                     flex: 10,
-                                    child:  (a["ischeck"] == 1 && a["repayment_id"] != null)?
+                                    child:  ((a["ischeck"] == 1 && a["repayment_id"] != null) || (cfg.closed == 1))?
                                       new Text(
-                                        a["r_summ"].toString(),
+                                        (a["r_summ"]==null)?"":numFormat.format(a["r_summ"]),
                                         textAlign: TextAlign.right,
                                       ):new TextField(
                                         keyboardType: TextInputType.number,
