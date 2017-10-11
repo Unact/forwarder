@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool sendingInit = false;
   bool sendingConnect = false;
   bool sendingPwd = false;
+  bool loading = false;
   DbSynch cfg;
   final TextEditingController _ctlLogin = new TextEditingController();
   final TextEditingController _ctlPwd = new TextEditingController();
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    loading = true;
     cfg.initDB().then((Database db){
       print('Connected to db!');
       _ctlLogin.text = cfg.login;
@@ -76,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _ctlSrv.text = cfg.server;
       cfg.getCnt().then((List<Map> list){
         setState((){
+          loading = false;
           _cntAddresses = list[0]["c"];
           _cntOrders = list[0]["so"];
           _cntInc = list[0]["inc"];
@@ -201,8 +204,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   )
                 )
             )),
+            loading? new LinearProgressIndicator(): new Container(),
             new Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: sendingClose? new CircularProgressIndicator() : new RaisedButton(
                 color: Colors.blue,
                 onPressed: () {
@@ -229,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             new Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: sendingInit? new CircularProgressIndicator(): new RaisedButton(
                         color: Colors.blue,
                         onPressed: () {
