@@ -76,6 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
       _ctlLogin.text = cfg.login;
       _ctlPwd.text = cfg.password;
       _ctlSrv.text = cfg.server;
+      if (cfg.login == null || cfg.login == '' ||
+          cfg.password == null || cfg.password == '') {
+        _currentIndex = 1;
+      }
       cfg.getCnt().then((List<Map> list){
         setState((){
           loading = false;
@@ -220,6 +224,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         content: new Text("$s"),
                       );
                       showDialog(context: context, child: alert);
+                      if (s.indexOf('login')>0) {
+                        _currentIndex = 1;
+                      }
                     }
                     else {
                       setState((){ });
@@ -246,6 +253,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 title: new Text("Ошибка обновления базы"),
                                 content: new Text("$s"),
                               );
+                              if (s.indexOf('login')>0) {
+                                _currentIndex = 1;
+                              }
                             }
                             else {
                               cfg.getCnt().then((List<Map> list){
@@ -289,6 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
             new Text('Пароль'),
             new TextField(
               controller: _ctlPwd,
+              keyboardType: TextInputType.number,
               decoration: new InputDecoration(
                 hintText: 'Введите пароль',
               ),
@@ -309,6 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               );
                             }
                             else {
+                              _currentIndex = 0;
                               alert = new AlertDialog(
                                 title: new Text("Подключение"),
                                 content: new Text("Успешно"),
