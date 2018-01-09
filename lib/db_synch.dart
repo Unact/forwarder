@@ -212,7 +212,7 @@ class DbSynch {
           token = null;
           i++;
         } if(data["closed"] == null) {
-          return 'Ответ сервера: ${response.body}';
+          return 'Нет периода продаж! Ответ сервера: ${response.body}';
         }
       } catch(exception) {
         return 'Ответ сервера: ${response.body}\n$exception';
