@@ -107,6 +107,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.3"
+  iboxpro_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: fa931339845675ad6673c3bba6310c9216d88ae8
+      url: "ssh://git@github.com/Unact/iboxpro_flutter.git"
+    source: git
+    version: "0.0.1"
   image:
     dependency: transitive
     description:
@@ -198,6 +207,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.3+4"
+  signature_pad:
+    dependency: transitive
+    description:
+      name: signature_pad
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0+1"
+  signature_pad_flutter:
+    dependency: "direct main"
+    description:
+      name: signature_pad_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -231,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  stream_transform:
+    dependency: transitive
+    description:
+      name: stream_transform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.19"
   string_scanner:
     dependency: transitive
     description:

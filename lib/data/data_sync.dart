@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:forwarder/app/app.dart';
+import 'package:forwarder/app/models/card_repayment.dart';
 import 'package:forwarder/app/models/buyer.dart';
 import 'package:forwarder/app/models/order.dart';
 import 'package:forwarder/app/models/debt.dart';
@@ -20,6 +21,7 @@ class DataSync {
     Map<String, dynamic> data = await Api.get('v2/forwarder');
 
     Batch batch = App.application.data.db.batch();
+    await CardRepayment.import(data['card_repayments'], batch);
     await Buyer.import(data['buyers'], batch);
     await Order.import(data['orders'], batch);
     await Debt.import(data['debts'], batch);
@@ -29,6 +31,7 @@ class DataSync {
   }
 
   Future<void> clearData() async {
+    await CardRepayment.deleteAll();
     await Buyer.deleteAll();
     await Order.deleteAll();
     await Debt.deleteAll();

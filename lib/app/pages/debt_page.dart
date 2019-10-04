@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:forwarder/app/app.dart';
+import 'package:forwarder/app/pages/card_payment_page.dart';
+import 'package:forwarder/app/pages/cash_payment_page.dart';
 
 import 'package:forwarder/app/models/debt.dart';
-import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/utils/format.dart';
 import 'package:forwarder/app/utils/nullify.dart';
 
@@ -24,35 +24,29 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
   double _paymentSum = 0;
   bool _editingEnabled = true;
 
-  void _pay() async {
+  Future<void> _pay({bool card}) async {
     if (_paymentSum == 0) {
       _showSnackBar('Введена не верная оплата');
       return;
     }
 
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) => Center(child: CircularProgressIndicator())
-      );
+    Map<String, dynamic> result = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => card ?
+        CardPaymentPage(debt: widget.debt, paymentSum: _paymentSum) :
+        CashPaymentPage(debt: widget.debt, paymentSum: _paymentSum)
+    );
 
-      await Api.post('v2/forwarder/save', body: {
-        'id': widget.debt.id,
-        'payment_sum': _paymentSum,
-        'local_ts': DateTime.now().toIso8601String()
-      });
-      await App.application.data.dataSync.importData();
-
-      setState(() {
+    setState(() {
+      if (result['success']) {
         _editingEnabled = false;
-        Navigator.pop(context);
         _showSnackBar('Оплата успешно создана');
-      });
-    } on ApiException catch(e) {
-      Navigator.pop(context);
-      _showSnackBar(e.errorMsg);
-    }
+        return;
+      }
+
+      _showSnackBar('Произошла ошибка - ${result['errorMessage']}');
+    });
   }
 
   void _showSnackBar(String content) {
@@ -76,21 +70,31 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
           child: Text('Накладная', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, height: 24.0/15.0))
         ),
         _buildListViewItem(_buildTable()),
-        _buildPayButton(),
+        _buildPayButtons()
       ]
     );
   }
 
-  Widget _buildPayButton() {
+  Widget _buildPayButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         RaisedButton(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          color: Colors.red,
-          onPressed: _editingEnabled ? _pay : null,
+          color: Colors.blue,
+          onPressed: !_editingEnabled ? null : () async {
+            await _pay(card: false);
+          },
           child: Text('Оплатить нал.', style: TextStyle(color: Colors.white)),
+        ),
+        RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          color: Colors.blue,
+          onPressed: !_editingEnabled ? null : () async {
+            await _pay(card: true);
+          },
+          child: Text('Оплатить безнал.', style: TextStyle(color: Colors.white)),
         ),
       ]
     );
@@ -124,7 +128,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
               child: TextFormField(
                 enabled: _editingEnabled,
                 maxLines: 1,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 initialValue: _paymentSum.toStringAsFixed(2),
                 style: defaultTextStyle,
                 decoration: InputDecoration(

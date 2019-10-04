@@ -14,14 +14,16 @@ class Debt extends DatabaseModel {
   int buyerId;
   int orderId;
   String ndoc;
+  String orderNdoc;
   DateTime ddate;
+  DateTime orderDdate;
   bool isCheck;
   double debtSum;
   double orderSum;
 
   get tableName => _tableName;
 
-  get name => ndoc + ' от ' + Format.dateStr(ddate);
+  get name => orderNdoc + ' от ' + Format.dateStr(orderDdate);
 
   Debt({
     Map<String, dynamic> values,
@@ -29,7 +31,9 @@ class Debt extends DatabaseModel {
     this.buyerId,
     this.orderId,
     this.ndoc,
+    this.orderNdoc,
     this.ddate,
+    this.orderDdate,
     this.isCheck,
     this.debtSum,
     this.orderSum
@@ -45,7 +49,9 @@ class Debt extends DatabaseModel {
     buyerId = values['buyer_id'];
     orderId = values['order_id'];
     ndoc = values['ndoc'];
+    orderNdoc = values['order_ndoc'];
     ddate = Nullify.parseDate(values['ddate']);
+    orderDdate = Nullify.parseDate(values['order_ddate']);
     isCheck = Nullify.parseBool(values['is_check']);
     debtSum = Nullify.parseDouble(values['debt_sum']);
     orderSum = Nullify.parseDouble(values['order_sum']);
@@ -57,7 +63,9 @@ class Debt extends DatabaseModel {
     map['buyer_id'] = buyerId;
     map['order_id'] = orderId;
     map['ndoc'] = ndoc;
+    map['order_ndoc'] = orderNdoc;
     map['ddate'] = ddate?.toIso8601String();
+    map['order_ddate'] = orderDdate?.toIso8601String();
     map['is_check'] = isCheck;
     map['debt_sum'] = debtSum;
     map['order_sum'] = orderSum;

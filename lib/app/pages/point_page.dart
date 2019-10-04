@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:forwarder/app/models/card_repayment.dart';
 import 'package:forwarder/app/models/buyer.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/order.dart';
@@ -23,11 +24,14 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
   List<Order> _orders = [];
   List<Debt> _debts = [];
   List<Repayment> _repayments = [];
+  List<CardRepayment> _cardRepayments = [];
 
   Future<void> _loadData() async {
     _orders = (await Order.all()).where((order) => order.buyerId == widget.buyer.id).toList();
     _debts = (await Debt.all()).where((debt) => debt.buyerId == widget.buyer.id).toList();
     _repayments = (await Repayment.all()).where((repayment) => repayment.buyerId == widget.buyer.id).toList();
+    _cardRepayments = (await CardRepayment.all()).
+      where((cardRepayment) => cardRepayment.buyerId == widget.buyer.id).toList();
 
     if (mounted) {
       setState(() {});
@@ -73,18 +77,20 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     double repaymentsSum = _repayments.fold(0, (sum, repayment) => sum + repayment.summ);
     double repaymentsCheckSum = _repayments.where((repayment) => repayment.kkmprinted).
       fold(0, (sum, repayment) => sum + repayment.summ);
+    double cardRepaymentsSum = _cardRepayments.fold(0, (sum, cardRepayment) => sum + cardRepayment.summ);
 
     return Table(
       columnWidths: <int, TableColumnWidth>{
-        0: FixedColumnWidth(96.0),
+        0: FixedColumnWidth(112.0),
       },
       children: <TableRow>[
         _buildTableRow('', widget.buyer.name.toString()),
         _buildTableRow('Адрес', widget.buyer.address.toString()),
         _buildTableRow('Инкассация', widget.inc ? 'Да' : 'Нет'),
         _buildTableRow('Долг', Format.numberStr(debtsSum)),
-        _buildTableRow('Получено', Format.numberStr(repaymentsSum)),
         _buildTableRow('Чек', Format.numberStr(repaymentsCheckSum)),
+        _buildTableRow('Наличными', Format.numberStr(repaymentsSum)),
+        _buildTableRow('Безналичными', Format.numberStr(cardRepaymentsSum)),
       ]
     );
   }
@@ -130,10 +136,12 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
 
   Widget _buildDebtRow(Debt debt) {
     Repayment rep = _repayments.firstWhere((repayment) => repayment.orderId == debt.orderId, orElse: () => null);
+    CardRepayment cardRep = _cardRepayments.
+      firstWhere((cardRepayment) => cardRepayment.orderId == debt.orderId, orElse: () => null);
 
     return ListTile(
       onTap: () async {
-        if (rep == null) {
+        if (rep == null && cardRep == null) {
           await Navigator.push(context, MaterialPageRoute(builder: (context) => DebtPage(debt: debt)));
           await _loadData();
           setState(() {});
@@ -154,9 +162,9 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
               text: 'Долг: ${Format.numberStr(debt.debtSum)}\n',
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
-            rep != null ?
+            (rep != null || cardRep != null) ?
               TextSpan(
-                text: 'Оплачено: ${Format.numberStr(rep.summ)}\n',
+                text: 'Оплачено: ${Format.numberStr(rep?.summ ?? cardRep.summ)}\n',
                 style: TextStyle(color: Colors.grey, fontSize: 12.0)
               ) :
               TextSpan(),

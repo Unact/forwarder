@@ -17,6 +17,10 @@ dependencies:
   device_info: any
   package_info: any
   url_launcher: any
+  signature_pad_flutter: any
+  iboxpro_flutter:
+    git:
+      url: ssh://git@github.com/Unact/iboxpro_flutter.git
 
 dev_dependencies:
   flutter_test:
