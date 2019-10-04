@@ -45,7 +45,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       _status = 'Установление связи с терминалом';
     });
 
-    await PaymentController.searchBTDevice(
+    await PaymentController.startSearchBTDevice(
       readerType: ReaderType.P17,
       onReaderSetBTDevice: (res) async {
         await _getApiCredentials();
@@ -210,6 +210,13 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     );
   }
 
+  Future<void> _cancel() async {
+    await PaymentController.stopSearchBTDevice();
+    Navigator.pop(context, {
+      'success': false,
+      'errorMessage': 'Отмена операции'
+    });
+  }
 
   List<Widget> _buildProgressPart() {
     return [
@@ -225,12 +232,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         child: _showCancelButton ? RaisedButton(
           child: Text('Отмена'),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          onPressed: () {
-            Navigator.pop(context, {
-              'success': false,
-              'errorMessage': 'Отмена операции'
-            });
-          },
+          onPressed: _cancel
         ) : Container()
       ),
       Container(height: 40)
