@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:forwarder/app/app.dart';
-import 'package:forwarder/app/models/user.dart';
-import 'package:forwarder/app/pages/person_page.dart';
 import 'package:forwarder/app/models/buyer.dart';
+import 'package:forwarder/app/models/card_repayment.dart';
 import 'package:forwarder/app/models/order.dart';
 import 'package:forwarder/app/models/repayment.dart';
+import 'package:forwarder/app/models/user.dart';
 import 'package:forwarder/app/modules/api.dart';
+import 'package:forwarder/app/pages/person_page.dart';
 import 'package:forwarder/app/utils/format.dart';
 
 class InfoPage extends StatefulWidget {
@@ -25,8 +26,10 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
   List<Buyer> _buyers = [];
   List<Order> _orders = [];
   List<Repayment> _repayments = [];
+  List<CardRepayment> _cardRepayments = [];
 
   Future<void> _loadData() async {
+    _cardRepayments = await CardRepayment.all();
     _repayments = await Repayment.all();
     _buyers = await Buyer.all();
     _orders = await Order.all();
@@ -132,7 +135,9 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
   }
 
   Widget _buildPaymentsSubtitle() {
-    double sum = _repayments.fold(0, (sum, repayment) => sum + repayment.summ);
+    double cardRepaymentsSum = _cardRepayments.fold(0, (sum, cardRepayment) => sum + cardRepayment.summ);
+    double repaymentsSum = _repayments.fold(0, (sum, repayment) => sum + repayment.summ);
+    double sum = cardRepaymentsSum + repaymentsSum;
     double kkmSum = _repayments.where((repayment) => repayment.kkmprinted).
       fold(0, (sum, repayment) => sum + repayment.summ);
 
@@ -141,6 +146,8 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
         style: TextStyle(color: Colors.grey),
         children: <TextSpan>[
           TextSpan(text: 'Всего: ${Format.numberStr(sum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nНаличными: ${Format.numberStr(repaymentsSum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nКартой: ${Format.numberStr(cardRepaymentsSum)}', style: TextStyle(fontSize: 12.0)),
           TextSpan(text: '\nККМ: ${Format.numberStr(kkmSum)}', style: TextStyle(fontSize: 12.0))
         ]
       )

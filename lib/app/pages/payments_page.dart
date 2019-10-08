@@ -37,7 +37,7 @@ class _PaymentsPageState extends State<PaymentsPage> with WidgetsBindingObserver
         ),
         ExpansionTile(
           initiallyExpanded: true,
-          title: Text('Безналичными'),
+          title: Text('Картой'),
           children: _cardRepayments.map((cardRepayment) => _cardRepaymentTile(context, cardRepayment)).toList(),
         )
       ]

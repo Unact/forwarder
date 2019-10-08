@@ -90,7 +90,7 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
         _buildTableRow('Долг', Format.numberStr(debtsSum)),
         _buildTableRow('Чек', Format.numberStr(repaymentsCheckSum)),
         _buildTableRow('Наличными', Format.numberStr(repaymentsSum)),
-        _buildTableRow('Безналичными', Format.numberStr(cardRepaymentsSum)),
+        _buildTableRow('Картой', Format.numberStr(cardRepaymentsSum)),
       ]
     );
   }

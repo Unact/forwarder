@@ -86,7 +86,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
           onPressed: !_editingEnabled ? null : () async {
             await _pay(card: false);
           },
-          child: Text('Оплатить нал.', style: TextStyle(color: Colors.white)),
+          child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
         ),
         RaisedButton(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
@@ -94,7 +94,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
           onPressed: !_editingEnabled ? null : () async {
             await _pay(card: true);
           },
-          child: Text('Оплатить безнал.', style: TextStyle(color: Colors.white)),
+          child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
         ),
       ]
     );
