@@ -1,10 +1,11 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
+
 import 'package:forwarder/app/pages/card_payment_page.dart';
 import 'package:forwarder/app/pages/cash_payment_page.dart';
-
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/utils/format.dart';
-import 'package:forwarder/app/utils/nullify.dart';
 
 class DebtPage extends StatefulWidget {
   final Debt debt;
@@ -21,12 +22,14 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
   final EdgeInsets firstColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
+  TextEditingController _paymentController = TextEditingController();
+  GlobalKey<FormFieldState> _paymentFieldKey = GlobalKey();
   double _paymentSum = 0;
   bool _editingEnabled = true;
 
   Future<void> _pay({bool card}) async {
-    if (_paymentSum == 0) {
-      _showSnackBar('Введена не верная оплата');
+    if (_paymentSum <= 0) {
+      _showSnackBar('Указана не верная сумма оплаты');
       return;
     }
 
@@ -63,31 +66,123 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
 
   Widget _buildBody(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, ),
+      padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
-          child: Text('Накладная', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, height: 24.0/15.0))
+        _buildListViewItem(
+          TextFormField(
+            enabled: false,
+            maxLines: 1,
+            style: defaultTextStyle,
+            decoration: InputDecoration(
+              labelText: 'Заказ',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.only(),
+              prefixIcon: Icon(Icons.assignment)
+            ),
+            initialValue: widget.debt.name,
+          )
         ),
-        _buildListViewItem(_buildTable()),
-        _buildPayButtons()
+        _buildListViewItem(
+          TextFormField(
+            enabled: false,
+            maxLines: 1,
+            style: defaultTextStyle,
+            decoration: InputDecoration(
+              labelText: 'Сумма',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.only(),
+              prefixIcon: Icon(Icons.attach_money)
+            ),
+            initialValue: Format.numberStr(widget.debt.orderSum)
+          )
+        ),
+        _buildListViewItem(
+          TextFormField(
+            enabled: false,
+            maxLines: 1,
+            style: defaultTextStyle,
+            decoration: InputDecoration(
+              labelText: 'Долг',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.only(),
+              prefixIcon: Icon(Icons.attach_money)
+            ),
+            initialValue: Format.numberStr(widget.debt.debtSum)
+          ),
+        ),
+        _buildListViewItem(
+          TextFormField(
+            enabled: false,
+            maxLines: 1,
+            style: defaultTextStyle,
+            decoration: InputDecoration(
+              labelText: 'Чек',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.only(),
+              prefixIcon: Icon(Icons.receipt)
+            ),
+            initialValue: widget.debt.isCheck ? 'Да' : 'Нет'
+          )
+        ),
+        Container(height: 32),
+        _buildListViewItem(
+          TextFormField(
+            key: _paymentFieldKey,
+            autofocus: true,
+            controller: _paymentController,
+            enabled: _editingEnabled,
+            maxLines: 1,
+            style: defaultTextStyle,
+            decoration: InputDecoration(
+              labelText: 'Оплата',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.only(),
+              prefixIcon: Icon(Icons.attach_money),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.local_atm),
+                onPressed: () {
+                    _paymentController.text = Format.numberStr(widget.debt.debtSum);
+                    _paymentSum = widget.debt.debtSum;
+                    _paymentFieldKey.currentState.save();
+                }
+              ),
+            ),
+            onFieldSubmitted: (String value) {
+              String formattedValue = value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), '');
+              double parsedValue;
+
+              try {
+                parsedValue = double.parse(formattedValue);
+              } on FormatException {}
+
+              setState(() {
+                if (parsedValue == null || parsedValue <= 0) {
+                  _showSnackBar('Введена не верная сумма оплаты');
+                }
+
+                _paymentSum = parsedValue ?? 0;
+              });
+            }
+          ),
+        ),
       ]
     );
   }
 
-  Widget _buildPayButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          color: Colors.blue,
-          onPressed: !_editingEnabled ? null : () async {
-            await _pay(card: false);
-          },
-          child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
-        ),
+  List<Widget> _buildPayButtons() {
+    List<Widget> buttons = [
+      RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        onPressed: !_editingEnabled ? null : () async {
+          await _pay(card: false);
+        },
+        child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+      )
+    ];
+
+    if (Platform.isIOS) {
+      buttons.insert(0,
         RaisedButton(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           color: Colors.blue,
@@ -95,69 +190,17 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
             await _pay(card: true);
           },
           child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
-        ),
-      ]
-    );
+        )
+      );
+    }
+
+    return buttons;
   }
 
   Widget _buildListViewItem(Widget child) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: child
-    );
-  }
-
-  Table _buildTable() {
-    return Table(
-      columnWidths: <int, TableColumnWidth>{
-        0: FixedColumnWidth(96.0),
-      },
-      children: <TableRow>[
-        _buildTableRow('', widget.debt.name.toString()),
-        _buildTableRow('Сумма', Format.numberStr(widget.debt.orderSum)),
-        _buildTableRow('Долг', Format.numberStr(widget.debt.debtSum)),
-        _buildTableRow('Чек', widget.debt.isCheck ? 'Да' : 'Нет'),
-        TableRow(
-          children: <Widget>[
-            Padding(
-              padding: firstColumnPadding,
-              child: Text('Оплата', style: firstColumnTextStyle, textAlign: TextAlign.end)
-            ),
-            Padding(
-              padding: baseColumnPadding,
-              child: TextFormField(
-                enabled: _editingEnabled,
-                maxLines: 1,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                initialValue: _paymentSum.toStringAsFixed(2),
-                style: defaultTextStyle,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(),
-                ),
-                onChanged: (String value) {
-                  _paymentSum = Nullify.parseDouble(value) ?? 0;
-                }
-              ),
-            ),
-          ]
-        )
-      ]
-    );
-  }
-
-  TableRow _buildTableRow(String leftStr, String rightStr) {
-    return TableRow(
-      children: <Widget>[
-        Padding(
-          padding: firstColumnPadding,
-          child: Text(leftStr, style: firstColumnTextStyle, textAlign: TextAlign.end)
-        ),
-        Padding(
-          padding: baseColumnPadding,
-          child: Text(rightStr)
-        ),
-      ]
     );
   }
 
@@ -175,7 +218,8 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text('Задолженность')
       ),
-      body: _buildBody(context)
+      body: _buildBody(context),
+      persistentFooterButtons: _buildPayButtons()
     );
   }
 }
