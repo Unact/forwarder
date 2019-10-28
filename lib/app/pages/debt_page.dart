@@ -126,43 +126,44 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
         ),
         Container(height: 32),
         _buildListViewItem(
-          TextFormField(
-            key: _paymentFieldKey,
-            autofocus: true,
-            controller: _paymentController,
-            enabled: _editingEnabled,
-            maxLines: 1,
-            style: defaultTextStyle,
-            decoration: InputDecoration(
-              labelText: 'Оплата',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(),
-              prefixIcon: Icon(Icons.attach_money),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.local_atm),
-                onPressed: () {
-                    _paymentController.text = Format.numberStr(widget.debt.debtSum);
-                    _paymentSum = widget.debt.debtSum;
-                    _paymentFieldKey.currentState.save();
-                }
+          GestureDetector(
+            child: TextFormField(
+              key: _paymentFieldKey,
+              autofocus: true,
+              controller: _paymentController,
+              enabled: _editingEnabled,
+              maxLines: 1,
+              style: defaultTextStyle,
+              decoration: InputDecoration(
+                labelText: 'Оплата',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.only(),
+                prefixIcon: Icon(Icons.attach_money),
               ),
+              onFieldSubmitted: (String value) {
+                String formattedValue = value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), '');
+                double parsedValue;
+
+                try {
+                  parsedValue = double.parse(formattedValue);
+                } on FormatException {}
+
+                setState(() {
+                  if (parsedValue == null || parsedValue <= 0) {
+                    _showSnackBar('Введена не верная сумма оплаты');
+                  }
+
+                  _paymentSum = parsedValue ?? 0;
+                });
+              }
             ),
-            onFieldSubmitted: (String value) {
-              String formattedValue = value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), '');
-              double parsedValue;
-
-              try {
-                parsedValue = double.parse(formattedValue);
-              } on FormatException {}
-
+            onHorizontalDragEnd: (_) {
               setState(() {
-                if (parsedValue == null || parsedValue <= 0) {
-                  _showSnackBar('Введена не верная сумма оплаты');
-                }
-
-                _paymentSum = parsedValue ?? 0;
+                _paymentController.text = Format.numberStr(widget.debt.debtSum);
+                _paymentSum = widget.debt.debtSum;
+                FocusScope.of(context).unfocus();
               });
-            }
+            },
           ),
         ),
       ]
