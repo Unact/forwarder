@@ -23,7 +23,8 @@ class Debt extends DatabaseModel {
 
   get tableName => _tableName;
 
-  get name => orderNdoc + ' от ' + Format.dateStr(orderDdate);
+  get orderName => orderNdoc + ' от ' + Format.dateStr(orderDdate);
+  get fullname => ndoc + ' от ' + Format.dateStr(ddate) + ' (' + orderNdoc + ')';
 
   Debt({
     Map<String, dynamic> values,

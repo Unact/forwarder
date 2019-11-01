@@ -113,7 +113,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
 
     await PaymentController.startPayment(
       amount: widget.paymentSum,
-      description: 'Оплата за заказ ${widget.debt.name}',
+      description: 'Оплата за заказ ${widget.debt.orderName}',
       currencyType: CurrencyType.RUB,
       inputType: InputType.Swipe,
       onPaymentStart: (res) {

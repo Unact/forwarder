@@ -150,7 +150,7 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
         }
       },
       dense: true,
-      title: Text(debt.name),
+      title: Text(debt.fullname),
       subtitle: RichText(
         text: TextSpan(
           children: <TextSpan>[

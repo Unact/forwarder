@@ -74,12 +74,12 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
             maxLines: 1,
             style: defaultTextStyle,
             decoration: InputDecoration(
-              labelText: 'Заказ',
+              labelText: 'Накладная',
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.only(),
               prefixIcon: Icon(Icons.assignment)
             ),
-            initialValue: widget.debt.name,
+            initialValue: widget.debt.fullname,
           )
         ),
         _buildListViewItem(
