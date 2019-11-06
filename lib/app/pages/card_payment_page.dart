@@ -24,6 +24,7 @@ class CardPaymentPage extends StatefulWidget {
 class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingObserver {
   final int _timeout = 30;
   String _status = 'Ожидание';
+  Map<dynamic, dynamic> _transaction;
   String _transactionId;
   String _iboxLogin;
   String _iboxPassword;
@@ -134,6 +135,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       onPaymentComplete: (res) async {
         setState(() {
           _status = 'Подтверждение оплаты';
+          _transaction = res['transaction'];
           _requiredSignature = res['requiredSignature'];
         });
 
@@ -158,28 +160,21 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       onInfo: (res) async {
         int errorCode = res['errorCode'];
 
-        if (errorCode == 0) {
-          try {
-            await Api.post('v2/forwarder/save', body: {
-              'id': widget.debt.id,
-              'payment_sum': widget.paymentSum,
-              'payment_transaction': res,
-              'local_ts': DateTime.now().toIso8601String()
-            });
-            await App.application.data.dataSync.importData();
-            Navigator.pop(context, {
-              'success': true
-            });
-          } on ApiException catch(e) {
-            Navigator.pop(context, {
-              'success': false,
-              'errorMessage': e.errorMsg
-            });
-          }
-        } else {
+        try {
+          await Api.post('v2/forwarder/save', body: {
+            'id': widget.debt.id,
+            'payment_sum': widget.paymentSum,
+            'payment_transaction': errorCode == 0 ? res : _transaction,
+            'local_ts': DateTime.now().toIso8601String()
+          });
+          await App.application.data.dataSync.importData();
+          Navigator.pop(context, {
+            'success': true
+          });
+        } on ApiException catch(e) {
           Navigator.pop(context, {
             'success': false,
-            'errorMessage': '$errorCode'
+            'errorMessage': e.errorMsg
           });
         }
       }
