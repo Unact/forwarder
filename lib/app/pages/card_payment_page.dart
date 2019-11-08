@@ -116,7 +116,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       amount: widget.paymentSum,
       description: 'Оплата за заказ ${widget.debt.orderName}',
       currencyType: CurrencyType.RUB,
-      inputType: InputType.Swipe,
+      inputType: InputType.NFC,
       onPaymentStart: (res) {
         setState(() {
           _status = 'Обработка оплаты';
