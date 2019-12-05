@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iboxpro_flutter/iboxpro_flutter.dart';
+import 'package:sentry/sentry.dart' as sentryLib;
 import 'package:signature_pad/signature_pad.dart';
 import 'package:signature_pad_flutter/signature_pad_flutter.dart';
 
 import 'package:forwarder/app/app.dart';
 import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/models/debt.dart';
+import 'package:forwarder/app/models/user.dart';
 
 class CardPaymentPage extends StatefulWidget {
   final double paymentSum;
@@ -37,6 +39,30 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   void initState() {
     _searchDevice();
     super.initState();
+  }
+
+  Future<void> _captureEvent(String culprit, String errorMsg) async {
+    if (App.application.config.env == 'development')
+      return;
+
+    User user = User.currentUser;
+    App.application.sentry.client.capture(
+      event: sentryLib.Event(
+        culprit: culprit,
+        exception: errorMsg,
+        userContext: sentryLib.User(
+          id: user.id.toString(),
+          username: user.username,
+          email: user.email
+        ),
+        environment: App.application.config.env,
+        extra: {
+          'osVersion': App.application.config.osVersion,
+          'deviceModel': App.application.config.deviceModel,
+          'orderName': widget.debt.orderName
+        }
+      )
+    );
   }
 
   Future<void> _searchDevice() async {
@@ -96,6 +122,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           });
           await _startPayment();
         } else {
+          _captureEvent('apiLogin', errorCode.toString());
           Navigator.pop(context, {
             'success': false,
             'errorMessage': '$errorCode'
@@ -117,6 +144,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       description: 'Оплата за заказ ${widget.debt.orderName}',
       currencyType: CurrencyType.RUB,
       inputType: InputType.NFC,
+      singleStepAuth: true,
       onPaymentStart: (res) {
         setState(() {
           _status = 'Обработка оплаты';
@@ -126,10 +154,12 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       onPaymentError: (res) async {
         int errorType = res['errorType'];
         String errorMessage = res['errorMessage'] ?? '';
+        String errorFullMessage = '$errorType; $errorMessage';
 
+        _captureEvent('startPaymentPaymentError', errorFullMessage);
         Navigator.pop(context, {
           'success': false,
-          'errorMessage': '$errorType; $errorMessage'
+          'errorMessage': errorFullMessage
         });
       },
       onPaymentComplete: (res) async {
@@ -161,6 +191,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         int errorCode = res['errorCode'];
 
         try {
+          if (errorCode != 0) {
+            _captureEvent('savePayment', errorCode.toString());
+          }
+
           await Api.post('v2/forwarder/save', body: {
             'id': widget.debt.id,
             'payment_sum': widget.paymentSum,
@@ -196,6 +230,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         if (errorCode == 0) {
           await _savePayment();
         } else {
+          _captureEvent('adjustPayment', errorCode.toString());
           Navigator.pop(context, {
             'success': false,
             'errorMessage': '$errorCode'
