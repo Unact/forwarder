@@ -1,6 +1,6 @@
 name: forwarder
 description: Приложение для экспедиторов
-version: 1.0.7+14
+version: 1.0.8+15
 
 dependencies:
   flutter:
