@@ -17,7 +17,12 @@ dependencies:
   device_info: any
   package_info: any
   url_launcher: any
-  signature_pad_flutter: any
+  # https://github.com/johnpryan/signature-pad-dart/pull/2
+  signature_pad_flutter:
+    git:
+      url: git://github.com/remicode/signature-pad-dart
+      ref: fix-picture-to-image-now-returns-future-not-image
+      path: signature_pad_flutter
   iboxpro_flutter:
     git:
       url: ssh://git@github.com/Unact/iboxpro_flutter.git

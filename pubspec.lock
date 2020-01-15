@@ -224,9 +224,11 @@ packages:
   signature_pad_flutter:
     dependency: "direct main"
     description:
-      name: signature_pad_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: signature_pad_flutter
+      ref: fix-picture-to-image-now-returns-future-not-image
+      resolved-ref: "30219342dcad9b6c1e94237e56670fac261e6fbc"
+      url: "git://github.com/remicode/signature-pad-dart"
+    source: git
     version: "1.3.0"
   sky_engine:
     dependency: transitive
