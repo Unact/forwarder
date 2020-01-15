@@ -20,6 +20,9 @@ class Debt extends DatabaseModel {
   bool isCheck;
   double debtSum;
   double orderSum;
+  double paidSum;
+
+  double paymentSum;
 
   get tableName => _tableName;
 
@@ -37,7 +40,8 @@ class Debt extends DatabaseModel {
     this.orderDdate,
     this.isCheck,
     this.debtSum,
-    this.orderSum
+    this.orderSum,
+    this.paidSum
   }) {
     if (values != null) build(values);
   }
@@ -56,6 +60,7 @@ class Debt extends DatabaseModel {
     isCheck = Nullify.parseBool(values['is_check']);
     debtSum = Nullify.parseDouble(values['debt_sum']);
     orderSum = Nullify.parseDouble(values['order_sum']);
+    paidSum = Nullify.parseDouble(values['paid_sum']);
   }
 
   Map<String, dynamic> toMap() {
@@ -70,6 +75,7 @@ class Debt extends DatabaseModel {
     map['is_check'] = isCheck;
     map['debt_sum'] = debtSum;
     map['order_sum'] = orderSum;
+    map['paid_sum'] = paidSum;
 
     return map;
   }

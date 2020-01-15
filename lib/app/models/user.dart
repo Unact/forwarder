@@ -28,8 +28,6 @@ class User {
     closed = App.application.data.prefs.getBool('closed') ?? false;
   }
 
-  User._();
-
   static User _currentUser;
   static User get currentUser => _currentUser;
 

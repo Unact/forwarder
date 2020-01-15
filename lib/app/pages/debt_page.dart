@@ -23,22 +23,28 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
   TextEditingController _paymentController = TextEditingController();
-  GlobalKey<FormFieldState> _paymentFieldKey = GlobalKey();
   double _paymentSum = 0;
   bool _editingEnabled = true;
 
   Future<void> _pay({bool card}) async {
-    if (_paymentSum <= 0) {
-      _showSnackBar('Указана не верная сумма оплаты');
+    List<Debt> debts = [widget.debt];
+
+    if (_paymentSum == null || _paymentSum <= 0) {
+      _showSnackBar('Указана неверная сумма оплаты');
       return;
     }
+
+    if (card && _paymentSum > widget.debt.debtSum) {
+      _showSnackBar('Указана неверная сумма для оплаты картой');
+      return;
+    }
+
+    widget.debt.paymentSum = _paymentSum;
 
     Map<String, dynamic> result = await showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) => card ?
-        CardPaymentPage(debt: widget.debt, paymentSum: _paymentSum) :
-        CashPaymentPage(debt: widget.debt, paymentSum: _paymentSum)
+      builder: (BuildContext context) => card ? CardPaymentPage(debts: debts) : CashPaymentPage(debts: debts)
     );
 
     setState(() {
@@ -128,7 +134,6 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
         _buildListViewItem(
           GestureDetector(
             child: TextFormField(
-              key: _paymentFieldKey,
               autofocus: true,
               controller: _paymentController,
               enabled: _editingEnabled,
@@ -153,7 +158,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
                     _showSnackBar('Введена не верная сумма оплаты');
                   }
 
-                  _paymentSum = parsedValue ?? 0;
+                  _paymentSum = parsedValue;
                 });
               }
             ),

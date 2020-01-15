@@ -5,12 +5,10 @@ import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/models/debt.dart';
 
 class CashPaymentPage extends StatefulWidget {
-  final double paymentSum;
-  final Debt debt;
+  final List<Debt> debts;
 
   CashPaymentPage({
-    this.paymentSum,
-    this.debt,
+    this.debts,
     Key key
   }) : super(key: key);
 
@@ -35,8 +33,7 @@ class _CashPaymentPageState extends State<CashPaymentPage> with WidgetsBindingOb
 
     try {
       await Api.post('v2/forwarder/save', body: {
-        'id': widget.debt.id,
-        'payment_sum': widget.paymentSum,
+        'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
         'local_ts': DateTime.now().toIso8601String()
       });
       await App.application.data.dataSync.importData();

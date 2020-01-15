@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 
 import 'package:forwarder/app/models/card_repayment.dart';
@@ -5,6 +7,8 @@ import 'package:forwarder/app/models/buyer.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/order.dart';
 import 'package:forwarder/app/models/repayment.dart';
+import 'package:forwarder/app/pages/card_payment_page.dart';
+import 'package:forwarder/app/pages/cash_payment_page.dart';
 import 'package:forwarder/app/pages/debt_page.dart';
 import 'package:forwarder/app/utils/format.dart';
 
@@ -135,13 +139,14 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
   }
 
   Widget _buildDebtRow(Debt debt) {
-    Repayment rep = _repayments.firstWhere((repayment) => repayment.orderId == debt.orderId, orElse: () => null);
-    CardRepayment cardRep = _cardRepayments.
-      firstWhere((cardRepayment) => cardRepayment.orderId == debt.orderId, orElse: () => null);
+    bool isEditable = debt.paidSum == null;
+    TextEditingController paymentController = TextEditingController();
+
+    paymentController.text = debt.paymentSum != null ? Format.numberStr(debt.paymentSum) : '';
 
     return ListTile(
       onTap: () async {
-        if (rep == null && cardRep == null) {
+        if (isEditable) {
           await Navigator.push(context, MaterialPageRoute(builder: (context) => DebtPage(debt: debt)));
           await _loadData();
           setState(() {});
@@ -151,6 +156,47 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
       },
       dense: true,
       title: Text(debt.fullname),
+      trailing: GestureDetector(
+        child: Container(
+          width: 96,
+          child: TextFormField(
+            textAlign: TextAlign.center,
+            controller: paymentController,
+            enabled: isEditable,
+            maxLines: 1,
+            style: TextStyle(fontSize: 14.0, color: Colors.black),
+            decoration: InputDecoration(
+              labelText: '',
+              border: isEditable ? UnderlineInputBorder() : InputBorder.none,
+              contentPadding: EdgeInsets.only(),
+            ),
+            onFieldSubmitted: (String value) {
+              String formattedValue = value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), '');
+              double parsedValue;
+
+              try {
+                parsedValue = double.parse(formattedValue);
+              } on FormatException {}
+
+              setState(() {
+                if (parsedValue == null || parsedValue <= 0) {
+                  _showSnackBar('Введена не верная сумма оплаты');
+                }
+
+                debt.paymentSum = parsedValue;
+              });
+            }
+          )
+        ),
+        onHorizontalDragEnd: (_) {
+          setState(() {
+            debt.paymentSum = debt.debtSum;
+            paymentController.text = Format.numberStr(debt.paymentSum);
+
+            FocusScope.of(context).unfocus();
+          });
+        },
+      ),
       subtitle: RichText(
         text: TextSpan(
           children: <TextSpan>[
@@ -162,9 +208,9 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
               text: 'Долг: ${Format.numberStr(debt.debtSum)}\n',
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
-            (rep != null || cardRep != null) ?
+            (!isEditable) ?
               TextSpan(
-                text: 'Оплачено: ${Format.numberStr(rep?.summ ?? cardRep.summ)}\n',
+                text: 'Оплачено: ${Format.numberStr(debt.paidSum)}\n',
                 style: TextStyle(color: Colors.grey, fontSize: 12.0)
               ) :
               TextSpan(),
@@ -190,6 +236,67 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     );
   }
 
+  List<Widget> _buildPayButtons() {
+    bool isEnabled = _debts.any((debt) => debt.paymentSum != null);
+
+    List<Widget> buttons = [
+      RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        onPressed: !isEnabled ? null : () async {
+          await _pay(card: false);
+        },
+        child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+      )
+    ];
+
+    if (Platform.isIOS) {
+      buttons.insert(0,
+        RaisedButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          color: Colors.blue,
+          onPressed: !isEnabled ? null : () async {
+            await _pay(card: true);
+          },
+          child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        )
+      );
+    }
+
+    return buttons;
+  }
+
+  Future<void> _pay({bool card}) async {
+    List<Debt> debts = _debts.where((debt) => debt.paymentSum != null).toList();
+    double paymentSum = debts.map((debt) => debt.paymentSum).reduce((acc, el) => acc + el);
+
+    if (debts.isEmpty || paymentSum <= 0) {
+      _showSnackBar('Указана неверная сумма оплаты');
+      return;
+    }
+
+    if (card && debts.any((debt) => debt.paymentSum > debt.debtSum)) {
+      _showSnackBar('Указана неверная сумма для оплаты картой');
+      return;
+    }
+
+    Map<String, dynamic> result = await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => card ? CardPaymentPage(debts: debts) : CashPaymentPage(debts: debts)
+    );
+
+    setState(() {
+      if (result['success']) {
+        _showSnackBar('Оплаты успешно созданы');
+        _loadData();
+        return;
+      }
+
+      _showSnackBar('Произошла ошибка - ${result['errorMessage']}');
+    });
+  }
+
   @override
   void initState() {
 
@@ -204,7 +311,8 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text('Точка')
       ),
-      body: _buildBody(context)
+      body: _buildBody(context),
+      persistentFooterButtons: _buildPayButtons()
     );
   }
 }

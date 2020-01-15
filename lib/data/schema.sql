@@ -37,6 +37,7 @@ CREATE TABLE debts(
     is_check INTEGER,
     debt_sum NUMERIC,
     order_sum NUMERIC,
+    paid_sum NUMERIC,
 
     local_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
     local_id INTEGER PRIMARY KEY,

@@ -10,12 +10,10 @@ import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/user.dart';
 
 class CardPaymentPage extends StatefulWidget {
-  final double paymentSum;
-  final Debt debt;
+  final List<Debt> debts;
 
   CardPaymentPage({
-    this.paymentSum,
-    this.debt,
+    this.debts,
     Key key
   }) : super(key: key);
 
@@ -59,7 +57,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         extra: {
           'osVersion': App.application.config.osVersion,
           'deviceModel': App.application.config.deviceModel,
-          'orderName': widget.debt.orderName
+          'orderNames': widget.debts.map((debt) => debt.orderName).join(', ')
         }
       )
     );
@@ -140,8 +138,8 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     });
 
     await PaymentController.startPayment(
-      amount: widget.paymentSum,
-      description: 'Оплата за заказ ${widget.debt.orderName}',
+      amount: widget.debts.map((debt) => debt.paymentSum).reduce((acc, el) => acc + el),
+      description: 'Оплата за заказ ${widget.debts.map((debt) => debt.orderName).join(', ')}',
       currencyType: CurrencyType.RUB,
       inputType: InputType.NFC,
       singleStepAuth: true,
@@ -196,8 +194,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           }
 
           await Api.post('v2/forwarder/save', body: {
-            'id': widget.debt.id,
-            'payment_sum': widget.paymentSum,
+            'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
             'payment_transaction': errorCode == 0 ? res : _transaction,
             'local_ts': DateTime.now().toIso8601String()
           });
