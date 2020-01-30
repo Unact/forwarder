@@ -43,7 +43,7 @@ void main() async {
     deviceModel: deviceModel,
     osVersion: osVersion,
     env: development ? 'development' : 'production',
-    databaseVersion: 3,
+    databaseVersion: 4,
     apiBaseUrl: '${development ? developmentUrl : 'https://rapi.unact.ru'}/api/',
     sentryDsn: appEnv['SENTRY_DSN']
   )).run();

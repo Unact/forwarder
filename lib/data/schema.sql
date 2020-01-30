@@ -13,7 +13,6 @@ CREATE TABLE orders(
     id INTEGER UNIQUE,
     buyer_id INTEGER,
     ord INTEGER,
-    recept_ndoc TEXT,
     ndoc TEXT,
     info TEXT,
     inc INTEGER,

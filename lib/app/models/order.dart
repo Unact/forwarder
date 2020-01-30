@@ -12,7 +12,6 @@ class Order extends DatabaseModel {
   int id;
   int buyerId;
   int ord;
-  String receptNdoc;
   String ndoc;
   String info;
   bool inc;
@@ -26,7 +25,6 @@ class Order extends DatabaseModel {
     this.id,
     this.buyerId,
     this.ord,
-    this.receptNdoc,
     this.ndoc,
     this.info,
     this.inc,
@@ -43,7 +41,6 @@ class Order extends DatabaseModel {
     id = values['id'];
     buyerId = values['buyer_id'];
     ord = values['ord'];
-    receptNdoc = values['recept_ndoc'];
     ndoc = values['ndoc'];
     info = values['info'];
     inc = Nullify.parseBool(values['inc']);
@@ -56,7 +53,6 @@ class Order extends DatabaseModel {
     map['id'] = id;
     map['buyer_id'] = buyerId;
     map['ord'] = ord;
-    map['recept_ndoc'] = receptNdoc;
     map['ndoc'] = ndoc;
     map['info'] = info;
     map['inc'] = inc;
