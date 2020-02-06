@@ -2,7 +2,7 @@ class Nullify {
   static final List<dynamic> _trueValues = ['true', true, '1', 1];
 
   static DateTime parseDate(value) {
-    return value != null ? (value is DateTime ? value : DateTime.parse(value)) : null;
+    return value != null ? (value is DateTime ? value : DateTime.parse(value).toLocal()) : null;
   }
 
   static double parseDouble(value) {
