@@ -111,16 +111,16 @@ packages:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.4"
   iboxpro_flutter:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e9f208566604937d265830b538ece186aa0da99d
+      resolved-ref: ceb9d32f0c11aed88deded629a30ed3baf2027a5
       url: "ssh://git@github.com/Unact/iboxpro_flutter.git"
     source: git
-    version: "0.0.9"
+    version: "0.0.10"
   image:
     dependency: transitive
     description:
