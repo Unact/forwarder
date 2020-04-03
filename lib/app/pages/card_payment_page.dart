@@ -28,7 +28,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   String _transactionId;
   String _iboxLogin;
   String _iboxPassword;
-  String _deviceName;
   bool _requiredSignature = false;
   bool _showCancelButton = true;
   SignaturePadController _padController = SignaturePadController();
@@ -149,9 +148,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           _status = 'Обработка оплаты';
           _transactionId = res['id'];
         });
-
-        Map<dynamic, dynamic> device = await PaymentController.getBTDevice();
-        _deviceName = device['deviceName'];
       },
       onPaymentError: (res) async {
         int errorType = res['errorType'];
@@ -200,7 +196,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           await Api.post('v2/forwarder/save', body: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
             'payment_transaction': errorCode == 0 ? res : _transaction,
-            'device_name': _deviceName,
             'local_ts': DateTime.now().toIso8601String()
           });
           await App.application.data.dataSync.importData();
