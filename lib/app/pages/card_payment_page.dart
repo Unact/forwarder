@@ -74,8 +74,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     await PaymentController.startSearchBTDevice(
       readerType: ReaderType.P17,
       onReaderSetBTDevice: (res) async {
-        _deviceName = res['deviceName'];
-
         await _getApiCredentials();
       }
     );
@@ -146,11 +144,14 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       currencyType: CurrencyType.RUB,
       inputType: InputType.NFC,
       singleStepAuth: true,
-      onPaymentStart: (res) {
+      onPaymentStart: (res) async {
         setState(() {
           _status = 'Обработка оплаты';
           _transactionId = res['id'];
         });
+
+        Map<dynamic, dynamic> device = await PaymentController.getBTDevice();
+        _deviceName = device['deviceName'];
       },
       onPaymentError: (res) async {
         int errorType = res['errorType'];
