@@ -49,7 +49,7 @@ class User {
   }
 
   Future<void> loadDataFromRemote() async {
-    Map<String, dynamic> userData = await Api.get('v2/forwarder/user_info');
+    Map<String, dynamic> userData = await Api.get('v1/forwarder/user_info');
 
     id = userData['id'];
     email = userData['email'];
@@ -71,7 +71,7 @@ class User {
   }
 
   Future<void> reverseDay() async {
-    await Api.post('v2/forwarder/close_day', body: {'closed': !closed});
+    await Api.post('v1/forwarder/close_day', body: {'closed': !closed});
     closed = !closed;
 
     await save();

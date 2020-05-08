@@ -86,7 +86,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     });
 
     try {
-      Map<String, dynamic> apiRes = await Api.get('v2/forwarder/credentials');
+      Map<String, dynamic> apiRes = await Api.get('v1/forwarder/credentials');
 
       _iboxLogin = apiRes['ibox_login'];
       _iboxPassword = apiRes['ibox_password'];
@@ -193,7 +193,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
             _captureEvent('savePayment', errorCode.toString());
           }
 
-          await Api.post('v2/forwarder/save', body: {
+          await Api.post('v1/forwarder/save', body: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
             'payment_transaction': errorCode == 0 ? res : _transaction,
             'local_ts': DateTime.now().toIso8601String()

@@ -21,7 +21,7 @@ class DataSync {
   Future<void> importData() async {
     await User.currentUser.loadDataFromRemote();
 
-    Map<String, dynamic> data = await Api.get('v2/forwarder');
+    Map<String, dynamic> data = await Api.get('v1/forwarder');
     Batch batch = App.application.data.db.batch();
 
     await CardRepayment.import(data['card_repayments'], batch);

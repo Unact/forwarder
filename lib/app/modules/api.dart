@@ -48,7 +48,7 @@ class Api {
   ) async {
     if (User.currentUser.token != null) {
       headers.addAll({
-        'Authorization': 'RApi client_id=${App.application.config.clientId},token=${User.currentUser.token}'
+        'Authorization': 'Renew client_id=${App.application.config.clientId},token=${User.currentUser.token}'
       });
     }
 
@@ -70,7 +70,7 @@ class Api {
 
   static Future<void> resetPassword(String username) async {
     await _sendRequest('POST', 'v1/reset_password', {
-      'Authorization': 'RApi client_id=${App.application.config.clientId},login=$username'
+      'Authorization': 'Renew client_id=${App.application.config.clientId},login=$username'
     });
   }
 
@@ -93,7 +93,7 @@ class Api {
 
   static Future<void> _authenticate(String username, String password) async {
     dynamic response = await _sendRawRequest('POST', 'v1/authenticate', {
-      'Authorization': 'RApi client_id=${App.application.config.clientId},login=$username,password=$password'
+      'Authorization': 'Renew client_id=${App.application.config.clientId},login=$username,password=$password'
     });
     User.currentUser.token = response['token'];
     await User.currentUser.save();

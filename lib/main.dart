@@ -44,7 +44,7 @@ void main() async {
     osVersion: osVersion,
     env: development ? 'development' : 'production',
     databaseVersion: 4,
-    apiBaseUrl: '${development ? developmentUrl : 'https://rapi.unact.ru'}/api/',
+    apiBaseUrl: '${development ? developmentUrl : 'https://data.unact.ru'}/api/',
     sentryDsn: appEnv['SENTRY_DSN']
   )).run();
 }
