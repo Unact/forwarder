@@ -28,11 +28,13 @@
 		<true/>
 	</dict>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Для определения места проведения платежа</string>
+	<string>Для определения места проведения платежа и доставки</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Для определения места проведения платежа</string>
+	<string>Для определения места проведения платежа и доставки</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Для определения места проведения платежа и доставки</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Для связи с терминалом</string>
+	<string>Для связи с платежным терминалом</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>external-accessory</string>

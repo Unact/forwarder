@@ -7,10 +7,12 @@ import 'package:forwarder/app/models/buyer.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/order.dart';
 import 'package:forwarder/app/models/repayment.dart';
+import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/pages/card_payment_page.dart';
 import 'package:forwarder/app/pages/cash_payment_page.dart';
 import 'package:forwarder/app/pages/debt_page.dart';
 import 'package:forwarder/app/utils/format.dart';
+import 'package:forwarder/app/utils/geo_loc.dart';
 
 class PointPage extends StatefulWidget {
   final Buyer buyer;
@@ -128,6 +130,46 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
           ]
         )
       ),
+      trailing: RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        child: Text('Доставлен', style: TextStyle(color: Colors.white)),
+        onPressed: order.delivered ? null : () => _showConfirmDialog(order)
+      ),
+    );
+  }
+
+  Future<void> _showConfirmDialog(Order order) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Предупреждение'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Вы подтверждаете что передали заказ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Да'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _confirmDelivery(order);
+              },
+            ),
+            FlatButton(
+              child: Text('Нет'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -266,9 +308,38 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     return buttons;
   }
 
+  Future<void> _confirmDelivery(Order order) async {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(padding: EdgeInsets.all(5.0), child: Center(child: CircularProgressIndicator()));
+      }
+    );
+
+    try {
+      await Api.post('v1/forwarder/confirm_delivery', body: {
+        'sale_order_id': order.id,
+        'location': await GeoLoc.getCurrentLocation(),
+        'local_ts': DateTime.now().toIso8601String()
+      });
+      setState(() {
+        order.delivered = true;
+      });
+      await order.update();
+
+      _showSnackBar('Информация о доставке сохранена');
+    } on ApiException catch(e) {
+      _showSnackBar(e.errorMsg);
+    } finally {
+      Navigator.pop(context);
+    }
+  }
+
   Future<void> _pay({bool card}) async {
     List<Debt> debts = _debts.where((debt) => debt.paymentSum != null).toList();
     double paymentSum = debts.map((debt) => debt.paymentSum).reduce((acc, el) => acc + el);
+    Map<String, dynamic> location = await GeoLoc.getCurrentLocation();
 
     if (debts.isEmpty || paymentSum <= 0) {
       _showSnackBar('Указана неверная сумма оплаты');
@@ -283,7 +354,9 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     Map<String, dynamic> result = await showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) => card ? CardPaymentPage(debts: debts) : CashPaymentPage(debts: debts)
+      builder: (BuildContext context) => card ?
+        CardPaymentPage(debts: debts, location: location) :
+        CashPaymentPage(debts: debts, location: location)
     );
 
     setState(() {

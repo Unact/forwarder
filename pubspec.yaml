@@ -16,6 +16,7 @@ dependencies:
   shared_preferences: any
   device_info: any
   package_info: any
+  location: any
   url_launcher: any
   # https://github.com/johnpryan/signature-pad-dart/pull/2
   signature_pad_flutter:

@@ -18,6 +18,7 @@ CREATE TABLE orders(
     inc INTEGER,
     goods_cnt INTEGER,
     mc NUMERIC,
+    delivered INTEGER,
 
     local_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
     local_id INTEGER PRIMARY KEY,

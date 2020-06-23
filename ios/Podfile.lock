@@ -7,6 +7,10 @@ PODS:
   - FMDB/standard (2.7.5)
   - iboxpro_flutter (0.0.1):
     - Flutter
+  - location (0.0.1):
+    - Flutter
+  - location_web (0.0.1):
+    - Flutter
   - package_info (0.0.1):
     - Flutter
   - path_provider (0.0.1):
@@ -33,6 +37,8 @@ DEPENDENCIES:
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - Flutter (from `Flutter`)
   - iboxpro_flutter (from `.symlinks/plugins/iboxpro_flutter/ios`)
+  - location (from `.symlinks/plugins/location/ios`)
+  - location_web (from `.symlinks/plugins/location_web/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
@@ -45,7 +51,7 @@ DEPENDENCIES:
   - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - FMDB
 
 EXTERNAL SOURCES:
@@ -55,6 +61,10 @@ EXTERNAL SOURCES:
     :path: Flutter
   iboxpro_flutter:
     :path: ".symlinks/plugins/iboxpro_flutter/ios"
+  location:
+    :path: ".symlinks/plugins/location/ios"
+  location_web:
+    :path: ".symlinks/plugins/location_web/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider:
@@ -81,6 +91,8 @@ SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   iboxpro_flutter: fe944bd0a3f50fa4f18a7c633ead63603611016d
+  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
+  location_web: b94e7433cfe28c0f7c8923c2ee482824b32e55a7
   package_info: 48b108e75b8802c2d5e126f208ef540561c98aef
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
@@ -94,4 +106,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9ec0b926d741f3b13993aceabf2687bc78d2468b
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.9.1

@@ -11,9 +11,11 @@ import 'package:forwarder/app/models/user.dart';
 
 class CardPaymentPage extends StatefulWidget {
   final List<Debt> debts;
+  final Map<String, dynamic> location;
 
   CardPaymentPage({
     this.debts,
+    this.location,
     Key key
   }) : super(key: key);
 
@@ -31,7 +33,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   bool _requiredSignature = false;
   bool _showCancelButton = true;
   SignaturePadController _padController = SignaturePadController();
-
 
   @override
   void initState() {
@@ -196,6 +197,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           await Api.post('v1/forwarder/save', body: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
             'payment_transaction': errorCode == 0 ? res : _transaction,
+            'location': widget.location,
             'local_ts': DateTime.now().toIso8601String()
           });
           await App.application.data.dataSync.importData();

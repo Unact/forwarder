@@ -17,6 +17,7 @@ class Order extends DatabaseModel {
   bool inc;
   int goodsCnt;
   double mc;
+  bool delivered;
 
   get tableName => _tableName;
 
@@ -29,7 +30,8 @@ class Order extends DatabaseModel {
     this.info,
     this.inc,
     this.goodsCnt,
-    this.mc
+    this.mc,
+    this.delivered
   }) {
     if (values != null) build(values);
   }
@@ -46,6 +48,7 @@ class Order extends DatabaseModel {
     inc = Nullify.parseBool(values['inc']);
     goodsCnt = values['goods_cnt'];
     mc = Nullify.parseDouble(values['mc']);
+    delivered = Nullify.parseBool(values['delivered']);
   }
 
   Map<String, dynamic> toMap() {
@@ -58,6 +61,7 @@ class Order extends DatabaseModel {
     map['inc'] = inc;
     map['goods_cnt'] = goodsCnt;
     map['mc'] = mc;
+    map['delivered'] = delivered;
 
     return map;
   }

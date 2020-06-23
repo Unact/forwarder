@@ -6,6 +6,7 @@ import 'package:forwarder/app/pages/card_payment_page.dart';
 import 'package:forwarder/app/pages/cash_payment_page.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/utils/format.dart';
+import 'package:forwarder/app/utils/geo_loc.dart';
 
 class DebtPage extends StatefulWidget {
   final Debt debt;
@@ -28,6 +29,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
 
   Future<void> _pay({bool card}) async {
     List<Debt> debts = [widget.debt];
+    Map<String, dynamic> location = await GeoLoc.getCurrentLocation();
 
     if (_paymentSum == null || _paymentSum <= 0) {
       _showSnackBar('Указана неверная сумма оплаты');
@@ -44,7 +46,9 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
     Map<String, dynamic> result = await showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) => card ? CardPaymentPage(debts: debts) : CashPaymentPage(debts: debts)
+      builder: (BuildContext context) => card ?
+        CardPaymentPage(debts: debts, location: location) :
+        CashPaymentPage(debts: debts, location: location)
     );
 
     setState(() {
