@@ -284,7 +284,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
 
           await Api.post('v1/forwarder/save', body: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
-            'payment_transaction': errorCode == 0 ? res : _transaction,
+            'payment_transaction': (errorCode == 0 ? res : _transaction)..addAll({'deviceName': _deviceName}),
             'location': widget.location,
             'local_ts': DateTime.now().toIso8601String()
           });
