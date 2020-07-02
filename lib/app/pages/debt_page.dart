@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/material.dart';
 
 import 'package:forwarder/app/pages/card_payment_page.dart';
@@ -180,7 +178,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
   }
 
   List<Widget> _buildPayButtons() {
-    List<Widget> buttons = [
+    return [
       RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
         color: Colors.blue,
@@ -188,23 +186,16 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
           await _pay(card: false);
         },
         child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+      ),
+      RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        onPressed: !_editingEnabled ? null : () async {
+          await _pay(card: true);
+        },
+        child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
       )
     ];
-
-    if (Platform.isIOS) {
-      buttons.insert(0,
-        RaisedButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          color: Colors.blue,
-          onPressed: !_editingEnabled ? null : () async {
-            await _pay(card: true);
-          },
-          child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
-        )
-      );
-    }
-
-    return buttons;
   }
 
   Widget _buildListViewItem(Widget child) {

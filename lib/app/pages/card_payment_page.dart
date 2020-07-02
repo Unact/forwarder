@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart' as blue;
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' as blueSerial;
 import 'package:iboxpro_flutter/iboxpro_flutter.dart';
 import 'package:sentry/sentry.dart' as sentryLib;
 import 'package:signature_pad/signature_pad.dart';
@@ -24,7 +29,7 @@ class CardPaymentPage extends StatefulWidget {
 }
 
 class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingObserver {
-  final int _timeout = 30;
+  Duration _searchTimeout = Duration(seconds: 5);
   String _status = 'Ожидание';
   Map<dynamic, dynamic> _transaction;
   String _transactionId;
@@ -33,11 +38,22 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   bool _requiredSignature = false;
   bool _showCancelButton = true;
   SignaturePadController _padController = SignaturePadController();
+  StreamSubscription<blueSerial.BluetoothDiscoveryResult> _streamSubscription;
+  String _deviceName;
 
   @override
   void initState() {
-    _searchDevice();
+    _searchBTDevice();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    PaymentController.stopSearchBTDevice();
+    PaymentController.cancel();
+
+    super.dispose();
   }
 
   Future<void> _captureEvent(String culprit, String errorMsg) async {
@@ -64,19 +80,87 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     );
   }
 
-  Future<void> _searchDevice() async {
+  Future<String> _findBTDeviceNameIos() async {
+    blue.FlutterBlue flutterBlue = blue.FlutterBlue.instance;
+    List<blue.ScanResult> results = await flutterBlue.startScan(timeout: _searchTimeout);
+    blue.BluetoothDevice device = results.firstWhere(
+      (blue.ScanResult result) => result?.device?.name?.contains('MPOS'),
+      orElse: () => null
+    )?.device;
+
+    if (device == null) {
+      return null;
+    }
+
+    return device.name;
+  }
+
+  Future<String> _findBTDeviceNameAndroid() async {
+    blueSerial.FlutterBluetoothSerial bluetooth = blueSerial.FlutterBluetoothSerial.instance;
+    List<blueSerial.BluetoothDevice> devices = await bluetooth.getBondedDevices();
+
+    if (!devices.any((device) => device.name.contains('MPOS'))) {
+      List<blueSerial.BluetoothDiscoveryResult> results = [];
+
+      _streamSubscription = bluetooth.startDiscovery().listen((r) => results.add(r));
+      await Future.delayed(_searchTimeout);
+      _streamSubscription.cancel();
+
+      devices.addAll(
+        results
+          .where((blueSerial.BluetoothDiscoveryResult result) => result.device != null)
+          .map((result) => result.device)
+      );
+    }
+
+    blueSerial.BluetoothDevice device = devices
+      .where((device) => device.name != null)
+      .firstWhere((device) => device.name.contains('MPOS'), orElse: () => null);
+
+    if (device == null) {
+      return null;
+    }
+
+    if (!device.isBonded) await bluetooth.bondDeviceAtAddress(device.address);
+
+    return device.name;
+  }
+
+  Future<void> _searchBTDevice() async {
     if (!mounted) return;
 
     setState(() {
       _status = 'Установление связи с терминалом';
     });
 
-    await PaymentController.startSearchBTDevice(
-      readerType: ReaderType.P17,
-      onReaderSetBTDevice: (res) async {
-        await _getApiCredentials();
-      }
-    );
+    if (!(await blue.FlutterBlue.instance.isOn)) {
+      Navigator.pop(context, {
+        'success': false,
+        'errorMessage': 'Не включен Bluetooth'
+      });
+      return;
+    }
+
+    try {
+      _deviceName = await (Platform.isIOS ? _findBTDeviceNameIos() : _findBTDeviceNameAndroid());
+    } catch(e) {
+      _captureEvent('_searchBTDevice', e.toString());
+      Navigator.pop(context, {
+        'success': false,
+        'errorMessage': 'Ошибка при установлении связи с терминалом'
+      });
+      return;
+    }
+
+    if (_deviceName == null) {
+      Navigator.pop(context, {
+        'success': false,
+        'errorMessage': 'Не удалось найти терминал'
+      });
+      return;
+    }
+
+    await PaymentController.startSearchBTDevice(onReaderSetBTDevice: (res) async => await _getApiCredentials());
   }
 
   Future<void> _getApiCredentials() async {
@@ -108,7 +192,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       _status = 'Авторизация оплаты';
     });
 
-    await PaymentController.setRequestTimeout(timeout: _timeout);
     await PaymentController.login(
       email: _iboxLogin,
       password: _iboxPassword,
@@ -116,9 +199,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         int errorCode = res['errorCode'];
 
         if (errorCode == 0) {
-          setState(() {
-            _showCancelButton = false;
-          });
           await _startPayment();
         } else {
           _captureEvent('apiLogin', errorCode.toString());
@@ -141,18 +221,26 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     await PaymentController.startPayment(
       amount: widget.debts.map((debt) => debt.paymentSum).reduce((acc, el) => acc + el),
       description: 'Оплата за заказ ${widget.debts.map((debt) => debt.orderName).join(', ')}',
-      currencyType: CurrencyType.RUB,
       inputType: InputType.NFC,
       singleStepAuth: true,
+      onReaderEvent: (res) async {
+        if (res['readerEventType'] == ReaderEventType.Disconnected) {
+          Navigator.pop(context, {
+            'success': false,
+            'errorMessage': 'Прервана связь с терминалом'
+          });
+        }
+      },
       onPaymentStart: (res) async {
         setState(() {
           _status = 'Обработка оплаты';
           _transactionId = res['id'];
+          _showCancelButton = false;
         });
       },
       onPaymentError: (res) async {
         int errorType = res['errorType'];
-        String errorMessage = res['errorMessage'] ?? '';
+        String errorMessage = res['errorMessage'];
         String errorFullMessage = '$errorType; $errorMessage';
 
         _captureEvent('startPaymentPaymentError', errorFullMessage);
@@ -239,14 +327,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     );
   }
 
-  Future<void> _cancel() async {
-    await PaymentController.stopSearchBTDevice();
-    Navigator.pop(context, {
-      'success': false,
-      'errorMessage': 'Отмена операции'
-    });
-  }
-
   List<Widget> _buildProgressPart() {
     return [
       CircularProgressIndicator(
@@ -261,7 +341,12 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
         child: _showCancelButton ? RaisedButton(
           child: Text('Отмена'),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          onPressed: _cancel
+          onPressed: () {
+            Navigator.pop(context, {
+              'success': false,
+              'errorMessage': 'Отмена операции'
+            });
+          }
         ) : Container()
       ),
       Container(height: 40)

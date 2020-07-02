@@ -7,6 +7,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_bluetooth_serial: any
+  flutter_blue: any
   path_provider: any
   sqflite: any
   http: any
