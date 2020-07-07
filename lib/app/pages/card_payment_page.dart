@@ -14,6 +14,16 @@ import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/user.dart';
 
+class BTDevice {
+  final String name;
+  final String address;
+
+  BTDevice({
+    this.name,
+    this.address
+  });
+}
+
 class CardPaymentPage extends StatefulWidget {
   final List<Debt> debts;
   final Map<String, dynamic> location;
@@ -39,7 +49,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   bool _showCancelButton = true;
   SignaturePadController _padController = SignaturePadController();
   StreamSubscription<blueSerial.BluetoothDiscoveryResult> _streamSubscription;
-  String _deviceName;
+  BTDevice _device;
 
   @override
   void initState() {
@@ -80,7 +90,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     );
   }
 
-  Future<String> _findBTDeviceNameIos() async {
+  Future<BTDevice> _findBTDeviceNameIos() async {
     blue.FlutterBlue flutterBlue = blue.FlutterBlue.instance;
     List<blue.ScanResult> results = await flutterBlue.startScan(timeout: _searchTimeout);
     blue.BluetoothDevice device = results.firstWhere(
@@ -92,10 +102,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       return null;
     }
 
-    return device.name;
+    return BTDevice(name: device.name, address: device.id.id);
   }
 
-  Future<String> _findBTDeviceNameAndroid() async {
+  Future<BTDevice> _findBTDeviceNameAndroid() async {
     blueSerial.FlutterBluetoothSerial bluetooth = blueSerial.FlutterBluetoothSerial.instance;
     List<blueSerial.BluetoothDevice> devices = await bluetooth.getBondedDevices();
 
@@ -123,7 +133,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
 
     if (!device.isBonded) await bluetooth.bondDeviceAtAddress(device.address);
 
-    return device.name;
+    return BTDevice(name: device.name, address: device.address);
   }
 
   Future<void> _searchBTDevice() async {
@@ -142,7 +152,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     }
 
     try {
-      _deviceName = await (Platform.isIOS ? _findBTDeviceNameIos() : _findBTDeviceNameAndroid());
+      _device = await (Platform.isIOS ? _findBTDeviceNameIos() : _findBTDeviceNameAndroid());
     } catch(e) {
       _captureEvent('_searchBTDevice', e.toString());
       Navigator.pop(context, {
@@ -152,7 +162,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       return;
     }
 
-    if (_deviceName == null) {
+    if (_device == null) {
       Navigator.pop(context, {
         'success': false,
         'errorMessage': 'Не удалось найти терминал'
@@ -160,7 +170,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       return;
     }
 
-    await PaymentController.startSearchBTDevice(onReaderSetBTDevice: (res) async => await _getApiCredentials());
+    await PaymentController.startSearchBTDevice(
+      deviceAddress: _device.address,
+      onReaderSetBTDevice: () async => await _getApiCredentials()
+    );
   }
 
   Future<void> _getApiCredentials() async {
@@ -284,7 +297,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
 
           await Api.post('v1/forwarder/save', body: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
-            'payment_transaction': (errorCode == 0 ? res : _transaction)..addAll({'deviceName': _deviceName}),
+            'payment_transaction': (errorCode == 0 ? res : _transaction)..addAll({'deviceName': _device.name}),
             'location': widget.location,
             'local_ts': DateTime.now().toIso8601String()
           });

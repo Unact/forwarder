@@ -145,10 +145,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "813cf7aab679923b8f28a7660366608af3850348"
+      resolved-ref: "032151fe71d3abf2915a0933e9472ea2561abc06"
       url: "ssh://git@github.com/Unact/iboxpro_flutter.git"
     source: git
-    version: "0.1.4"
+    version: "0.1.5"
   image:
     dependency: transitive
     description:
