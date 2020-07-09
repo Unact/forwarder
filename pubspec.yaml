@@ -9,6 +9,9 @@ dependencies:
     sdk: flutter
   flutter_bluetooth_serial: any
   flutter_blue: any
+  dio: any
+  pub_semver: any
+  flutter_user_agent: any
   path_provider: any
   sqflite: any
   http: any

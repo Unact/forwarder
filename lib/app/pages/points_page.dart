@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:forwarder/app/models/buyer.dart';
 import 'package:forwarder/app/models/order.dart';
 import 'package:forwarder/app/pages/point_page.dart';
+import 'package:forwarder/app/utils/geo_loc.dart';
 
 class PointsPage extends StatefulWidget {
   PointsPage({Key key}) : super(key: key);
@@ -12,6 +13,7 @@ class PointsPage extends StatefulWidget {
 }
 
 class _PointsPageState extends State<PointsPage> with WidgetsBindingObserver {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Buyer> _buyers = [];
   List<Order> _orders = [];
 
@@ -22,6 +24,10 @@ class _PointsPageState extends State<PointsPage> with WidgetsBindingObserver {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  void _showSnackBar(String content) {
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -35,7 +41,12 @@ class _PointsPageState extends State<PointsPage> with WidgetsBindingObserver {
     return ListTile(
       dense: true,
       title: Text(buyer.name, style: TextStyle(fontSize: 14.0)),
-      onTap: () {
+      onTap: () async {
+        if ((await GeoLoc.getCurrentLocation()) == null) {
+          _showSnackBar('Необходимо разрешить определение местоположения');
+          return;
+        }
+
         Navigator.push(context, MaterialPageRoute(builder: (context) => PointPage(buyer: buyer, inc: inc)));
       },
       subtitle: RichText(
@@ -60,6 +71,7 @@ class _PointsPageState extends State<PointsPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Точки')
       ),

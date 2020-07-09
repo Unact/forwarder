@@ -34,7 +34,7 @@ class _CashPaymentPageState extends State<CashPaymentPage> with WidgetsBindingOb
     });
 
     try {
-      await Api.post('v1/forwarder/save', body: {
+      await Api.post('v1/forwarder/save', data: {
         'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
         'location': widget.location,
         'local_ts': DateTime.now().toIso8601String()

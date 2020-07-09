@@ -14,11 +14,11 @@ import 'package:forwarder/app/modules/api.dart';
 import 'package:forwarder/app/models/debt.dart';
 import 'package:forwarder/app/models/user.dart';
 
-class BTDevice {
+class _BTDevice {
   final String name;
   final String address;
 
-  BTDevice({
+  _BTDevice({
     this.name,
     this.address
   });
@@ -49,7 +49,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
   bool _showCancelButton = true;
   SignaturePadController _padController = SignaturePadController();
   StreamSubscription<blueSerial.BluetoothDiscoveryResult> _streamSubscription;
-  BTDevice _device;
+  _BTDevice _device;
 
   @override
   void initState() {
@@ -90,7 +90,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     );
   }
 
-  Future<BTDevice> _findBTDeviceNameIos() async {
+  Future<_BTDevice> _findBTDeviceNameIos() async {
     blue.FlutterBlue flutterBlue = blue.FlutterBlue.instance;
     List<blue.ScanResult> results = await flutterBlue.startScan(timeout: _searchTimeout);
     blue.BluetoothDevice device = results.firstWhere(
@@ -102,10 +102,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       return null;
     }
 
-    return BTDevice(name: device.name, address: device.id.id);
+    return _BTDevice(name: device.name, address: device.id.id);
   }
 
-  Future<BTDevice> _findBTDeviceNameAndroid() async {
+  Future<_BTDevice> _findBTDeviceNameAndroid() async {
     blueSerial.FlutterBluetoothSerial bluetooth = blueSerial.FlutterBluetoothSerial.instance;
     List<blueSerial.BluetoothDevice> devices = await bluetooth.getBondedDevices();
 
@@ -133,7 +133,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
 
     if (!device.isBonded) await bluetooth.bondDeviceAtAddress(device.address);
 
-    return BTDevice(name: device.name, address: device.address);
+    return _BTDevice(name: device.name, address: device.address);
   }
 
   Future<void> _searchBTDevice() async {
@@ -295,7 +295,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
             _captureEvent('savePayment', errorCode.toString());
           }
 
-          await Api.post('v1/forwarder/save', body: {
+          await Api.post('v1/forwarder/save', data: {
             'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
             'payment_transaction': (errorCode == 0 ? res : _transaction)..addAll({'deviceName': _device.name}),
             'location': widget.location,

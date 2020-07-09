@@ -23,7 +23,6 @@ class AppConfig {
   final String osVersion;
   final String env;
   final String sentryDsn;
-  final String clientId = 'forwarder';
   final String secretKeyWord = '5005';
   final int databaseVersion;
 

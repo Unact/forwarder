@@ -50,11 +50,7 @@ class App {
         primarySwatch: Colors.blue,
         platform: TargetPlatform.android
       ),
-      routes: {
-        '/': (BuildContext context) => HomePage(),
-        '/login': (BuildContext context) => LoginPage()
-      },
-      initialRoute: User.currentUser.isLogged() ? '/' : '/login',
+      home: User.currentUser.isLogged() ? HomePage() : LoginPage(),
       locale: Locale('ru', 'RU'),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

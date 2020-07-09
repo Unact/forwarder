@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:forwarder/app/app.dart';
 import 'package:forwarder/app/models/user.dart';
 import 'package:forwarder/app/modules/api.dart';
+import 'package:forwarder/app/pages/login_page.dart';
 
 class PersonPage extends StatefulWidget {
   PersonPage({Key key}) : super(key: key);
@@ -32,7 +33,11 @@ class _PersonPageState extends State<PersonPage> {
       await Api.logout();
       await User.currentUser.reset();
       await App.application.data.dataSync.clearData();
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+        (Route<dynamic> route) => false
+      );
     } on ApiException catch(e) {
       Navigator.pop(context);
       _showMessage(e.errorMsg);
@@ -40,8 +45,8 @@ class _PersonPageState extends State<PersonPage> {
   }
 
   Future<void> _launchAppUpdate() async {
-    String androidUpdateUrl = 'https://github.com/Unact/forwarder/releases/download/${Api.workingVersion}/app-release.apk';
-    String iosUpdateUrl = 'itms-services://?action=download-manifest&url=https://unact.github.io/mobile_apps/forwarder/manifest.plist';
+    final String androidUpdateUrl = "https://github.com/Unact/forwarder/releases/download/${User.currentUser.remoteVersion}/app-release.apk";
+    final String iosUpdateUrl = 'itms-services://?action=download-manifest&url=https://unact.github.io/mobile_apps/forwarder/manifest.plist';
     String url = Platform.isIOS ? iosUpdateUrl : androidUpdateUrl;
 
     if (await canLaunch(url)) {
@@ -68,22 +73,23 @@ class _PersonPageState extends State<PersonPage> {
   }
 
   Widget _buildUpdateAppButton(BuildContext context) {
-    if (Api.workingVersion != null && Api.workingVersion != App.application.config.packageInfo.version)
-      return Padding(
-        padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
+    return Padding(
+      padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          User.currentUser.newVersionAvailable ?
             RaisedButton(
-              onPressed: _launchAppUpdate,
               child: Text('Обновить приложение'),
-            )
-          ],
-        )
-      );
-
-    return Container();
+              onPressed: _launchAppUpdate,
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+            ) :
+            Container()
+        ],
+      )
+    );
   }
 
   Widget _buildBody(BuildContext context) {
@@ -99,11 +105,11 @@ class _PersonPageState extends State<PersonPage> {
           children: [
             _buildInfoRow('Логин', User.currentUser.username ?? ''),
             _buildInfoRow('Экспедитор', User.currentUser.salesmanName ?? ''),
-            _buildInfoRow('Версия', App.application.config.packageInfo.version),
             _buildInfoRow('Обновление БД', lastSyncTimeText),
+            _buildInfoRow('Версия', App.application.config.packageInfo.version),
             _buildUpdateAppButton(context),
             Padding(
-              padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
+              padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,

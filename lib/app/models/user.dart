@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:pub_semver/pub_semver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:forwarder/app/app.dart';
@@ -12,6 +13,7 @@ class User {
   String email = '';
   String salesmanName = '';
   String token;
+  String remoteVersion;
   bool closed = false;
 
   static const int kGuestId = 1;
@@ -26,10 +28,17 @@ class User {
     email = App.application.data.prefs.getString('email');
     token = App.application.data.prefs.getString('token');
     closed = App.application.data.prefs.getBool('closed') ?? false;
+    remoteVersion = App.application.data.prefs.getString('remoteVersion');
   }
 
   static User _currentUser;
   static User get currentUser => _currentUser;
+
+  bool get newVersionAvailable {
+    String currentVersion = App.application.config.packageInfo.version;
+
+    return remoteVersion != null && Version.parse(remoteVersion) > Version.parse(currentVersion);
+  }
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = Map<String, dynamic>();
@@ -40,6 +49,7 @@ class User {
     map['email'] = email;
     map['token'] = token;
     map['closed'] = closed;
+    map['remote_version'] = remoteVersion;
 
     return map;
   }
@@ -55,6 +65,7 @@ class User {
     email = userData['email'];
     salesmanName = userData['salesman_name'];
     closed = userData['closed'];
+    remoteVersion = userData['app']['version'];
     await save();
   }
 
@@ -66,12 +77,13 @@ class User {
     salesmanName = null;
     token = null;
     closed = false;
+    remoteVersion = null;
 
     await save();
   }
 
   Future<void> reverseDay() async {
-    await Api.post('v1/forwarder/close_day', body: {'closed': !closed});
+    await Api.post('v1/forwarder/close_day', data: {'closed': !closed});
     closed = !closed;
 
     await save();
@@ -87,5 +99,6 @@ class User {
     await (salesmanName != null ? prefs.setString('salesmanName', salesmanName) : prefs.remove('salesmanName'));
     await (token != null ? prefs.setString('token', token) : prefs.remove('token'));
     await (closed != null ? prefs.setBool('closed', closed) : prefs.remove('closed'));
+    await (remoteVersion != null ? prefs.setString('remoteVersion', remoteVersion) : prefs.remove('remoteVersion'));
   }
 }

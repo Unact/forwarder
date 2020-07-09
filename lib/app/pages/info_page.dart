@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'package:forwarder/app/app.dart';
 import 'package:forwarder/app/models/buyer.dart';
@@ -43,8 +44,11 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
     try {
       await App.application.data.dataSync.importData();
       await _loadData();
+      _showSnackBar('Данные успешно обновлены');
     } on ApiException catch(e) {
       _showErrorSnackBar(e.errorMsg);
+    } catch(e) {
+      _showErrorSnackBar('Произошла ошибка');
     }
   }
 
@@ -114,8 +118,23 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
           title: Text('Оплаты'),
           subtitle: _buildPaymentsSubtitle(),
         ),
-      )
+      ),
+      _buildInfoCard(),
     ];
+  }
+
+  Widget _buildInfoCard() {
+    if (User.currentUser.newVersionAvailable) {
+      return Card(
+        child: ListTile(
+          isThreeLine: true,
+          title: Text('Информация'),
+          subtitle: Text('Доступна новая версия приложения'),
+        )
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _buildPointsSubtitle() {
@@ -172,11 +191,30 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _backgroundRefresh() async {
+    DateTime now = DateTime.now();
+    DateTime time = App.application.data.dataSync.lastSyncTime ?? now.subtract(Duration(days: 1));
+
+    if (now.year != time.year || now.month != time.month || now.day != time.day) {
+      _refreshIndicatorKey.currentState?.show();
+    }
+  }
+
   @override
   void initState() {
 
     super.initState();
     _loadData();
+
+    WidgetsBinding.instance.addObserver(this);
+    SchedulerBinding.instance.addPostFrameCallback((_) => _backgroundRefresh());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:forwarder/app/app.dart';
 import 'package:forwarder/app/modules/api.dart';
+import 'package:forwarder/app/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -39,7 +40,11 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await Api.login(_username, _password);
-      Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+        (Route<dynamic> route) => false
+      );
     } on ApiException catch(e) {
       Navigator.pop(context);
       _showSnackBar(e.errorMsg);

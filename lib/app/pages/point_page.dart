@@ -309,7 +309,7 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     );
 
     try {
-      await Api.post('v1/forwarder/confirm_delivery', body: {
+      await Api.post('v1/forwarder/confirm_delivery', data: {
         'sale_order_id': order.id,
         'location': await GeoLoc.getCurrentLocation(),
         'local_ts': DateTime.now().toIso8601String()
