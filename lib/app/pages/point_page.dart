@@ -118,7 +118,7 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
             TextSpan(
-              text: 'Коробов: ${order.mc}\n',
+              text: 'Коробов: ${order.mc ?? ''}\n',
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
             TextSpan(
@@ -140,7 +140,7 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
   Future<void> _showConfirmDialog(Order order) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Предупреждение'),
@@ -327,6 +327,26 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
     }
   }
 
+  Future<bool> _confirmPayment(double paymentSum) async {
+    String warningText = 'Вы уверены, что хотите внести оплату ${Format.numberStr(paymentSum)} руб.?\n' +
+      'Изменить потом будет нельзя.';
+
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Предупреждение'),
+          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(warningText)])),
+          actions: <Widget>[
+            FlatButton(child: Text('Да'), onPressed: () => Navigator.of(context).pop(true)),
+            FlatButton(child: Text('Нет'), onPressed: () => Navigator.of(context).pop(false))
+          ],
+        );
+      }
+    );
+  }
+
   Future<void> _pay({bool card}) async {
     List<Debt> debts = _debts.where((debt) => debt.paymentSum != null).toList();
     double paymentSum = debts.map((debt) => debt.paymentSum).reduce((acc, el) => acc + el);
@@ -339,6 +359,14 @@ class _PointPageState extends State<PointPage> with WidgetsBindingObserver {
 
     if (card && debts.any((debt) => debt.paymentSum > debt.debtSum)) {
       _showSnackBar('Указана неверная сумма для оплаты картой');
+      return;
+    }
+
+    if (!await _confirmPayment(paymentSum)) {
+      setState(() {
+        debts.forEach((debt) => debt.paymentSum = null);
+      });
+
       return;
     }
 

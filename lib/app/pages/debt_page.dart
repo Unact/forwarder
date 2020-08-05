@@ -22,7 +22,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
   TextEditingController _paymentController = TextEditingController();
-  double _paymentSum = 0;
+  double _paymentSum;
   bool _editingEnabled = true;
 
   Future<void> _pay({bool card}) async {
@@ -36,6 +36,15 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
 
     if (card && _paymentSum > widget.debt.debtSum) {
       _showSnackBar('Указана неверная сумма для оплаты картой');
+      return;
+    }
+
+    if (!await _confirmPayment(_paymentSum)) {
+      setState(() {
+        _paymentSum = 0;
+        _paymentController.clear();
+      });
+
       return;
     }
 
@@ -60,16 +69,28 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
     });
   }
 
-  void _showSnackBar(String content) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
+  Future<bool> _confirmPayment(double paymentSum) async {
+    String warningText = 'Вы уверены, что хотите внести оплату ${Format.numberStr(paymentSum)} руб.?\n' +
+      'Изменить потом будет нельзя.';
+
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Предупреждение'),
+          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(warningText)])),
+          actions: <Widget>[
+            FlatButton(child: Text('Да'), onPressed: () => Navigator.of(context).pop(true)),
+            FlatButton(child: Text('Нет'), onPressed: () => Navigator.of(context).pop(false))
+          ],
+        );
+      }
+    );
   }
 
-  void _loadData() {
-    _paymentSum = widget.debt.debtSum;
-
-    if (mounted) {
-      setState(() {});
-    }
+  void _showSnackBar(String content) {
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -203,13 +224,6 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: child
     );
-  }
-
-  @override
-  void initState() {
-
-    super.initState();
-    _loadData();
   }
 
   @override
