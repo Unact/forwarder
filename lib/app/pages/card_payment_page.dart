@@ -171,7 +171,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     }
 
     await PaymentController.startSearchBTDevice(
-      deviceAddress: _device.address,
+      deviceName: _device.name,
       onReaderSetBTDevice: () async => await _getApiCredentials()
     );
   }
