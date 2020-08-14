@@ -285,34 +285,23 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       _status = 'Сохранение информации об оплате';
     });
 
-    await PaymentController.info(
-      trId: _transactionId,
-      onInfo: (res) async {
-        int errorCode = res['errorCode'];
-
-        try {
-          if (errorCode != 0) {
-            _captureEvent('savePayment', errorCode.toString());
-          }
-
-          await Api.post('v1/forwarder/save', data: {
-            'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
-            'payment_transaction': (errorCode == 0 ? res : _transaction)..addAll({'deviceName': _device.name}),
-            'location': widget.location,
-            'local_ts': DateTime.now().toIso8601String()
-          });
-          await App.application.data.dataSync.importData();
-          Navigator.pop(context, {
-            'success': true
-          });
-        } on ApiException catch(e) {
-          Navigator.pop(context, {
-            'success': false,
-            'errorMessage': e.errorMsg
-          });
-        }
-      }
-    );
+    try {
+      await Api.post('v1/forwarder/save', data: {
+        'payments': widget.debts.map((debt) => {'id': debt.id, 'payment_sum': debt.paymentSum}).toList(),
+        'payment_transaction': _transaction..addAll({'deviceName': _device.name}),
+        'location': widget.location,
+        'local_ts': DateTime.now().toIso8601String()
+      });
+      await App.application.data.dataSync.importData();
+      Navigator.pop(context, {
+        'success': true
+      });
+    } on ApiException catch(e) {
+      Navigator.pop(context, {
+        'success': false,
+        'errorMessage': e.errorMsg
+      });
+    }
   }
 
   Future<void> _adjustPayment() async {
