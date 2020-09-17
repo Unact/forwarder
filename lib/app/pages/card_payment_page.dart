@@ -208,8 +208,8 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     await PaymentController.login(
       email: _iboxLogin,
       password: _iboxPassword,
-      onLogin: (res) async {
-        int errorCode = res['errorCode'];
+      onLogin: (Result res) async {
+        int errorCode = res.errorCode;
 
         if (errorCode == 0) {
           await _startPayment();
@@ -236,24 +236,24 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
       description: 'Оплата за заказ ${widget.debts.map((debt) => debt.orderName).join(', ')}',
       inputType: InputType.NFC,
       singleStepAuth: true,
-      onReaderEvent: (res) async {
-        if (res['readerEventType'] == ReaderEventType.Disconnected) {
+      onReaderEvent: (ReaderEvent readerEvent) async {
+        if (readerEvent.type == ReaderEventType.Disconnected) {
           Navigator.pop(context, {
             'success': false,
             'errorMessage': 'Прервана связь с терминалом'
           });
         }
       },
-      onPaymentStart: (res) async {
+      onPaymentStart: (String id) async {
         setState(() {
           _status = 'Обработка оплаты';
-          _transactionId = res['id'];
+          _transactionId = id;
           _showCancelButton = false;
         });
       },
-      onPaymentError: (res) async {
-        int errorType = res['errorType'];
-        String errorMessage = res['errorMessage'];
+      onPaymentError: (PaymentError res) async {
+        int errorType = res.type;
+        String errorMessage = res.message;
         String errorFullMessage = '$errorType; $errorMessage';
 
         _captureEvent('startPaymentPaymentError', errorFullMessage);
@@ -262,11 +262,11 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
           'errorMessage': errorFullMessage
         });
       },
-      onPaymentComplete: (res) async {
+      onPaymentComplete: (Transaction transaction, bool requiredSignature) async {
         setState(() {
           _status = 'Подтверждение оплаты';
-          _transaction = res['transaction'];
-          _requiredSignature = res['requiredSignature'];
+          _transaction = transaction.toMap();
+          _requiredSignature = requiredSignature;
         });
 
         if (!_requiredSignature) {
@@ -311,10 +311,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> with WidgetsBindingOb
     });
 
     await PaymentController.adjustPayment(
-      trId: _transactionId,
+      id: _transactionId,
       signature: await _padController.toPng(),
-      onPaymentAdjust: (res) async {
-        int errorCode = res['errorCode'];
+      onPaymentAdjust: (Result res) async {
+        int errorCode = res.errorCode;
 
         if (errorCode == 0) {
           await _savePayment();
