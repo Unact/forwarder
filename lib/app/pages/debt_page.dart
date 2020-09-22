@@ -1,99 +1,126 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-import 'package:forwarder/app/pages/card_payment_page.dart';
-import 'package:forwarder/app/pages/cash_payment_page.dart';
-import 'package:forwarder/app/models/debt.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:forwarder/app/constants/strings.dart';
+import 'package:forwarder/app/pages/accept_payment_page.dart';
 import 'package:forwarder/app/utils/format.dart';
-import 'package:forwarder/app/utils/geo_loc.dart';
+import 'package:forwarder/app/utils/nullify.dart';
+import 'package:forwarder/app/view_models/accept_payment_view_model.dart';
+import 'package:forwarder/app/view_models/debt_view_model.dart';
 
 class DebtPage extends StatefulWidget {
-  final Debt debt;
-
-  DebtPage({Key key, @required this.debt}) : super(key: key);
+  DebtPage({Key key}) : super(key: key);
 
   @override
   _DebtPageState createState() => _DebtPageState();
 }
 
-class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
+class _DebtPageState extends State<DebtPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextStyle firstColumnTextStyle = TextStyle(color: Colors.blue);
   final EdgeInsets firstColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
-  TextEditingController _paymentController = TextEditingController();
-  double _paymentSum;
-  bool _editingEnabled = true;
+  DebtViewModel _debtViewModel;
+  TextEditingController _controller = TextEditingController();
 
-  Future<void> _pay({bool card}) async {
-    List<Debt> debts = [widget.debt];
-    Map<String, dynamic> location = await GeoLoc.getCurrentLocation();
+  @override
+  void initState() {
+    super.initState();
 
-    if (_paymentSum == null || _paymentSum <= 0) {
-      _showSnackBar('Указана неверная сумма оплаты');
-      return;
-    }
-
-    if (card && _paymentSum > widget.debt.debtSum) {
-      _showSnackBar('Указана неверная сумма для оплаты картой');
-      return;
-    }
-
-    if (!await _confirmPayment(_paymentSum)) {
-      setState(() {
-        _paymentSum = 0;
-        _paymentController.clear();
-      });
-
-      return;
-    }
-
-    widget.debt.paymentSum = _paymentSum;
-
-    Map<String, dynamic> result = await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) => card ?
-        CardPaymentPage(debts: debts, location: location) :
-        CashPaymentPage(debts: debts, location: location)
-    );
-
-    setState(() {
-      if (result['success']) {
-        _editingEnabled = false;
-        _showSnackBar('Оплата успешно создана');
-        return;
-      }
-
-      _showSnackBar('Произошла ошибка - ${result['errorMessage']}');
-    });
+    _debtViewModel = context.read<DebtViewModel>();
+    _debtViewModel.addListener(this.vmListener);
   }
 
-  Future<bool> _confirmPayment(double paymentSum) async {
-    String warningText = 'Вы уверены, что хотите внести оплату ${Format.numberStr(paymentSum)} руб.?\n' +
-      'Изменить потом будет нельзя.';
+  @override
+  void dispose() {
+    _debtViewModel.removeListener(this.vmListener);
+    super.dispose();
+  }
 
-    return showDialog<bool>(
+  String _validatePaymentSum(String value) {
+    double parsedValue = Nullify.parseDouble(value);
+
+    return value != '' && (parsedValue == null || parsedValue < 0 || parsedValue == 0) ? 'Некорректное значение' : null;
+  }
+
+  Future<Map<String, dynamic>> showAcceptPaymentDialog() async {
+    return await showDialog(
+      context: context,
+      builder: (_) => ChangeNotifierProvider<AcceptPaymentViewModel>(
+        create: (context) => AcceptPaymentViewModel(
+          context: context,
+          debts: [_debtViewModel.debt],
+          isCard: _debtViewModel.isCard
+        ),
+        child: AcceptPaymentPage(),
+      ),
+      barrierDismissible: false
+    );
+  }
+
+  Future<bool> showConfirmationDialog(String message) async {
+    return await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Предупреждение'),
-          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(warningText)])),
+          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
-            FlatButton(child: Text('Да'), onPressed: () => Navigator.of(context).pop(true)),
-            FlatButton(child: Text('Нет'), onPressed: () => Navigator.of(context).pop(false))
+            FlatButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
+            FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
         );
       }
     );
   }
 
-  void _showSnackBar(String content) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
+  Future<void> vmListener() async {
+    switch (_debtViewModel.state) {
+      case DebtState.NeedUserConfirmation:
+        _debtViewModel.confirmationCallback(await showConfirmationDialog(_debtViewModel.message));
+        break;
+      case DebtState.PaymentStarted:
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          _debtViewModel.finishPayment(await showAcceptPaymentDialog());
+        });
+        break;
+      case DebtState.PaymentFinished:
+      case DebtState.PaymentFailure:
+        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_debtViewModel.message)));
+        break;
+      default:
+    }
+  }
+
+  void unfocus() {
+    FocusScopeNode currentFocus = FocusScope.of(context);
+
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<DebtViewModel>(builder: (context, vm, _) {
+      return Scaffold(
+        key: _scaffoldKey,
+        persistentFooterButtons: _buildPayButtons(context),
+        appBar: AppBar(
+          title: Text('Задолженность'),
+        ),
+        body: _buildBody(context)
+      );
+    });
   }
 
   Widget _buildBody(BuildContext context) {
+    DebtViewModel vm = Provider.of<DebtViewModel>(context);
+
     return ListView(
       padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
       children: <Widget>[
@@ -108,7 +135,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
               contentPadding: EdgeInsets.only(),
               prefixIcon: Icon(Icons.assignment)
             ),
-            initialValue: widget.debt.fullname,
+            initialValue: vm.debt.fullname,
           )
         ),
         _buildListViewItem(
@@ -122,7 +149,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
               contentPadding: EdgeInsets.only(),
               prefixIcon: Icon(Icons.attach_money)
             ),
-            initialValue: Format.numberStr(widget.debt.orderSum)
+            initialValue: Format.numberStr(vm.debt.orderSum)
           )
         ),
         _buildListViewItem(
@@ -136,7 +163,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
               contentPadding: EdgeInsets.only(),
               prefixIcon: Icon(Icons.attach_money)
             ),
-            initialValue: Format.numberStr(widget.debt.debtSum)
+            initialValue: Format.numberStr(vm.debt.debtSum)
           ),
         ),
         _buildListViewItem(
@@ -150,7 +177,7 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
               contentPadding: EdgeInsets.only(),
               prefixIcon: Icon(Icons.receipt)
             ),
-            initialValue: widget.debt.isCheck ? 'Да' : 'Нет'
+            initialValue: vm.debt.needCheck ? 'Да' : 'Нет'
           )
         ),
         Container(height: 32),
@@ -158,8 +185,8 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
           GestureDetector(
             child: TextFormField(
               autofocus: true,
-              controller: _paymentController,
-              enabled: _editingEnabled,
+              controller: _controller,
+              enabled: vm.isEditable,
               maxLines: 1,
               style: defaultTextStyle,
               decoration: InputDecoration(
@@ -167,56 +194,21 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.only(),
                 prefixIcon: Icon(Icons.attach_money),
+                errorMaxLines: 2,
+                isDense: true,
+                errorText: _validatePaymentSum(_controller.text),
               ),
-              onFieldSubmitted: (String value) {
-                String formattedValue = value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), '');
-                double parsedValue;
-
-                try {
-                  parsedValue = double.parse(formattedValue);
-                } on FormatException {}
-
-                setState(() {
-                  if (parsedValue == null || parsedValue <= 0) {
-                    _showSnackBar('Введена не верная сумма оплаты');
-                  }
-
-                  _paymentSum = parsedValue;
-                });
-              }
+              onChanged: (newValue) => vm.updatePaymentSum(Nullify.parseDouble(newValue))
             ),
             onHorizontalDragEnd: (_) {
-              setState(() {
-                _paymentController.text = Format.numberStr(widget.debt.debtSum);
-                _paymentSum = widget.debt.debtSum;
-                FocusScope.of(context).unfocus();
-              });
+              _controller.text = vm.debt.debtSum.toString();
+              vm.updatePaymentSum(vm.debt.debtSum);
+              unfocus();
             },
           ),
         ),
       ]
     );
-  }
-
-  List<Widget> _buildPayButtons() {
-    return [
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: !_editingEnabled ? null : () async {
-          await _pay(card: false);
-        },
-        child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
-      ),
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: !_editingEnabled ? null : () async {
-          await _pay(card: true);
-        },
-        child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
-      )
-    ];
   }
 
   Widget _buildListViewItem(Widget child) {
@@ -226,15 +218,22 @@ class _DebtPageState extends State<DebtPage> with WidgetsBindingObserver {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('Задолженность')
+  List<Widget> _buildPayButtons(BuildContext context) {
+    DebtViewModel vm = Provider.of<DebtViewModel>(context);
+
+    return [
+      RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        onPressed: vm.isEditable ? () => vm.tryStartPayment(false) : null,
+        child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
       ),
-      body: _buildBody(context),
-      persistentFooterButtons: _buildPayButtons()
-    );
+      RaisedButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        color: Colors.blue,
+        onPressed: vm.isEditable ? () => vm.tryStartPayment(true) : null,
+        child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+      )
+    ];
   }
 }

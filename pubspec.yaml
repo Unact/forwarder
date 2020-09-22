@@ -1,28 +1,32 @@
 name: forwarder
 description: Приложение для экспедиторов
 version: 1.2.5+39
+publish_to: 'none'
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_bluetooth_serial: any
-  flutter_blue: any
+  equatable: any
   dio: any
-  pub_semver: any
   flutter_user_agent: any
-  path_provider: any
-  sqflite: any
-  http: any
-  intl: any
-  sentry: any
-  dotenv: any
+  pub_semver: any
   shared_preferences: any
+  sqflite: any
+  path_provider: any
   device_info: any
   package_info: any
-  location: any
+  sentry: any
+  flutter_dotenv: any
+  provider: any
   url_launcher: any
+  location: any
+  flutter_bluetooth_serial: any
+  flutter_blue: any
   # https://github.com/johnpryan/signature-pad-dart/pull/2
   signature_pad_flutter:
     git:
@@ -40,5 +44,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/data/schema.sql
-    - .app_env
+    - lib/app/data/schema.sql
+    - .env

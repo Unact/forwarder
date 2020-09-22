@@ -1,141 +1,126 @@
-import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
-import 'package:forwarder/app/app.dart';
-import 'package:forwarder/app/models/user.dart';
-import 'package:forwarder/app/modules/api.dart';
-import 'package:forwarder/app/pages/login_page.dart';
+import 'package:forwarder/app/view_models/person_view_model.dart';
+import 'package:forwarder/app/widgets/widgets.dart';
 
 class PersonPage extends StatefulWidget {
-  PersonPage({Key key}) : super(key: key);
+  const PersonPage({Key key}) : super(key: key);
 
-  @override
   _PersonPageState createState() => _PersonPageState();
 }
 
 class _PersonPageState extends State<PersonPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  PersonViewModel _personViewModel;
+  Completer<void> _dialogCompleter = Completer();
 
-  void _logout() async {
-    try {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return Padding(padding: EdgeInsets.all(5.0), child: Center(child: CircularProgressIndicator()));
-        }
-      );
+  @override
+  void initState() {
+    super.initState();
 
-      await Api.logout();
-      await User.currentUser.reset();
-      await App.application.data.dataSync.clearData();
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
-        (Route<dynamic> route) => false
-      );
-    } on ApiException catch(e) {
-      Navigator.pop(context);
-      _showMessage(e.errorMsg);
+    _personViewModel = context.read<PersonViewModel>();
+    _personViewModel.addListener(this.vmListener);
+  }
+
+  @override
+  void dispose() {
+    _personViewModel.removeListener(this.vmListener);
+    super.dispose();
+  }
+
+  Future<void> openDialog() async {
+    showDialog(
+      context: context,
+      builder: (_) => Center(child: CircularProgressIndicator()),
+      barrierDismissible: false
+    );
+    await _dialogCompleter.future;
+    Navigator.of(context).pop();
+  }
+
+  void closeDialog() {
+    _dialogCompleter.complete();
+    _dialogCompleter = Completer();
+  }
+
+  Future<void> vmListener() async {
+    switch (_personViewModel.state) {
+      case PersonState.InProgress:
+        openDialog();
+        break;
+      case PersonState.Failure:
+        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_personViewModel.message)));
+        closeDialog();
+        break;
+      case PersonState.LoggedOut:
+        closeDialog();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(context).pop();
+        });
+        break;
+      default:
     }
-  }
-
-  Future<void> _launchAppUpdate() async {
-    final String androidUpdateUrl = "https://github.com/Unact/forwarder/releases/download/${User.currentUser.remoteVersion}/app-release.apk";
-    final String iosUpdateUrl = 'itms-services://?action=download-manifest&url=https://unact.github.io/mobile_apps/forwarder/manifest.plist';
-    String url = Platform.isIOS ? iosUpdateUrl : androidUpdateUrl;
-
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      _showMessage('Произошла ошибка');
-    }
-  }
-
-  void _showMessage(String content) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
-  }
-
-  Widget _buildInfoRow(String leftStr, String rightStr) {
-    return Padding(
-      padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: Text(leftStr)),
-          Text(rightStr)
-        ]
-      )
-    );
-  }
-
-  Widget _buildUpdateAppButton(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          User.currentUser.newVersionAvailable ?
-            RaisedButton(
-              child: Text('Обновить приложение'),
-              onPressed: _launchAppUpdate,
-              color: Colors.blueAccent,
-              textColor: Colors.white,
-            ) :
-            Container()
-        ],
-      )
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    DateTime lastSyncTime = App.application.data.dataSync.lastSyncTime;
-    String lastSyncTimeText = lastSyncTime != null ?
-      DateFormat.yMMMd('ru').add_jms().format(lastSyncTime) :
-      'Не проводилось';
-
-    return ListView(
-      padding: EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0),
-      children: [
-        Column(
-          children: [
-            _buildInfoRow('Логин', User.currentUser.username ?? ''),
-            _buildInfoRow('Экспедитор', User.currentUser.salesmanName ?? ''),
-            _buildInfoRow('Обновление БД', lastSyncTimeText),
-            _buildInfoRow('Версия', App.application.config.packageInfo.version),
-            _buildUpdateAppButton(context),
-            Padding(
-              padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Colors.red,
-                    onPressed: _logout,
-                    child: Text('Выйти', style: TextStyle(color: Colors.white)),
-                  ),
-                ]
-              )
-            )
-          ]
-        )
-      ]
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Пользователь'),
+        title: Text('Пользователь')
       ),
-      body: _buildBody(context)
+      body: Consumer<PersonViewModel>(
+        builder: (context, vm, _) {
+          return _buildBody(context);
+        }
+      )
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    PersonViewModel vm = Provider.of<PersonViewModel>(context);
+
+    return ListView(
+      padding: EdgeInsets.only(top: 24, bottom: 24),
+      children: [
+        InfoRow(title: Text('Логин'), trailing: Text(vm.username)),
+        InfoRow(title: Text('Экспедитор'), trailing: Text(vm.salesmanName)),
+        InfoRow(title: Text('Обновление БД'), trailing: Text(vm.lastSyncTime)),
+        InfoRow(title: Text('Версия'), trailing: Text(vm.version)),
+        !vm.newVersionAvailable ? Container() : Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                child: Text('Обновить приложение'),
+                onPressed: vm.launchAppUpdate,
+                color: Colors.blueAccent,
+                textColor: Colors.white,
+              )
+            ],
+          )
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                color: Colors.red,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                onPressed: vm.apiLogout,
+                child: Text('Выйти', style: TextStyle(color: Colors.white)),
+              ),
+            ]
+          )
+        )
+      ]
     );
   }
 }

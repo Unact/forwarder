@@ -2,7 +2,7 @@ class Nullify {
   static final List<dynamic> _trueValues = ['true', true, '1', 1];
 
   static DateTime parseDate(value) {
-    return value != null ? (value is DateTime ? value : DateTime.parse(value).toLocal()) : null;
+    return value != null ? (value is DateTime ? value : DateTime.tryParse(value).toLocal()) : null;
   }
 
   static double parseDouble(value) {
@@ -18,7 +18,7 @@ class Nullify {
     if (value is int)
       return value.toDouble();
 
-    return double.parse(value);
+    return double.tryParse(value.replaceAll(',', '.').replaceAll(RegExp(r'\s\b|\b\s'), ''));
   }
 
   static bool parseBool(value) {

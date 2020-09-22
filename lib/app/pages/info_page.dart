@@ -1,130 +1,209 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
-import 'package:forwarder/app/app.dart';
-import 'package:forwarder/app/models/buyer.dart';
-import 'package:forwarder/app/models/card_repayment.dart';
-import 'package:forwarder/app/models/order.dart';
-import 'package:forwarder/app/models/repayment.dart';
-import 'package:forwarder/app/models/user.dart';
-import 'package:forwarder/app/modules/api.dart';
+import 'package:provider/provider.dart';
+
+import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/pages/person_page.dart';
 import 'package:forwarder/app/utils/format.dart';
+import 'package:forwarder/app/view_models/info_view_model.dart';
+import 'package:forwarder/app/view_models/person_view_model.dart';
 
 class InfoPage extends StatefulWidget {
-  final GlobalKey bottomNavigationBarKey;
-  InfoPage({Key key, @required this.bottomNavigationBarKey}) : super(key: key);
+  InfoPage({Key key}) : super(key: key);
 
   @override
   _InfoPageState createState() => _InfoPageState();
 }
 
-class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
+class _InfoPageState extends State<InfoPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  List<Buyer> _buyers = [];
-  List<Order> _orders = [];
-  List<Repayment> _repayments = [];
-  List<CardRepayment> _cardRepayments = [];
+  InfoViewModel _infoViewModel;
+  Completer<void> _refresherCompleter = Completer();
+  Completer<void> _dialogCompleter = Completer();
 
-  Future<void> _loadData() async {
-    _cardRepayments = await CardRepayment.all();
-    _repayments = await Repayment.all();
-    _buyers = await Buyer.all();
-    _orders = await Order.all();
 
-    if (mounted) {
-      setState(() {});
+  @override
+  void initState() {
+    super.initState();
+
+    _infoViewModel = context.read<InfoViewModel>();
+    _infoViewModel.addListener(this.vmListener);
+
+    if (_infoViewModel.needRefresh) openRefresher();
+  }
+
+  @override
+  void dispose() {
+    _infoViewModel.removeListener(this.vmListener);
+    super.dispose();
+  }
+
+  Future<void> openRefresher() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState.show();
+    });
+  }
+
+  void closeRefresher() {
+    _refresherCompleter.complete();
+    _refresherCompleter = Completer();
+  }
+
+  Future<void> openDialog() async {
+    showDialog(
+      context: context,
+      builder: (_) => Center(child: CircularProgressIndicator()),
+      barrierDismissible: false
+    );
+    await _dialogCompleter.future;
+    Navigator.of(context).pop();
+  }
+
+  void closeDialog() {
+    _dialogCompleter.complete();
+    _dialogCompleter = Completer();
+  }
+
+  Future<void> vmListener() async {
+    switch (_infoViewModel.state) {
+      case InfoState.ReverseStart:
+        openDialog();
+
+        break;
+      case InfoState.ReverseFailure:
+      case InfoState.ReverseSuccess:
+        closeDialog();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+
+        break;
+      case InfoState.Failure:
+      case InfoState.DataLoaded:
+        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+        closeRefresher();
+
+        break;
+      default:
     }
   }
 
-  Future<void> _syncData() async {
-    try {
-      await App.application.data.dataSync.importData();
-      await _loadData();
-      _showSnackBar('Данные успешно обновлены');
-    } on ApiException catch(e) {
-      _showErrorSnackBar(e.errorMsg);
-    } catch(e) {
-      _showErrorSnackBar('Произошла ошибка');
-    }
-  }
-
-  Future<void> _onReverseDay() async {
-    User user = User.currentUser;
-    bool closed = user.closed;
-    String msg = 'День успешно ${closed ? 'открыт' : 'закрыт'}';
-
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) => Center(child: CircularProgressIndicator())
-      );
-
-      await user.reverseDay();
-    } on ApiException catch(e) {
-      msg = e.errorMsg;
-    }
-
-    Navigator.pop(context);
-    _showSnackBar(msg);
-    setState(() {});
-  }
-
-  void _showSnackBar(String content) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(content)));
-  }
-
-  void _showErrorSnackBar(String content) {
-    _scaffoldKey.currentState?.showSnackBar(SnackBar(
-      content: Text(content),
-      action: SnackBarAction(
-        label: 'Повторить',
-        onPressed: _refreshIndicatorKey.currentState?.show
-      )
-    ));
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(Strings.ruAppName),
+        actions: <Widget>[
+          IconButton(
+            color: Colors.white,
+            icon: Icon(Icons.person),
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => ChangeNotifierProvider<PersonViewModel>(
+                    create: (context) => PersonViewModel(context: context),
+                    child: PersonPage(),
+                  ),
+                  fullscreenDialog: true
+                )
+              );
+            }
+          )
+        ]
+      ),
+      body: Consumer<InfoViewModel>(builder: (context, vm, _) {
+        return RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
+            vm.getData();
+            return _refresherCompleter.future;
+          },
+          child: ListView(
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
+            children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildInfoCards(context)
+              )
+            ],
+          )
+        );
+      })
+    );
   }
 
   List<Widget> _buildInfoCards(BuildContext context) {
+    InfoViewModel vm = Provider.of<InfoViewModel>(context);
+
     return <Widget>[
       Card(
         child: ListTile(
-          onTap: () {
-            BottomNavigationBar navigationBar = widget.bottomNavigationBarKey.currentWidget;
-            navigationBar.onTap(1);
-          },
+          onTap: () => vm.changePage(1),
           isThreeLine: true,
-          title: Text('Точки'),
-          subtitle: _buildPointsSubtitle(),
+          title: Text(Strings.buyersPageName),
+          subtitle: _buildDebtsCard(context),
           trailing: RaisedButton(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-            child: Text('${User.currentUser.closed ? 'Открыть' : 'Закрыть'} день'),
+            child: Text('${vm.closed ? 'Открыть' : 'Закрыть'} день'),
             textColor: Colors.white,
             color: Colors.blue,
-            onPressed: _onReverseDay
+            onPressed: vm.reverseDay
           ),
         ),
       ),
       Card(
         child: ListTile(
-          onTap: () {
-            BottomNavigationBar navigationBar = widget.bottomNavigationBarKey.currentWidget;
-            navigationBar.onTap(2);
-          },
+          onTap: () => vm.changePage(2),
           isThreeLine: true,
-          title: Text('Оплаты'),
-          subtitle: _buildPaymentsSubtitle(),
+          title: Text(Strings.paymentsPageName),
+          subtitle: _buildPaymentsCard(context),
         ),
       ),
-      _buildInfoCard(),
+      _buildInfoCard(context),
     ];
   }
 
-  Widget _buildInfoCard() {
-    if (User.currentUser.newVersionAvailable) {
+  Widget _buildDebtsCard(BuildContext context) {
+    InfoViewModel vm = Provider.of<InfoViewModel>(context);
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(color: Colors.grey),
+        children: <TextSpan>[
+          TextSpan(text: 'Адресов: ${vm.buyersCnt}\n', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: 'Заказов: ${vm.ordersCnt}\n', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: 'Инкассаций: ${vm.incCnt}\n', style: TextStyle(fontSize: 12.0))
+        ]
+      )
+    );
+  }
+
+  Widget _buildPaymentsCard(BuildContext context) {
+    InfoViewModel vm = Provider.of<InfoViewModel>(context);
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(color: Colors.grey),
+        children: <TextSpan>[
+          TextSpan(text: 'Всего: ${Format.numberStr(vm.paymentsSum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nНаличными: ${Format.numberStr(vm.cashPaymentsSum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nККМ: ${Format.numberStr(vm.kkmSum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nКартой: ${Format.numberStr(vm.cardPaymentsSum)}', style: TextStyle(fontSize: 12.0)),
+          TextSpan(text: '\nОтменено: ${Format.numberStr(vm.cardPaymentsCancelSum)}', style: TextStyle(fontSize: 12.0)),
+        ]
+      )
+    );
+  }
+
+  Widget _buildInfoCard(BuildContext context) {
+    InfoViewModel vm = Provider.of<InfoViewModel>(context);
+
+    if (vm.newVersionAvailable) {
       return Card(
         child: ListTile(
           isThreeLine: true,
@@ -135,108 +214,5 @@ class _InfoPageState extends State<InfoPage> with WidgetsBindingObserver {
     } else {
       return Container();
     }
-  }
-
-  Widget _buildPointsSubtitle() {
-    int incassations = _orders.where((order) => order.inc).length +
-      _buyers.where((buyer) => !_orders.any((order) => order.buyerId == buyer.id)).length;
-
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(color: Colors.grey),
-        children: <TextSpan>[
-          TextSpan(text: 'Адресов: ${_buyers.length}', style: TextStyle(fontSize: 12.0)),
-          TextSpan(text: '\nЗаказов: ${_orders.length}', style: TextStyle(fontSize: 12.0)),
-          TextSpan(text: '\nИнкассаций: $incassations', style: TextStyle(fontSize: 12.0))
-        ]
-      )
-    );
-  }
-
-  Widget _buildPaymentsSubtitle() {
-    double cardRepaymentsSum = _cardRepayments.fold(0, (sum, cardRepayment) => sum + cardRepayment.summ);
-    double repaymentsSum = _repayments.fold(0, (sum, repayment) => sum + repayment.summ);
-    double sum = cardRepaymentsSum + repaymentsSum;
-    double kkmSum = _repayments.where((repayment) => repayment.kkmprinted).
-      fold(0, (sum, repayment) => sum + repayment.summ);
-
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(color: Colors.grey),
-        children: <TextSpan>[
-          TextSpan(text: 'Всего: ${Format.numberStr(sum)}', style: TextStyle(fontSize: 12.0)),
-          TextSpan(text: '\nНаличными: ${Format.numberStr(repaymentsSum)}', style: TextStyle(fontSize: 12.0)),
-          TextSpan(text: '\nКартой: ${Format.numberStr(cardRepaymentsSum)}', style: TextStyle(fontSize: 12.0)),
-          TextSpan(text: '\nККМ: ${Format.numberStr(kkmSum)}', style: TextStyle(fontSize: 12.0))
-        ]
-      )
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return RefreshIndicator(
-      key: _refreshIndicatorKey,
-      onRefresh: _syncData,
-      child: ListView.builder(
-        padding: EdgeInsets.only(top: 24.0, left: 8.0, right: 8.0),
-        itemCount: 1,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildInfoCards(context)
-          );
-        }
-      )
-    );
-  }
-
-  Future<void> _backgroundRefresh() async {
-    DateTime now = DateTime.now();
-    DateTime time = App.application.data.dataSync.lastSyncTime ?? now.subtract(Duration(days: 1));
-
-    if (now.year != time.year || now.month != time.month || now.day != time.day) {
-      _refreshIndicatorKey.currentState?.show();
-    }
-  }
-
-  @override
-  void initState() {
-
-    super.initState();
-    _loadData();
-
-    WidgetsBinding.instance.addObserver(this);
-    SchedulerBinding.instance.addPostFrameCallback((_) => _backgroundRefresh());
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    WidgetsBinding.instance.removeObserver(this);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('Экспедитор'),
-        actions: <Widget>[
-          IconButton(
-            color: Colors.white,
-            icon: Icon(Icons.person),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => PersonPage(), fullscreenDialog: true)
-              );
-            }
-          )
-        ]
-      ),
-      body: _buildBody(context)
-    );
   }
 }

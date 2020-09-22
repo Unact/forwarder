@@ -1,63 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:forwarder/app/constants/strings.dart';
+import 'package:forwarder/app/pages/buyers_page.dart';
 import 'package:forwarder/app/pages/info_page.dart';
-import 'package:forwarder/app/pages/points_page.dart';
 import 'package:forwarder/app/pages/payments_page.dart';
+import 'package:forwarder/app/view_models/buyers_view_model.dart';
+import 'package:forwarder/app/view_models/home_view_model.dart';
+import 'package:forwarder/app/view_models/info_view_model.dart';
+import 'package:forwarder/app/view_models/payments_view_model.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final GlobalKey _bottomNavigationBarKey = GlobalKey();
-  int _currentIndex = 0;
-  List<Widget> _children = [];
-
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return BottomNavigationBar(
-      key: _bottomNavigationBarKey,
-      currentIndex: _currentIndex,
-      onTap: (int index) => setState(() => _currentIndex = index),
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          title: Text('Главная')
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.local_grocery_store),
-          title: Text('Точки'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.payment),
-          title: Text('Оплаты'),
-        )
-      ],
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return _children[_currentIndex];
-  }
-
-  @override
-  void initState() {
-
-    super.initState();
-    _children = [
-      InfoPage(bottomNavigationBarKey: _bottomNavigationBarKey),
-      PointsPage(),
-      PaymentsPage()
-    ];
-  }
+class HomePage extends StatelessWidget {
+  const HomePage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: _buildBottomNavigationBar(context),
-      body: _buildBody(context)
+    return Consumer<HomeViewModel>(
+      builder: (context, vm, _) {
+        return Scaffold(
+          bottomNavigationBar: _buildBottomNavigationBar(context, vm),
+          body: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<InfoViewModel>(create: (context) => InfoViewModel(context: context)),
+              ChangeNotifierProvider<BuyersViewModel>(create: (context) => BuyersViewModel(context: context)),
+              ChangeNotifierProvider<PaymentsViewModel>(create: (context) => PaymentsViewModel(context: context))
+            ],
+            child: [
+              InfoPage(),
+              BuyersPage(),
+              PaymentsPage()
+            ][vm.currentIndex]
+          )
+        );
+      }
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context, HomeViewModel vm) {
+    return BottomNavigationBar(
+      currentIndex: vm.currentIndex,
+      onTap: vm.setCurrentIndex,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          title: Text(Strings.infoPageName)
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.local_grocery_store),
+          title: Text(Strings.buyersPageName),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.payment),
+          title: Text(Strings.paymentsPageName),
+        )
+      ],
     );
   }
 }
