@@ -9,8 +9,8 @@ class BuyersViewModel extends BaseViewModel {
   BuyersViewModel({@required BuildContext context}) : super(context: context);
 
   List<Buyer> get buyers => appState.buyers..sort((buyer1, buyer2) {
-    int ord1 = _ordersForBuyer(buyer1).map<int>((e) => e.ord).reduce(max);
-    int ord2 = _ordersForBuyer(buyer2).map<int>((e) => e.ord).reduce(max);
+    int ord1 = _ordersForBuyer(buyer1).map<int>((e) => e.ord).fold(0, max);
+    int ord2 = _ordersForBuyer(buyer2).map<int>((e) => e.ord).fold(0, max);
     int ordCompare = ord1.compareTo(ord2);
 
     return ordCompare == 0 ? buyer1.name.toLowerCase().compareTo(buyer2.name.toLowerCase()) : ordCompare;
