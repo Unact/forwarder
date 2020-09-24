@@ -84,7 +84,7 @@ class Api {
         summ: Nullify.parseDouble(e['summ']),
         ddate: Nullify.parseDate(e['ddate']),
         transactionId: e['transaction_id'],
-        canceled: Nullify.parseBool(e['canceled']) ? 1 : 0
+        canceled: Nullify.parseBoolInt(e['canceled'])
       )).toList();
     List<CashPayment> cashPayments = data['repayments']
       .map<CashPayment>((e) => CashPayment(
@@ -119,7 +119,7 @@ class Api {
         inc: e['inc'],
         goodsCnt: e['goods_cnt'],
         mc: Nullify.parseDouble(e['mc']),
-        delivered: e['delivered']
+        delivered: Nullify.parseBoolInt(e['delivered'])
       )).toList();
 
     return {
@@ -138,6 +138,7 @@ class Api {
   Future<void> deliverOrder(Order order, Location location) async {
     await _post('v1/forwarder/confirm_delivery', data: {
       'sale_order_id': order.id,
+      'delivered': order.delivered,
       'location': {
         'latitude': location.latitude,
         'longitude': location.longitude,

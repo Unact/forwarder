@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:forwarder/app/utils/format.dart';
 
-import 'package:forwarder/app/app_state.dart';
 import 'package:forwarder/app/entities/entities.dart';
-import 'package:forwarder/app/utils/geo_loc.dart';
 import 'package:forwarder/app/view_models/base_view_model.dart';
 
 enum BuyerState {
   Initial,
-  InProgress,
-  OpenDebtSuccess,
-  OpenDebtFailure,
   NeedUserConfirmation,
   DebtChanged,
-  DeliverySuccess,
-  DeliveryFailure,
   PaymentStarted,
   PaymentFinished
 }
@@ -24,9 +17,7 @@ class BuyerViewModel extends BaseViewModel {
   final bool isInc;
   BuyerState _state = BuyerState.Initial;
   String _message;
-  Debt _debtToOpen;
   List<Debt> _debtsToPay;
-  Order _orderToDeliver;
   bool _isCard = false;
   Function _confirmationCallback;
 
@@ -38,7 +29,6 @@ class BuyerViewModel extends BaseViewModel {
 
   BuyerState get state => _state;
   String get message => _message;
-  Debt get debtToOpen => _debtToOpen;
   List<Debt> get debtsToPay => _debtsToPay;
   bool get isCard => _isCard;
   Function get confirmationCallback => _confirmationCallback;
@@ -79,43 +69,6 @@ class BuyerViewModel extends BaseViewModel {
   }
 
   bool debtIsEditable(Debt debt) => debt.paidSum == null;
-
-  void onOpenDebt(Debt debt) {
-    if (debtIsEditable(debt)) {
-      _debtToOpen = debt;
-      _setState(BuyerState.OpenDebtSuccess);
-
-      return;
-    }
-
-    _setMessage('Для этой задолженности уже есть оплата на сегодня');
-    _setState(BuyerState.OpenDebtFailure);
-  }
-
-  void tryDeliverOrder(Order order) {
-    _message = 'Вы подтверждаете что передали заказ?';
-    _confirmationCallback = deliverOrder;
-    _orderToDeliver = order;
-
-    _setState(BuyerState.NeedUserConfirmation);
-  }
-
-  Future<void> deliverOrder(bool confirmed) async {
-    if (!confirmed) return;
-
-    _setState(BuyerState.InProgress);
-
-    try {
-      Location location = await GeoLoc.getCurrentLocation();
-      await appState.deliveryOrder(_orderToDeliver, location);
-
-      _setMessage('Информация о доставке сохранена');
-      _setState(BuyerState.DeliverySuccess);
-    } on AppError catch(e) {
-      _setMessage(e.message);
-      _setState(BuyerState.DeliveryFailure);
-    }
-  }
 
   void tryStartPayment(bool isCard) {
     List<Debt> debtsToPay = debts.where((e) => e.paymentSum != null && e.paidSum == null).toList();

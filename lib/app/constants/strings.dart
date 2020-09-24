@@ -12,4 +12,7 @@ class Strings {
   static const genericErrorMsg = 'Произошла непредвиденная ошибка';
   static const ok = 'ОК';
   static const cancel = 'Отмена';
+  static const yes = 'Да';
+  static const no = 'Нет';
+  static const inProcess = 'В процессе';
 }

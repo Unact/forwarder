@@ -72,7 +72,25 @@ class DebtViewModel extends BaseViewModel {
   }
 
   void finishPayment(Map<String, dynamic> result) {
-    debt = result['debts'].first;
+    Debt updatedDebt = result['debts'].firstWhere((e) => e.id == debt.id, orElse: () => null);
+
+    if (updatedDebt == null) {
+      debt = Debt(
+        id: debt.id,
+        buyerId: debt.buyerId,
+        orderId: debt.orderId,
+        ndoc: debt.ndoc,
+        orderNdoc: debt.orderNdoc,
+        ddate: debt.ddate,
+        orderDdate: debt.ddate,
+        isCheck: debt.isCheck,
+        debtSum: debt.debtSum,
+        orderSum: debt.orderSum,
+        paidSum: debt.paymentSum,
+        paymentSum: debt.paymentSum
+      );
+    }
+
     _setMessage(result['message']);
     _setState(DebtState.PaymentFinished);
   }

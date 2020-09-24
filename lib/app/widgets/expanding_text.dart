@@ -4,11 +4,13 @@ class ExpandingText extends StatefulWidget {
   final String content;
   final TextStyle style;
   final TextAlign textAlign;
+  final int limit;
 
   ExpandingText(this.content, {
     Key key,
     this.style,
-    this.textAlign
+    this.textAlign,
+    this.limit = 40
   }) : super(key: key);
 
   @override
@@ -16,7 +18,6 @@ class ExpandingText extends StatefulWidget {
 }
 
 class _ExpandingTextState extends State<ExpandingText> {
-  static final int _kLimit = 40;
   bool _showAll = false;
 
   @override
@@ -27,12 +28,12 @@ class _ExpandingTextState extends State<ExpandingText> {
         text: TextSpan(
           children: [
             TextSpan(
-              style: TextStyle(color: Colors.black, fontSize: 14).merge(widget.style),
-              text: widget.content.length > _kLimit && !_showAll ?
-                widget.content.substring(0, _kLimit) :
+              style: TextStyle(color: Colors.black, fontSize: 12).merge(widget.style),
+              text: widget.content.length > widget.limit && !_showAll ?
+                widget.content.substring(0, widget.limit) :
                 widget.content
             ),
-            widget.content.length <= _kLimit ? TextSpan() : WidgetSpan(
+            widget.content.length <= widget.limit ? TextSpan() : WidgetSpan(
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -41,7 +42,7 @@ class _ExpandingTextState extends State<ExpandingText> {
                 },
                 child: Text(
                   _showAll ? '' : '...',
-                  style: TextStyle(color: Colors.blue, fontSize: 13),
+                  style: TextStyle(color: Colors.blue, fontSize: 12),
                 ),
               ),
             )

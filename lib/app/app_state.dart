@@ -218,7 +218,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<Order> deliveryOrder(Order order, Location location) async {
+  Future<Order> deliveryOrder(Order order, bool delivered, Location location) async {
     Order updatedOrder = Order(
       id: order.id,
       buyerId: order.buyerId,
@@ -228,7 +228,7 @@ class AppState extends ChangeNotifier {
       inc: order.inc,
       goodsCnt: order.goodsCnt,
       mc: order.mc,
-      delivered: 1
+      delivered: delivered ? 1 : 0
     );
 
     try {
@@ -276,7 +276,9 @@ class AppState extends ChangeNotifier {
     try {
       await app.api.acceptPayment(updatedDebts, transaction, location);
       await getData();
-      updatedDebts = updatedDebts.map((e) => _debts.firstWhere((debt) => debt.id == e.id));
+      updatedDebts = updatedDebts.
+        map((e) => _debts.firstWhere((debt) => debt.id == e.id, orElse: () => null)).
+        where((e) => e != null).toList();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {

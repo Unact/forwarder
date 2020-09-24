@@ -21,7 +21,22 @@ class BuyersPage extends StatelessWidget {
           return ListView(
             physics: AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
-            children: vm.buyers.map((e) => _buyerTile(context, e)).toList()
+            children: [
+              ExpansionTile(
+                initiallyExpanded: false,
+                tilePadding: EdgeInsets.all(0),
+                childrenPadding: EdgeInsets.only(left: 8),
+                title: Text('Выполнено'),
+                children: vm.buyersWithDelivery.map((e) => _buyerTile(context, e)).toList()
+              ),
+              ExpansionTile(
+                initiallyExpanded: true,
+                tilePadding: EdgeInsets.all(0),
+                childrenPadding: EdgeInsets.only(left: 8),
+                title: Text('Активно'),
+                children: vm.buyersWithoutDelivery.map((e) => _buyerTile(context, e)).toList()
+              ),
+            ]
           );
         }
       )

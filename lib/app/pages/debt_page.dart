@@ -9,6 +9,7 @@ import 'package:forwarder/app/utils/format.dart';
 import 'package:forwarder/app/utils/nullify.dart';
 import 'package:forwarder/app/view_models/accept_payment_view_model.dart';
 import 'package:forwarder/app/view_models/debt_view_model.dart';
+import 'package:forwarder/app/widgets/widgets.dart';
 
 class DebtPage extends StatefulWidget {
   DebtPage({Key key}) : super(key: key);
@@ -121,100 +122,55 @@ class _DebtPageState extends State<DebtPage> {
   Widget _buildBody(BuildContext context) {
     DebtViewModel vm = Provider.of<DebtViewModel>(context);
 
-    return ListView(
-      padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-      children: <Widget>[
-        _buildListViewItem(
-          TextFormField(
-            enabled: false,
-            maxLines: 1,
-            style: defaultTextStyle,
-            decoration: InputDecoration(
-              labelText: 'Накладная',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(),
-              prefixIcon: Icon(Icons.assignment)
-            ),
-            initialValue: vm.debt.fullname,
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+          child: Column(
+            children: [
+              InfoRow(trailingFlex: 2, title: Text('Накладная'), trailing: Text(vm.debt.fullname)),
+              InfoRow(title: Text('Сумма'), trailing: Text(Format.numberStr(vm.debt.orderSum))),
+              InfoRow(title: Text('Долг'), trailing: Text(Format.numberStr(vm.debt.debtSum))),
+              InfoRow(title: Text('Чек'), trailing: Text(vm.debt.needCheck ? 'Да' : 'Нет')),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                title: Text('Оплата', style: TextStyle(fontSize: 14.0)),
+                trailing: !vm.isEditable ?
+                  Text(Format.numberStr(vm.debt.paidSum), textAlign: TextAlign.end) :
+                  GestureDetector(
+                    child: SizedBox(
+                      width: 104,
+                      height: 48,
+                      child: TextFormField(
+                        textAlign: TextAlign.end,
+                        autofocus: true,
+                        controller: _controller,
+                        enabled: vm.isEditable,
+                        maxLines: 1,
+                        style: defaultTextStyle,
+                        decoration: InputDecoration(
+                          labelText: '',
+                          border: UnderlineInputBorder(),
+                          contentPadding: EdgeInsets.only(),
+                          errorMaxLines: 2,
+                          isDense: true,
+                          errorText: _validatePaymentSum(_controller.text),
+                        ),
+                        onChanged: (newValue) => vm.updatePaymentSum(Nullify.parseDouble(newValue))
+                      )
+                    ),
+                    onHorizontalDragEnd: (_) {
+                      _controller.text = vm.debt.debtSum.toString();
+                      vm.updatePaymentSum(vm.debt.debtSum);
+                      unfocus();
+                    },
+                  ),
+              )
+            ],
           )
-        ),
-        _buildListViewItem(
-          TextFormField(
-            enabled: false,
-            maxLines: 1,
-            style: defaultTextStyle,
-            decoration: InputDecoration(
-              labelText: 'Сумма',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(),
-              prefixIcon: Icon(Icons.attach_money)
-            ),
-            initialValue: Format.numberStr(vm.debt.orderSum)
-          )
-        ),
-        _buildListViewItem(
-          TextFormField(
-            enabled: false,
-            maxLines: 1,
-            style: defaultTextStyle,
-            decoration: InputDecoration(
-              labelText: 'Долг',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(),
-              prefixIcon: Icon(Icons.attach_money)
-            ),
-            initialValue: Format.numberStr(vm.debt.debtSum)
-          ),
-        ),
-        _buildListViewItem(
-          TextFormField(
-            enabled: false,
-            maxLines: 1,
-            style: defaultTextStyle,
-            decoration: InputDecoration(
-              labelText: 'Чек',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(),
-              prefixIcon: Icon(Icons.receipt)
-            ),
-            initialValue: vm.debt.needCheck ? 'Да' : 'Нет'
-          )
-        ),
-        Container(height: 32),
-        _buildListViewItem(
-          GestureDetector(
-            child: TextFormField(
-              autofocus: true,
-              controller: _controller,
-              enabled: vm.isEditable,
-              maxLines: 1,
-              style: defaultTextStyle,
-              decoration: InputDecoration(
-                labelText: 'Оплата',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.only(),
-                prefixIcon: Icon(Icons.attach_money),
-                errorMaxLines: 2,
-                isDense: true,
-                errorText: _validatePaymentSum(_controller.text),
-              ),
-              onChanged: (newValue) => vm.updatePaymentSum(Nullify.parseDouble(newValue))
-            ),
-            onHorizontalDragEnd: (_) {
-              _controller.text = vm.debt.debtSum.toString();
-              vm.updatePaymentSum(vm.debt.debtSum);
-              unfocus();
-            },
-          ),
-        ),
-      ]
-    );
-  }
-
-  Widget _buildListViewItem(Widget child) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: child
+        )
+      ],
     );
   }
 

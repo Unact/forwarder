@@ -24,4 +24,8 @@ class Nullify {
   static bool parseBool(value) {
     return value != null ? (_trueValues.indexOf(value) != -1 ? true : false) : null;
   }
+
+  static int parseBoolInt(value) {
+    return value != null ? (_trueValues.indexOf(value) != -1 ? 1 : 0) : null;
+  }
 }

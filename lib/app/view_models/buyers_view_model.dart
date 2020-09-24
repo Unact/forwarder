@@ -17,6 +17,11 @@ class BuyersViewModel extends BaseViewModel {
   });
 
   List<Order> _ordersForBuyer(Buyer buyer) => appState.orders.where((e) => e.buyerId == buyer.id).toList();
+  List<Buyer> get buyersWithoutDelivery =>
+    buyers.where((e) => _ordersForBuyer(e).every((e) => !e.didDelivery)).toList();
+  List<Buyer> get buyersWithDelivery =>
+    buyers.where((e) => _ordersForBuyer(e).every((e) => e.didDelivery)).toList();
+
   int ordersCntForBuyer(Buyer buyer) => _ordersForBuyer(buyer).length;
   bool buyerIsInc(Buyer buyer) => appState.orders.any((e) => e.buyerId == buyer.id && e.isInc) ||
     ordersCntForBuyer(buyer) == 0;

@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:forwarder/app/pages/cancel_payment_page.dart';
 import 'package:forwarder/app/view_models/cancel_payment_view_model.dart';
-import 'package:forwarder/app/widgets/info_row.dart';
 import 'package:provider/provider.dart';
 
 import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/entities/entities.dart';
 import 'package:forwarder/app/utils/format.dart';
 import 'package:forwarder/app/view_models/payments_view_model.dart';
+import 'package:forwarder/app/widgets/widgets.dart';
 
 class PaymentsPage extends StatefulWidget {
   PaymentsPage({Key key}) : super(key: key);
@@ -79,11 +79,15 @@ class _PaymentsPageState extends State<PaymentsPage> {
             ExpansionTile(
               initiallyExpanded: true,
               title: Text('Наличными'),
+              tilePadding: EdgeInsets.all(0),
+              childrenPadding: EdgeInsets.all(0),
               children: vm.cashPayments.map((payment) => _cashPaymentTile(context, payment)).toList(),
             ),
             ExpansionTile(
               initiallyExpanded: true,
               title: Text('Картой'),
+              tilePadding: EdgeInsets.all(0),
+              childrenPadding: EdgeInsets.all(0),
               children: vm.cardPayments.map((payment) => _cardPaymentTile(context, payment)).toList(),
             )
           ]
@@ -97,20 +101,21 @@ class _PaymentsPageState extends State<PaymentsPage> {
     Buyer buyer = vm.buyerForCashPayment(cashPayment);
     Color summColor = cashPayment.isKkmprinted ? Colors.black : Colors.red;
 
-    return Padding(
-      padding: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 8),
-      child: InfoRow(
-        title: RichText(
-          text: TextSpan(
-            text: buyer.name + '\n',
-            style: TextStyle(color: Colors.black),
-            children: [
-              TextSpan(text: buyer.address, style: TextStyle(color: Colors.grey, fontSize: 12))
-            ]
+    return InfoRow(
+      titleFlex: 4,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(buyer.name),
+          ExpandingText(
+            buyer.address,
+            style: TextStyle(color: Colors.grey, fontSize: 10),
+            textAlign: TextAlign.left,
+            limit: 60
           )
-        ),
-        trailing: Text(Format.numberStr(cashPayment.summ), style: TextStyle(color: summColor)),
-      )
+        ]
+      ),
+      trailing: Text(Format.numberStr(cashPayment.summ), style: TextStyle(color: summColor)),
     );
   }
 
@@ -119,38 +124,39 @@ class _PaymentsPageState extends State<PaymentsPage> {
     Buyer buyer = vm.buyerForCardPayment(cardPayment);
     Color summColor = Colors.black;
 
-    return Padding(
-      padding: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 8),
-      child: InfoRow(
-        title: RichText(
-          text: TextSpan(
-            text: buyer.name + '\n',
-            style: TextStyle(color: Colors.black),
-            children: [
-              TextSpan(text: buyer.address, style: TextStyle(color: Colors.grey, fontSize: 12))
-            ]
-          )
-        ),
-        trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+    return InfoRow(
+      titleFlex: 1,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RaisedButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-            color: Colors.blue,
-            child: Text('Отменить', style: TextStyle(color: Colors.white)),
-            onPressed: cardPayment.isCanceled ? null : () => vm.startCancelPayment(cardPayment)
-          ),
-          Container(width: 12,),
-          Container(
-            width: 60,
-            child: Text(
-              Format.numberStr(cardPayment.summ),
-              style: TextStyle(color: summColor),
-              textAlign: TextAlign.end,
-            ),
+          Text(buyer.name),
+          ExpandingText(
+            buyer.address,
+            style: TextStyle(color: Colors.grey, fontSize: 10),
+            textAlign: TextAlign.left,
           )
-        ]),
-      )
+        ]
+      ),
+      trailing: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            RaisedButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+              color: Colors.blue,
+              child: Text('Отменить', style: TextStyle(color: Colors.white)),
+              onPressed: cardPayment.isCanceled ? null : () => vm.startCancelPayment(cardPayment)
+            ),
+            Container(width: 6),
+            Container(
+              width: 60,
+              child: Text(
+                Format.numberStr(cardPayment.summ),
+                style: TextStyle(color: summColor),
+                textAlign: TextAlign.end,
+              ),
+            )
+          ]
+        ),
     );
   }
 }

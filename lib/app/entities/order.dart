@@ -25,7 +25,9 @@ class Order extends Equatable {
     this.delivered,
   });
 
-  bool get isDelivered => delivered == 1;
+  bool get isDelivered => didDelivery && delivered == 1;
+  bool get isUndelivered => didDelivery && delivered == 0;
+  bool get didDelivery => delivered != null;
   bool get isInc => inc == 1;
 
   @override
