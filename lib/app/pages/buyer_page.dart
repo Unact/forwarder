@@ -62,7 +62,10 @@ class _BuyerPageState extends State<BuyerPage> {
           debts: _buyerViewModel.debtsToPay,
           isCard: _buyerViewModel.isCard
         ),
-        child: AcceptPaymentPage(),
+        child: WillPopScope(
+          onWillPop: () async => false,
+          child: AcceptPaymentPage(),
+        )
       ),
       barrierDismissible: false
     );
@@ -72,16 +75,17 @@ class _BuyerPageState extends State<BuyerPage> {
     return await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
+      builder: (BuildContext context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
           title: Text('Предупреждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
             FlatButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
             FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
-        );
-      }
+        )
+      )
     );
   }
 
@@ -96,7 +100,7 @@ class _BuyerPageState extends State<BuyerPage> {
         });
         break;
       case BuyerState.PaymentFinished:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_buyerViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_buyerViewModel.message)));
         break;
       default:
     }

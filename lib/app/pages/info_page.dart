@@ -55,7 +55,10 @@ class _InfoPageState extends State<InfoPage> {
   Future<void> openDialog() async {
     showDialog(
       context: context,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(child: CircularProgressIndicator())
+      ),
       barrierDismissible: false
     );
     await _dialogCompleter.future;
@@ -76,12 +79,12 @@ class _InfoPageState extends State<InfoPage> {
       case InfoState.ReverseFailure:
       case InfoState.ReverseSuccess:
         closeDialog();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
 
         break;
       case InfoState.Failure:
       case InfoState.DataLoaded:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
         closeRefresher();
 
         break;

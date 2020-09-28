@@ -44,7 +44,10 @@ class _PaymentsPageState extends State<PaymentsPage> {
           context: context,
           cardPayment: _paymentsViewModel.cardPaymentToCancel
         ),
-        child: CancelPaymentPage(),
+        child: WillPopScope(
+          onWillPop: () async => false,
+          child: CancelPaymentPage(),
+        )
       ),
       barrierDismissible: false
     );
@@ -58,7 +61,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
         });
         break;
       case PaymentsState.CancelFinished:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_paymentsViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_paymentsViewModel.message)));
         break;
       default:
     }

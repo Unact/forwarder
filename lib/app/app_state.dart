@@ -281,6 +281,8 @@ class AppState extends ChangeNotifier {
         where((e) => e != null).toList();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
+    } on AppError {
+      rethrow;
     } catch(e, trace) {
       _reportError(e, trace);
       throw AppError(Strings.genericErrorMsg);

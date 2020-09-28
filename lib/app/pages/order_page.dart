@@ -41,7 +41,10 @@ class _OrderPageState extends State<OrderPage> {
   Future<void> openDialog() async {
     showDialog(
       context: context,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(child: CircularProgressIndicator())
+      ),
       barrierDismissible: false
     );
     await _dialogCompleter.future;
@@ -57,16 +60,17 @@ class _OrderPageState extends State<OrderPage> {
     return await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
+      builder: (BuildContext context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
           title: Text('Подтверждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
             FlatButton(child: Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
             FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
-        );
-      }
+        )
+      )
     );
   }
 
@@ -81,7 +85,7 @@ class _OrderPageState extends State<OrderPage> {
       case OrderState.DeliveryFinished:
       case OrderState.DeliveryFailure:
         closeDialog();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_orderViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_orderViewModel.message)));
         break;
       default:
     }

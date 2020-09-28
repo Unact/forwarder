@@ -34,7 +34,10 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> openDialog() async {
     showDialog(
       context: context,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(child: CircularProgressIndicator())
+      ),
       barrierDismissible: false
     );
     await _dialogCompleter.future;
@@ -53,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         break;
       case LoginState.Failure:
       case LoginState.PasswordSent:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_loginViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_loginViewModel.message)));
         closeDialog();
         break;
       case LoginState.LoggedIn:

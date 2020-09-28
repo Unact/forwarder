@@ -34,7 +34,10 @@ class _PersonPageState extends State<PersonPage> {
   Future<void> openDialog() async {
     showDialog(
       context: context,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(child: CircularProgressIndicator())
+      ),
       barrierDismissible: false
     );
     await _dialogCompleter.future;
@@ -52,7 +55,7 @@ class _PersonPageState extends State<PersonPage> {
         openDialog();
         break;
       case PersonState.Failure:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_personViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_personViewModel.message)));
         closeDialog();
         break;
       case PersonState.LoggedOut:

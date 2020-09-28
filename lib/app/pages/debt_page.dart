@@ -56,7 +56,10 @@ class _DebtPageState extends State<DebtPage> {
           debts: [_debtViewModel.debt],
           isCard: _debtViewModel.isCard
         ),
-        child: AcceptPaymentPage(),
+        child: WillPopScope(
+          onWillPop: () async => false,
+          child: AcceptPaymentPage(),
+        )
       ),
       barrierDismissible: false
     );
@@ -66,16 +69,17 @@ class _DebtPageState extends State<DebtPage> {
     return await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
+      builder: (BuildContext context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
           title: Text('Предупреждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
             FlatButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
             FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
-        );
-      }
+        )
+      )
     );
   }
 
@@ -91,7 +95,7 @@ class _DebtPageState extends State<DebtPage> {
         break;
       case DebtState.PaymentFinished:
       case DebtState.PaymentFailure:
-        _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(_debtViewModel.message)));
+        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_debtViewModel.message)));
         break;
       default:
     }
