@@ -1,6 +1,6 @@
 name: forwarder
 description: Приложение для экспедиторов
-version: 1.3.2+44
+version: 1.3.2+45
 publish_to: 'none'
 
 environment:
