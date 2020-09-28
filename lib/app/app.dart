@@ -21,6 +21,7 @@ class App {
   final Api api;
   final bool isDebug;
   final String version;
+  final String buildNumber;
   final AppDataRepository appDataRepo;
   final BuyerRepository buyerRepo;
   final CardPaymentRepository cardPaymentRepo;
@@ -34,6 +35,7 @@ class App {
     @required this.api,
     @required this.isDebug,
     @required this.version,
+    @required this.buildNumber,
     @required this.appDataRepo,
     @required this.buyerRepo,
     @required this.cardPaymentRepo,
@@ -76,6 +78,7 @@ class App {
     }
 
     String version = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
     Storage storage = await Storage.init();
     AppDataRepository appDataRepo = AppDataRepository(storage: storage);
     BuyerRepository buyerRepo = BuyerRepository(storage: storage);
@@ -107,6 +110,7 @@ class App {
       api: api,
       isDebug: isDebug,
       version: version,
+      buildNumber: buildNumber,
       appDataRepo: appDataRepo,
       buyerRepo: buyerRepo,
       cardPaymentRepo: cardPaymentRepo,

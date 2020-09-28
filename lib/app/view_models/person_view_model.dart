@@ -32,7 +32,7 @@ class PersonViewModel extends BaseViewModel {
 
   String get username => appState.user.username ?? '';
   String get salesmanName => appState.user.salesmanName ?? '';
-  String get version => app.version;
+  String get fullVersion => appState.fullVersion;
   bool get newVersionAvailable => appState.newVersionAvailable;
 
   Future<void> apiLogout() async {

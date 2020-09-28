@@ -23,6 +23,8 @@ class AppState extends ChangeNotifier {
 
   User _user;
 
+  String get fullVersion => app.version + '+' + app.buildNumber;
+
   bool get newVersionAvailable {
     String currentVersion = app.version;
     String remoteVersion = user.version;

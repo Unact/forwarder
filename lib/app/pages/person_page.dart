@@ -91,7 +91,7 @@ class _PersonPageState extends State<PersonPage> {
         InfoRow(title: Text('Логин'), trailing: Text(vm.username)),
         InfoRow(title: Text('Экспедитор'), trailing: Text(vm.salesmanName)),
         InfoRow(title: Text('Обновление БД'), trailing: Text(vm.lastSyncTime)),
-        InfoRow(title: Text('Версия'), trailing: Text(vm.version)),
+        InfoRow(title: Text('Версия'), trailing: Text(vm.fullVersion)),
         !vm.newVersionAvailable ? Container() : Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Row(
