@@ -78,6 +78,7 @@ class Iboxpro {
     @required Function onPaymentStart,
     @required Function onPaymentComplete,
   }) async {
+    bool paymentStarted = false;
 
     await PaymentController.startPayment(
       amount: amount,
@@ -85,11 +86,12 @@ class Iboxpro {
       inputType: InputType.NFC,
       singleStepAuth: true,
       onReaderEvent: (ReaderEvent res) async {
-        if (res.type == ReaderEventType.Disconnected) {
+        if (res.type == ReaderEventType.Disconnected && !paymentStarted) {
           onError.call('Прервана связь с терминалом');
         }
       },
       onPaymentStart: (String id) async {
+        paymentStarted = true;
         _transactionId = id;
         onPaymentStart.call(_transactionId);
       },
@@ -136,6 +138,7 @@ class Iboxpro {
     @required Function onPaymentComplete,
   }) async {
     _transactionId = id;
+    bool paymentStarted = false;
 
     await PaymentController.startReversePayment(
       id: _transactionId,
@@ -144,11 +147,12 @@ class Iboxpro {
       inputType: InputType.NFC,
       singleStepAuth: true,
       onReaderEvent: (ReaderEvent res) async {
-        if (res.type == ReaderEventType.Disconnected) {
+        if (res.type == ReaderEventType.Disconnected && !paymentStarted) {
           onError.call('Прервана связь с терминалом');
         }
       },
       onPaymentStart: (String id) async {
+        paymentStarted = true;
         _transactionId = id;
         onPaymentStart.call(_transactionId);
       },

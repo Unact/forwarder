@@ -126,7 +126,7 @@ class CancelPaymentViewModel extends BaseViewModel {
         _setState(CancelPaymentState.PaymentFinished);
 
         if (!_requiredSignature) {
-          _savePayment();
+          _savePayment(transaction);
         } else {
           _setMessage('Для завершения отмены\nнеобходимо указать подпись');
           _setState(CancelPaymentState.RequiredSignature);
@@ -150,12 +150,12 @@ class CancelPaymentViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> _savePayment() async {
+  Future<void> _savePayment(Map<dynamic, dynamic> transaction) async {
     _setMessage('Сохранение информации об отмене');
     _setState(CancelPaymentState.SavingPayment);
 
     try {
-      cardPayment = await appState.cancelCardPayment(cardPayment);
+      cardPayment = await appState.cancelCardPayment(cardPayment, transaction);
 
       _setMessage('Отмена успешно сохранена');
       _setState(CancelPaymentState.Finished);

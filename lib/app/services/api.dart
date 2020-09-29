@@ -172,8 +172,12 @@ class Api {
     });
   }
 
-  Future<void> cancelCardPayment(CardPayment payment) async {
-    await _post('v1/forwarder/cancel', data: { 'id': payment.id });
+  Future<void> cancelCardPayment(CardPayment payment, Map<String, dynamic> transaction) async {
+    await _post('v1/forwarder/cancel', data: {
+      'id': payment.id,
+      'payment_transaction': transaction,
+      'local_ts': DateTime.now().toIso8601String()
+    });
   }
 
   Future<Map<String, dynamic>> getPaymentCredentials() async {

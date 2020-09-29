@@ -295,7 +295,8 @@ class AppState extends ChangeNotifier {
     return updatedDebts;
   }
 
-  Future<CardPayment> cancelCardPayment(CardPayment cardPayment) async {
+  Future<CardPayment> cancelCardPayment(CardPayment cardPayment, Map<String, dynamic> transaction) async {
+    Debt paymentDebt = _debts.firstWhere((e) => e.orderId == cardPayment.orderId);
     CardPayment updatedCardPayment = CardPayment(
       id: cardPayment.id,
       buyerId: cardPayment.buyerId,
@@ -305,9 +306,21 @@ class AppState extends ChangeNotifier {
       transactionId: cardPayment.transactionId,
       canceled: 1
     );
+    Debt updatedDebt = Debt(
+      id: paymentDebt.id,
+      buyerId: paymentDebt.buyerId,
+      orderId: paymentDebt.orderId,
+      ndoc: paymentDebt.ndoc,
+      orderNdoc: paymentDebt.orderNdoc,
+      ddate: paymentDebt.ddate,
+      orderDdate: paymentDebt.ddate,
+      isCheck: paymentDebt.isCheck,
+      debtSum: paymentDebt.debtSum,
+      orderSum: paymentDebt.orderSum
+    );
 
     try {
-      await app.api.cancelCardPayment(updatedCardPayment);
+      await app.api.cancelCardPayment(updatedCardPayment, transaction);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -316,6 +329,7 @@ class AppState extends ChangeNotifier {
     }
 
     await updateCardPayment(updatedCardPayment);
+    await updateDebt(updatedDebt);
     notifyListeners();
 
     return updatedCardPayment;
