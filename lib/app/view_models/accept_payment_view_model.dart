@@ -21,7 +21,8 @@ enum AcceptPaymentState {
   SavingSignature,
   SavingPayment,
   Finished,
-  Failure
+  Failure,
+  Disconnected
 }
 
 class AcceptPaymentViewModel extends BaseViewModel {
@@ -124,6 +125,10 @@ class AcceptPaymentViewModel extends BaseViewModel {
       onError: (String error) {
         _setMessage(error);
         _setState(AcceptPaymentState.Failure);
+      },
+      onDisconnect: () {
+        _setMessage('Прервана связь с терминалом');
+        _setState(AcceptPaymentState.Disconnected);
       },
       onPaymentStart: (_) {
         _isCancelable = false;

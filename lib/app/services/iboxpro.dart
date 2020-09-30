@@ -75,15 +75,21 @@ class Iboxpro {
     @required double amount,
     @required String description,
     @required Function onError,
+    @required Function onDisconnect,
     @required Function onPaymentStart,
     @required Function onPaymentComplete,
   }) async {
+
     await PaymentController.startPayment(
       amount: amount,
       description: description,
       inputType: InputType.NFC,
       singleStepAuth: true,
-      onReaderEvent: (ReaderEvent res) {},
+      onReaderEvent: (ReaderEvent res) async {
+        if (res.type == ReaderEventType.Disconnected) {
+          onDisconnect.call();
+        }
+      },
       onPaymentStart: (String id) async {
         _transactionId = id;
         onPaymentStart.call(_transactionId);
@@ -127,6 +133,7 @@ class Iboxpro {
     @required double amount,
     @required String description,
     @required Function onError,
+    @required Function onDisconnect,
     @required Function onPaymentStart,
     @required Function onPaymentComplete,
   }) async {
@@ -138,7 +145,11 @@ class Iboxpro {
       description: description,
       inputType: InputType.NFC,
       singleStepAuth: true,
-      onReaderEvent: (ReaderEvent res) {},
+      onReaderEvent: (ReaderEvent res) async {
+        if (res.type == ReaderEventType.Disconnected) {
+          onDisconnect.call();
+        }
+      },
       onPaymentStart: (String id) async {
         _transactionId = id;
         onPaymentStart.call(_transactionId);
