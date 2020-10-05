@@ -271,7 +271,7 @@ class AppState extends ChangeNotifier {
       isCheck: e.isCheck,
       debtSum: e.debtSum,
       orderSum: e.orderSum,
-      paidSum: e.paymentSum,
+      paidSum: (e.paidSum ?? 0) + e.paymentSum,
       paymentSum: e.paymentSum
     )).toList();
 

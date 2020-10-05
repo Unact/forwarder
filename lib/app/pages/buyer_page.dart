@@ -247,6 +247,10 @@ class _BuyerPageState extends State<BuyerPage> {
     BuyerViewModel vm = Provider.of<BuyerViewModel>(context);
     TextEditingController controller = _controllers[debt.id];
 
+    if (debt.paymentSum == null) {
+      controller.text = '';
+    }
+
     return ListTile(
       dense: true,
       contentPadding: EdgeInsets.only(left: 8),
@@ -290,7 +294,7 @@ class _BuyerPageState extends State<BuyerPage> {
               text: 'Долг: ${Format.numberStr(debt.debtSum)}\n',
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
-            (vm.debtIsEditable(debt)) ? TextSpan() : TextSpan(
+            TextSpan(
               text: 'Оплачено: ${Format.numberStr(debt.paidSum)}\n',
               style: TextStyle(color: Colors.grey, fontSize: 12.0)
             ),

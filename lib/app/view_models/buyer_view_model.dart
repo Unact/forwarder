@@ -45,7 +45,7 @@ class BuyerViewModel extends BaseViewModel {
   double get cashPaymentsSum => cashPayments.fold(0, (sum, debt) => sum + debt.summ);
   double get cardPaymentsSum => cardPayments.fold(0, (sum, debt) => sum + debt.summ);
 
-  bool get isPayable => debts.any((e) => e.paymentSum != null && e.paidSum == null);
+  bool get isPayable => debts.any((e) => e.paymentSum != null);
 
   Future<void> updateDebtPaymentSum(Debt debt, double newValue) async {
     Debt updatedDebt = Debt(
@@ -68,10 +68,10 @@ class BuyerViewModel extends BaseViewModel {
     _setState(BuyerState.DebtChanged);
   }
 
-  bool debtIsEditable(Debt debt) => debt.paidSum == null;
+  bool debtIsEditable(Debt debt) => debt.debtSum > 0;
 
   void tryStartPayment(bool isCard) {
-    List<Debt> debtsToPay = debts.where((e) => e.paymentSum != null && e.paidSum == null).toList();
+    List<Debt> debtsToPay = debts.where((e) => e.paymentSum != null).toList();
     double paymentSumTotal = debtsToPay.fold(0, (sum, e) => sum + e.paymentSum);
     _debtsToPay = debtsToPay;
     _isCard = isCard;

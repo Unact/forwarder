@@ -126,6 +126,10 @@ class _DebtPageState extends State<DebtPage> {
   Widget _buildBody(BuildContext context) {
     DebtViewModel vm = Provider.of<DebtViewModel>(context);
 
+    if (vm.debt.paymentSum == null) {
+      _controller.text = '';
+    }
+
     return Column(
       children: [
         Padding(
@@ -135,13 +139,14 @@ class _DebtPageState extends State<DebtPage> {
               InfoRow(trailingFlex: 2, title: Text('Накладная'), trailing: Text(vm.debt.fullname)),
               InfoRow(title: Text('Сумма'), trailing: Text(Format.numberStr(vm.debt.orderSum))),
               InfoRow(title: Text('Долг'), trailing: Text(Format.numberStr(vm.debt.debtSum))),
+              InfoRow(title: Text('Оплачено'), trailing: Text(Format.numberStr(vm.debt.paidSum))),
               InfoRow(title: Text('Чек'), trailing: Text(vm.debt.needCheck ? 'Да' : 'Нет')),
               ListTile(
                 dense: true,
                 contentPadding: EdgeInsets.symmetric(horizontal: 8),
                 title: Text('Оплата', style: TextStyle(fontSize: 14.0)),
                 trailing: !vm.isEditable ?
-                  Text(Format.numberStr(vm.debt.paidSum), textAlign: TextAlign.end) :
+                  Container() :
                   GestureDetector(
                     child: SizedBox(
                       width: 104,

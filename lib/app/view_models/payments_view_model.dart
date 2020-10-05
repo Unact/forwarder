@@ -20,8 +20,20 @@ class PaymentsViewModel extends BaseViewModel {
   String get message => _message;
   CardPayment get cardPaymentToCancel => _cardPaymentToCancel;
 
-  List<CardPayment> get cardPayments => appState.cardPayments;
-  List<CashPayment> get cashPayments => appState.cashPayments;
+  List<CashPayment> get cashPayments => appState.cashPayments..sort((cashPayment1, cashPayment2) {
+    Buyer buyer1 = buyerForCashPayment(cashPayment1);
+    Buyer buyer2 = buyerForCashPayment(cashPayment2);
+    int ordCompare = buyer1.name.toLowerCase().compareTo(buyer2.name.toLowerCase());
+
+    return ordCompare == 0 ? cashPayment1.summ.compareTo(cashPayment2.summ) : ordCompare;
+  });
+  List<CardPayment> get cardPayments => appState.cardPayments..sort((cardPayment1, cardPayment2) {
+    Buyer buyer1 = buyerForCardPayment(cardPayment1);
+    Buyer buyer2 = buyerForCardPayment(cardPayment2);
+    int ordCompare = buyer1.name.toLowerCase().compareTo(buyer2.name.toLowerCase());
+
+    return ordCompare == 0 ? cardPayment1.summ.compareTo(cardPayment2.summ) : ordCompare;
+  });
 
   Buyer buyerForCardPayment(CardPayment cardPayment) => appState.buyers.firstWhere((e) => e.id == cardPayment.buyerId);
   Buyer buyerForCashPayment(CashPayment cashPayment) => appState.buyers.firstWhere((e) => e.id == cashPayment.buyerId);
