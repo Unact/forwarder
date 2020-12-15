@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/utils/format.dart';
 
 import 'package:forwarder/app/app_state.dart';
@@ -44,6 +45,13 @@ class OrderViewModel extends BaseViewModel {
 
     try {
       Location location = await GeoLoc.getCurrentLocation();
+
+      if (location == null) {
+        _setMessage(Strings.locationNotFound);
+        _setState(OrderState.DeliveryFailure);
+        return;
+      }
+
       order = await appState.deliveryOrder(order, _delivered, location);
 
       _setMessage('Информация о доставке сохранена');

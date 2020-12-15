@@ -81,9 +81,9 @@ class DebtViewModel extends BaseViewModel {
       ddate: debt.ddate,
       orderDdate: debt.ddate,
       isCheck: debt.isCheck,
-      debtSum: debt.debtSum,
+      debtSum: debt.debtSum - debt.paymentSum,
       orderSum: debt.orderSum,
-      paidSum: debt.paidSum + debt.paymentSum,
+      paidSum: (debt.paidSum ?? 0) + debt.paymentSum,
       paymentSum: null
     );
 

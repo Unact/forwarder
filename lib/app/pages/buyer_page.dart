@@ -34,11 +34,6 @@ class _BuyerPageState extends State<BuyerPage> {
 
     _buyerViewModel = context.read<BuyerViewModel>();
     _buyerViewModel.addListener(this.vmListener);
-
-    _controllers = Map.fromIterable(
-      _buyerViewModel.debts,
-      key: (e) => e.id, value: (e) => TextEditingController(text: e.paymentSum?.toString())
-    );
   }
 
   @override
@@ -246,6 +241,12 @@ class _BuyerPageState extends State<BuyerPage> {
   Widget _buildDebtTile(BuildContext context, Debt debt) {
     BuyerViewModel vm = Provider.of<BuyerViewModel>(context);
     TextEditingController controller = _controllers[debt.id];
+
+    if (controller == null) {
+      controller = TextEditingController(text: debt.paymentSum?.toString());
+
+      _controllers[debt.id] = controller;
+    }
 
     if (debt.paymentSum == null) {
       controller.text = '';

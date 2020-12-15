@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'package:forwarder/app/app_state.dart';
+import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/entities/entities.dart';
 import 'package:forwarder/app/services/iboxpro.dart';
 import 'package:forwarder/app/utils/geo_loc.dart';
@@ -27,6 +28,7 @@ enum AcceptPaymentState {
 
 class AcceptPaymentViewModel extends BaseViewModel {
   List<Debt> debts;
+  Location _location;
   String _message = 'Инициализация платежа';
   AcceptPaymentState _state = AcceptPaymentState.Initial;
   bool _canceled = false;
@@ -40,11 +42,7 @@ class AcceptPaymentViewModel extends BaseViewModel {
     @required this.debts,
     @required this.isCard
   }) : super(context: context) {
-    if (!isCard) {
-      _savePayment();
-    } else {
-      _connectToDevice();
-    }
+    _getLocation();
   }
 
   AcceptPaymentState get state => _state;
@@ -57,6 +55,22 @@ class AcceptPaymentViewModel extends BaseViewModel {
     'message': message,
     'debts': debts
   };
+
+  Future<void> _getLocation() async {
+    _location = await GeoLoc.getCurrentLocation();
+
+    if (_location == null) {
+      _setMessage(Strings.locationNotFound);
+      _setState(AcceptPaymentState.Failure);
+      return;
+    }
+
+    if (!isCard) {
+      _savePayment();
+    } else {
+      _connectToDevice();
+    }
+  }
 
   Future<void> cancelPayment() async {
     _canceled = true;
@@ -169,9 +183,8 @@ class AcceptPaymentViewModel extends BaseViewModel {
     _setMessage('Сохранение информации об оплате');
     _setState(AcceptPaymentState.SavingPayment);
 
-    Location location = await GeoLoc.getCurrentLocation();
     try {
-      debts = await appState.acceptPayment(debts, transaction, location);
+      debts = await appState.acceptPayment(debts, transaction, _location);
 
       _setMessage('Оплата успешно сохранена');
       _setState(AcceptPaymentState.Finished);
