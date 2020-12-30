@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forwarder/app/constants/strings.dart';
-import 'package:forwarder/app/utils/format.dart';
 
 import 'package:forwarder/app/app_state.dart';
 import 'package:forwarder/app/entities/entities.dart';

@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,14 +8,14 @@ import 'package:forwarder/app/repositories/cash_payment_repository.dart';
 import 'package:forwarder/app/repositories/debt_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:package_info/package_info.dart';
+import 'package:sentry_flutter/sentry_flutter.dart' as sentryLib;
 
+import 'package:forwarder/app/entities/entities.dart';
 import 'package:forwarder/app/repositories/repositories.dart';
 import 'package:forwarder/app/services/api.dart';
-import 'package:forwarder/app/services/sentry.dart';
 import 'package:forwarder/app/services/storage.dart';
 
 class App {
-  final Sentry sentry;
   final Api api;
   final bool isDebug;
   final String version;
@@ -31,7 +29,6 @@ class App {
   final UserRepository userRepo;
 
   App._({
-    @required this.sentry,
     @required this.api,
     @required this.isDebug,
     @required this.version,
@@ -54,10 +51,6 @@ class App {
     if (_instance != null)
       return _instance;
 
-    AndroidDeviceInfo androidDeviceInfo;
-    IosDeviceInfo iosDeviceInfo;
-    String osVersion;
-    String deviceModel;
     bool isDebug = false;
     assert(isDebug = true);
 
@@ -66,16 +59,6 @@ class App {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     await FlutterUserAgent.init();
     await DotEnv().load('.env');
-
-    if (Platform.isIOS) {
-      iosDeviceInfo = await DeviceInfoPlugin().iosInfo;
-      osVersion = iosDeviceInfo.systemVersion;
-      deviceModel = iosDeviceInfo.utsname.machine;
-    } else {
-      androidDeviceInfo = await DeviceInfoPlugin().androidInfo;
-      osVersion = androidDeviceInfo.version.release;
-      deviceModel = androidDeviceInfo.brand + ' - ' + androidDeviceInfo.model;
-    }
 
     String version = packageInfo.version;
     String buildNumber = packageInfo.buildNumber;
@@ -87,26 +70,11 @@ class App {
     DebtRepository debtRepo = DebtRepository(storage: storage);
     OrderRepository orderRepo = OrderRepository(storage: storage);
     UserRepository userRepo = UserRepository(storage: storage);
-    Sentry sentry = Sentry.init(
-      version: version,
-      osVersion: osVersion,
-      deviceModel: deviceModel,
-      dsn: DotEnv().env['SENTRY_DSN'],
-      userRepo: userRepo,
-      capture: !isDebug
-    );
     Api api = Api.init(repo: ApiDataRepository(storage: storage), version: version);
 
-    FlutterError.onError = (FlutterErrorDetails details) async {
-      if (isDebug) {
-        FlutterError.dumpErrorToConsole(details);
-      } else {
-        Zone.current.handleUncaughtError(details.exception, details.stack);
-      }
-    };
+    await _initSentry(dsn: DotEnv().env['SENTRY_DSN'], userRepo: userRepo, capture: !isDebug);
 
     return App._(
-      sentry: sentry,
       api: api,
       isDebug: isDebug,
       version: version,
@@ -124,6 +92,30 @@ class App {
   Future<void> reportError(dynamic error, dynamic stackTrace) async {
     print(error);
     print(stackTrace);
-    await sentry.captureException(error, stackTrace);
+    await sentryLib.Sentry.captureException(error, stackTrace: stackTrace);
+  }
+
+  static Future<void> _initSentry({
+    @required UserRepository userRepo,
+    @required String dsn,
+    @required bool capture
+  }) async {
+    if (!capture)
+      return;
+
+    await sentryLib.SentryFlutter.init(
+      (options) {
+        options.dsn = dsn;
+        options.beforeSend = (sentryLib.SentryEvent event, {dynamic hint}) {
+          User user = userRepo.getUser();
+
+          return event.copyWith(user: sentryLib.User(
+            id: user.id.toString(),
+            username: user.username,
+            email: user.email
+          ));
+        };
+      },
+    );
   }
 }
