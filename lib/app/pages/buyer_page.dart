@@ -17,15 +17,14 @@ import 'package:forwarder/app/view_models/order_view_model.dart';
 import 'package:forwarder/app/widgets/widgets.dart';
 
 class BuyerPage extends StatefulWidget {
-  BuyerPage({Key key}) : super(key: key);
+  BuyerPage({Key? key}) : super(key: key);
 
   @override
   _BuyerPageState createState() => _BuyerPageState();
 }
 
 class _BuyerPageState extends State<BuyerPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  BuyerViewModel _buyerViewModel;
+  late final BuyerViewModel _buyerViewModel;
   Map<int, TextEditingController> _controllers = {};
 
   @override
@@ -42,13 +41,13 @@ class _BuyerPageState extends State<BuyerPage> {
     super.dispose();
   }
 
-  String _validatePaymentSum(String value) {
-    double parsedValue = Nullify.parseDouble(value);
+  String? _validatePaymentSum(String value) {
+    double? parsedValue = Nullify.parseDouble(value);
 
     return value != '' && (parsedValue == null || parsedValue < 0 || parsedValue == 0) ? 'Некорректное значение' : null;
   }
 
-  Future<Map<String, dynamic>> showAcceptPaymentDialog() async {
+  Future<AcceptPaymentResult> showAcceptPaymentDialog() async {
     return await showDialog(
       context: context,
       builder: (_) => ChangeNotifierProvider<AcceptPaymentViewModel>(
@@ -76,26 +75,26 @@ class _BuyerPageState extends State<BuyerPage> {
           title: Text('Предупреждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
-            FlatButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
-            FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+            TextButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
+            TextButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
         )
       )
-    );
+    ) ?? false;
   }
 
   Future<void> vmListener() async {
     switch (_buyerViewModel.state) {
       case BuyerState.NeedUserConfirmation:
-        _buyerViewModel.confirmationCallback(await showConfirmationDialog(_buyerViewModel.message));
+        _buyerViewModel.confirmationCallback!(await showConfirmationDialog(_buyerViewModel.message!));
         break;
       case BuyerState.PaymentStarted:
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+        WidgetsBinding.instance!.addPostFrameCallback((_) async {
           _buyerViewModel.finishPayment(await showAcceptPaymentDialog());
         });
         break;
       case BuyerState.PaymentFinished:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_buyerViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_buyerViewModel.message!)));
         break;
       default:
     }
@@ -113,7 +112,6 @@ class _BuyerPageState extends State<BuyerPage> {
   Widget build(BuildContext context) {
     return Consumer<BuyerViewModel>(builder: (context, vm, _) {
       return Scaffold(
-        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Точка'),
         ),
@@ -135,17 +133,21 @@ class _BuyerPageState extends State<BuyerPage> {
     BuyerViewModel vm = Provider.of<BuyerViewModel>(context);
 
     return [
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: !vm.isPayable ? null : () => vm.tryStartPayment(false),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+        onPressed: !vm.isPayable ? null : () => vm.tryStartPayment(false),
       ),
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: !vm.isPayable ? null : () => vm.tryStartPayment(true),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        onPressed: !vm.isPayable ? null : () => vm.tryStartPayment(true),
       )
     ];
   }
@@ -240,7 +242,7 @@ class _BuyerPageState extends State<BuyerPage> {
 
   Widget _buildDebtTile(BuildContext context, Debt debt) {
     BuyerViewModel vm = Provider.of<BuyerViewModel>(context);
-    TextEditingController controller = _controllers[debt.id];
+    TextEditingController? controller = _controllers[debt.id];
 
     if (controller == null) {
       controller = TextEditingController(text: debt.paymentSum?.toString());
@@ -279,7 +281,7 @@ class _BuyerPageState extends State<BuyerPage> {
               )
           ),
           onHorizontalDragEnd: (_) {
-            controller.text = debt.debtSum.toString();
+            controller!.text = debt.debtSum.toString();
             vm.updateDebtPaymentSum(debt, debt.debtSum);
             unfocus();
           },

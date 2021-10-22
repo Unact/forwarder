@@ -28,7 +28,8 @@ enum AcceptPaymentState {
 
 class AcceptPaymentViewModel extends BaseViewModel {
   List<Debt> debts;
-  Location _location;
+  Location? _location;
+  bool success = false;
   String _message = 'Инициализация платежа';
   AcceptPaymentState _state = AcceptPaymentState.Initial;
   bool _canceled = false;
@@ -38,9 +39,9 @@ class AcceptPaymentViewModel extends BaseViewModel {
   Iboxpro iboxpro = Iboxpro();
 
   AcceptPaymentViewModel({
-    @required BuildContext context,
-    @required this.debts,
-    @required this.isCard
+    required BuildContext context,
+    required this.debts,
+    required this.isCard
   }) : super(context: context) {
     _getLocation();
   }
@@ -51,10 +52,7 @@ class AcceptPaymentViewModel extends BaseViewModel {
   bool get requiredSignature => _requiredSignature;
   bool get isCancelable => _isCancelable;
 
-  Map<String, dynamic> get result => {
-    'message': message,
-    'debts': debts
-  };
+  AcceptPaymentResult get result => AcceptPaymentResult(message: message, success: success);
 
   Future<void> _getLocation() async {
     _location = await GeoLoc.getCurrentLocation();
@@ -101,9 +99,9 @@ class AcceptPaymentViewModel extends BaseViewModel {
     _setState(AcceptPaymentState.GettingCredentials);
 
     try {
-      Map<String, dynamic> credentials = await appState.getPaymentCredentials();
+      PaymentCredentials credentials = await appState.getPaymentCredentials();
 
-      await _apiLogin(credentials['ibox_login'], credentials['ibox_password']);
+      await _apiLogin(credentials.login, credentials.password);
     } on AppError catch(e) {
       _setMessage(e.message);
       _setState(AcceptPaymentState.Failure);
@@ -134,7 +132,7 @@ class AcceptPaymentViewModel extends BaseViewModel {
     _setState(AcceptPaymentState.WaitingForPayment);
 
     await iboxpro.startPayment(
-      amount: debts.fold(0, (sum, e) => sum + e.paymentSum),
+      amount: debts.fold(0, (sum, e) => sum + e.paymentSum!),
       description: 'Оплата за заказ ${debts.map((debt) => debt.orderName).join(', ')}',
       onError: (String error) {
         _setMessage(error);
@@ -149,7 +147,7 @@ class AcceptPaymentViewModel extends BaseViewModel {
         _setMessage('Обработка оплаты');
         _setState(AcceptPaymentState.PaymentStarted);
       },
-      onPaymentComplete: (Map<dynamic, dynamic> transaction, bool requiredSignature) {
+      onPaymentComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
         _requiredSignature = requiredSignature;
         _setMessage('Подтверждение оплаты');
         _setState(AcceptPaymentState.PaymentFinished);
@@ -179,13 +177,14 @@ class AcceptPaymentViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> _savePayment([Map<dynamic, dynamic> transaction]) async {
+  Future<void> _savePayment([Map<String, dynamic>? transaction]) async {
     _setMessage('Сохранение информации об оплате');
     _setState(AcceptPaymentState.SavingPayment);
 
     try {
-      debts = await appState.acceptPayment(debts, transaction, _location);
+      await appState.acceptPayment(debts, transaction, _location!);
 
+      success = true;
       _setMessage('Оплата успешно сохранена');
       _setState(AcceptPaymentState.Finished);
     } on AppError catch(e) {

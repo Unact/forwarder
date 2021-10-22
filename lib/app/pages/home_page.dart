@@ -3,15 +3,17 @@ import 'package:provider/provider.dart';
 
 import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/pages/buyers_page.dart';
+import 'package:forwarder/app/pages/history_page.dart';
 import 'package:forwarder/app/pages/info_page.dart';
 import 'package:forwarder/app/pages/payments_page.dart';
 import 'package:forwarder/app/view_models/buyers_view_model.dart';
+import 'package:forwarder/app/view_models/history_view_model.dart';
 import 'package:forwarder/app/view_models/home_view_model.dart';
 import 'package:forwarder/app/view_models/info_view_model.dart';
 import 'package:forwarder/app/view_models/payments_view_model.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +25,14 @@ class HomePage extends StatelessWidget {
             providers: [
               ChangeNotifierProvider<InfoViewModel>(create: (context) => InfoViewModel(context: context)),
               ChangeNotifierProvider<BuyersViewModel>(create: (context) => BuyersViewModel(context: context)),
-              ChangeNotifierProvider<PaymentsViewModel>(create: (context) => PaymentsViewModel(context: context))
+              ChangeNotifierProvider<PaymentsViewModel>(create: (context) => PaymentsViewModel(context: context)),
+              ChangeNotifierProvider<HistoryViewModel>(create: (context) => HistoryViewModel(context: context))
             ],
             child: [
               InfoPage(),
               BuyersPage(),
-              PaymentsPage()
+              PaymentsPage(),
+              HistoryPage()
             ][vm.currentIndex]
           )
         );
@@ -40,6 +44,7 @@ class HomePage extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: vm.currentIndex,
       onTap: vm.setCurrentIndex,
+      type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
@@ -52,6 +57,10 @@ class HomePage extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.payment),
           label: Strings.paymentsPageName
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: Strings.historyPageName
         )
       ],
     );

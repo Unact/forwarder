@@ -8,6 +8,7 @@ class Strings {
   static const infoPageName = 'Главная';
   static const buyersPageName = 'Точки';
   static const paymentsPageName = 'Оплаты';
+  static const historyPageName = 'Касса';
 
   static const genericErrorMsg = 'Произошла непредвиденная ошибка';
   static const locationNotFound = 'Не удалось определить местоположение';

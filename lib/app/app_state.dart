@@ -4,7 +4,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:forwarder/app/app.dart';
 import 'package:forwarder/app/constants/strings.dart';
 import 'package:forwarder/app/entities/entities.dart';
+import 'package:forwarder/app/repositories/repositories.dart';
 import 'package:forwarder/app/services/api.dart';
+import 'package:forwarder/app/services/storage.dart';
 
 class AppError implements Exception {
   final String message;
@@ -14,27 +16,50 @@ class AppError implements Exception {
 
 class AppState extends ChangeNotifier {
   final App app;
-  AppData _appData;
+  late AppData _appData;
+  late User _user;
   List<Buyer> _buyers = [];
   List<CardPayment> _cardPayments = [];
   List<CashPayment> _cashPayments = [];
   List<Debt> _debts = [];
   List<Order> _orders = [];
+  List<Income> _incomes = [];
+  List<Recept> _recepts = [];
 
-  User _user;
-
-  String get fullVersion => app.version + '+' + app.buildNumber;
+  final Api api;
+  final AppDataRepository appDataRepo;
+  final BuyerRepository buyerRepo;
+  final CardPaymentRepository cardPaymentRepo;
+  final CashPaymentRepository cashPaymentRepo;
+  final DebtRepository debtRepo;
+  final OrderRepository orderRepo;
+  final UserRepository userRepo;
+  final IncomeRepository incomeRepo;
+  final ReceptRepository receptRepo;
 
   bool get newVersionAvailable {
     String currentVersion = app.version;
-    String remoteVersion = user.version;
+    String? remoteVersion = user.version;
 
     return remoteVersion != null && Version.parse(remoteVersion) > Version.parse(currentVersion);
   }
 
-  AppState({@required this.app}) {
-    _appData = app.appDataRepo.getAppData();
-    _user = app.userRepo.getUser();
+  String get fullVersion => app.version + '+' + app.buildNumber;
+
+  AppState({required this.app}) :
+    api = Api.instance!,
+    appDataRepo = AppDataRepository(storage: Storage.instance!),
+    buyerRepo = BuyerRepository(storage: Storage.instance!),
+    cardPaymentRepo = CardPaymentRepository(storage: Storage.instance!),
+    cashPaymentRepo = CashPaymentRepository(storage: Storage.instance!),
+    debtRepo = DebtRepository(storage: Storage.instance!),
+    orderRepo = OrderRepository(storage: Storage.instance!),
+    userRepo = UserRepository(storage: Storage.instance!),
+    incomeRepo = IncomeRepository(storage: Storage.instance!),
+    receptRepo = ReceptRepository(storage: Storage.instance!)
+  {
+    _appData = appDataRepo.getAppData();
+    _user = userRepo.getUser();
 
     loadData();
   }
@@ -45,14 +70,16 @@ class AppState extends ChangeNotifier {
   List<CashPayment> get cashPayments => _cashPayments;
   List<Debt> get debts => _debts;
   List<Order> get orders => _orders;
+  List<Income> get incomes => _incomes;
+  List<Recept> get recepts => _recepts;
   User get user => _user;
 
   Future<void> loadData() async {
-    _buyers = await app.buyerRepo.getBuyers();
-    _cardPayments= await app.cardPaymentRepo.getCardPayments();
-    _cashPayments= await app.cashPaymentRepo.getCashPayments();
-    _debts = await app.debtRepo.getDebts();
-    _orders = await app.orderRepo.getOrders();
+    _buyers = await buyerRepo.getBuyers();
+    _cardPayments= await cardPaymentRepo.getCardPayments();
+    _cashPayments= await cashPaymentRepo.getCashPayments();
+    _debts = await debtRepo.getDebts();
+    _orders = await orderRepo.getOrders();
 
     notifyListeners();
   }
@@ -61,13 +88,15 @@ class AppState extends ChangeNotifier {
     await loadUserData();
 
     try {
-      dynamic data = await app.api.getData();
+      GetDataResponse data = await api.getData();
 
-      await _setBuyers(data['buyers']);
-      await _setCardPayments(data['cardPayments']);
-      await _setCashPayments(data['cashPayments']);
-      await _setDebts(data['debts']);
-      await _setOrders(data['orders']);
+      await _setBuyers(data.buyers);
+      await _setCardPayments(data.cardPayments);
+      await _setCashPayments(data.cashPayments);
+      await _setDebts(data.debts);
+      await _setOrders(data.orders);
+      await _setIncomes(data.incomes);
+      await _setRecepts(data.recepts);
 
       await _setAppData(AppData(lastSyncTime: DateTime.now()));
     } on ApiException catch(e) {
@@ -87,63 +116,75 @@ class AppState extends ChangeNotifier {
     await _setCashPayments([]);
     await _setDebts([]);
     await _setOrders([]);
+    await _setIncomes([]);
+    await _setRecepts([]);
     await _setAppData(AppData());
 
     notifyListeners();
   }
 
   Future<void> _setAppData(AppData appData) async {
-    await app.appDataRepo.setAppData(appData);
+    await appDataRepo.setAppData(appData);
     _appData = appData;
   }
 
   Future<void> _setBuyers(List<Buyer> buyers) async {
     _buyers = buyers;
-    await app.buyerRepo.reloadBuyers(buyers);
+    await buyerRepo.reloadBuyers(buyers);
   }
 
   Future<void> _setCardPayments(List<CardPayment> cardPayments) async {
     _cardPayments = cardPayments;
-    await app.cardPaymentRepo.reloadCardPayments(cardPayments);
+    await cardPaymentRepo.reloadCardPayments(cardPayments);
   }
 
   Future<void> updateCardPayment(CardPayment updatedCardPayment) async {
     _cardPayments.removeWhere((e) => e.id == updatedCardPayment.id);
     _cardPayments.add(updatedCardPayment);
-    await app.cardPaymentRepo.updateCardPayment(updatedCardPayment);
+    await cardPaymentRepo.updateCardPayment(updatedCardPayment);
   }
 
   Future<void> _setCashPayments(List<CashPayment> cashPayments) async {
     _cashPayments = cashPayments;
-    await app.cashPaymentRepo.reloadCashPayments(cashPayments);
+    await cashPaymentRepo.reloadCashPayments(cashPayments);
   }
 
   Future<void> _setOrders(List<Order> orders) async {
     _orders = orders;
-    await app.orderRepo.reloadOrders(orders);
+    await orderRepo.reloadOrders(orders);
+  }
+
+  Future<void> _setIncomes(List<Income> incomes) async {
+    _incomes = incomes;
+    await incomeRepo.reloadIncomes(incomes);
+  }
+
+  Future<void> _setRecepts(List<Recept> recepts) async {
+    _recepts = recepts;
+    await receptRepo.reloadRecepts(recepts);
   }
 
   Future<void> updateOrder(Order updatedOrder) async {
     _orders.removeWhere((e) => e.id == updatedOrder.id);
     _orders.add(updatedOrder);
-    await app.orderRepo.updateOrder(updatedOrder);
+    await orderRepo.updateOrder(updatedOrder);
   }
 
   Future<void> _setDebts(List<Debt> debts) async {
     _debts = debts;
-    await app.debtRepo.reloadDebts(debts);
+    await debtRepo.reloadDebts(debts);
   }
 
   Future<void> updateDebt(Debt updatedDebt) async {
     _debts.removeWhere((e) => e.id == updatedDebt.id);
     _debts.add(updatedDebt);
-    await app.debtRepo.updateDebt(updatedDebt);
+    await debtRepo.updateDebt(updatedDebt);
   }
 
   Future<void> loadUserData() async {
     try {
-      User user = await app.api.getUserData();
-      await app.userRepo.setUser(user);
+      User user = (await api.getUserData()).user;
+      await userRepo.setUser(user);
       _user = user;
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
@@ -156,13 +197,13 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> deleteUser() async {
-    _user = await app.userRepo.resetUser();
+    _user = await userRepo.resetUser();
     notifyListeners();
   }
 
   Future<void> login(String url, String login, String password) async {
     try {
-      await app.api.login(url, login, password);
+      await api.login(url, login, password);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -175,7 +216,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> logout() async {
     try {
-      await app.api.logout();
+      await api.logout();
       await clearData();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
@@ -187,7 +228,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> resetPassword(String url, String login) async {
     try {
-      await app.api.resetPassword(url, login);
+      await api.resetPassword(url, login);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -207,8 +248,8 @@ class AppState extends ChangeNotifier {
         closed: !_user.closed
       );
 
-      await app.api.closeDay(updatedUser.closed);
-      await app.userRepo.setUser(updatedUser);
+      await api.closeDay(updatedUser.closed);
+      await userRepo.setUser(updatedUser);
       _user = updatedUser;
 
       notifyListeners();
@@ -234,7 +275,7 @@ class AppState extends ChangeNotifier {
     );
 
     try {
-      await app.api.deliverOrder(updatedOrder, location);
+      await api.deliverOrder(updatedOrder, location);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -248,9 +289,9 @@ class AppState extends ChangeNotifier {
     return updatedOrder;
   }
 
-  Future<Map<String, dynamic>> getPaymentCredentials() async {
+  Future<PaymentCredentials> getPaymentCredentials() async {
     try {
-      return await app.api.getPaymentCredentials();
+      return (await api.getPaymentCredentials()).paymentCredentials;
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -259,7 +300,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  Future<List<Debt>> acceptPayment(List<Debt> debts, Map<String, dynamic> transaction, Location location) async {
+  Future<void> acceptPayment(List<Debt> debts, Map<String, dynamic>? transaction, Location location) async {
     List<Debt> updatedDebts = debts.map((e) => Debt(
       id: e.id,
       buyerId: e.buyerId,
@@ -271,16 +312,13 @@ class AppState extends ChangeNotifier {
       isCheck: e.isCheck,
       debtSum: e.debtSum,
       orderSum: e.orderSum,
-      paidSum: (e.paidSum ?? 0) + e.paymentSum,
+      paidSum: (e.paidSum ?? 0) + e.paymentSum!,
       paymentSum: e.paymentSum
     )).toList();
 
     try {
-      await app.api.acceptPayment(updatedDebts, transaction, location);
+      await api.acceptPayment(updatedDebts, transaction, location);
       await getData();
-      updatedDebts = updatedDebts.
-        map((e) => _debts.firstWhere((debt) => debt.id == e.id, orElse: () => null)).
-        where((e) => e != null).toList();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } on AppError {
@@ -291,8 +329,6 @@ class AppState extends ChangeNotifier {
     }
 
     notifyListeners();
-
-    return updatedDebts;
   }
 
   Future<CardPayment> cancelCardPayment(CardPayment cardPayment, Map<String, dynamic> transaction) async {
@@ -320,7 +356,7 @@ class AppState extends ChangeNotifier {
     );
 
     try {
-      await app.api.cancelCardPayment(updatedCardPayment, transaction);
+      await api.cancelCardPayment(updatedCardPayment, transaction);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {

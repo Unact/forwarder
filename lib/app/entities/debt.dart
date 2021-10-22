@@ -14,20 +14,20 @@ class Debt extends Equatable {
   final int isCheck;
   final double debtSum;
   final double orderSum;
-  final double paidSum;
-  final double paymentSum;
+  final double? paidSum;
+  final double? paymentSum;
 
   const Debt({
-    this.id,
-    this.buyerId,
-    this.orderId,
-    this.ndoc,
-    this.orderNdoc,
-    this.ddate,
-    this.orderDdate,
-    this.isCheck,
-    this.debtSum,
-    this.orderSum,
+    required this.id,
+    required this.buyerId,
+    required this.orderId,
+    required this.ndoc,
+    required this.orderNdoc,
+    required this.ddate,
+    required this.orderDdate,
+    required this.isCheck,
+    required this.debtSum,
+    required this.orderSum,
     this.paidSum,
     this.paymentSum
   });
@@ -37,7 +37,7 @@ class Debt extends Equatable {
   String get fullname => ndoc + ' от ' + Format.dateStr(ddate) + ' (' + orderNdoc + ')';
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     id,
     buyerId,
     orderId,
@@ -52,18 +52,18 @@ class Debt extends Equatable {
     paymentSum
   ];
 
-  static Debt fromJson(dynamic json) {
+  factory Debt.fromJson(dynamic json) {
     return Debt(
       id: json['id'],
       buyerId: json['buyerId'],
       orderId: json['orderId'],
       ndoc: json['ndoc'],
       orderNdoc: json['orderNdoc'],
-      ddate: Nullify.parseDate(json['ddate']),
-      orderDdate: Nullify.parseDate(json['orderDdate']),
+      ddate: Nullify.parseDate(json['ddate'])!,
+      orderDdate: Nullify.parseDate(json['orderDdate'])!,
       isCheck: json['isCheck'],
-      debtSum: Nullify.parseDouble(json['debtSum']),
-      orderSum: Nullify.parseDouble(json['orderSum']),
+      debtSum: Nullify.parseDouble(json['debtSum'])!,
+      orderSum: Nullify.parseDouble(json['orderSum'])!,
       paidSum: Nullify.parseDouble(json['paidSum']),
       paymentSum: Nullify.parseDouble(json['paymentSum']),
     );
@@ -76,8 +76,8 @@ class Debt extends Equatable {
       'orderId': orderId,
       'ndoc': ndoc,
       'orderNdoc': orderNdoc,
-      'ddate': ddate?.toIso8601String(),
-      'orderDdate': orderDdate?.toIso8601String(),
+      'ddate': ddate.toIso8601String(),
+      'orderDdate': orderDdate.toIso8601String(),
       'isCheck': isCheck,
       'debtSum': debtSum,
       'orderSum': orderSum,

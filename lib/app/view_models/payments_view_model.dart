@@ -11,14 +11,14 @@ enum PaymentsState {
 
 class PaymentsViewModel extends BaseViewModel {
   PaymentsState _state = PaymentsState.Initial;
-  String _message;
-  CardPayment _cardPaymentToCancel;
+  String? _message;
+  CardPayment? _cardPaymentToCancel;
 
-  PaymentsViewModel({@required BuildContext context}) : super(context: context);
+  PaymentsViewModel({required BuildContext context}) : super(context: context);
 
   PaymentsState get state => _state;
-  String get message => _message;
-  CardPayment get cardPaymentToCancel => _cardPaymentToCancel;
+  String? get message => _message;
+  CardPayment? get cardPaymentToCancel => _cardPaymentToCancel;
 
   List<CashPayment> get cashPayments => appState.cashPayments..sort((cashPayment1, cashPayment2) {
     Buyer buyer1 = buyerForCashPayment(cashPayment1);

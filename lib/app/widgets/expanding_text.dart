@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class ExpandingText extends StatefulWidget {
   final String content;
-  final TextStyle style;
+  final TextStyle? style;
   final TextAlign textAlign;
   final int limit;
 
   ExpandingText(this.content, {
-    Key key,
+    Key? key,
     this.style,
-    this.textAlign,
+    this.textAlign = TextAlign.right,
     this.limit = 40
   }) : super(key: key);
 
@@ -24,7 +24,7 @@ class _ExpandingTextState extends State<ExpandingText> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: RichText(
-        textAlign: widget.textAlign ?? TextAlign.right,
+        textAlign: widget.textAlign,
         text: TextSpan(
           children: [
             TextSpan(

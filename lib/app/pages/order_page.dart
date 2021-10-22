@@ -9,19 +9,18 @@ import 'package:forwarder/app/view_models/order_view_model.dart';
 import 'package:forwarder/app/widgets/widgets.dart';
 
 class OrderPage extends StatefulWidget {
-  OrderPage({Key key}) : super(key: key);
+  OrderPage({Key? key}) : super(key: key);
 
   @override
   _OrderPageState createState() => _OrderPageState();
 }
 
 class _OrderPageState extends State<OrderPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextStyle firstColumnTextStyle = TextStyle(color: Colors.blue);
   final EdgeInsets firstColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
-  OrderViewModel _orderViewModel;
+  late final OrderViewModel _orderViewModel;
   Completer<void> _dialogCompleter = Completer();
 
   @override
@@ -66,12 +65,12 @@ class _OrderPageState extends State<OrderPage> {
           title: Text('Подтверждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
-            FlatButton(child: Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
-            FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+            TextButton(child: Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
+            TextButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
         )
       )
-    );
+    ) ?? false;
   }
 
   Future<void> vmListener() async {
@@ -80,12 +79,12 @@ class _OrderPageState extends State<OrderPage> {
         openDialog();
         break;
       case OrderState.NeedUserConfirmation:
-        _orderViewModel.confirmationCallback(await showConfirmationDialog(_orderViewModel.message));
+        _orderViewModel.confirmationCallback!(await showConfirmationDialog(_orderViewModel.message!));
         break;
       case OrderState.DeliveryFinished:
       case OrderState.DeliveryFailure:
         closeDialog();
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_orderViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_orderViewModel.message!)));
         break;
       default:
     }
@@ -103,7 +102,6 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Consumer<OrderViewModel>(builder: (context, vm, _) {
       return Scaffold(
-        key: _scaffoldKey,
         persistentFooterButtons: _buildPayButtons(context),
         appBar: AppBar(
           title: Text('Заказ'),
@@ -143,18 +141,22 @@ class _OrderPageState extends State<OrderPage> {
     OrderViewModel vm = Provider.of<OrderViewModel>(context);
 
     return [
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: vm.isEditable ? () => vm.tryDeliverOrder(true) : null,
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Доставлен', style: TextStyle(color: Colors.white)),
+        onPressed: vm.isEditable ? () => vm.tryDeliverOrder(true) : null,
       ),
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: vm.isEditable ? () => vm.tryDeliverOrder(false) : null,
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Не доставлен', style: TextStyle(color: Colors.white)),
-      )
+        onPressed: vm.isEditable ? () => vm.tryDeliverOrder(false) : null,
+      ),
     ];
   }
 }

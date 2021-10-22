@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 
 import 'package:forwarder/app/constants/strings.dart';
@@ -9,18 +8,18 @@ import 'package:forwarder/app/pages/person_page.dart';
 import 'package:forwarder/app/utils/format.dart';
 import 'package:forwarder/app/view_models/info_view_model.dart';
 import 'package:forwarder/app/view_models/person_view_model.dart';
+import 'package:forwarder/app/widgets/widgets.dart';
 
 class InfoPage extends StatefulWidget {
-  InfoPage({Key key}) : super(key: key);
+  InfoPage({Key? key}) : super(key: key);
 
   @override
   _InfoPageState createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  InfoViewModel _infoViewModel;
+  late final InfoViewModel _infoViewModel;
   Completer<void> _refresherCompleter = Completer();
   Completer<void> _dialogCompleter = Completer();
 
@@ -29,9 +28,8 @@ class _InfoPageState extends State<InfoPage> {
   void initState() {
     super.initState();
 
-    _infoViewModel = context.read<InfoViewModel>();
-    _infoViewModel.addListener(this.vmListener);
-
+     _infoViewModel = context.read<InfoViewModel>();
+     _infoViewModel.addListener(this.vmListener);
     if (_infoViewModel.needRefresh) openRefresher();
   }
 
@@ -42,8 +40,8 @@ class _InfoPageState extends State<InfoPage> {
   }
 
   Future<void> openRefresher() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshIndicatorKey.currentState.show();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState!.show();
     });
   }
 
@@ -79,12 +77,12 @@ class _InfoPageState extends State<InfoPage> {
       case InfoState.ReverseFailure:
       case InfoState.ReverseSuccess:
         closeDialog();
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_infoViewModel.message!)));
 
         break;
       case InfoState.Failure:
       case InfoState.DataLoaded:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_infoViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_infoViewModel.message!)));
         closeRefresher();
 
         break;
@@ -95,7 +93,6 @@ class _InfoPageState extends State<InfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(Strings.ruAppName),
         actions: <Widget>[
@@ -150,13 +147,14 @@ class _InfoPageState extends State<InfoPage> {
           isThreeLine: true,
           title: Text(Strings.buyersPageName),
           subtitle: _buildDebtsCard(context),
-          trailing: RaisedButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          trailing: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+              primary: Colors.blue
+            ),
             child: Text('${vm.closed ? 'Открыть' : 'Закрыть'} день'),
-            textColor: Colors.white,
-            color: Colors.blue,
             onPressed: vm.reverseDay
-          ),
+          )
         ),
       ),
       Card(
@@ -167,8 +165,30 @@ class _InfoPageState extends State<InfoPage> {
           subtitle: _buildPaymentsCard(context),
         ),
       ),
+      _buildHistoryCard(context),
       _buildInfoCard(context),
     ];
+  }
+
+  Widget _buildHistoryCard(BuildContext context) {
+    InfoViewModel vm = Provider.of<InfoViewModel>(context);
+
+    return Card(
+      child: ListTile(
+        onTap: () => vm.changePage(3),
+        isThreeLine: true,
+        title: Text(Strings.historyPageName),
+        subtitle: RichText(
+          text: TextSpan(
+            style: TextStyle(color: Colors.grey),
+            children: <TextSpan>[
+              TextSpan(text: 'Номер вносителя: ${vm.salesmanNum}\n', style: TextStyle(fontSize: 12.0)),
+              TextSpan(text: 'Остаток в кассе: ${Format.numberStr(vm.total)}\n', style: TextStyle(fontSize: 12.0))
+            ]
+          )
+        )
+      ),
+    );
   }
 
   Widget _buildDebtsCard(BuildContext context) {

@@ -7,14 +7,13 @@ import 'package:forwarder/app/view_models/person_view_model.dart';
 import 'package:forwarder/app/widgets/widgets.dart';
 
 class PersonPage extends StatefulWidget {
-  const PersonPage({Key key}) : super(key: key);
+  const PersonPage({Key? key}) : super(key: key);
 
   _PersonPageState createState() => _PersonPageState();
 }
 
 class _PersonPageState extends State<PersonPage> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  PersonViewModel _personViewModel;
+  late final PersonViewModel _personViewModel;
   Completer<void> _dialogCompleter = Completer();
 
   @override
@@ -55,12 +54,12 @@ class _PersonPageState extends State<PersonPage> {
         openDialog();
         break;
       case PersonState.Failure:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_personViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_personViewModel.message!)));
         closeDialog();
         break;
       case PersonState.LoggedOut:
         closeDialog();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
           Navigator.of(context).pop();
         });
         break;
@@ -98,12 +97,13 @@ class _PersonPageState extends State<PersonPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                  primary: Colors.blueAccent
+                ),
                 child: Text('Обновить приложение'),
-                onPressed: vm.launchAppUpdate,
-                color: Colors.blueAccent,
-                textColor: Colors.white,
+                onPressed: vm.apiLogout,
               )
             ],
           )
@@ -114,12 +114,14 @@ class _PersonPageState extends State<PersonPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
-                color: Colors.red,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                onPressed: vm.apiLogout,
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                  primary: Colors.red
+                ),
                 child: Text('Выйти', style: TextStyle(color: Colors.white)),
-              ),
+                onPressed: vm.apiLogout,
+              )
             ]
           )
         )

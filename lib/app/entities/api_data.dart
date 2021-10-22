@@ -1,17 +1,28 @@
 import 'package:equatable/equatable.dart';
 
 class ApiData extends Equatable {
-  final String login;
-  final String password;
-  final String token;
-  final String url;
+  final String? login;
+  final String? url;
+  final String? password;
+  final String? token;
 
-  const ApiData({this.login, this.password, this.token, this.url});
+  const ApiData({
+    this.login,
+    this.password,
+    this.url,
+
+    this.token
+  });
 
   @override
-  List<Object> get props => [login, password, token, url];
+  List<Object?> get props => [
+    login,
+    url,
+    password,
+    token
+  ];
 
-  static ApiData fromJson(dynamic json) {
+  factory ApiData.fromJson(dynamic json) {
     return ApiData(
       login: json['login'],
       password: json['password'],
@@ -20,7 +31,7 @@ class ApiData extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     return {
       'login': login,
       'password': password,

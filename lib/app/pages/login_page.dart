@@ -6,15 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:forwarder/app/view_models/login_view_model.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  LoginViewModel _loginViewModel;
+  late final LoginViewModel _loginViewModel;
   Completer<void> _dialogCompleter = Completer();
 
   @override
@@ -56,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
         break;
       case LoginState.Failure:
       case LoginState.PasswordSent:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_loginViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_loginViewModel.message!)));
         closeDialog();
         break;
       case LoginState.LoggedIn:
@@ -77,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Войти в приложение'),
         automaticallyImplyLeading: false,
@@ -142,32 +140,34 @@ class _LoginPageState extends State<LoginPage> {
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
                 child: Container(
                   width: 160,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                      primary: Colors.blueAccent
+                    ),
+                    child: Text('Войти'),
                     onPressed: () {
                       unfocus();
                       vm.apiLogin();
                     },
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
-                    child: Text('Войти'),
-                  ),
+                  )
                 )
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
                 child: Container(
                   width: 160,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                      primary: Colors.blueAccent
+                    ),
+                    child: Text('Получить пароль', textAlign: TextAlign.center,),
                     onPressed: () {
                       unfocus();
                       vm.getNewPassword();
                     },
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
-                    child: Text('Получить пароль', textAlign: TextAlign.center,),
-                  ),
+                  )
                 )
               ),
             ],

@@ -16,21 +16,21 @@ enum PersonState {
 }
 
 class PersonViewModel extends BaseViewModel {
-  String _message;
+  String? _message;
   PersonState _state = PersonState.Initial;
 
-  PersonViewModel({@required BuildContext context}) : super(context: context);
+  PersonViewModel({required BuildContext context}) : super(context: context);
 
   PersonState get state => _state;
-  String get message => _message;
+  String? get message => _message;
 
   String get lastSyncTime {
-    DateTime lastSyncTime = appState.appData.lastSyncTime;
+    DateTime? lastSyncTime = appState.appData.lastSyncTime;
 
     return lastSyncTime != null ? Format.dateTimeStr(lastSyncTime) : 'Не проводилось';
   }
 
-  String get username => appState.user.username ?? '';
+  String get username => appState.user.username;
   String get salesmanName => appState.user.salesmanName ?? '';
   String get fullVersion => appState.fullVersion;
   bool get newVersionAvailable => appState.newVersionAvailable;

@@ -20,11 +20,11 @@ enum InfoState {
 class InfoViewModel extends BaseViewModel {
   HomeViewModel _homeViewModel;
   InfoState _state = InfoState.Initial;
-  String _message;
+  String? _message;
 
-  InfoViewModel({@required BuildContext context}) : super(context: context) {
-    _homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
-  }
+  InfoViewModel({required BuildContext context}) :
+    _homeViewModel = Provider.of<HomeViewModel>(context, listen: false),
+    super(context: context);
 
   bool get needRefresh {
     if (_state == InfoState.InProgress)
@@ -33,17 +33,19 @@ class InfoViewModel extends BaseViewModel {
     if (appState.appData.lastSyncTime == null)
       return true;
 
-    DateTime lastAttempt = appState.appData.lastSyncTime;
+    DateTime lastAttempt = appState.appData.lastSyncTime!;
     DateTime time = DateTime.now();
 
     return lastAttempt.year != time.year || lastAttempt.month != time.month || lastAttempt.day != time.day;
   }
 
   InfoState get state => _state;
-  String get message => _message;
+  String? get message => _message;
 
   bool get newVersionAvailable => appState.newVersionAvailable;
   bool get closed => appState.user.closed;
+  double get total => appState.user.total!;
+  String get salesmanNum => appState.user.salesmanNum ?? 'Не удалось опредилить';
   int get buyersCnt => appState.buyers.length;
   int get ordersCnt => appState.orders.length;
   int get incCnt => appState.orders.where((order) => order.isInc).length +
@@ -60,7 +62,7 @@ class InfoViewModel extends BaseViewModel {
   Future<void> getData() async {
     _setState(InfoState.InProgress);
 
-    Location location = await GeoLoc.getCurrentLocation();
+    Location? location = await GeoLoc.getCurrentLocation();
 
     if (location == null) {
       _setMessage('Для работы с приложением необходимо разрешить определение местоположения');

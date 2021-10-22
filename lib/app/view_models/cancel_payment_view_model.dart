@@ -30,13 +30,12 @@ class CancelPaymentViewModel extends BaseViewModel {
   CancelPaymentState _state = CancelPaymentState.Initial;
   bool _canceled = false;
   bool _isCancelable = false;
-  bool isCard;
   bool _requiredSignature = false;
   Iboxpro iboxpro = Iboxpro();
 
   CancelPaymentViewModel({
-    @required BuildContext context,
-    @required this.cardPayment
+    required BuildContext context,
+    required this.cardPayment
   }) : super(context: context) {
     _connectToDevice();
   }
@@ -76,9 +75,9 @@ class CancelPaymentViewModel extends BaseViewModel {
     _setState(CancelPaymentState.GettingCredentials);
 
     try {
-      Map<String, dynamic> credentials = await appState.getPaymentCredentials();
+      PaymentCredentials credentials = await appState.getPaymentCredentials();
 
-      await _apiLogin(credentials['ibox_login'], credentials['ibox_password']);
+      await _apiLogin(credentials.login, credentials.password);
     } on AppError catch(e) {
       _setMessage(e.message);
       _setState(CancelPaymentState.Failure);
@@ -109,7 +108,7 @@ class CancelPaymentViewModel extends BaseViewModel {
     _setState(CancelPaymentState.WaitingForPayment);
 
     await iboxpro.startReversePayment(
-      id: cardPayment.transactionId,
+      id: cardPayment.transactionId!,
       amount: cardPayment.summ,
       description: 'Отмена заказа',
       onError: (String error) {
@@ -125,7 +124,7 @@ class CancelPaymentViewModel extends BaseViewModel {
         _setMessage('Обработка отмены');
         _setState(CancelPaymentState.PaymentStarted);
       },
-      onPaymentComplete: (Map<dynamic, dynamic> transaction, bool requiredSignature) {
+      onPaymentComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
         _requiredSignature = requiredSignature;
         _setMessage('Подтверждение отмены');
         _setState(CancelPaymentState.PaymentFinished);
@@ -155,7 +154,7 @@ class CancelPaymentViewModel extends BaseViewModel {
     );
   }
 
-  Future<void> _savePayment(Map<dynamic, dynamic> transaction) async {
+  Future<void> _savePayment(Map<String, dynamic> transaction) async {
     _setMessage('Сохранение информации об отмене');
     _setState(CancelPaymentState.SavingPayment);
 

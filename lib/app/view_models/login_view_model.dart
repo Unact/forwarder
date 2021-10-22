@@ -16,13 +16,13 @@ enum LoginState {
 
 class LoginViewModel extends BaseViewModel {
   LoginState _state = LoginState.Initial;
-  String _message;
-  String _login;
-  String _password;
-  String _url;
+  String? _message;
+  String? _login;
+  String? _password;
+  late String _url;
   bool _showUrl = false;
 
-  LoginViewModel({@required BuildContext context}) : super(context: context) {
+  LoginViewModel({required BuildContext context}) : super(context: context) {
     String debugUrl = Platform.isIOS ? 'http://localhost:3000' : 'http://10.0.2.2:3000';
     String baseUrl = app.isDebug ? debugUrl : 'https://data.unact.ru';
 
@@ -30,11 +30,11 @@ class LoginViewModel extends BaseViewModel {
   }
 
   LoginState get state => _state;
-  String get message => _message;
+  String? get message => _message;
   String get fullVersion => appState.fullVersion;
 
-  String get login => _login;
-  String get password => _password;
+  String? get login => _login;
+  String? get password => _password;
   String get url => _url;
   bool get showUrl => _showUrl;
 
@@ -57,13 +57,13 @@ class LoginViewModel extends BaseViewModel {
       _password = null;
       _setState(LoginState.Initial);
 
-      return false;
+      return;
     }
 
     _setState(LoginState.InProgress);
 
     try {
-      await appState.login(_url, _login, _password);
+      await appState.login(_url, _login!, _password!);
       _setState(LoginState.LoggedIn);
     } on AppError catch(e) {
       _setMessage(e.message);
@@ -82,7 +82,7 @@ class LoginViewModel extends BaseViewModel {
     _setState(LoginState.InProgress);
 
     try {
-      await appState.resetPassword(url, login);
+      await appState.resetPassword(url, login!);
       _setMessage('Пароль отправлен на почту');
       _setState(LoginState.PasswordSent);
     } on AppError catch(e) {

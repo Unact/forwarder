@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 import 'package:forwarder/app/entities/entities.dart';
@@ -11,7 +10,7 @@ class CardPaymentRepository {
   final Storage storage;
   final String _tableName = 'cardPayments';
 
-  CardPaymentRepository({@required this.storage});
+  CardPaymentRepository({required this.storage});
 
   Future<List<CardPayment>> getCardPayments() async {
     return (await storage.db.query(_tableName, orderBy: 'id')).map((e) => CardPayment.fromJson(e)).toList();

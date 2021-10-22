@@ -12,15 +12,14 @@ import 'package:forwarder/app/view_models/payments_view_model.dart';
 import 'package:forwarder/app/widgets/widgets.dart';
 
 class PaymentsPage extends StatefulWidget {
-  PaymentsPage({Key key}) : super(key: key);
+  PaymentsPage({Key? key}) : super(key: key);
 
   @override
   _PaymentsPageState createState() => _PaymentsPageState();
 }
 
 class _PaymentsPageState extends State<PaymentsPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  PaymentsViewModel _paymentsViewModel;
+  late final PaymentsViewModel _paymentsViewModel;
 
   @override
   void initState() {
@@ -42,7 +41,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
       builder: (_) => ChangeNotifierProvider<CancelPaymentViewModel>(
         create: (context) => CancelPaymentViewModel(
           context: context,
-          cardPayment: _paymentsViewModel.cardPaymentToCancel
+          cardPayment: _paymentsViewModel.cardPaymentToCancel!
         ),
         child: WillPopScope(
           onWillPop: () async => false,
@@ -56,12 +55,12 @@ class _PaymentsPageState extends State<PaymentsPage> {
   Future<void> vmListener() async {
     switch (_paymentsViewModel.state) {
       case PaymentsState.CancelStarted:
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+        WidgetsBinding.instance!.addPostFrameCallback((_) async {
           _paymentsViewModel.finishCancelPayment(await showCancelPaymentDialog());
         });
         break;
       case PaymentsState.CancelFinished:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_paymentsViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_paymentsViewModel.message!)));
         break;
       default:
     }
@@ -70,7 +69,6 @@ class _PaymentsPageState extends State<PaymentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(Strings.paymentsPageName),
       ),
@@ -143,9 +141,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
       trailing: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            RaisedButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              color: Colors.blue,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                primary: Colors.blue
+              ),
               child: Text('Отменить', style: TextStyle(color: Colors.white)),
               onPressed: cardPayment.isCanceled ? null : () => vm.startCancelPayment(cardPayment)
             ),

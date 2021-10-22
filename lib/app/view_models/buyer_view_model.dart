@@ -16,22 +16,22 @@ class BuyerViewModel extends BaseViewModel {
   final Buyer buyer;
   final bool isInc;
   BuyerState _state = BuyerState.Initial;
-  String _message;
-  List<Debt> _debtsToPay;
+  String? _message;
+  List<Debt> _debtsToPay = [];
   bool _isCard = false;
-  Function _confirmationCallback;
+  Function? _confirmationCallback;
 
   BuyerViewModel({
-    @required BuildContext context,
-    @required this.buyer,
-    @required this.isInc
+    required BuildContext context,
+    required this.buyer,
+    required this.isInc
   }) : super(context: context);
 
   BuyerState get state => _state;
-  String get message => _message;
+  String? get message => _message;
   List<Debt> get debtsToPay => _debtsToPay;
   bool get isCard => _isCard;
-  Function get confirmationCallback => _confirmationCallback;
+  Function? get confirmationCallback => _confirmationCallback;
 
   List<Order> get orders => appState.orders.where((e) => e.buyerId == buyer.id).toList()
     ..sort((order1, order2) => order1.ndoc.compareTo(order2.ndoc));
@@ -47,7 +47,7 @@ class BuyerViewModel extends BaseViewModel {
 
   bool get isPayable => debts.any((e) => e.paymentSum != null);
 
-  Future<void> updateDebtPaymentSum(Debt debt, double newValue) async {
+  Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {
     Debt updatedDebt = Debt(
       id: debt.id,
       buyerId: debt.buyerId,
@@ -72,7 +72,7 @@ class BuyerViewModel extends BaseViewModel {
 
   void tryStartPayment(bool isCard) {
     List<Debt> debtsToPay = debts.where((e) => e.paymentSum != null).toList();
-    double paymentSumTotal = debtsToPay.fold(0, (sum, e) => sum + e.paymentSum);
+    double paymentSumTotal = debtsToPay.fold(0, (sum, e) => sum + e.paymentSum!);
     _debtsToPay = debtsToPay;
     _isCard = isCard;
     _message = 'Вы уверены, что хотите внести оплату ${Format.numberStr(paymentSumTotal)} руб.?\n' +
@@ -87,8 +87,8 @@ class BuyerViewModel extends BaseViewModel {
     _setState(BuyerState.PaymentStarted);
   }
 
-  void finishPayment(Map<String, dynamic> result) {
-    _setMessage(result['message']);
+  void finishPayment(AcceptPaymentResult result) {
+    _setMessage(result.message);
     _setState(BuyerState.PaymentFinished);
   }
 

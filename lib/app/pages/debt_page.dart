@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:forwarder/app/entities/entities.dart';
 import 'package:provider/provider.dart';
 
 import 'package:forwarder/app/constants/strings.dart';
@@ -12,19 +13,18 @@ import 'package:forwarder/app/view_models/debt_view_model.dart';
 import 'package:forwarder/app/widgets/widgets.dart';
 
 class DebtPage extends StatefulWidget {
-  DebtPage({Key key}) : super(key: key);
+  DebtPage({Key? key}) : super(key: key);
 
   @override
   _DebtPageState createState() => _DebtPageState();
 }
 
 class _DebtPageState extends State<DebtPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextStyle firstColumnTextStyle = TextStyle(color: Colors.blue);
   final EdgeInsets firstColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = TextStyle(fontSize: 14.0, color: Colors.black);
-  DebtViewModel _debtViewModel;
+  late final DebtViewModel _debtViewModel;
   TextEditingController _controller = TextEditingController();
 
   @override
@@ -41,13 +41,13 @@ class _DebtPageState extends State<DebtPage> {
     super.dispose();
   }
 
-  String _validatePaymentSum(String value) {
-    double parsedValue = Nullify.parseDouble(value);
+  String? _validatePaymentSum(String value) {
+    double? parsedValue = Nullify.parseDouble(value);
 
     return value != '' && (parsedValue == null || parsedValue < 0 || parsedValue == 0) ? 'Некорректное значение' : null;
   }
 
-  Future<Map<String, dynamic>> showAcceptPaymentDialog() async {
+  Future<AcceptPaymentResult> showAcceptPaymentDialog() async {
     return await showDialog(
       context: context,
       builder: (_) => ChangeNotifierProvider<AcceptPaymentViewModel>(
@@ -75,27 +75,27 @@ class _DebtPageState extends State<DebtPage> {
           title: Text('Предупреждение'),
           content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
           actions: <Widget>[
-            FlatButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
-            FlatButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+            TextButton(child: Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
+            TextButton(child: Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
           ],
         )
       )
-    );
+    ) ?? false;
   }
 
   Future<void> vmListener() async {
     switch (_debtViewModel.state) {
       case DebtState.NeedUserConfirmation:
-        _debtViewModel.confirmationCallback(await showConfirmationDialog(_debtViewModel.message));
+        _debtViewModel.confirmationCallback!(await showConfirmationDialog(_debtViewModel.message!));
         break;
       case DebtState.PaymentStarted:
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+        WidgetsBinding.instance!.addPostFrameCallback((_) async {
           _debtViewModel.finishPayment(await showAcceptPaymentDialog());
         });
         break;
       case DebtState.PaymentFinished:
       case DebtState.PaymentFailure:
-        _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(_debtViewModel.message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_debtViewModel.message!)));
         break;
       default:
     }
@@ -113,7 +113,6 @@ class _DebtPageState extends State<DebtPage> {
   Widget build(BuildContext context) {
     return Consumer<DebtViewModel>(builder: (context, vm, _) {
       return Scaffold(
-        key: _scaffoldKey,
         persistentFooterButtons: _buildPayButtons(context),
         appBar: AppBar(
           title: Text('Задолженность'),
@@ -187,17 +186,21 @@ class _DebtPageState extends State<DebtPage> {
     DebtViewModel vm = Provider.of<DebtViewModel>(context);
 
     return [
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: vm.isEditable ? () => vm.tryStartPayment(false) : null,
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+        onPressed: vm.isEditable ? () => vm.tryStartPayment(false) : null,
       ),
-      RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        color: Colors.blue,
-        onPressed: vm.isEditable ? () => vm.tryStartPayment(true) : null,
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          primary: Colors.blue
+        ),
         child: Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        onPressed: vm.isEditable ? () => vm.tryStartPayment(true) : null,
       )
     ];
   }

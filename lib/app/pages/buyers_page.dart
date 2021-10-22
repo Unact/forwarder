@@ -8,7 +8,7 @@ import 'package:forwarder/app/view_models/buyer_view_model.dart';
 import 'package:forwarder/app/view_models/buyers_view_model.dart';
 
 class BuyersPage extends StatelessWidget {
-  const BuyersPage({Key key}) : super(key: key);
+  const BuyersPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

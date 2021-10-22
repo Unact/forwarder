@@ -16,21 +16,21 @@ enum DebtState {
 class DebtViewModel extends BaseViewModel {
   Debt debt;
   DebtState _state = DebtState.Initial;
-  String _message;
-  Function _confirmationCallback;
+  String? _message;
+  Function? _confirmationCallback;
   bool _isCard = false;
 
-  DebtViewModel({@required BuildContext context, @required this.debt}) : super(context: context);
+  DebtViewModel({required BuildContext context, required this.debt}) : super(context: context);
 
   DebtState get state => _state;
-  String get message => _message;
-  Function get confirmationCallback => _confirmationCallback;
+  String? get message => _message;
+  Function? get confirmationCallback => _confirmationCallback;
   bool get isCard => _isCard;
 
   bool get isEditable => debt.debtSum > 0;
 
-  void updatePaymentSum(double newValue) {
-    Debt updatedDebt = Debt(
+  void updatePaymentSum(double? newValue) {
+    debt = Debt(
       id: debt.id,
       buyerId: debt.buyerId,
       orderId: debt.orderId,
@@ -45,8 +45,6 @@ class DebtViewModel extends BaseViewModel {
       paymentSum: newValue
     );
 
-    debt = updatedDebt;
-
     _setState(DebtState.PaymentSumChanged);
   }
 
@@ -59,7 +57,7 @@ class DebtViewModel extends BaseViewModel {
     }
 
     _isCard = isCard;
-    _message = 'Вы уверены, что хотите внести оплату ${Format.numberStr(debt.paymentSum)} руб.?\n' +
+    _message = 'Вы уверены, что хотите внести оплату ${Format.numberStr(debt.paymentSum!)} руб.?\n' +
       'Изменить потом будет нельзя.';
     _confirmationCallback = startPayment;
     _setState(DebtState.NeedUserConfirmation);
@@ -71,23 +69,25 @@ class DebtViewModel extends BaseViewModel {
     _setState(DebtState.PaymentStarted);
   }
 
-  void finishPayment(Map<String, dynamic> result) {
-    debt = Debt(
-      id: debt.id,
-      buyerId: debt.buyerId,
-      orderId: debt.orderId,
-      ndoc: debt.ndoc,
-      orderNdoc: debt.orderNdoc,
-      ddate: debt.ddate,
-      orderDdate: debt.ddate,
-      isCheck: debt.isCheck,
-      debtSum: debt.debtSum - debt.paymentSum,
-      orderSum: debt.orderSum,
-      paidSum: (debt.paidSum ?? 0) + debt.paymentSum,
-      paymentSum: null
-    );
+  void finishPayment(AcceptPaymentResult result) {
+    if (result.success) {
+      debt = Debt(
+        id: debt.id,
+        buyerId: debt.buyerId,
+        orderId: debt.orderId,
+        ndoc: debt.ndoc,
+        orderNdoc: debt.orderNdoc,
+        ddate: debt.ddate,
+        orderDdate: debt.ddate,
+        isCheck: debt.isCheck,
+        debtSum: debt.debtSum - debt.paymentSum!,
+        orderSum: debt.orderSum,
+        paidSum: (debt.paidSum ?? 0) + debt.paymentSum!,
+        paymentSum: null
+      );
+    }
 
-    _setMessage(result['message']);
+    _setMessage(result.message);
     _setState(DebtState.PaymentFinished);
   }
 

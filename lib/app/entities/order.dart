@@ -11,17 +11,17 @@ class Order extends Equatable {
   final int inc;
   final int goodsCnt;
   final double mc;
-  final int delivered;
+  final int? delivered;
 
   const Order({
-    this.id,
-    this.buyerId,
-    this.ord,
-    this.ndoc,
-    this.info,
-    this.inc,
-    this.goodsCnt,
-    this.mc,
+    required this.id,
+    required this.buyerId,
+    required this.ord,
+    required this.ndoc,
+    required this.info,
+    required this.inc,
+    required this.goodsCnt,
+    required this.mc,
     this.delivered,
   });
 
@@ -31,7 +31,7 @@ class Order extends Equatable {
   bool get isInc => inc == 1;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     id,
     buyerId,
     ord,
@@ -43,7 +43,7 @@ class Order extends Equatable {
     delivered,
   ];
 
-  static Order fromJson(dynamic json) {
+  factory Order.fromJson(dynamic json) {
     return Order(
       id: json['id'],
       buyerId: json['buyerId'],
@@ -52,7 +52,7 @@ class Order extends Equatable {
       info: json['info'],
       inc: json['inc'],
       goodsCnt: json['goodsCnt'],
-      mc: Nullify.parseDouble(json['mc']),
+      mc: Nullify.parseDouble(json['mc'])!,
       delivered: json['delivered'],
     );
   }

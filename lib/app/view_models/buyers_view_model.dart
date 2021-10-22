@@ -6,7 +6,7 @@ import 'package:forwarder/app/entities/entities.dart';
 import 'package:forwarder/app/view_models/base_view_model.dart';
 
 class BuyersViewModel extends BaseViewModel {
-  BuyersViewModel({@required BuildContext context}) : super(context: context);
+  BuyersViewModel({required BuildContext context}) : super(context: context);
 
   List<Buyer> get buyers => appState.buyers..sort((buyer1, buyer2) {
     int ord1 = _ordersForBuyer(buyer1).map<int>((e) => e.ord).fold(0, max);

@@ -1,20 +1,22 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:signature_pad/signature_pad.dart';
-import 'package:signature_pad_flutter/signature_pad_flutter.dart';
+import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 
 import 'package:forwarder/app/view_models/cancel_payment_view_model.dart';
 
 class CancelPaymentPage extends StatefulWidget {
-  CancelPaymentPage({Key key}) : super(key: key);
+  CancelPaymentPage({Key? key}) : super(key: key);
 
   @override
   _CancelPaymentPageState createState() => _CancelPaymentPageState();
 }
 
 class _CancelPaymentPageState extends State<CancelPaymentPage> {
-  SignaturePadController _padController = SignaturePadController();
-  CancelPaymentViewModel _cancelPaymentViewModel;
+  final GlobalKey<SignatureState> _sign = GlobalKey<SignatureState>();
+  late final CancelPaymentViewModel _cancelPaymentViewModel;
 
   @override
   void initState() {
@@ -34,7 +36,7 @@ class _CancelPaymentPageState extends State<CancelPaymentPage> {
     switch (_cancelPaymentViewModel.state) {
       case CancelPaymentState.Finished:
       case CancelPaymentState.Failure:
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance!.addPostFrameCallback((_) {
           Navigator.pop(context, {
             'message': _cancelPaymentViewModel.message,
             'cardPayment': _cancelPaymentViewModel.cardPayment
@@ -43,6 +45,13 @@ class _CancelPaymentPageState extends State<CancelPaymentPage> {
         break;
       default:
     }
+  }
+
+  Future<Uint8List> getSignatureData() async {
+    SignatureState? sign = _sign.currentState;
+    ByteData? data = (await (await sign!.getData()).toByteData(format: ImageByteFormat.png));
+
+    return data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
   @override
@@ -74,9 +83,12 @@ class _CancelPaymentPageState extends State<CancelPaymentPage> {
       Container(height: 40),
       Container(
         height: 32,
-        child: vm.isCancelable ? RaisedButton(
-          child: Text('Отмена'),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        child: vm.isCancelable ? ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            primary: Colors.white
+          ),
+          child: Text('Отмена', style: TextStyle(color: Colors.black)),
           onPressed: vm.cancelPayment
         ) : Container()
       ),
@@ -99,7 +111,7 @@ class _CancelPaymentPageState extends State<CancelPaymentPage> {
           border: Border.all(color: Colors.grey),
           color: Colors.white
         ),
-        child: SignaturePadWidget(_padController, SignaturePadOptions(penColor: '#000000'))
+        child: Signature(key: _sign, strokeWidth: 5)
       ),
       Container(height: 40),
       Container(
@@ -107,16 +119,22 @@ class _CancelPaymentPageState extends State<CancelPaymentPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              child: Text('Очистить'),
-              onPressed: () => _padController.clear()
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                primary: Colors.white
+              ),
+              child: Text('Очистить', style: TextStyle(color: Colors.black)),
+              onPressed: () => _sign.currentState!.clear()
             ),
             Container(width: 40),
-            RaisedButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              child: Text('Подтвердить'),
-              onPressed: () async => vm.adjustReversePayment(await _padController.toPng())
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                primary: Colors.white
+              ),
+              child: Text('Подтвердить', style: TextStyle(color: Colors.black)),
+              onPressed: () async => vm.adjustReversePayment(await getSignatureData())
             )
           ]
         )

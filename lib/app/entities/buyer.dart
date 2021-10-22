@@ -5,12 +5,16 @@ class Buyer extends Equatable {
   final String name;
   final String address;
 
-  const Buyer({this.id, this.name, this.address});
+  const Buyer({
+    required this.id,
+    required this.name,
+    required this.address
+  });
 
   @override
   List<Object> get props => [id, name, address];
 
-  static Buyer fromJson(dynamic json) {
+  factory Buyer.fromJson(dynamic json) {
     return Buyer(
       id: json['id'],
       name: json['name'],
@@ -18,7 +22,7 @@ class Buyer extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson(){
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,

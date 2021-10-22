@@ -18,15 +18,15 @@ enum OrderState {
 class OrderViewModel extends BaseViewModel {
   Order order;
   OrderState _state = OrderState.Initial;
-  String _message;
-  Function _confirmationCallback;
-  bool _delivered;
+  String? _message;
+  Function? _confirmationCallback;
+  bool? _delivered;
 
-  OrderViewModel({@required BuildContext context, @required this.order}) : super(context: context);
+  OrderViewModel({required BuildContext context, required this.order}) : super(context: context);
 
   OrderState get state => _state;
-  String get message => _message;
-  Function get confirmationCallback => _confirmationCallback;
+  String? get message => _message;
+  Function? get confirmationCallback => _confirmationCallback;
 
   bool get isEditable => !order.didDelivery;
 
@@ -43,7 +43,7 @@ class OrderViewModel extends BaseViewModel {
     _setState(OrderState.InProgress);
 
     try {
-      Location location = await GeoLoc.getCurrentLocation();
+      Location? location = await GeoLoc.getCurrentLocation();
 
       if (location == null) {
         _setMessage(Strings.locationNotFound);
@@ -51,7 +51,7 @@ class OrderViewModel extends BaseViewModel {
         return;
       }
 
-      order = await appState.deliveryOrder(order, _delivered, location);
+      order = await appState.deliveryOrder(order, _delivered!, location);
 
       _setMessage('Информация о доставке сохранена');
       _setState(OrderState.DeliveryFinished);
