@@ -80,6 +80,8 @@ class AppState extends ChangeNotifier {
     _cashPayments= await cashPaymentRepo.getCashPayments();
     _debts = await debtRepo.getDebts();
     _orders = await orderRepo.getOrders();
+    _incomes = await incomeRepo.getIncomes();
+    _recepts = await receptRepo.getRecepts();
 
     notifyListeners();
   }
