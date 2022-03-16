@@ -34,9 +34,9 @@ class Api {
   Future<void> resetPassword(String url, String login) async {
     await logout();
     await _rawRequest(
-      ApiData(login: login, url: url),
+      ApiData(url: url),
       'POST',
-      'v1/reset_password',
+      'v2/reset_password',
       headers: {
         'Authorization': '$authSchema login=$login'
       }
@@ -44,9 +44,22 @@ class Api {
   }
 
   Future<ApiData> login(String url, String login, String password) async {
-    ApiData loginData = ApiData(login: login, password: password, url: url);
+    ApiData loginData = ApiData(url: url);
+    dynamic response = await _rawRequest(
+      loginData,
+      'POST',
+      'v2/authenticate',
+      headers: {
+        'Authorization': '$authSchema login=$login,password=$password'
+      }
+    );
 
-    ApiData authData = await _authenticate(loginData);
+    ApiData authData = ApiData(
+      accessToken: response['access_token'],
+      refreshToken: response['refresh_token'],
+      url: loginData.url,
+    );
+
     await repo.setApiData(authData);
 
     return authData;
@@ -56,9 +69,26 @@ class Api {
     await repo.resetApiData();
   }
 
-  Future<ApiData> relogin() async {
-    ApiData currentAuthData = repo.getApiData();
-    return await login(currentAuthData.url!, currentAuthData.login!, currentAuthData.password!);
+  Future<ApiData> refresh() async {
+    ApiData apiData = repo.getApiData();
+    dynamic response = await _rawRequest(
+      ApiData(url: apiData.url),
+      'POST',
+      'v2/refresh',
+      headers: {
+        'Authorization': '$authSchema token=${apiData.refreshToken}'
+      }
+    );
+
+    ApiData authData = ApiData(
+      accessToken: response['access_token'],
+      refreshToken: response['refresh_token'],
+      url: apiData.url,
+    );
+
+    await repo.setApiData(authData);
+
+    return authData;
   }
 
   Future<GetUserDataResponse> getUserData() async {
@@ -197,7 +227,7 @@ class Api {
       }
 
       return await _rawRequest(
-        await relogin(),
+        await refresh(),
         method,
         apiMethod,
         headers: headers,
@@ -212,9 +242,9 @@ class Api {
 
     if (headers == null) headers = {};
 
-    if (apiData.token != null) {
+    if (apiData.accessToken != null) {
       headers.addAll({
-        'Authorization': '$authSchema token=${apiData.token}'
+        'Authorization': '$authSchema token=${apiData.accessToken}'
       });
     }
 
@@ -288,24 +318,6 @@ class Api {
     } on DioError catch(e) {
       _onDioError(e);
     }
-  }
-
-  Future<ApiData> _authenticate(ApiData apiData) async {
-    dynamic response = await _rawRequest(
-      apiData,
-      'POST',
-      'v1/authenticate',
-      headers: {
-        'Authorization': '$authSchema login=${apiData.login},password=${apiData.password}'
-      }
-    );
-
-    return ApiData(
-      login: apiData.login,
-      password: apiData.password,
-      url: apiData.url,
-      token: response['token']
-    );
   }
 }
 

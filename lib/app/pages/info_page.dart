@@ -8,7 +8,6 @@ import 'package:forwarder/app/pages/person_page.dart';
 import 'package:forwarder/app/utils/format.dart';
 import 'package:forwarder/app/view_models/info_view_model.dart';
 import 'package:forwarder/app/view_models/person_view_model.dart';
-import 'package:forwarder/app/widgets/widgets.dart';
 
 class InfoPage extends StatefulWidget {
   InfoPage({Key? key}) : super(key: key);

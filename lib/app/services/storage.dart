@@ -11,6 +11,8 @@ class Storage {
 
   static const String schemaPath = 'lib/app/data/schema.sql';
 
+  static const int schemaVersion = 1;
+
   Storage._({
     required this.prefs,
     required this.db

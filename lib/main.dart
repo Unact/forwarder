@@ -33,6 +33,7 @@ void main() async {
             locale: Locale('ru', 'RU'),
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
             ],
             supportedLocales: [

@@ -1,45 +1,36 @@
 import 'package:equatable/equatable.dart';
 
 class ApiData extends Equatable {
-  final String? login;
+  final String? refreshToken;
   final String? url;
-  final String? password;
-  final String? token;
+  final String? accessToken;
 
   const ApiData({
-    this.login,
-    this.password,
+    this.accessToken,
+    this.refreshToken,
     this.url,
-
-    this.token
   });
 
   @override
   List<Object?> get props => [
-    login,
+    accessToken,
+    refreshToken,
     url,
-    password,
-    token
   ];
 
   factory ApiData.fromJson(dynamic json) {
     return ApiData(
-      login: json['login'],
-      password: json['password'],
-      token: json['token'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
       url: json['url']
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'login': login,
-      'password': password,
-      'token': token,
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
       'url': url
     };
   }
-
-  @override
-  String toString() => 'ApiData { login: $login }';
 }

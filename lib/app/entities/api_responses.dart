@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:forwarder/app/entities/entities.dart';
-import 'package:forwarder/app/entities/payment_credentials.dart';
 import 'package:forwarder/app/utils/nullify.dart';
 
 class GetDataResponse extends Equatable {
