@@ -40,7 +40,7 @@ class Storage {
     String dbPath = '$currentPath/${Strings.appName}.db';
     List<String> schemaExps = (await rootBundle.loadString(schemaPath)).split(';');
     schemaExps.removeLast(); // Уберем перенос строки
-    int prevVersion = schemaExps.join().hashCode;
+    int prevVersion = schemaVersion;
     int version = prevVersion;
     Database db = await openDatabase(dbPath, version: version,
       onCreate: (Database db, int version) async {
