@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:forwarder/app/app_state.dart';
 import 'package:forwarder/app/constants/strings.dart';
@@ -79,6 +81,12 @@ class AcceptPaymentViewModel extends BaseViewModel {
   }
 
   Future<void> _connectToDevice() async {
+    if (!await _checkBluetoothPermissions()) {
+      _setMessage('Не разрешено соединение по Bluetooth');
+      _setState(AcceptPaymentState.Failure);
+      return;
+    }
+
     _isCancelable = true;
     _setMessage('Установление связи с терминалом');
     _setState(AcceptPaymentState.SearchingForDevice);
@@ -200,5 +208,26 @@ class AcceptPaymentViewModel extends BaseViewModel {
 
   void _setMessage(String message) {
     _message = message;
+  }
+
+  Future<bool> _checkBluetoothPermissions() async {
+    if (Platform.isIOS) {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.bluetooth,
+      ].request();
+
+      return statuses.values.every((element) => element.isGranted);
+    }
+
+    if (Platform.isAndroid) {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.bluetoothConnect,
+        Permission.bluetoothScan
+      ].request();
+
+      return statuses.values.every((element) => element.isGranted);
+    }
+
+    return false;
   }
 }

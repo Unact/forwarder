@@ -163,9 +163,11 @@ packages:
   flutter_bluetooth_serial:
     dependency: "direct main"
     description:
-      name: flutter_bluetooth_serial
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: android-12-fixes
+      resolved-ref: "4c0679a4a57355380207f4b5df8ac144987a46a1"
+      url: "git@github.com:rickcasson/flutter_bluetooth_serial.git"
+    source: git
     version: "0.4.0"
   flutter_localizations:
     dependency: "direct main"
@@ -252,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.11"
+  material_color_utilities:
+    dependency: transitive
+    description:
+      name: material_color_utilities
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   meta:
     dependency: transitive
     description:
@@ -371,6 +380,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "8.3.0"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.7.0"
   platform:
     dependency: transitive
     description:
@@ -557,7 +580,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.3"
+    version: "0.4.8"
   typed_data:
     dependency: transitive
     description:

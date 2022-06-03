@@ -25,9 +25,13 @@ dependencies:
   url_launcher: ^6.0.6
   location: ^4.1.1
   flutter_blue: ^0.8.0
-  flutter_bluetooth_serial: ^0.4.0
+  flutter_bluetooth_serial:
+    git:
+      url: git@github.com:rickcasson/flutter_bluetooth_serial.git
+      ref: android-12-fixes
   flutter_signature_pad: ^3.0.0
   iboxpro_flutter: ^1.0.2
+  permission_handler: ^8.1.4
 
 dev_dependencies:
   flutter_test:
