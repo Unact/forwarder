@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:flutter_blue/flutter_blue.dart' as blue;
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' as blueSerial;
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' as blueS;
 import 'package:iboxpro_flutter/iboxpro_flutter.dart';
 
 class Iboxpro {
@@ -208,27 +208,23 @@ class Iboxpro {
   }
 
   Future<String?> _findBTDeviceNameAndroid() async {
-    blueSerial.FlutterBluetoothSerial bluetooth = blueSerial.FlutterBluetoothSerial.instance;
-    List<blueSerial.BluetoothDevice> devices = await bluetooth.getBondedDevices();
+    blueS.FlutterBluetoothSerial bluetooth = blueS.FlutterBluetoothSerial.instance;
 
-    if (!devices.any((device) => (device.name ?? '').contains(_terminalNamePrefix))) {
-      List<blueSerial.BluetoothDiscoveryResult> results = [];
-      StreamSubscription<blueSerial.BluetoothDiscoveryResult> subscription = bluetooth.startDiscovery().
-        listen((r) => results.add(r));
-      await Future.delayed(_searchTimeout);
-      await subscription.cancel();
+    List<blueS.BluetoothDiscoveryResult> results = [];
+    StreamSubscription<blueS.BluetoothDiscoveryResult> subscription = bluetooth.startDiscovery().
+      listen((r) => results.add(r));
+    await Future.delayed(_searchTimeout);
+    await subscription.cancel();
 
-      devices.addAll(results.map((result) => result.device));
-    }
+    List<blueS.BluetoothDevice> bondedDevices = await bluetooth.getBondedDevices();
+    List<blueS.BluetoothDevice> localDevices = results.map((result) => result.device).toList();
+    bool Function(blueS.BluetoothDevice) search = (device) => (device.name ?? '').contains(_terminalNamePrefix);
 
-    blueSerial.BluetoothDevice? device = devices.firstWhereOrNull(
-      (device) => (device.name ?? '').contains(_terminalNamePrefix)
-    );
+    blueS.BluetoothDevice? bondedDevice = bondedDevices.firstWhereOrNull(search);
+    blueS.BluetoothDevice? localDevice = localDevices.firstWhereOrNull(search);
+    blueS.BluetoothDevice? device = bondedDevice == localDevice ? bondedDevice : localDevice;
 
-    if (device == null) {
-      return null;
-    }
-
+    if (device == null) return null;
     if (!device.isBonded) await bluetooth.bondDeviceAtAddress(device.address);
 
     return device.name;
