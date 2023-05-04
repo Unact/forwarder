@@ -3,15 +3,15 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:flutter_blue/flutter_blue.dart' as blue;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' as blue_serial;
 import 'package:iboxpro_flutter/iboxpro_flutter.dart';
 
 class Iboxpro {
   static const String _terminalNamePrefix = 'MPOS';
-  Duration _searchTimeout = Duration(seconds: 5);
+  final Duration _searchTimeout = const Duration(seconds: 5);
   String? _deviceName;
-  Map<String, dynamic>? _transaction;
+  Map<dynamic, dynamic>? _transaction;
   String? _transactionId;
 
   Iboxpro();
@@ -41,7 +41,7 @@ class Iboxpro {
     required Function(String) onError,
     required Function() onConnected
   }) async {
-    if (!(await blue.FlutterBlue.instance.isOn)) {
+    if (!await blue.FlutterBluePlus.instance.isOn) {
       onError.call('Не включен Bluetooth');
 
       return;
@@ -75,7 +75,6 @@ class Iboxpro {
     required double amount,
     required String description,
     required Function onError,
-    required Function onDisconnect,
     required Function onPaymentStart,
     required Function onPaymentComplete,
   }) async {
@@ -86,7 +85,7 @@ class Iboxpro {
       singleStepAuth: true,
       onReaderEvent: (ReaderEvent res) async {
         if (res.type == ReaderEventType.Disconnected) {
-          onDisconnect.call();
+          onError.call('Прервана связь с терминалом');
         }
       },
       onPaymentStart: (String id) async {
@@ -109,8 +108,8 @@ class Iboxpro {
 
   Future<void> adjustPayment({
     required Uint8List signature,
-    required Function onError,
-    required Function onPaymentAdjust
+    required onError,
+    required onPaymentAdjust
   }) async {
     await PaymentController.adjustPayment(
       id: _transactionId!,
@@ -132,7 +131,6 @@ class Iboxpro {
     required double amount,
     required String description,
     required Function onError,
-    required Function onDisconnect,
     required Function onPaymentStart,
     required Function onPaymentComplete,
   }) async {
@@ -146,7 +144,7 @@ class Iboxpro {
       singleStepAuth: true,
       onReaderEvent: (ReaderEvent res) async {
         if (res.type == ReaderEventType.Disconnected) {
-          onDisconnect.call();
+          onError.call('Прервана связь с терминалом');
         }
       },
       onPaymentStart: (String id) async {
@@ -175,8 +173,8 @@ class Iboxpro {
 
   Future<void> adjustReversePayment({
     required Uint8List signature,
-    required Function onError,
-    required Function onReversePaymentAdjust
+    required onError,
+    required onReversePaymentAdjust
   }) async {
     await PaymentController.adjustReversePayment(
       id: _transactionId!,
@@ -194,7 +192,7 @@ class Iboxpro {
   }
 
   Future<String?> _findBTDeviceNameIos() async {
-    blue.FlutterBlue flutterBlue = blue.FlutterBlue.instance;
+    blue.FlutterBluePlus flutterBlue = blue.FlutterBluePlus.instance;
     List<blue.ScanResult> results = await flutterBlue.startScan(timeout: _searchTimeout);
     blue.BluetoothDevice? device = results.firstWhereOrNull(
       (blue.ScanResult result) => result.device.name.contains(_terminalNamePrefix)

@@ -1,2 +1,3 @@
-export 'package:forwarder/app/widgets/expanding_text.dart';
-export 'package:forwarder/app/widgets/info_row.dart';
+export 'expanding_text.dart';
+export 'info_row.dart';
+export 'progress_dialog.dart';

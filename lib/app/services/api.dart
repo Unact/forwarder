@@ -3,262 +3,207 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:forwarder/app/constants/strings.dart';
-import 'package:forwarder/app/entities/entities.dart';
-import 'package:forwarder/app/repositories/repositories.dart';
-import 'package:forwarder/app/services/storage.dart';
+import '/app/constants/strings.dart';
+import '/app/entities/entities.dart';
+import '/app/data/database.dart';
 
 class Api {
-  final ApiDataRepository repo;
-  final String version;
   static const String authSchema = 'Renew';
 
-  Api._({required this.repo, required this.version}) {
-    _instance = this;
-  }
+  final AppDataStore dataStore;
 
-  static Api? _instance;
-  static Api? get instance => _instance;
+  Api({
+    required this.dataStore
+  });
 
-  static Future<Api> init() async {
-    if (_instance != null)
-      return _instance!;
+  Future<void> login({
+    required String url,
+    required String login,
+    required String password
+  }) async {
+    Map<String, dynamic> result = await _sendRawRequest(() async {
+      Dio dio = await _createDio(url, null);
 
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      return await dio.post(
+        'v2/authenticate',
+        options: Options(headers: { 'Authorization': '$authSchema login=$login,password=$password' })
+      );
+    });
 
-    return Api._(repo: ApiDataRepository(storage: Storage.instance!), version: packageInfo.version);
-  }
-
-  Future<void> resetPassword(String url, String login) async {
-    await logout();
-    await _rawRequest(
-      ApiData(url: url),
-      'POST',
-      'v2/reset_password',
-      headers: {
-        'Authorization': '$authSchema login=$login'
-      }
-    );
-  }
-
-  Future<ApiData> login(String url, String login, String password) async {
-    ApiData loginData = ApiData(url: url);
-    dynamic response = await _rawRequest(
-      loginData,
-      'POST',
-      'v2/authenticate',
-      headers: {
-        'Authorization': '$authSchema login=$login,password=$password'
-      }
+    ApiCredential apiCredential = ApiCredential(
+      accessToken: result['access_token'],
+      refreshToken: result['refresh_token'],
+      url: url
     );
 
-    ApiData authData = ApiData(
-      accessToken: response['access_token'],
-      refreshToken: response['refresh_token'],
-      url: loginData.url,
+    await dataStore.apiCredentialsDao.updateApiCredential(apiCredential.toCompanion(true));
+  }
+
+  Future<void> refresh() async {
+    ApiCredential apiCredential = await _getApiCredentials();
+    Map<String, dynamic> result = await _sendRawRequest(() async {
+      Dio dio = await _createDio(apiCredential.url, apiCredential.refreshToken);
+
+      return await dio.post('v2/refresh');
+    });
+
+    ApiCredential newApiCredential = apiCredential.copyWith(
+      accessToken: result['access_token'],
+      refreshToken: result['refresh_token']
     );
 
-    await repo.setApiData(authData);
-
-    return authData;
+    await dataStore.apiCredentialsDao.updateApiCredential(newApiCredential.toCompanion(true));
   }
 
   Future<void> logout() async {
-    await repo.resetApiData();
-  }
-
-  Future<ApiData> refresh() async {
-    ApiData apiData = repo.getApiData();
-    dynamic response = await _rawRequest(
-      ApiData(url: apiData.url),
-      'POST',
-      'v2/refresh',
-      headers: {
-        'Authorization': '$authSchema token=${apiData.refreshToken}'
-      }
+    ApiCredential newApiCredential = ApiCredential(
+      accessToken: '',
+      refreshToken: '',
+      url: ''
     );
 
-    ApiData authData = ApiData(
-      accessToken: response['access_token'],
-      refreshToken: response['refresh_token'],
-      url: apiData.url,
-    );
-
-    await repo.setApiData(authData);
-
-    return authData;
+    await dataStore.apiCredentialsDao.updateApiCredential(newApiCredential.toCompanion(true));
   }
 
-  Future<GetUserDataResponse> getUserData() async {
-    return GetUserDataResponse.fromJson(await _get('v1/forwarder/user_info'));
+  Future<void> resetPassword({
+    required String url,
+    required String login
+  }) async {
+    await _sendRawRequest(() async {
+      Dio dio = await _createDio(url, null);
+
+      return await dio.post(
+        'v2/reset_password',
+        options: Options(headers: { 'Authorization': '$authSchema login=$login' })
+      );
+    });
   }
 
-  Future<GetDataResponse> getData() async {
-    return GetDataResponse.fromJson(await _get('v1/forwarder'));
+
+  Future<ApiUserData> getUserData() async {
+    return ApiUserData.fromJson(await _sendRequest((dio) => dio.get('v1/forwarder/user_info')));
+  }
+
+  Future<ApiData> getData() async {
+    return ApiData.fromJson(await _sendRequest((dio) => dio.get('v1/forwarder')));
   }
 
   Future<void> closeDay(bool closed) async {
-    await _post('v1/forwarder/close_day', data: { 'closed': closed });
+    await _sendRequest((dio) => dio.post(
+      'v1/forwarder/close_day',
+      data: {
+        'closed': closed
+      }
+    ));
   }
 
-  Future<void> deliverOrder(Order order, Location location) async {
-    await _post('v1/forwarder/confirm_delivery', data: {
-      'sale_order_id': order.id,
-      'delivered': order.delivered,
-      'location': {
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-        'accuracy': location.accuracy,
-        'altitude': location.altitude,
-        'speed': location.speed,
-        'heading': location.heading,
-        'point_ts': location.pointTs?.toIso8601String()
-      },
-      'local_ts': DateTime.now().toIso8601String()
-    });
+  Future<void> deliverOrder(int orderId, bool delivered, Location location) async {
+    await _sendRequest((dio) => dio.post(
+      'v1/forwarder/confirm_delivery',
+      data: {
+        'sale_order_id': orderId,
+        'delivered': delivered,
+        'location': {
+          'latitude': location.latitude,
+          'longitude': location.longitude,
+          'accuracy': location.accuracy,
+          'altitude': location.altitude,
+          'speed': location.speed,
+          'heading': location.heading,
+          'point_ts': location.pointTs?.toIso8601String()
+        },
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    ));
   }
 
-  Future<void> acceptPayment(List<Debt> debts, Map<String, dynamic>? transaction, Location location) async {
-    await _post('v1/forwarder/save', data: {
-      'payments': debts.map((e) => {
-        'id': e.id,
-        'payment_sum': e.paymentSum
-      }).toList(),
-      'payment_transaction': transaction,
-      'location': {
-        'latitude': location.latitude,
-        'longitude': location.longitude,
-        'accuracy': location.accuracy,
-        'altitude': location.altitude,
-        'speed': location.speed,
-        'heading': location.heading,
-        'point_ts': location.pointTs?.toIso8601String()
-      },
-      'local_ts': DateTime.now().toIso8601String()
-    });
-  }
-
-  Future<void> cancelCardPayment(CardPayment payment, Map<String, dynamic> transaction) async {
-    await _post('v1/forwarder/cancel', data: {
-      'id': payment.id,
-      'payment_transaction': transaction,
-      'local_ts': DateTime.now().toIso8601String()
-    });
-  }
-
-  Future<GetPaymentCredentialsResponse> getPaymentCredentials() async {
-    return GetPaymentCredentialsResponse.fromJson(await _get('v1/forwarder/credentials'));
-  }
-
-  Future<dynamic> _get(
-    String method,
-    {
-      Map<String, String>? headers,
-      Map<String, dynamic>? queryParameters,
-    }
+  Future<void> acceptPayment(
+    List<Map<String, dynamic>> payments,
+    Map<String, dynamic>? transaction,
+    Location location
   ) async {
-    return await _request(
-      repo.getApiData(),
-      'GET',
-      method,
-      headers: headers,
-      queryParameters: queryParameters
-    );
+    await _sendRequest((dio) => dio.post(
+      'v1/forwarder/save',
+      data: {
+        'payments': payments,
+        'payment_transaction': transaction,
+        'location': {
+          'latitude': location.latitude,
+          'longitude': location.longitude,
+          'accuracy': location.accuracy,
+          'altitude': location.altitude,
+          'speed': location.speed,
+          'heading': location.heading,
+          'point_ts': location.pointTs?.toIso8601String()
+        },
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    ));
   }
 
-  Future<dynamic> _post(
-    String method,
-    {
-      Map<String, String>? headers,
-      Map<String, dynamic>? queryParameters,
-      dynamic data,
-      File? file,
-      String fileKey = 'file'
-    }
-  ) async {
-    return await _request(
-      repo.getApiData(),
-      'POST',
-      method,
-      headers: headers,
-      queryParameters: queryParameters,
-      data: data,
-      file: file,
-      fileKey: fileKey
-    );
+  Future<void> cancelCardPayment(int paymentId, Map<String, dynamic> transaction) async {
+    await _sendRequest((dio) => dio.post(
+      'v1/forwarder/cancel',
+      data: {
+        'id': paymentId,
+        'payment_transaction': transaction,
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    ));
   }
 
-  Future<dynamic> _request(
-    ApiData apiData,
-    String method,
-    String apiMethod,
-    {
-      Map<String, String>? headers,
-      Map<String, dynamic>? queryParameters,
-      dynamic data,
-      File? file,
-      String fileKey = 'file'
-    }
-  ) async {
-    dynamic dataToSend = data;
+  Future<ApiPaymentCredentials> getPaymentCredentials() async {
+    return ApiPaymentCredentials.fromJson(await _sendRequest((dio) => dio.get('v1/forwarder/credentials')));
+  }
 
-    if (data is! Map<String, dynamic> && file != null) {
-      throw 'file not empty, data must be Map<String, dynamic>';
-    }
-
-    if (file != null) {
-      dataToSend = _createFileFormData(data, file, fileKey);
-    }
+  Future<dynamic> _sendRequest(Future<dynamic> Function(Dio) request) async {
+    ApiCredential apiCredential = await _getApiCredentials();
 
     try {
-      return await _rawRequest(
-        apiData,
-        method,
-        apiMethod,
-        headers: headers,
-        data: dataToSend,
-        queryParameters: queryParameters
-      );
-    } on AuthException {
-      if (dataToSend is FormData) {
-        dataToSend = _createFileFormData(data, file!, fileKey);
-      }
+      return await _sendRawRequest(() async {
+        Dio dio = await _createDio(apiCredential.url, apiCredential.accessToken);
 
-      return await _rawRequest(
-        await refresh(),
-        method,
-        apiMethod,
-        headers: headers,
-        data: dataToSend,
-        queryParameters: queryParameters
-      );
+        return await request.call(dio);
+      });
+    } on AuthException {
+      await refresh();
+      ApiCredential newApiCredential = await _getApiCredentials();
+      Dio newDio = await _createDio(newApiCredential.url, newApiCredential.accessToken);
+
+      return await _sendRawRequest(() async {
+        return await request.call(newDio);
+      });
     }
   }
 
-  Dio _createDio(ApiData apiData, String method, [Map<String, String>? headers = const {}]) {
-    String appName = Strings.appName;
-
-    if (headers == null) headers = {};
-
-    if (apiData.accessToken != null) {
-      headers.addAll({
-        'Authorization': '$authSchema token=${apiData.accessToken}'
-      });
+  Future<dynamic> _sendRawRequest(Future<Response> Function() rawRequest) async {
+    try {
+      return (await rawRequest.call()).data;
+    } on DioError catch(e) {
+      _onDioError(e);
     }
+  }
 
-    headers.addAll({
+  Future<ApiCredential> _getApiCredentials() async {
+    return await dataStore.apiCredentialsDao.getApiCredential();
+  }
+
+  Future<Dio> _createDio(String url, String? token) async {
+    String version = (await PackageInfo.fromPlatform()).version;
+    String appName = Strings.appName;
+    Map<String, dynamic> headers = {
       'Accept': 'application/json',
-      appName: '$version',
+      appName: version,
+      'Authorization': '$authSchema token=$token',
       HttpHeaders.userAgentHeader: '$appName/$version ${FkUserAgent.userAgent}',
-    });
+    };
 
     return Dio(BaseOptions(
-      method: method,
-      baseUrl: apiData.url!,
-      connectTimeout: 100000,
-      receiveTimeout: 100000,
+      baseUrl: url,
+      connectTimeout: const Duration(seconds: 100000),
+      receiveTimeout: const Duration(seconds: 100000),
       headers: headers,
       contentType: Headers.jsonContentType,
       responseType: ResponseType.json,
@@ -290,33 +235,16 @@ class Api {
         throw ApiException(body['error'], statusCode);
       }
     } else {
-      throw ApiConnException();
-    }
-  }
+      if (
+        e.error is SocketException ||
+        e.error is HandshakeException ||
+        e.error is HttpException ||
+        e.type == DioErrorType.connectionTimeout
+      ) {
+        throw ApiConnException();
+      }
 
-  FormData _createFileFormData(Map<String, dynamic> data, File file, String fileKey) {
-    Map<String, dynamic> dataToAdd = data;
-    dataToAdd[fileKey] = MultipartFile.fromBytes(file.readAsBytesSync(), filename: file.path.split('/').last);
-
-    return FormData.fromMap(dataToAdd);
-  }
-
-  Future<dynamic> _rawRequest(
-    ApiData apiData,
-    String method,
-    String apiMethod,
-    {
-      Map<String, String>? headers,
-      Map<String, dynamic>? queryParameters,
-      data
-    }
-  ) async {
-    Dio dio = _createDio(apiData, method, headers);
-
-    try {
-      return (await dio.request(apiMethod, data: data, queryParameters: queryParameters)).data;
-    } on DioError catch(e) {
-      _onDioError(e);
+      throw e;
     }
   }
 }
