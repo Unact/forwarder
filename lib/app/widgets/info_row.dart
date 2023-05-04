@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class InfoRow extends StatelessWidget {
+  final EdgeInsets padding;
   final Widget title;
   final Widget? trailing;
   final int titleFlex;
@@ -8,6 +9,7 @@ class InfoRow extends StatelessWidget {
 
   InfoRow({
     Key? key,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8),
     required this.title,
     this.trailing,
     this.titleFlex = 1,
@@ -17,12 +19,12 @@ class InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: padding,
       child: Row(
         children: [
           Flexible(
             flex: titleFlex,
-            child: Container(
+            child: SizedBox(
               height: 48,
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -32,7 +34,7 @@ class InfoRow extends StatelessWidget {
           ),
           Flexible(
             flex: trailingFlex,
-            child: Container(
+            child: SizedBox(
               height: 48,
               child: Align(
                 alignment: Alignment.centerRight,

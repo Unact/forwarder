@@ -28,12 +28,12 @@ class _ExpandingTextState extends State<ExpandingText> {
         text: TextSpan(
           children: [
             TextSpan(
-              style: TextStyle(color: Colors.black, fontSize: 12).merge(widget.style),
+              style: const TextStyle(color: Colors.black, fontSize: 13).merge(widget.style),
               text: widget.content.length > widget.limit && !_showAll ?
                 widget.content.substring(0, widget.limit) :
                 widget.content
             ),
-            widget.content.length <= widget.limit ? TextSpan() : WidgetSpan(
+            widget.content.length <= widget.limit ? const TextSpan() : WidgetSpan(
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -42,7 +42,7 @@ class _ExpandingTextState extends State<ExpandingText> {
                 },
                 child: Text(
                   _showAll ? '' : '...',
-                  style: TextStyle(color: Colors.blue, fontSize: 12),
+                  style: const TextStyle(color: Colors.blue, fontSize: 12),
                 ),
               ),
             )

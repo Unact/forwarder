@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import 'package:forwarder/app/utils/nullify.dart';
+part of 'entities.dart';
 
 class Location extends Equatable {
   final double? latitude;
@@ -21,26 +19,15 @@ class Location extends Equatable {
     this.pointTs,
   });
 
-  @override
-  List<Object?> get props => [
-    latitude,
-    longitude,
-    accuracy,
-    altitude,
-    heading,
-    speed,
-    pointTs,
-  ];
-
   factory Location.fromJson(dynamic json) {
     return Location(
-      latitude: Nullify.parseDouble(json['latitude']),
-      longitude: Nullify.parseDouble(json['longitude']),
-      accuracy: Nullify.parseDouble(json['accuracy']),
-      altitude: Nullify.parseDouble(json['altitude']),
-      heading: Nullify.parseDouble(json['heading']),
-      speed: Nullify.parseDouble(json['speed']),
-      pointTs: Nullify.parseDate(json['pointTs']),
+      latitude: Parsing.parseDouble(json['latitude']),
+      longitude: Parsing.parseDouble(json['longitude']),
+      accuracy: Parsing.parseDouble(json['accuracy']),
+      altitude: Parsing.parseDouble(json['altitude']),
+      heading: Parsing.parseDouble(json['heading']),
+      speed: Parsing.parseDouble(json['speed']),
+      pointTs: Parsing.parseDate(json['pointTs']),
     );
   }
 
@@ -57,5 +44,13 @@ class Location extends Equatable {
   }
 
   @override
-  String toString() => 'Location { latitude: $latitude, longitude: $longitude }';
+  List<Object?> get props => [
+    latitude,
+    longitude,
+    accuracy,
+    altitude,
+    heading,
+    speed,
+    pointTs,
+  ];
 }

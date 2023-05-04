@@ -1,14 +1,17 @@
-export 'package:forwarder/app/entities/accept_payment_result.dart';
-export 'package:forwarder/app/entities/api_data.dart';
-export 'package:forwarder/app/entities/api_responses.dart';
-export 'package:forwarder/app/entities/app_data.dart';
-export 'package:forwarder/app/entities/buyer.dart';
-export 'package:forwarder/app/entities/card_payment.dart';
-export 'package:forwarder/app/entities/cash_payment.dart';
-export 'package:forwarder/app/entities/debt.dart';
-export 'package:forwarder/app/entities/income.dart';
-export 'package:forwarder/app/entities/location.dart';
-export 'package:forwarder/app/entities/order.dart';
-export 'package:forwarder/app/entities/payment_credentials.dart';
-export 'package:forwarder/app/entities/recept.dart';
-export 'package:forwarder/app/entities/user.dart';
+import 'package:equatable/equatable.dart';
+
+import '/app/data/database.dart';
+import '/app/utils/parsing.dart';
+
+part 'api_buyer.dart';
+part 'api_card_payment.dart';
+part 'api_cash_payment.dart';
+part 'api_debt.dart';
+part 'api_data.dart';
+part 'api_income.dart';
+part 'api_order.dart';
+part 'api_payment_credentials.dart';
+part 'api_recept.dart';
+part 'api_user_data.dart';
+part 'app_error.dart';
+part 'location.dart';
