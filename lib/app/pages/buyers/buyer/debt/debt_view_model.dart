@@ -21,9 +21,11 @@ class DebtViewModel extends PageViewModel<DebtState, DebtStateStatus> {
 
   @override
   Future<void> loadData() async {
+    Debt debt = await paymentsRepository.getDebtById(state.debt.id);
+
     emit(state.copyWith(
       status: DebtStateStatus.dataLoaded,
-      debt: await paymentsRepository.getDebtById(state.debt.id),
+      debt: debt
     ));
   }
 

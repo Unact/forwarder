@@ -17,7 +17,12 @@ class LandingViewModel extends PageViewModel<LandingState, LandingStateStatus> {
 
   @override
   Future<void> loadData() async {
-    emit(state.copyWith(user: await usersRepository.getUser()));
+    User user = await usersRepository.getUser();
+
+    emit(state.copyWith(
+      status: LandingStateStatus.dataLoaded,
+      user: user
+    ));
   }
 
   Future<void> _maybeLogout() async {

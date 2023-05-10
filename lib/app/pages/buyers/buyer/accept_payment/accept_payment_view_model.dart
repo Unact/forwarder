@@ -2,11 +2,13 @@ part of 'accept_payment_page.dart';
 
 class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPaymentStateStatus> {
   final AppRepository appRepository;
+  final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
   Iboxpro iboxpro = Iboxpro();
 
   AcceptPaymentViewModel(
     this.appRepository,
+    this.ordersRepository,
     this.paymentsRepository,
     {
       required List<Debt> debts,
@@ -14,18 +16,38 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     }
   ) : super(
     AcceptPaymentState(debts: debts, isCard: isCard, message: 'Инициализация платежа'),
-    [appRepository, paymentsRepository]
+    [appRepository, ordersRepository, paymentsRepository]
   );
 
   @override
   AcceptPaymentStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {}
+  Future<void> loadData() async {
+    List<int> orderIds = state.debts.map(((e) => e.orderId)).toList();
+    List<Order> orders = (await ordersRepository.getOrders()).where((e) => orderIds.contains(e.id)).toList();
+
+    emit(state.copyWith(
+      status: AcceptPaymentStateStatus.dataLoaded,
+      orders: orders
+    ));
+  }
 
   @override
   Future<void> initViewModel() async {
     await super.initViewModel();
+    await _checkOrders();
+  }
+
+  Future<void> _checkOrders() async {
+    if (state.orders.any((element) => element.isUndelivered && element.physical)) {
+      emit(state.copyWith(
+        message: 'Присутствуют не доставленные заказы физ. лиц',
+        status: AcceptPaymentStateStatus.failure
+      ));
+      return;
+    }
+
     _getLocation();
   }
 

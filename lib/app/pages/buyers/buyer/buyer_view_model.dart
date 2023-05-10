@@ -24,12 +24,17 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
   @override
   Future<void> loadData() async {
+    List<Order> orders = await ordersRepository.getOrdersByBuyerId(state.buyer.id);
+    List<Debt> debts = await paymentsRepository.getDebtsByBuyerId(state.buyer.id);
+    List<CardPayment> cardPayments = await paymentsRepository.getCardPaymentsByBuyerId(state.buyer.id);
+    List<CashPayment> cashPayments = await paymentsRepository.getCashPaymentsByBuyerId(state.buyer.id);
+
     emit(state.copyWith(
       status: BuyerStateStatus.dataLoaded,
-      orders: await ordersRepository.getOrdersByBuyerId(state.buyer.id),
-      debts: await paymentsRepository.getDebtsByBuyerId(state.buyer.id),
-      cardPayments: await paymentsRepository.getCardPaymentsByBuyerId(state.buyer.id),
-      cashPayments: await paymentsRepository.getCashPaymentsByBuyerId(state.buyer.id)
+      orders: orders,
+      debts: debts,
+      cardPayments: cardPayments,
+      cashPayments: cashPayments
     ));
   }
 

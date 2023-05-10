@@ -2271,6 +2271,7 @@ class Order extends DataClass implements Insertable<Order> {
   final int goodsCnt;
   final double mc;
   final bool? delivered;
+  final bool physical;
   Order(
       {required this.id,
       required this.buyerId,
@@ -2280,7 +2281,8 @@ class Order extends DataClass implements Insertable<Order> {
       required this.isInc,
       required this.goodsCnt,
       required this.mc,
-      this.delivered});
+      this.delivered,
+      required this.physical});
   factory Order.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Order(
@@ -2302,6 +2304,8 @@ class Order extends DataClass implements Insertable<Order> {
           .mapFromDatabaseResponse(data['${effectivePrefix}mc'])!,
       delivered: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}delivered']),
+      physical: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}physical'])!,
     );
   }
   @override
@@ -2318,6 +2322,7 @@ class Order extends DataClass implements Insertable<Order> {
     if (!nullToAbsent || delivered != null) {
       map['delivered'] = Variable<bool?>(delivered);
     }
+    map['physical'] = Variable<bool>(physical);
     return map;
   }
 
@@ -2334,6 +2339,7 @@ class Order extends DataClass implements Insertable<Order> {
       delivered: delivered == null && nullToAbsent
           ? const Value.absent()
           : Value(delivered),
+      physical: Value(physical),
     );
   }
 
@@ -2350,6 +2356,7 @@ class Order extends DataClass implements Insertable<Order> {
       goodsCnt: serializer.fromJson<int>(json['goodsCnt']),
       mc: serializer.fromJson<double>(json['mc']),
       delivered: serializer.fromJson<bool?>(json['delivered']),
+      physical: serializer.fromJson<bool>(json['physical']),
     );
   }
   @override
@@ -2365,6 +2372,7 @@ class Order extends DataClass implements Insertable<Order> {
       'goodsCnt': serializer.toJson<int>(goodsCnt),
       'mc': serializer.toJson<double>(mc),
       'delivered': serializer.toJson<bool?>(delivered),
+      'physical': serializer.toJson<bool>(physical),
     };
   }
 
@@ -2377,7 +2385,8 @@ class Order extends DataClass implements Insertable<Order> {
           bool? isInc,
           int? goodsCnt,
           double? mc,
-          bool? delivered}) =>
+          bool? delivered,
+          bool? physical}) =>
       Order(
         id: id ?? this.id,
         buyerId: buyerId ?? this.buyerId,
@@ -2388,6 +2397,7 @@ class Order extends DataClass implements Insertable<Order> {
         goodsCnt: goodsCnt ?? this.goodsCnt,
         mc: mc ?? this.mc,
         delivered: delivered ?? this.delivered,
+        physical: physical ?? this.physical,
       );
   @override
   String toString() {
@@ -2400,14 +2410,15 @@ class Order extends DataClass implements Insertable<Order> {
           ..write('isInc: $isInc, ')
           ..write('goodsCnt: $goodsCnt, ')
           ..write('mc: $mc, ')
-          ..write('delivered: $delivered')
+          ..write('delivered: $delivered, ')
+          ..write('physical: $physical')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered);
+  int get hashCode => Object.hash(
+      id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2420,7 +2431,8 @@ class Order extends DataClass implements Insertable<Order> {
           other.isInc == this.isInc &&
           other.goodsCnt == this.goodsCnt &&
           other.mc == this.mc &&
-          other.delivered == this.delivered);
+          other.delivered == this.delivered &&
+          other.physical == this.physical);
 }
 
 class OrdersCompanion extends UpdateCompanion<Order> {
@@ -2433,6 +2445,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   final Value<int> goodsCnt;
   final Value<double> mc;
   final Value<bool?> delivered;
+  final Value<bool> physical;
   const OrdersCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
@@ -2443,6 +2456,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     this.goodsCnt = const Value.absent(),
     this.mc = const Value.absent(),
     this.delivered = const Value.absent(),
+    this.physical = const Value.absent(),
   });
   OrdersCompanion.insert({
     this.id = const Value.absent(),
@@ -2454,13 +2468,15 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     required int goodsCnt,
     required double mc,
     this.delivered = const Value.absent(),
+    required bool physical,
   })  : buyerId = Value(buyerId),
         ord = Value(ord),
         ndoc = Value(ndoc),
         info = Value(info),
         isInc = Value(isInc),
         goodsCnt = Value(goodsCnt),
-        mc = Value(mc);
+        mc = Value(mc),
+        physical = Value(physical);
   static Insertable<Order> custom({
     Expression<int>? id,
     Expression<int>? buyerId,
@@ -2471,6 +2487,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Expression<int>? goodsCnt,
     Expression<double>? mc,
     Expression<bool?>? delivered,
+    Expression<bool>? physical,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2482,6 +2499,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       if (goodsCnt != null) 'goods_cnt': goodsCnt,
       if (mc != null) 'mc': mc,
       if (delivered != null) 'delivered': delivered,
+      if (physical != null) 'physical': physical,
     });
   }
 
@@ -2494,7 +2512,8 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       Value<bool>? isInc,
       Value<int>? goodsCnt,
       Value<double>? mc,
-      Value<bool?>? delivered}) {
+      Value<bool?>? delivered,
+      Value<bool>? physical}) {
     return OrdersCompanion(
       id: id ?? this.id,
       buyerId: buyerId ?? this.buyerId,
@@ -2505,6 +2524,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       goodsCnt: goodsCnt ?? this.goodsCnt,
       mc: mc ?? this.mc,
       delivered: delivered ?? this.delivered,
+      physical: physical ?? this.physical,
     );
   }
 
@@ -2538,6 +2558,9 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     if (delivered.present) {
       map['delivered'] = Variable<bool?>(delivered.value);
     }
+    if (physical.present) {
+      map['physical'] = Variable<bool>(physical.value);
+    }
     return map;
   }
 
@@ -2552,7 +2575,8 @@ class OrdersCompanion extends UpdateCompanion<Order> {
           ..write('isInc: $isInc, ')
           ..write('goodsCnt: $goodsCnt, ')
           ..write('mc: $mc, ')
-          ..write('delivered: $delivered')
+          ..write('delivered: $delivered, ')
+          ..write('physical: $physical')
           ..write(')'))
         .toString();
   }
@@ -2614,9 +2638,16 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       type: const BoolType(),
       requiredDuringInsert: false,
       defaultConstraints: 'CHECK (delivered IN (0, 1))');
+  final VerificationMeta _physicalMeta = const VerificationMeta('physical');
+  @override
+  late final GeneratedColumn<bool?> physical = GeneratedColumn<bool?>(
+      'physical', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (physical IN (0, 1))');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered];
+      [id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical];
   @override
   String get aliasedName => _alias ?? 'orders';
   @override
@@ -2674,6 +2705,12 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       context.handle(_deliveredMeta,
           delivered.isAcceptableOrUnknown(data['delivered']!, _deliveredMeta));
     }
+    if (data.containsKey('physical')) {
+      context.handle(_physicalMeta,
+          physical.isAcceptableOrUnknown(data['physical']!, _physicalMeta));
+    } else if (isInserting) {
+      context.missing(_physicalMeta);
+    }
     return context;
   }
 
@@ -2688,6 +2725,544 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
   @override
   $OrdersTable createAlias(String alias) {
     return $OrdersTable(attachedDatabase, alias);
+  }
+}
+
+class OrderLine extends DataClass implements Insertable<OrderLine> {
+  final int orderId;
+  final int subid;
+  final String name;
+  final String gtin;
+  final double vol;
+  final bool needMarking;
+  OrderLine(
+      {required this.orderId,
+      required this.subid,
+      required this.name,
+      required this.gtin,
+      required this.vol,
+      required this.needMarking});
+  factory OrderLine.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return OrderLine(
+      orderId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
+      subid: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}subid'])!,
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      gtin: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}gtin'])!,
+      vol: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}vol'])!,
+      needMarking: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}need_marking'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['order_id'] = Variable<int>(orderId);
+    map['subid'] = Variable<int>(subid);
+    map['name'] = Variable<String>(name);
+    map['gtin'] = Variable<String>(gtin);
+    map['vol'] = Variable<double>(vol);
+    map['need_marking'] = Variable<bool>(needMarking);
+    return map;
+  }
+
+  OrderLinesCompanion toCompanion(bool nullToAbsent) {
+    return OrderLinesCompanion(
+      orderId: Value(orderId),
+      subid: Value(subid),
+      name: Value(name),
+      gtin: Value(gtin),
+      vol: Value(vol),
+      needMarking: Value(needMarking),
+    );
+  }
+
+  factory OrderLine.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OrderLine(
+      orderId: serializer.fromJson<int>(json['orderId']),
+      subid: serializer.fromJson<int>(json['subid']),
+      name: serializer.fromJson<String>(json['name']),
+      gtin: serializer.fromJson<String>(json['gtin']),
+      vol: serializer.fromJson<double>(json['vol']),
+      needMarking: serializer.fromJson<bool>(json['needMarking']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'orderId': serializer.toJson<int>(orderId),
+      'subid': serializer.toJson<int>(subid),
+      'name': serializer.toJson<String>(name),
+      'gtin': serializer.toJson<String>(gtin),
+      'vol': serializer.toJson<double>(vol),
+      'needMarking': serializer.toJson<bool>(needMarking),
+    };
+  }
+
+  OrderLine copyWith(
+          {int? orderId,
+          int? subid,
+          String? name,
+          String? gtin,
+          double? vol,
+          bool? needMarking}) =>
+      OrderLine(
+        orderId: orderId ?? this.orderId,
+        subid: subid ?? this.subid,
+        name: name ?? this.name,
+        gtin: gtin ?? this.gtin,
+        vol: vol ?? this.vol,
+        needMarking: needMarking ?? this.needMarking,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('OrderLine(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('name: $name, ')
+          ..write('gtin: $gtin, ')
+          ..write('vol: $vol, ')
+          ..write('needMarking: $needMarking')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(orderId, subid, name, gtin, vol, needMarking);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OrderLine &&
+          other.orderId == this.orderId &&
+          other.subid == this.subid &&
+          other.name == this.name &&
+          other.gtin == this.gtin &&
+          other.vol == this.vol &&
+          other.needMarking == this.needMarking);
+}
+
+class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
+  final Value<int> orderId;
+  final Value<int> subid;
+  final Value<String> name;
+  final Value<String> gtin;
+  final Value<double> vol;
+  final Value<bool> needMarking;
+  const OrderLinesCompanion({
+    this.orderId = const Value.absent(),
+    this.subid = const Value.absent(),
+    this.name = const Value.absent(),
+    this.gtin = const Value.absent(),
+    this.vol = const Value.absent(),
+    this.needMarking = const Value.absent(),
+  });
+  OrderLinesCompanion.insert({
+    required int orderId,
+    required int subid,
+    required String name,
+    required String gtin,
+    required double vol,
+    required bool needMarking,
+  })  : orderId = Value(orderId),
+        subid = Value(subid),
+        name = Value(name),
+        gtin = Value(gtin),
+        vol = Value(vol),
+        needMarking = Value(needMarking);
+  static Insertable<OrderLine> custom({
+    Expression<int>? orderId,
+    Expression<int>? subid,
+    Expression<String>? name,
+    Expression<String>? gtin,
+    Expression<double>? vol,
+    Expression<bool>? needMarking,
+  }) {
+    return RawValuesInsertable({
+      if (orderId != null) 'order_id': orderId,
+      if (subid != null) 'subid': subid,
+      if (name != null) 'name': name,
+      if (gtin != null) 'gtin': gtin,
+      if (vol != null) 'vol': vol,
+      if (needMarking != null) 'need_marking': needMarking,
+    });
+  }
+
+  OrderLinesCompanion copyWith(
+      {Value<int>? orderId,
+      Value<int>? subid,
+      Value<String>? name,
+      Value<String>? gtin,
+      Value<double>? vol,
+      Value<bool>? needMarking}) {
+    return OrderLinesCompanion(
+      orderId: orderId ?? this.orderId,
+      subid: subid ?? this.subid,
+      name: name ?? this.name,
+      gtin: gtin ?? this.gtin,
+      vol: vol ?? this.vol,
+      needMarking: needMarking ?? this.needMarking,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (orderId.present) {
+      map['order_id'] = Variable<int>(orderId.value);
+    }
+    if (subid.present) {
+      map['subid'] = Variable<int>(subid.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (gtin.present) {
+      map['gtin'] = Variable<String>(gtin.value);
+    }
+    if (vol.present) {
+      map['vol'] = Variable<double>(vol.value);
+    }
+    if (needMarking.present) {
+      map['need_marking'] = Variable<bool>(needMarking.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLinesCompanion(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('name: $name, ')
+          ..write('gtin: $gtin, ')
+          ..write('vol: $vol, ')
+          ..write('needMarking: $needMarking')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OrderLinesTable extends OrderLines
+    with TableInfo<$OrderLinesTable, OrderLine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OrderLinesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+  @override
+  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
+      'order_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _subidMeta = const VerificationMeta('subid');
+  @override
+  late final GeneratedColumn<int?> subid = GeneratedColumn<int?>(
+      'subid', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+      'name', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _gtinMeta = const VerificationMeta('gtin');
+  @override
+  late final GeneratedColumn<String?> gtin = GeneratedColumn<String?>(
+      'gtin', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _volMeta = const VerificationMeta('vol');
+  @override
+  late final GeneratedColumn<double?> vol = GeneratedColumn<double?>(
+      'vol', aliasedName, false,
+      type: const RealType(), requiredDuringInsert: true);
+  final VerificationMeta _needMarkingMeta =
+      const VerificationMeta('needMarking');
+  @override
+  late final GeneratedColumn<bool?> needMarking = GeneratedColumn<bool?>(
+      'need_marking', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (need_marking IN (0, 1))');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [orderId, subid, name, gtin, vol, needMarking];
+  @override
+  String get aliasedName => _alias ?? 'order_lines';
+  @override
+  String get actualTableName => 'order_lines';
+  @override
+  VerificationContext validateIntegrity(Insertable<OrderLine> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('order_id')) {
+      context.handle(_orderIdMeta,
+          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
+    } else if (isInserting) {
+      context.missing(_orderIdMeta);
+    }
+    if (data.containsKey('subid')) {
+      context.handle(
+          _subidMeta, subid.isAcceptableOrUnknown(data['subid']!, _subidMeta));
+    } else if (isInserting) {
+      context.missing(_subidMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('gtin')) {
+      context.handle(
+          _gtinMeta, gtin.isAcceptableOrUnknown(data['gtin']!, _gtinMeta));
+    } else if (isInserting) {
+      context.missing(_gtinMeta);
+    }
+    if (data.containsKey('vol')) {
+      context.handle(
+          _volMeta, vol.isAcceptableOrUnknown(data['vol']!, _volMeta));
+    } else if (isInserting) {
+      context.missing(_volMeta);
+    }
+    if (data.containsKey('need_marking')) {
+      context.handle(
+          _needMarkingMeta,
+          needMarking.isAcceptableOrUnknown(
+              data['need_marking']!, _needMarkingMeta));
+    } else if (isInserting) {
+      context.missing(_needMarkingMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid};
+  @override
+  OrderLine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return OrderLine.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $OrderLinesTable createAlias(String alias) {
+    return $OrderLinesTable(attachedDatabase, alias);
+  }
+}
+
+class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
+  final int orderId;
+  final int subid;
+  final String code;
+  OrderLineCode(
+      {required this.orderId, required this.subid, required this.code});
+  factory OrderLineCode.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return OrderLineCode(
+      orderId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
+      subid: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}subid'])!,
+      code: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['order_id'] = Variable<int>(orderId);
+    map['subid'] = Variable<int>(subid);
+    map['code'] = Variable<String>(code);
+    return map;
+  }
+
+  OrderLineCodesCompanion toCompanion(bool nullToAbsent) {
+    return OrderLineCodesCompanion(
+      orderId: Value(orderId),
+      subid: Value(subid),
+      code: Value(code),
+    );
+  }
+
+  factory OrderLineCode.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OrderLineCode(
+      orderId: serializer.fromJson<int>(json['orderId']),
+      subid: serializer.fromJson<int>(json['subid']),
+      code: serializer.fromJson<String>(json['code']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'orderId': serializer.toJson<int>(orderId),
+      'subid': serializer.toJson<int>(subid),
+      'code': serializer.toJson<String>(code),
+    };
+  }
+
+  OrderLineCode copyWith({int? orderId, int? subid, String? code}) =>
+      OrderLineCode(
+        orderId: orderId ?? this.orderId,
+        subid: subid ?? this.subid,
+        code: code ?? this.code,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('OrderLineCode(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('code: $code')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(orderId, subid, code);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OrderLineCode &&
+          other.orderId == this.orderId &&
+          other.subid == this.subid &&
+          other.code == this.code);
+}
+
+class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
+  final Value<int> orderId;
+  final Value<int> subid;
+  final Value<String> code;
+  const OrderLineCodesCompanion({
+    this.orderId = const Value.absent(),
+    this.subid = const Value.absent(),
+    this.code = const Value.absent(),
+  });
+  OrderLineCodesCompanion.insert({
+    required int orderId,
+    required int subid,
+    required String code,
+  })  : orderId = Value(orderId),
+        subid = Value(subid),
+        code = Value(code);
+  static Insertable<OrderLineCode> custom({
+    Expression<int>? orderId,
+    Expression<int>? subid,
+    Expression<String>? code,
+  }) {
+    return RawValuesInsertable({
+      if (orderId != null) 'order_id': orderId,
+      if (subid != null) 'subid': subid,
+      if (code != null) 'code': code,
+    });
+  }
+
+  OrderLineCodesCompanion copyWith(
+      {Value<int>? orderId, Value<int>? subid, Value<String>? code}) {
+    return OrderLineCodesCompanion(
+      orderId: orderId ?? this.orderId,
+      subid: subid ?? this.subid,
+      code: code ?? this.code,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (orderId.present) {
+      map['order_id'] = Variable<int>(orderId.value);
+    }
+    if (subid.present) {
+      map['subid'] = Variable<int>(subid.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLineCodesCompanion(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('code: $code')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OrderLineCodesTable extends OrderLineCodes
+    with TableInfo<$OrderLineCodesTable, OrderLineCode> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OrderLineCodesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+  @override
+  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
+      'order_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _subidMeta = const VerificationMeta('subid');
+  @override
+  late final GeneratedColumn<int?> subid = GeneratedColumn<int?>(
+      'subid', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+      'code', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [orderId, subid, code];
+  @override
+  String get aliasedName => _alias ?? 'order_line_codes';
+  @override
+  String get actualTableName => 'order_line_codes';
+  @override
+  VerificationContext validateIntegrity(Insertable<OrderLineCode> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('order_id')) {
+      context.handle(_orderIdMeta,
+          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
+    } else if (isInserting) {
+      context.missing(_orderIdMeta);
+    }
+    if (data.containsKey('subid')) {
+      context.handle(
+          _subidMeta, subid.isAcceptableOrUnknown(data['subid']!, _subidMeta));
+    } else if (isInserting) {
+      context.missing(_subidMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid, code};
+  @override
+  OrderLineCode map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return OrderLineCode.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $OrderLineCodesTable createAlias(String alias) {
+    return $OrderLineCodesTable(attachedDatabase, alias);
   }
 }
 
@@ -3103,6 +3678,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $CashPaymentsTable cashPayments = $CashPaymentsTable(this);
   late final $DebtsTable debts = $DebtsTable(this);
   late final $OrdersTable orders = $OrdersTable(this);
+  late final $OrderLinesTable orderLines = $OrderLinesTable(this);
+  late final $OrderLineCodesTable orderLineCodes = $OrderLineCodesTable(this);
   late final $ApiCredentialsTable apiCredentials = $ApiCredentialsTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
   late final ApiCredentialsDao apiCredentialsDao =
@@ -3122,6 +3699,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
         cashPayments,
         debts,
         orders,
+        orderLines,
+        orderLineCodes,
         apiCredentials,
         prefs
       ];
@@ -3139,6 +3718,8 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $IncomesTable get incomes => attachedDatabase.incomes;
   $ReceptsTable get recepts => attachedDatabase.recepts;
   $OrdersTable get orders => attachedDatabase.orders;
+  $OrderLinesTable get orderLines => attachedDatabase.orderLines;
+  $OrderLineCodesTable get orderLineCodes => attachedDatabase.orderLineCodes;
 }
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;

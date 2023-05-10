@@ -11,10 +11,13 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
 
   @override
   Future<void> loadData() async {
+    List<Buyer> buyers = await ordersRepository.getBuyers();
+    List<Order> orders = await ordersRepository.getOrders();
+
     emit(state.copyWith(
       status: BuyersStateStatus.dataLoaded,
-      buyers: await ordersRepository.getBuyers(),
-      orders: await ordersRepository.getOrders()
+      buyers: buyers,
+      orders: orders
     ));
   }
 

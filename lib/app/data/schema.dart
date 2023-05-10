@@ -84,4 +84,26 @@ class Orders extends Table {
   IntColumn get goodsCnt => integer()();
   RealColumn get mc => real()();
   BoolColumn get delivered => boolean().nullable()();
+  BoolColumn get physical => boolean()();
+}
+
+class OrderLines extends Table {
+  IntColumn get orderId => integer()();
+  IntColumn get subid => integer()();
+  TextColumn get name => text()();
+  TextColumn get gtin => text()();
+  RealColumn get vol => real()();
+  BoolColumn get needMarking => boolean()();
+
+  @override
+  Set<Column> get primaryKey => {orderId, subid};
+}
+
+class OrderLineCodes extends Table {
+  IntColumn get orderId => integer()();
+  IntColumn get subid => integer()();
+  TextColumn get code => text()();
+
+  @override
+  Set<Column> get primaryKey => {orderId, subid, code};
 }

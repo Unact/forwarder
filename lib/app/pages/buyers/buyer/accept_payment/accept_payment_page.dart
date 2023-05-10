@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
+import 'package:forwarder/app/repositories/orders_repository.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -33,6 +34,7 @@ class AcceptPaymentPage extends StatelessWidget {
     return BlocProvider<AcceptPaymentViewModel>(
       create: (context) => AcceptPaymentViewModel(
         RepositoryProvider.of<AppRepository>(context),
+        RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
         debts: debts,
         isCard: isCard

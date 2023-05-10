@@ -5,7 +5,9 @@ part of 'database.dart';
     Buyers,
     Incomes,
     Recepts,
-    Orders
+    Orders,
+    OrderLines,
+    OrderLineCodes
   ]
 )
 class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
@@ -25,6 +27,13 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     });
   }
 
+  Future<void> loadOrderLines(List<OrderLine> list) async {
+    await batch((batch) {
+      batch.deleteWhere(orderLines, (row) => const Constant(true));
+      batch.insertAll(orderLines, list, mode: InsertMode.insertOrReplace);
+    });
+  }
+
   Future<void> loadIncomes(List<Income> list) async {
     await batch((batch) {
       batch.deleteWhere(incomes, (row) => const Constant(true));
@@ -41,6 +50,18 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
 
   Future<List<Order>> getOrders() async {
     return select(orders).get();
+  }
+
+  Future<List<OrderLineWithCode>> getOrderLinesByOrderId(int orderId) async {
+    final orderLineRows = await (select(orderLines)..where((tbl) => tbl.orderId.equals(orderId))).get();
+    final orderLineCodeRows = await select(orderLineCodes).get();
+
+    return orderLineRows.map(((e) {
+      return OrderLineWithCode(
+        e,
+        orderLineCodeRows.where((element) => element.orderId == e.orderId && element.subid == e.subid).toList()
+      );
+    })).toList();
   }
 
   Future<List<Income>> getIncomes() async {
@@ -70,4 +91,27 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   Future<int> upsertOrder(OrdersCompanion order) {
     return into(orders).insertOnConflictUpdate(order);
   }
+
+  Future<int> upsertOrderLineCode(OrderLineCodesCompanion orderLineCode) {
+    return into(orderLineCodes).insertOnConflictUpdate(orderLineCode);
+  }
+
+  Future<void> clearOrderLineCodesByOrderId(int orderId) async {
+    await (delete(orderLineCodes)..where((tbl) => tbl.orderId.equals(orderId))).go();
+  }
+
+  Future<void> clearOrderLineCodesByOrderLineSubid(int orderId, int subid) async {
+    await (
+      delete(orderLineCodes)
+        ..where((tbl) => tbl.orderId.equals(orderId))
+        ..where((tbl) => tbl.subid.equals(subid))
+    ).go();
+  }
+}
+
+class OrderLineWithCode {
+  final OrderLine orderLine;
+  final List<OrderLineCode> orderLineCodes;
+
+  OrderLineWithCode(this.orderLine, this.orderLineCodes);
 }

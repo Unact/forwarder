@@ -35,6 +35,8 @@ dependencies:
   drift: ^1.5.0
   qr_code_scanner: ^1.0.1
   sqlite3_flutter_libs: ^0.5.0
+  soundpool: ^2.3.0
+  gs1_barcode_parser: ^1.0.4
 
 dev_dependencies:
   drift_dev: ^1.5.2
@@ -45,3 +47,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/beep.mp3
