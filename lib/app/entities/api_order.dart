@@ -10,6 +10,7 @@ class ApiOrder extends Equatable {
   final int goodsCnt;
   final double mc;
   final bool? delivered;
+  final bool physical;
 
   const ApiOrder({
     required this.id,
@@ -21,6 +22,7 @@ class ApiOrder extends Equatable {
     required this.goodsCnt,
     required this.mc,
     this.delivered,
+    required this.physical
   });
 
   factory ApiOrder.fromJson(dynamic json) {
@@ -34,6 +36,7 @@ class ApiOrder extends Equatable {
       goodsCnt: json['goods_cnt'],
       mc: Parsing.parseDouble(json['mc'])!,
       delivered: json['delivered'],
+      physical: json['physical']
     );
   }
 
@@ -47,7 +50,8 @@ class ApiOrder extends Equatable {
       isInc: inc == 1,
       goodsCnt: goodsCnt,
       mc: mc,
-      delivered: delivered
+      delivered: delivered,
+      physical: physical
     );
   }
 

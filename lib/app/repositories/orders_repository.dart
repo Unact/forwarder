@@ -30,15 +30,39 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.getOrdersByBuyerId(buyerId);
   }
 
+  Future<List<OrderLineWithCode>> getOrderLinesByOrderId(int orderId) async {
+    return dataStore.ordersDao.getOrderLinesByOrderId(orderId);
+  }
+
   Future<Order> getOrderById(int id) async {
     return dataStore.ordersDao.getOrderById(id);
   }
 
-  Future<void> deliveryOrder(Order order, bool delivered, Location location) async {
+  Future<void> addOrderLineCode(OrderLine orderLine, String code) async {
+    OrderLineCodesCompanion newOrderLineCode = OrderLineCodesCompanion(
+      orderId: Value(orderLine.orderId),
+      subid: Value(orderLine.subid),
+      code: Value(code)
+    );
+
+    await dataStore.ordersDao.upsertOrderLineCode(newOrderLineCode);
+    notifyListeners();
+  }
+
+  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Location location) async {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: Value(delivered));
+    List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
+      'subid': e.subid,
+      'code': e.code
+    }).toList();
 
     try {
-      await api.deliverOrder(updatedOrder.id.value, delivered, location);
+      await api.deliverOrder(
+        updatedOrder.id.value,
+        updatedOrderLineCodes,
+        delivered,
+        location
+      );
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -47,6 +71,12 @@ class OrdersRepository extends BaseRepository {
     }
 
     await dataStore.ordersDao.upsertOrder(updatedOrder);
+    await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
+    notifyListeners();
+  }
+
+  Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {
+    await dataStore.ordersDao.clearOrderLineCodesByOrderLineSubid(orderLine.orderId, orderLine.subid);
     notifyListeners();
   }
 }

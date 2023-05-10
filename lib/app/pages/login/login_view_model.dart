@@ -11,9 +11,11 @@ class LoginViewModel extends PageViewModel<LoginState, LoginStateStatus> {
 
   @override
   Future<void> loadData() async {
+    String fullVersion = await appRepository.fullVersion;
+
     emit(state.copyWith(
       status: LoginStateStatus.dataLoaded,
-      fullVersion: await appRepository.fullVersion
+      fullVersion: fullVersion
     ));
   }
 

@@ -25,6 +25,8 @@ part 'users_dao.dart';
     CashPayments,
     Debts,
     Orders,
+    OrderLines,
+    OrderLineCodes,
     ApiCredentials,
     Prefs
   ],
@@ -85,7 +87,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

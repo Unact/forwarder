@@ -12,10 +12,13 @@ class HistoryViewModel extends PageViewModel<HistoryState, HistoryStateStatus> {
 
   @override
   Future<void> loadData() async {
+    List<Income> incomes = await ordersRepository.getIncomes();
+    List<Recept> recepts = await ordersRepository.getRecepts();
+
     emit(state.copyWith(
       status: HistoryStateStatus.dataLoaded,
-      incomes: await ordersRepository.getIncomes(),
-      recepts: await ordersRepository.getRecepts()
+      incomes: incomes,
+      recepts: recepts
     ));
   }
 }

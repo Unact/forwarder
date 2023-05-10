@@ -23,4 +23,8 @@ class Permissions {
 
     return false;
   }
+
+  static Future<bool> hasCameraPermissions() async {
+    return (await Permission.camera.request()).isGranted;
+  }
 }

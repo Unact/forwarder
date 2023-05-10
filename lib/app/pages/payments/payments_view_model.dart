@@ -13,11 +13,15 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
 
   @override
   Future<void> loadData() async {
+    List<Buyer> buyers = await ordersRepository.getBuyers();
+    List<CardPayment> cardPayments = await paymentsRepository.getCardPayments();
+    List<CashPayment> cashPayments = await paymentsRepository.getCashPayments();
+
     emit(state.copyWith(
       status: PaymentsStateStatus.dataLoaded,
-      buyers: await ordersRepository.getBuyers(),
-      cardPayments: await paymentsRepository.getCardPayments(),
-      cashPayments: await paymentsRepository.getCashPayments(),
+      buyers: buyers,
+      cardPayments: cardPayments,
+      cashPayments: cashPayments
     ));
   }
 

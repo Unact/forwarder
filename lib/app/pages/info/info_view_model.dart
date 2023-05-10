@@ -24,15 +24,23 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
 
   @override
   Future<void> loadData() async {
+    bool newVersionAvailable = await appRepository.newVersionAvailable;
+    User user = await usersRepository.getUser();
+    Pref pref = await appRepository.getPref();
+    List<Buyer> buyers = await ordersRepository.getBuyers();
+    List<Order> orders = await ordersRepository.getOrders();
+    List<CardPayment> cardPayments = await paymentsRepository.getCardPayments();
+    List<CashPayment> cashPayments = await paymentsRepository.getCashPayments();
+
     emit(state.copyWith(
       status: InfoStateStatus.dataLoaded,
-      newVersionAvailable: await appRepository.newVersionAvailable,
-      user: await usersRepository.getUser(),
-      pref: await appRepository.getPref(),
-      buyers: await ordersRepository.getBuyers(),
-      orders: await ordersRepository.getOrders(),
-      cardPayments: await paymentsRepository.getCardPayments(),
-      cashPayments: await paymentsRepository.getCashPayments()
+      newVersionAvailable: newVersionAvailable,
+      user: user,
+      pref: pref,
+      buyers: buyers,
+      orders: orders,
+      cardPayments: cardPayments,
+      cashPayments: cashPayments
     ));
   }
 

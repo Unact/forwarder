@@ -2,6 +2,7 @@ part of 'landing_page.dart';
 
 enum LandingStateStatus {
   initial,
+  dataLoaded
 }
 
 class LandingState {

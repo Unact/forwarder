@@ -2,6 +2,7 @@ part of 'accept_payment_page.dart';
 
 enum AcceptPaymentStateStatus {
   initial,
+  dataLoaded,
   searchingForDevice,
   gettingCredentials,
   paymentAuthorization,
@@ -20,6 +21,7 @@ class AcceptPaymentState {
     this.status = AcceptPaymentStateStatus.initial,
     required this.debts,
     required this.isCard,
+    this.orders = const [],
     this.location,
     this.canceled = false,
     this.isCancelable = true,
@@ -27,6 +29,7 @@ class AcceptPaymentState {
     this.message = ''
   });
 
+  final List<Order> orders;
   final List<Debt> debts;
   final bool isCard;
   final Location? location;
@@ -40,6 +43,7 @@ class AcceptPaymentState {
     AcceptPaymentStateStatus? status,
     List<Debt>? debts,
     bool? isCard,
+    List<Order>? orders,
     Location? location,
     bool? canceled,
     bool? isCancelable,
@@ -50,6 +54,7 @@ class AcceptPaymentState {
       status: status ?? this.status,
       debts: debts ?? this.debts,
       isCard: isCard ?? this.isCard,
+      orders: orders ?? this.orders,
       location: location ?? this.location,
       canceled: canceled ?? this.canceled,
       isCancelable: isCancelable ?? this.isCancelable,

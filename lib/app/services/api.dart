@@ -99,11 +99,12 @@ class Api {
     ));
   }
 
-  Future<void> deliverOrder(int orderId, bool delivered, Location location) async {
+  Future<void> deliverOrder(int orderId, List<Map<String, dynamic>> codes, bool delivered, Location location) async {
     await _sendRequest((dio) => dio.post(
       'v1/forwarder/confirm_delivery',
       data: {
         'sale_order_id': orderId,
+        'markirovka_codes': codes,
         'delivered': delivered,
         'location': {
           'latitude': location.latitude,
