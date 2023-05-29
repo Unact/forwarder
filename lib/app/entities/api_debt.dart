@@ -13,6 +13,7 @@ class ApiDebt extends Equatable {
   final double orderSum;
   final double? paidSum;
   final double? paymentSum;
+  final bool physical;
 
   const ApiDebt({
     required this.id,
@@ -26,7 +27,8 @@ class ApiDebt extends Equatable {
     required this.debtSum,
     required this.orderSum,
     this.paidSum,
-    this.paymentSum
+    this.paymentSum,
+    required this.physical
   });
 
   factory ApiDebt.fromJson(dynamic json) {
@@ -43,6 +45,7 @@ class ApiDebt extends Equatable {
       orderSum: Parsing.parseDouble(json['order_sum'])!,
       paidSum: Parsing.parseDouble(json['paid_sum']),
       paymentSum: Parsing.parseDouble(json['payment_sum']),
+      physical: json['physical']
     );
   }
 
@@ -59,7 +62,8 @@ class ApiDebt extends Equatable {
       debtSum: debtSum,
       orderSum: orderSum,
       paidSum: paidSum,
-      paymentSum: paymentSum
+      paymentSum: paymentSum,
+      physical: physical
     );
   }
 
@@ -76,6 +80,7 @@ class ApiDebt extends Equatable {
     debtSum,
     orderSum,
     paidSum,
-    paymentSum
+    paymentSum,
+    physical
   ];
 }

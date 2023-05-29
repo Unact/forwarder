@@ -3,9 +3,10 @@ part of 'order_page.dart';
 class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   final AppRepository appRepository;
   final OrdersRepository ordersRepository;
+  final PaymentsRepository paymentsRepository;
 
-  OrderViewModel(this.appRepository, this.ordersRepository, {required Order order}) :
-    super(OrderState(order: order, confirmationCallback: () {}), [appRepository, ordersRepository]);
+  OrderViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository, {required Order order}) :
+    super(OrderState(order: order, confirmationCallback: () {}), [appRepository, ordersRepository, paymentsRepository]);
 
   @override
   OrderStateStatus get status => state.status;
@@ -14,11 +15,13 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   Future<void> loadData() async {
     List<OrderLineWithCode> codeLines = await ordersRepository.getOrderLinesByOrderId(state.order.id);
     Order order = await ordersRepository.getOrderById(state.order.id);
+    Debt? debt = await paymentsRepository.getDebtByOrderId(state.order.id);
 
     emit(state.copyWith(
       status: OrderStateStatus.dataLoaded,
       codeLines: codeLines,
-      order: order
+      order: order,
+      debt: debt
     ));
   }
 
@@ -36,11 +39,15 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   }
 
   void tryDeliverOrder(bool delivered) {
-    if (delivered && state.markingCodeLines.any((e) => e.orderLine.vol != e.orderLineCodes.length)) {
+    bool allVolScanned = state.codeLines.every(
+      (e) => e.orderLine.vol == e.orderLineCodes.fold<int>(0, (v, el) => v + el.amount)
+    );
+
+    if (delivered && state.order.physical && !allVolScanned) {
       emit(state.copyWith(
         status: OrderStateStatus.needUserConfirmation,
         delivered: delivered,
-        message: 'Не все товары с маркировкой отсканированы. Подтверждаете доставку?',
+        message: 'Не все товары отсканированы. Подтверждаете доставку?',
         confirmationCallback: deliverOrder
       ));
 
@@ -74,10 +81,29 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
         state.codeLines.map((e) => e.orderLineCodes).expand((e) => e).toList(),
         location
       );
+      await appRepository.loadData();
 
       emit(state.copyWith(status: OrderStateStatus.success, message: 'Информация о доставке сохранена'));
     } on AppError catch(e) {
       emit(state.copyWith(status: OrderStateStatus.failure, message: e.message));
     }
+  }
+
+  Future<void> startPayment(bool isCard) async {
+    emit(state.copyWith(status: OrderStateStatus.paymentStarted, isCard: isCard));
+  }
+
+  void finishPayment(String result) async {
+    emit(state.copyWith(status: OrderStateStatus.paymentFinished, message: result));
+  }
+
+  void tryStartPayment(bool isCard) {
+    if (state.debt == null) {
+      emit(state.copyWith(status: OrderStateStatus.paymentFailure, message: 'Не найдена задолженность для заказа'));
+
+      return;
+    }
+
+    startPayment(isCard);
   }
 }

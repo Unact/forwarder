@@ -104,7 +104,7 @@ class Api {
       'v1/forwarder/confirm_delivery',
       data: {
         'sale_order_id': orderId,
-        'markirovka_codes': codes,
+        'codes': codes,
         'delivered': delivered,
         'location': {
           'latitude': location.latitude,

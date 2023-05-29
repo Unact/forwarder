@@ -25,7 +25,8 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   @override
   Future<void> loadData() async {
     List<Order> orders = await ordersRepository.getOrdersByBuyerId(state.buyer.id);
-    List<Debt> debts = await paymentsRepository.getDebtsByBuyerId(state.buyer.id);
+    List<Debt> debts = (await paymentsRepository.getDebtsByBuyerId(state.buyer.id))
+      .where((el) => !el.physical).toList();
     List<CardPayment> cardPayments = await paymentsRepository.getCardPaymentsByBuyerId(state.buyer.id);
     List<CashPayment> cashPayments = await paymentsRepository.getCashPaymentsByBuyerId(state.buyer.id);
 

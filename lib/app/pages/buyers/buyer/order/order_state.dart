@@ -7,7 +7,10 @@ enum OrderStateStatus {
   inProgress,
   success,
   failure,
-  showScan
+  showScan,
+  paymentStarted,
+  paymentFailure,
+  paymentFinished
 }
 
 class OrderState {
@@ -17,7 +20,9 @@ class OrderState {
     required this.confirmationCallback,
     this.codeLines = const [],
     this.message = '',
-    this.delivered = false
+    this.delivered = false,
+    this.debt,
+    this.isCard = false
   });
 
   final OrderStateStatus status;
@@ -26,9 +31,10 @@ class OrderState {
   final Function confirmationCallback;
   final String message;
   final bool delivered;
+  final Debt? debt;
+  final bool isCard;
 
-  List<OrderLineWithCode> get markingCodeLines => codeLines.where((e) => e.orderLine.needMarking).toList();
-  bool get needScan => codeLines.any((e) => e.orderLine.needMarking && e.orderLine.vol != e.orderLineCodes.length);
+  bool get needPayment => debt != null && debt!.paymentSum != null && debt!.paidSum == 0;
 
   OrderState copyWith({
     OrderStateStatus? status,
@@ -36,15 +42,19 @@ class OrderState {
     List<OrderLineWithCode>? codeLines,
     Function? confirmationCallback,
     String? message,
-    bool? delivered
+    bool? delivered,
+    Debt? debt,
+    bool? isCard
   }) {
     return OrderState(
       status: status ?? this.status,
       order: order ?? this.order,
+      debt: debt ?? this.debt,
       codeLines: codeLines ?? this.codeLines,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       message: message ?? this.message,
-      delivered: delivered ?? this.delivered
+      delivered: delivered ?? this.delivered,
+      isCard: isCard ?? this.isCard
     );
   }
 }

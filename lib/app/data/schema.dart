@@ -72,6 +72,7 @@ class Debts extends Table {
   RealColumn get orderSum => real()();
   RealColumn get paidSum => real().nullable()();
   RealColumn get paymentSum => real().nullable()();
+  BoolColumn get physical => boolean()();
 }
 
 class Orders extends Table {
@@ -94,6 +95,7 @@ class OrderLines extends Table {
   TextColumn get gtin => text()();
   RealColumn get vol => real()();
   BoolColumn get needMarking => boolean()();
+  TextColumn get barcodes => text().map(const JsonListConverter())();
 
   @override
   Set<Column> get primaryKey => {orderId, subid};
@@ -103,7 +105,23 @@ class OrderLineCodes extends Table {
   IntColumn get orderId => integer()();
   IntColumn get subid => integer()();
   TextColumn get code => text()();
+  IntColumn get amount => integer()();
+  BoolColumn get isDataMatrix => boolean()();
 
   @override
   Set<Column> get primaryKey => {orderId, subid, code};
+}
+
+class JsonListConverter extends TypeConverter<List<String>, String> {
+  const JsonListConverter();
+
+  @override
+  List<String>? mapToDart(String? fromDb) {
+    return (json.decode(fromDb!) as List).cast<String>();
+  }
+
+  @override
+  String? mapToSql(List<String>? value) {
+    return json.encode(value);
+  }
 }

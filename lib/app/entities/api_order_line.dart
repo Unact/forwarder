@@ -7,6 +7,7 @@ class ApiOrderLine extends Equatable {
   final String gtin;
   final double vol;
   final bool needMarking;
+  final List<String> barcodes;
 
   const ApiOrderLine({
     required this.orderId,
@@ -14,7 +15,8 @@ class ApiOrderLine extends Equatable {
     required this.name,
     required this.gtin,
     required this.vol,
-    required this.needMarking
+    required this.needMarking,
+    required this.barcodes
   });
 
   factory ApiOrderLine.fromJson(dynamic json) {
@@ -24,7 +26,8 @@ class ApiOrderLine extends Equatable {
       name: json['name'],
       gtin: json['gtin'],
       vol: Parsing.parseDouble(json['vol'])!,
-      needMarking: json['need_marking']
+      needMarking: json['need_marking'],
+      barcodes: json['barcodes'].split(',')
     );
   }
 
@@ -35,7 +38,8 @@ class ApiOrderLine extends Equatable {
       name: name,
       gtin: gtin,
       vol: vol,
-      needMarking: needMarking
+      needMarking: needMarking,
+      barcodes: barcodes
     );
   }
 
@@ -46,6 +50,7 @@ class ApiOrderLine extends Equatable {
     name,
     gtin,
     vol,
-    needMarking
+    needMarking,
+    barcodes
   ];
 }

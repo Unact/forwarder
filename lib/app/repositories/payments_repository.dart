@@ -30,6 +30,10 @@ class PaymentsRepository extends BaseRepository {
     return dataStore.paymentsDao.getDebtById(id);
   }
 
+  Future<Debt?> getDebtByOrderId(int orderId) async {
+    return dataStore.paymentsDao.getDebtByOrderId(orderId);
+  }
+
   Future<List<CardPayment>> getCardPaymentsByBuyerId(int buyerId) async {
     return dataStore.paymentsDao.getCardPaymentsByBuyerId(buyerId);
   }
@@ -79,7 +83,7 @@ class PaymentsRepository extends BaseRepository {
   }
 
   Future<void> cancelCardPayment(CardPayment cardPayment, Map<String, dynamic> transaction) async {
-    Debt paymentDebt = await dataStore.paymentsDao.getDebtByOrderId(cardPayment.orderId);
+    Debt paymentDebt = (await dataStore.paymentsDao.getDebtByOrderId(cardPayment.orderId))!;
     CardPaymentsCompanion updatedCardPayment = cardPayment.toCompanion(true).copyWith(canceled: const Value(true));
     DebtsCompanion updatedDebt = paymentDebt.toCompanion(true).copyWith(
       paidSum: const Value(null),
