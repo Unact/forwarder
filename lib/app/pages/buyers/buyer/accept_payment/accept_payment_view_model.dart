@@ -177,6 +177,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
 
   Future<void> _savePayment([Map<String, dynamic>? transaction]) async {
     emit(state.copyWith(
+      isCancelable: false,
       message: 'Сохранение информации об оплате',
       status: AcceptPaymentStateStatus.savingPayment
     ));

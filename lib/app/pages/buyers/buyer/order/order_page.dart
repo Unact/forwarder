@@ -6,10 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
+import '/app/pages/buyers/buyer/accept_payment/accept_payment_page.dart';
 import '/app/pages/buyers/buyer/order/scan/code_scan_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
+import '/app/repositories/payments_repository.dart';
 import '/app/utils/geo_loc.dart';
 import '/app/utils/format.dart';
 import '/app/utils/misc.dart';
@@ -33,6 +35,7 @@ class OrderPage extends StatelessWidget {
       create: (context) => OrderViewModel(
         RepositoryProvider.of<AppRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
+        RepositoryProvider.of<PaymentsRepository>(context),
         order: order,
       ),
       child: _OrderView(),
@@ -51,7 +54,6 @@ class _OrderViewState extends State<_OrderView> {
   final EdgeInsets baseColumnPadding = const EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = const TextStyle(fontSize: 14.0, color: Colors.black);
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
-
 
   Future<void> showConfirmationDialog(String message) async {
     OrderViewModel vm = context.read<OrderViewModel>();
@@ -75,6 +77,24 @@ class _OrderViewState extends State<_OrderView> {
     vm.state.confirmationCallback(result);
   }
 
+  Future<void> showAcceptPaymentDialog() async {
+    OrderViewModel vm = context.read<OrderViewModel>();
+
+    String result = await showDialog(
+      context: context,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: AcceptPaymentPage(
+          debts: [vm.state.debt!],
+          isCard: vm.state.isCard
+        )
+      ),
+      barrierDismissible: false
+    ) ?? 'Платеж отменен';
+
+    vm.finishPayment(result);
+  }
+
   Future<void> showScan() async {
     OrderViewModel vm = context.read<OrderViewModel>();
 
@@ -92,7 +112,7 @@ class _OrderViewState extends State<_OrderView> {
     return BlocConsumer<OrderViewModel, OrderState>(
       builder: (context, state) {
         return Scaffold(
-          persistentFooterButtons: _buildPayButtons(context),
+          persistentFooterButtons: _buildFooterButtons(context),
           appBar: AppBar(
             title: const Text('Заказ'),
           ),
@@ -101,24 +121,33 @@ class _OrderViewState extends State<_OrderView> {
       },
       listener: (context, state) async {
         switch (state.status) {
-        case OrderStateStatus.inProgress:
-          _progressDialog.open();
-          break;
-        case OrderStateStatus.needUserConfirmation:
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            await showConfirmationDialog(state.message);
-          });
-          break;
-        case OrderStateStatus.showScan:
-          await showScan();
-          break;
-        case OrderStateStatus.failure:
-        case OrderStateStatus.success:
-          _progressDialog.close();
-          Misc.showMessage(context, state.message);
-          break;
-        default:
-      }
+          case OrderStateStatus.inProgress:
+            _progressDialog.open();
+            break;
+          case OrderStateStatus.needUserConfirmation:
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await showConfirmationDialog(state.message);
+            });
+            break;
+          case OrderStateStatus.showScan:
+            await showScan();
+            break;
+          case OrderStateStatus.failure:
+          case OrderStateStatus.success:
+            _progressDialog.close();
+            Misc.showMessage(context, state.message);
+            break;
+          case OrderStateStatus.paymentStarted:
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await showAcceptPaymentDialog();
+            });
+            break;
+          case OrderStateStatus.paymentFailure:
+          case OrderStateStatus.paymentFinished:
+            Misc.showMessage(context, state.message);
+            break;
+          default:
+        }
       }
     );
   }
@@ -146,49 +175,38 @@ class _OrderViewState extends State<_OrderView> {
             ],
           )
         ),
-        _buildOrderLinesTile(context),
-        _buildMarkingOrderLinesTile(context)
+        _buildOrderLinesTile(context)
       ],
     );
   }
 
   Widget _buildOrderLinesTile(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
+    bool needScan = vm.state.order.didDelivery || !vm.state.order.physical || vm.state.codeLines.isEmpty;
 
     return ExpansionTile(
       title: const Text('Позиции', style: TextStyle(fontSize: 14)),
-      initiallyExpanded: false,
+      initiallyExpanded: true,
+      trailing: needScan ? null : IconButton(
+        tooltip: "Отсканировать код маркировки или штрихкод",
+        icon: const Icon(Icons.qr_code_scanner),
+        onPressed: vm.tryShowScan
+      ),
       children: vm.state.codeLines.map((e) => _buildOrderLineTile(context, e)).toList()
     );
   }
 
   Widget _buildOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
-    return ListTile(
-      dense: true,
-      title: Text(codeLine.orderLine.name),
-      trailing: Text(codeLine.orderLine.vol.toInt().toString()),
-    );
-  }
-
-  Widget _buildMarkingOrderLinesTile(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
+    int amount = codeLine.orderLineCodes.fold<int>(0, (v, el) => v + el.amount);
 
-    if (vm.state.order.didDelivery || !vm.state.order.physical || vm.state.markingCodeLines.isEmpty) return Container();
-
-    return ExpansionTile(
-      title: const Text('Маркировка', style: TextStyle(fontSize: 14)),
-      initiallyExpanded: true,
-      trailing: IconButton(
-        tooltip: "Отсканировать код маркировки",
-        icon: const Icon(Icons.qr_code_scanner),
-        onPressed: vm.state.needScan ? vm.tryShowScan : null
-      ),
-      children: vm.state.markingCodeLines.map((e) => _buildMarkingOrderLineTile(context, e)).toList()
-    );
-  }
-
-  Widget _buildMarkingOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
-    OrderViewModel vm = context.read<OrderViewModel>();
+    if (!vm.state.order.physical || vm.state.order.didDelivery) {
+      return ListTile(
+        dense: true,
+        title: Text(codeLine.orderLine.name),
+        trailing: Text(codeLine.orderLine.vol.toInt().toString()),
+      );
+    }
 
     return Dismissible(
       key: Key(codeLine.hashCode.toString()),
@@ -197,12 +215,21 @@ class _OrderViewState extends State<_OrderView> {
       child: ListTile(
         dense: true,
         title: Text(codeLine.orderLine.name),
-        trailing: Text("${codeLine.orderLineCodes.length} из ${codeLine.orderLine.vol.toInt()}")
+        trailing: Text("$amount из ${codeLine.orderLine.vol.toInt()}")
       )
     );
   }
 
-  List<Widget> _buildPayButtons(BuildContext context) {
+  List<Widget> _buildFooterButtons(BuildContext context) {
+    OrderViewModel vm = context.read<OrderViewModel>();
+
+    if (vm.state.order.isDelivered && vm.state.needPayment) return _buildPayButtons(context);
+    if (!vm.state.order.didDelivery) return _buildDeliveryButtons(context);
+
+    return [];
+  }
+
+  List<Widget> _buildDeliveryButtons(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
 
     return [
@@ -222,6 +249,29 @@ class _OrderViewState extends State<_OrderView> {
         child: const Text('Не доставлен', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(false) : null,
       ),
+    ];
+  }
+
+  List<Widget> _buildPayButtons(BuildContext context) {
+    OrderViewModel vm = context.read<OrderViewModel>();
+
+    return [
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          backgroundColor: Colors.blue
+        ),
+        child: const Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+        onPressed: () => vm.tryStartPayment(false)
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          backgroundColor: Colors.blue
+        ),
+        child: const Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        onPressed: () => vm.tryStartPayment(true)
+      )
     ];
   }
 }

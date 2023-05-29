@@ -1723,6 +1723,7 @@ class Debt extends DataClass implements Insertable<Debt> {
   final double orderSum;
   final double? paidSum;
   final double? paymentSum;
+  final bool physical;
   Debt(
       {required this.id,
       required this.buyerId,
@@ -1735,7 +1736,8 @@ class Debt extends DataClass implements Insertable<Debt> {
       required this.debtSum,
       required this.orderSum,
       this.paidSum,
-      this.paymentSum});
+      this.paymentSum,
+      required this.physical});
   factory Debt.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Debt(
@@ -1763,6 +1765,8 @@ class Debt extends DataClass implements Insertable<Debt> {
           .mapFromDatabaseResponse(data['${effectivePrefix}paid_sum']),
       paymentSum: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}payment_sum']),
+      physical: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}physical'])!,
     );
   }
   @override
@@ -1784,6 +1788,7 @@ class Debt extends DataClass implements Insertable<Debt> {
     if (!nullToAbsent || paymentSum != null) {
       map['payment_sum'] = Variable<double?>(paymentSum);
     }
+    map['physical'] = Variable<bool>(physical);
     return map;
   }
 
@@ -1805,6 +1810,7 @@ class Debt extends DataClass implements Insertable<Debt> {
       paymentSum: paymentSum == null && nullToAbsent
           ? const Value.absent()
           : Value(paymentSum),
+      physical: Value(physical),
     );
   }
 
@@ -1824,6 +1830,7 @@ class Debt extends DataClass implements Insertable<Debt> {
       orderSum: serializer.fromJson<double>(json['orderSum']),
       paidSum: serializer.fromJson<double?>(json['paidSum']),
       paymentSum: serializer.fromJson<double?>(json['paymentSum']),
+      physical: serializer.fromJson<bool>(json['physical']),
     );
   }
   @override
@@ -1842,6 +1849,7 @@ class Debt extends DataClass implements Insertable<Debt> {
       'orderSum': serializer.toJson<double>(orderSum),
       'paidSum': serializer.toJson<double?>(paidSum),
       'paymentSum': serializer.toJson<double?>(paymentSum),
+      'physical': serializer.toJson<bool>(physical),
     };
   }
 
@@ -1857,7 +1865,8 @@ class Debt extends DataClass implements Insertable<Debt> {
           double? debtSum,
           double? orderSum,
           double? paidSum,
-          double? paymentSum}) =>
+          double? paymentSum,
+          bool? physical}) =>
       Debt(
         id: id ?? this.id,
         buyerId: buyerId ?? this.buyerId,
@@ -1871,6 +1880,7 @@ class Debt extends DataClass implements Insertable<Debt> {
         orderSum: orderSum ?? this.orderSum,
         paidSum: paidSum ?? this.paidSum,
         paymentSum: paymentSum ?? this.paymentSum,
+        physical: physical ?? this.physical,
       );
   @override
   String toString() {
@@ -1886,14 +1896,15 @@ class Debt extends DataClass implements Insertable<Debt> {
           ..write('debtSum: $debtSum, ')
           ..write('orderSum: $orderSum, ')
           ..write('paidSum: $paidSum, ')
-          ..write('paymentSum: $paymentSum')
+          ..write('paymentSum: $paymentSum, ')
+          ..write('physical: $physical')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, buyerId, orderId, ndoc, orderNdoc, ddate,
-      orderDdate, isCheck, debtSum, orderSum, paidSum, paymentSum);
+      orderDdate, isCheck, debtSum, orderSum, paidSum, paymentSum, physical);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1909,7 +1920,8 @@ class Debt extends DataClass implements Insertable<Debt> {
           other.debtSum == this.debtSum &&
           other.orderSum == this.orderSum &&
           other.paidSum == this.paidSum &&
-          other.paymentSum == this.paymentSum);
+          other.paymentSum == this.paymentSum &&
+          other.physical == this.physical);
 }
 
 class DebtsCompanion extends UpdateCompanion<Debt> {
@@ -1925,6 +1937,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   final Value<double> orderSum;
   final Value<double?> paidSum;
   final Value<double?> paymentSum;
+  final Value<bool> physical;
   const DebtsCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
@@ -1938,6 +1951,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
     this.orderSum = const Value.absent(),
     this.paidSum = const Value.absent(),
     this.paymentSum = const Value.absent(),
+    this.physical = const Value.absent(),
   });
   DebtsCompanion.insert({
     this.id = const Value.absent(),
@@ -1952,6 +1966,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
     required double orderSum,
     this.paidSum = const Value.absent(),
     this.paymentSum = const Value.absent(),
+    required bool physical,
   })  : buyerId = Value(buyerId),
         orderId = Value(orderId),
         ndoc = Value(ndoc),
@@ -1960,7 +1975,8 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
         orderDdate = Value(orderDdate),
         isCheck = Value(isCheck),
         debtSum = Value(debtSum),
-        orderSum = Value(orderSum);
+        orderSum = Value(orderSum),
+        physical = Value(physical);
   static Insertable<Debt> custom({
     Expression<int>? id,
     Expression<int>? buyerId,
@@ -1974,6 +1990,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
     Expression<double>? orderSum,
     Expression<double?>? paidSum,
     Expression<double?>? paymentSum,
+    Expression<bool>? physical,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1988,6 +2005,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
       if (orderSum != null) 'order_sum': orderSum,
       if (paidSum != null) 'paid_sum': paidSum,
       if (paymentSum != null) 'payment_sum': paymentSum,
+      if (physical != null) 'physical': physical,
     });
   }
 
@@ -2003,7 +2021,8 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
       Value<double>? debtSum,
       Value<double>? orderSum,
       Value<double?>? paidSum,
-      Value<double?>? paymentSum}) {
+      Value<double?>? paymentSum,
+      Value<bool>? physical}) {
     return DebtsCompanion(
       id: id ?? this.id,
       buyerId: buyerId ?? this.buyerId,
@@ -2017,6 +2036,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
       orderSum: orderSum ?? this.orderSum,
       paidSum: paidSum ?? this.paidSum,
       paymentSum: paymentSum ?? this.paymentSum,
+      physical: physical ?? this.physical,
     );
   }
 
@@ -2059,6 +2079,9 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
     if (paymentSum.present) {
       map['payment_sum'] = Variable<double?>(paymentSum.value);
     }
+    if (physical.present) {
+      map['physical'] = Variable<bool>(physical.value);
+    }
     return map;
   }
 
@@ -2076,7 +2099,8 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
           ..write('debtSum: $debtSum, ')
           ..write('orderSum: $orderSum, ')
           ..write('paidSum: $paidSum, ')
-          ..write('paymentSum: $paymentSum')
+          ..write('paymentSum: $paymentSum, ')
+          ..write('physical: $physical')
           ..write(')'))
         .toString();
   }
@@ -2151,6 +2175,13 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
   late final GeneratedColumn<double?> paymentSum = GeneratedColumn<double?>(
       'payment_sum', aliasedName, true,
       type: const RealType(), requiredDuringInsert: false);
+  final VerificationMeta _physicalMeta = const VerificationMeta('physical');
+  @override
+  late final GeneratedColumn<bool?> physical = GeneratedColumn<bool?>(
+      'physical', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (physical IN (0, 1))');
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2164,7 +2195,8 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
         debtSum,
         orderSum,
         paidSum,
-        paymentSum
+        paymentSum,
+        physical
       ];
   @override
   String get aliasedName => _alias ?? 'debts';
@@ -2243,6 +2275,12 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
           _paymentSumMeta,
           paymentSum.isAcceptableOrUnknown(
               data['payment_sum']!, _paymentSumMeta));
+    }
+    if (data.containsKey('physical')) {
+      context.handle(_physicalMeta,
+          physical.isAcceptableOrUnknown(data['physical']!, _physicalMeta));
+    } else if (isInserting) {
+      context.missing(_physicalMeta);
     }
     return context;
   }
@@ -2735,13 +2773,15 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   final String gtin;
   final double vol;
   final bool needMarking;
+  final List<String> barcodes;
   OrderLine(
       {required this.orderId,
       required this.subid,
       required this.name,
       required this.gtin,
       required this.vol,
-      required this.needMarking});
+      required this.needMarking,
+      required this.barcodes});
   factory OrderLine.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return OrderLine(
@@ -2757,6 +2797,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           .mapFromDatabaseResponse(data['${effectivePrefix}vol'])!,
       needMarking: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}need_marking'])!,
+      barcodes: $OrderLinesTable.$converter0.mapToDart(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}barcodes']))!,
     );
   }
   @override
@@ -2768,6 +2810,10 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['gtin'] = Variable<String>(gtin);
     map['vol'] = Variable<double>(vol);
     map['need_marking'] = Variable<bool>(needMarking);
+    {
+      final converter = $OrderLinesTable.$converter0;
+      map['barcodes'] = Variable<String>(converter.mapToSql(barcodes)!);
+    }
     return map;
   }
 
@@ -2779,6 +2825,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       gtin: Value(gtin),
       vol: Value(vol),
       needMarking: Value(needMarking),
+      barcodes: Value(barcodes),
     );
   }
 
@@ -2792,6 +2839,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       gtin: serializer.fromJson<String>(json['gtin']),
       vol: serializer.fromJson<double>(json['vol']),
       needMarking: serializer.fromJson<bool>(json['needMarking']),
+      barcodes: serializer.fromJson<List<String>>(json['barcodes']),
     );
   }
   @override
@@ -2804,6 +2852,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       'gtin': serializer.toJson<String>(gtin),
       'vol': serializer.toJson<double>(vol),
       'needMarking': serializer.toJson<bool>(needMarking),
+      'barcodes': serializer.toJson<List<String>>(barcodes),
     };
   }
 
@@ -2813,7 +2862,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           String? name,
           String? gtin,
           double? vol,
-          bool? needMarking}) =>
+          bool? needMarking,
+          List<String>? barcodes}) =>
       OrderLine(
         orderId: orderId ?? this.orderId,
         subid: subid ?? this.subid,
@@ -2821,6 +2871,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
         gtin: gtin ?? this.gtin,
         vol: vol ?? this.vol,
         needMarking: needMarking ?? this.needMarking,
+        barcodes: barcodes ?? this.barcodes,
       );
   @override
   String toString() {
@@ -2830,13 +2881,15 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           ..write('name: $name, ')
           ..write('gtin: $gtin, ')
           ..write('vol: $vol, ')
-          ..write('needMarking: $needMarking')
+          ..write('needMarking: $needMarking, ')
+          ..write('barcodes: $barcodes')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(orderId, subid, name, gtin, vol, needMarking);
+  int get hashCode =>
+      Object.hash(orderId, subid, name, gtin, vol, needMarking, barcodes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2846,7 +2899,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           other.name == this.name &&
           other.gtin == this.gtin &&
           other.vol == this.vol &&
-          other.needMarking == this.needMarking);
+          other.needMarking == this.needMarking &&
+          other.barcodes == this.barcodes);
 }
 
 class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
@@ -2856,6 +2910,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
   final Value<String> gtin;
   final Value<double> vol;
   final Value<bool> needMarking;
+  final Value<List<String>> barcodes;
   const OrderLinesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
@@ -2863,6 +2918,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     this.gtin = const Value.absent(),
     this.vol = const Value.absent(),
     this.needMarking = const Value.absent(),
+    this.barcodes = const Value.absent(),
   });
   OrderLinesCompanion.insert({
     required int orderId,
@@ -2871,12 +2927,14 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     required String gtin,
     required double vol,
     required bool needMarking,
+    required List<String> barcodes,
   })  : orderId = Value(orderId),
         subid = Value(subid),
         name = Value(name),
         gtin = Value(gtin),
         vol = Value(vol),
-        needMarking = Value(needMarking);
+        needMarking = Value(needMarking),
+        barcodes = Value(barcodes);
   static Insertable<OrderLine> custom({
     Expression<int>? orderId,
     Expression<int>? subid,
@@ -2884,6 +2942,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Expression<String>? gtin,
     Expression<double>? vol,
     Expression<bool>? needMarking,
+    Expression<List<String>>? barcodes,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
@@ -2892,6 +2951,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       if (gtin != null) 'gtin': gtin,
       if (vol != null) 'vol': vol,
       if (needMarking != null) 'need_marking': needMarking,
+      if (barcodes != null) 'barcodes': barcodes,
     });
   }
 
@@ -2901,7 +2961,8 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       Value<String>? name,
       Value<String>? gtin,
       Value<double>? vol,
-      Value<bool>? needMarking}) {
+      Value<bool>? needMarking,
+      Value<List<String>>? barcodes}) {
     return OrderLinesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
@@ -2909,6 +2970,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       gtin: gtin ?? this.gtin,
       vol: vol ?? this.vol,
       needMarking: needMarking ?? this.needMarking,
+      barcodes: barcodes ?? this.barcodes,
     );
   }
 
@@ -2933,6 +2995,10 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     if (needMarking.present) {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
+    if (barcodes.present) {
+      final converter = $OrderLinesTable.$converter0;
+      map['barcodes'] = Variable<String>(converter.mapToSql(barcodes.value)!);
+    }
     return map;
   }
 
@@ -2944,7 +3010,8 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
           ..write('name: $name, ')
           ..write('gtin: $gtin, ')
           ..write('vol: $vol, ')
-          ..write('needMarking: $needMarking')
+          ..write('needMarking: $needMarking, ')
+          ..write('barcodes: $barcodes')
           ..write(')'))
         .toString();
   }
@@ -2989,9 +3056,15 @@ class $OrderLinesTable extends OrderLines
       type: const BoolType(),
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (need_marking IN (0, 1))');
+  final VerificationMeta _barcodesMeta = const VerificationMeta('barcodes');
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>, String?> barcodes =
+      GeneratedColumn<String?>('barcodes', aliasedName, false,
+              type: const StringType(), requiredDuringInsert: true)
+          .withConverter<List<String>>($OrderLinesTable.$converter0);
   @override
   List<GeneratedColumn> get $columns =>
-      [orderId, subid, name, gtin, vol, needMarking];
+      [orderId, subid, name, gtin, vol, needMarking, barcodes];
   @override
   String get aliasedName => _alias ?? 'order_lines';
   @override
@@ -3039,6 +3112,7 @@ class $OrderLinesTable extends OrderLines
     } else if (isInserting) {
       context.missing(_needMarkingMeta);
     }
+    context.handle(_barcodesMeta, const VerificationResult.success());
     return context;
   }
 
@@ -3054,14 +3128,23 @@ class $OrderLinesTable extends OrderLines
   $OrderLinesTable createAlias(String alias) {
     return $OrderLinesTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $converter0 =
+      const JsonListConverter();
 }
 
 class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   final int orderId;
   final int subid;
   final String code;
+  final int amount;
+  final bool isDataMatrix;
   OrderLineCode(
-      {required this.orderId, required this.subid, required this.code});
+      {required this.orderId,
+      required this.subid,
+      required this.code,
+      required this.amount,
+      required this.isDataMatrix});
   factory OrderLineCode.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return OrderLineCode(
@@ -3071,6 +3154,10 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
           .mapFromDatabaseResponse(data['${effectivePrefix}subid'])!,
       code: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
+      amount: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
+      isDataMatrix: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_data_matrix'])!,
     );
   }
   @override
@@ -3079,6 +3166,8 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
     map['order_id'] = Variable<int>(orderId);
     map['subid'] = Variable<int>(subid);
     map['code'] = Variable<String>(code);
+    map['amount'] = Variable<int>(amount);
+    map['is_data_matrix'] = Variable<bool>(isDataMatrix);
     return map;
   }
 
@@ -3087,6 +3176,8 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       orderId: Value(orderId),
       subid: Value(subid),
       code: Value(code),
+      amount: Value(amount),
+      isDataMatrix: Value(isDataMatrix),
     );
   }
 
@@ -3097,6 +3188,8 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       orderId: serializer.fromJson<int>(json['orderId']),
       subid: serializer.fromJson<int>(json['subid']),
       code: serializer.fromJson<String>(json['code']),
+      amount: serializer.fromJson<int>(json['amount']),
+      isDataMatrix: serializer.fromJson<bool>(json['isDataMatrix']),
     );
   }
   @override
@@ -3106,70 +3199,101 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       'orderId': serializer.toJson<int>(orderId),
       'subid': serializer.toJson<int>(subid),
       'code': serializer.toJson<String>(code),
+      'amount': serializer.toJson<int>(amount),
+      'isDataMatrix': serializer.toJson<bool>(isDataMatrix),
     };
   }
 
-  OrderLineCode copyWith({int? orderId, int? subid, String? code}) =>
+  OrderLineCode copyWith(
+          {int? orderId,
+          int? subid,
+          String? code,
+          int? amount,
+          bool? isDataMatrix}) =>
       OrderLineCode(
         orderId: orderId ?? this.orderId,
         subid: subid ?? this.subid,
         code: code ?? this.code,
+        amount: amount ?? this.amount,
+        isDataMatrix: isDataMatrix ?? this.isDataMatrix,
       );
   @override
   String toString() {
     return (StringBuffer('OrderLineCode(')
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
-          ..write('code: $code')
+          ..write('code: $code, ')
+          ..write('amount: $amount, ')
+          ..write('isDataMatrix: $isDataMatrix')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(orderId, subid, code);
+  int get hashCode => Object.hash(orderId, subid, code, amount, isDataMatrix);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is OrderLineCode &&
           other.orderId == this.orderId &&
           other.subid == this.subid &&
-          other.code == this.code);
+          other.code == this.code &&
+          other.amount == this.amount &&
+          other.isDataMatrix == this.isDataMatrix);
 }
 
 class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   final Value<int> orderId;
   final Value<int> subid;
   final Value<String> code;
+  final Value<int> amount;
+  final Value<bool> isDataMatrix;
   const OrderLineCodesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
     this.code = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.isDataMatrix = const Value.absent(),
   });
   OrderLineCodesCompanion.insert({
     required int orderId,
     required int subid,
     required String code,
+    required int amount,
+    required bool isDataMatrix,
   })  : orderId = Value(orderId),
         subid = Value(subid),
-        code = Value(code);
+        code = Value(code),
+        amount = Value(amount),
+        isDataMatrix = Value(isDataMatrix);
   static Insertable<OrderLineCode> custom({
     Expression<int>? orderId,
     Expression<int>? subid,
     Expression<String>? code,
+    Expression<int>? amount,
+    Expression<bool>? isDataMatrix,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
       if (subid != null) 'subid': subid,
       if (code != null) 'code': code,
+      if (amount != null) 'amount': amount,
+      if (isDataMatrix != null) 'is_data_matrix': isDataMatrix,
     });
   }
 
   OrderLineCodesCompanion copyWith(
-      {Value<int>? orderId, Value<int>? subid, Value<String>? code}) {
+      {Value<int>? orderId,
+      Value<int>? subid,
+      Value<String>? code,
+      Value<int>? amount,
+      Value<bool>? isDataMatrix}) {
     return OrderLineCodesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
       code: code ?? this.code,
+      amount: amount ?? this.amount,
+      isDataMatrix: isDataMatrix ?? this.isDataMatrix,
     );
   }
 
@@ -3185,6 +3309,12 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     if (code.present) {
       map['code'] = Variable<String>(code.value);
     }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (isDataMatrix.present) {
+      map['is_data_matrix'] = Variable<bool>(isDataMatrix.value);
+    }
     return map;
   }
 
@@ -3193,7 +3323,9 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     return (StringBuffer('OrderLineCodesCompanion(')
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
-          ..write('code: $code')
+          ..write('code: $code, ')
+          ..write('amount: $amount, ')
+          ..write('isDataMatrix: $isDataMatrix')
           ..write(')'))
         .toString();
   }
@@ -3220,8 +3352,22 @@ class $OrderLineCodesTable extends OrderLineCodes
   late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
       'code', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  List<GeneratedColumn> get $columns => [orderId, subid, code];
+  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
+      'amount', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _isDataMatrixMeta =
+      const VerificationMeta('isDataMatrix');
+  @override
+  late final GeneratedColumn<bool?> isDataMatrix = GeneratedColumn<bool?>(
+      'is_data_matrix', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (is_data_matrix IN (0, 1))');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [orderId, subid, code, amount, isDataMatrix];
   @override
   String get aliasedName => _alias ?? 'order_line_codes';
   @override
@@ -3248,6 +3394,20 @@ class $OrderLineCodesTable extends OrderLineCodes
           _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
     } else if (isInserting) {
       context.missing(_codeMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('is_data_matrix')) {
+      context.handle(
+          _isDataMatrixMeta,
+          isDataMatrix.isAcceptableOrUnknown(
+              data['is_data_matrix']!, _isDataMatrixMeta));
+    } else if (isInserting) {
+      context.missing(_isDataMatrixMeta);
     }
     return context;
   }

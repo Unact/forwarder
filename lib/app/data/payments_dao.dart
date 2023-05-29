@@ -43,8 +43,8 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
     return select(debts).get();
   }
 
-  Future<Debt> getDebtByOrderId(int orderId) async {
-    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).getSingle();
+  Future<Debt?> getDebtByOrderId(int orderId) async {
+    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).getSingleOrNull();
   }
 
   Future<Debt> getDebtById(int id) async {

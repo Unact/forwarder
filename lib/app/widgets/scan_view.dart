@@ -74,6 +74,7 @@ class _ScanViewState extends State<ScanView> {
           )
         ].whereType<Widget>().toList()
       ),
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: false,
       body: Stack(
         children: [
@@ -81,6 +82,7 @@ class _ScanViewState extends State<ScanView> {
             child: QRView(
               key: _qrKey,
               formatsAllowed: const [
+                BarcodeFormat.ean13,
                 BarcodeFormat.dataMatrix
               ],
               overlay: QrScannerOverlayShape(
@@ -88,7 +90,7 @@ class _ScanViewState extends State<ScanView> {
                   borderRadius: 10,
                   borderLength: 30,
                   borderWidth: 10,
-                  cutOutWidth: 200,
+                  cutOutWidth: 300,
                   cutOutHeight: 200
                 ),
               onPermissionSet: (QRViewController controller, bool permission) {

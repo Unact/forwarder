@@ -43,12 +43,15 @@ class _CodeScanView extends StatefulWidget {
 
 class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CodeScanViewModel, CodeScanState>(
       builder: (context, state) {
         CodeScanViewModel vm = context.read<CodeScanViewModel>();
+
+        _controller.text = '';
 
         return ScanView(
           child: _lastLineInfoWidget(context),
@@ -74,12 +77,13 @@ class _CodeScanViewState extends State<_CodeScanView> {
     if (vm.state.lastScannedOrderLine == null) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text('Отсканируйте код маркировки', style: textStyle)
+        child: Text('Отсканируйте код', style: textStyle)
       );
     }
 
     OrderLine lastScannedCodeLine = vm.state.lastScannedOrderLine!;
-    OrderLineWithCode codeLine = vm.state.codeLines.firstWhere((e) => e.orderLine == lastScannedCodeLine);
+    OrderLineWithCode codeLine = vm.state.codeLines.firstWhere((e) => e.orderLine.subid == lastScannedCodeLine.subid);
+    int amount = codeLine.orderLineCodes.fold<int>(0, (v, el) => v + el.amount);
 
     return Column(
       children: [
@@ -96,11 +100,53 @@ class _CodeScanViewState extends State<_CodeScanView> {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Text(
-            "${codeLine.orderLineCodes.length} из ${lastScannedCodeLine.vol.toInt()}",
+            "$amount из ${lastScannedCodeLine.vol.toInt()}",
             style: textStyle
           )
-        )
-      ],
+        ),
+        const SizedBox(height: 30),
+        _lastLineEditWidget(context)
+      ]
+    );
+  }
+
+  Widget _lastLineEditWidget(BuildContext context) {
+    CodeScanViewModel vm = context.read<CodeScanViewModel>();
+    OrderLine lastScannedCodeLine = vm.state.lastScannedOrderLine!;
+    OrderLineWithCode codeLine = vm.state.codeLines.firstWhere((e) => e.orderLine.subid == lastScannedCodeLine.subid);
+
+    if (lastScannedCodeLine.needMarking) return Container();
+
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () => vm.decreaseAmount(codeLine),
+            icon: const Icon(Icons.remove, color: Colors.white)
+          ),
+          SizedBox(
+            child: TextField(
+              style: textStyle,
+              controller: _controller,
+              textAlign: TextAlign.center,
+              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+              onSubmitted: (value) => vm.updateAmount(codeLine, int.tryParse(value) ?? 0, true),
+              cursorColor: Colors.white,
+              decoration: const InputDecoration(
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 3, color: Colors.white)),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 3, color: Colors.white)),
+              ),
+            ),
+            width: 60,
+            height: 30,
+          ),
+          IconButton(
+            onPressed: () => vm.increaseAmount(codeLine),
+            icon: const Icon(Icons.add, color: Colors.white)
+          )
+        ]
+      )
     );
   }
 }

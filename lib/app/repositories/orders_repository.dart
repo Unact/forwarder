@@ -38,14 +38,31 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.getOrderById(id);
   }
 
-  Future<void> addOrderLineCode(OrderLine orderLine, String code) async {
+  Future<void> addOrderLineCode({
+    required OrderLine orderLine,
+    required String code,
+    required int amount,
+    required bool isDataMatrix
+  }) async {
     OrderLineCodesCompanion newOrderLineCode = OrderLineCodesCompanion(
       orderId: Value(orderLine.orderId),
       subid: Value(orderLine.subid),
-      code: Value(code)
+      code: Value(code),
+      amount: Value(amount),
+      isDataMatrix: Value(isDataMatrix)
     );
 
     await dataStore.ordersDao.upsertOrderLineCode(newOrderLineCode);
+    notifyListeners();
+  }
+
+  Future<void> updateOrderLineCode({
+    required OrderLineCode orderLineCode,
+    required int amount
+  }) async {
+    OrderLineCodesCompanion updatedOrderLineCode = orderLineCode.toCompanion(false).copyWith(amount: Value(amount));
+
+    await dataStore.ordersDao.upsertOrderLineCode(updatedOrderLineCode);
     notifyListeners();
   }
 
@@ -53,7 +70,9 @@ class OrdersRepository extends BaseRepository {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: Value(delivered));
     List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
       'subid': e.subid,
-      'code': e.code
+      'code': e.code,
+      'markirovka': e.isDataMatrix,
+      'amount': e.amount
     }).toList();
 
     try {
