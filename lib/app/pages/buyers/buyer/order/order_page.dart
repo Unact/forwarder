@@ -155,25 +155,28 @@ class _OrderViewState extends State<_OrderView> {
   Widget _buildBody(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
     OrderState state = vm.state;
+    List<Widget> children = [
+      InfoRow(title: const Text('Номер'), trailing: Text(state.order.ndoc)),
+      InfoRow(title: const Text('Комментарий'), trailing: ExpandingText(state.order.info)),
+      InfoRow(title: const Text('Коробов'), trailing: Text(Format.numberStr(state.order.mc))),
+      InfoRow(title: const Text('Товаров'), trailing: Text(state.order.goodsCnt.toString())),
+      InfoRow(
+        title: const Text('Доставлен'),
+        trailing: Text(
+          state.order.isDelivered ? Strings.yes : (state.order.isUndelivered ? Strings.no : Strings.inProcess)
+        )
+      )
+    ];
+
+    if (vm.state.order.isDelivered && vm.state.needPayment) {
+      children.add(InfoRow(title: const Text('Оплата'), trailing: Text(Format.numberStr(state.debt!.paymentSum))));
+    }
 
     return ListView(
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-          child: Column(
-            children: [
-              InfoRow(title: const Text('Номер'), trailing: Text(state.order.ndoc)),
-              InfoRow(title: const Text('Комментарий'), trailing: ExpandingText(state.order.info)),
-              InfoRow(title: const Text('Коробов'), trailing: Text(Format.numberStr(state.order.mc))),
-              InfoRow(title: const Text('Товаров'), trailing: Text(state.order.goodsCnt.toString())),
-              InfoRow(
-                title: const Text('Доставлен'),
-                trailing: Text(
-                  state.order.isDelivered ? Strings.yes : (state.order.isUndelivered ? Strings.no : Strings.inProcess)
-                )
-              )
-            ],
-          )
+          child: Column(children: children)
         ),
         _buildOrderLinesTile(context)
       ],

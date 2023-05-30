@@ -89,8 +89,10 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     }
   }
 
-  Future<void> startPayment(bool isCard) async {
-    emit(state.copyWith(status: OrderStateStatus.paymentStarted, isCard: isCard));
+  Future<void> startPayment(bool confirmed) async {
+    if (!confirmed) return;
+
+    emit(state.copyWith(status: OrderStateStatus.paymentStarted));
   }
 
   void finishPayment(String result) async {
@@ -104,6 +106,12 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
       return;
     }
 
-    startPayment(isCard);
+    emit(state.copyWith(
+      status: OrderStateStatus.needUserConfirmation,
+      isCard: isCard,
+      message: 'Вы уверены, что хотите внести оплату ${Format.numberStr(state.debt!.paymentSum)} руб.?\n'
+        'Изменить потом будет нельзя.',
+      confirmationCallback: startPayment
+    ));
   }
 }

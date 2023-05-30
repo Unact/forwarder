@@ -65,6 +65,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       return;
     }
 
+    if (codeLine.orderLine.needMarking) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Нельзя сканировать штрихкод товара ЧЗ'));
+      return;
+    }
+
     if (codeLine.orderLineCodes.isEmpty) {
       await ordersRepository.addOrderLineCode(
         orderLine: codeLine.orderLine,
