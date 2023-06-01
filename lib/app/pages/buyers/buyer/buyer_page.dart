@@ -67,7 +67,8 @@ class _BuyerViewState extends State<_BuyerView> {
         onWillPop: () async => false,
         child: AcceptPaymentPage(
           debts: vm.state.debtsToPay,
-          isCard: vm.state.isCard
+          isCard: vm.state.isCard,
+          isLink: false
         )
       ),
       barrierDismissible: false
@@ -147,7 +148,7 @@ class _BuyerViewState extends State<_BuyerView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
       ),
       ElevatedButton(
@@ -155,7 +156,7 @@ class _BuyerViewState extends State<_BuyerView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(true),
       )
     ];

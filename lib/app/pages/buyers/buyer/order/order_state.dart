@@ -22,6 +22,7 @@ class OrderState {
     this.message = '',
     this.delivered = false,
     this.debt,
+    this.isLink = false,
     this.isCard = false
   });
 
@@ -32,6 +33,7 @@ class OrderState {
   final String message;
   final bool delivered;
   final Debt? debt;
+  final bool isLink;
   final bool isCard;
 
   bool get needPayment => debt != null && debt!.paymentSum != null && debt!.paidSum == 0;
@@ -44,6 +46,7 @@ class OrderState {
     String? message,
     bool? delivered,
     Debt? debt,
+    bool? isLink,
     bool? isCard
   }) {
     return OrderState(
@@ -54,6 +57,7 @@ class OrderState {
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       message: message ?? this.message,
       delivered: delivered ?? this.delivered,
+      isLink: isLink ?? this.isLink,
       isCard: isCard ?? this.isCard
     );
   }

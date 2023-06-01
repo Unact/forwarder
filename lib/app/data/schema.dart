@@ -48,6 +48,7 @@ class CardPayments extends Table {
   DateTimeColumn get ddate => dateTime()();
   TextColumn get transactionId => text().nullable()();
   BoolColumn get canceled => boolean()();
+  BoolColumn get isLink => boolean()();
 }
 
 class CashPayments extends Table {

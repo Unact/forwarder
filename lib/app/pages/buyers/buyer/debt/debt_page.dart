@@ -64,7 +64,8 @@ class _DebtViewState extends State<_DebtView> {
         onWillPop: () async => false,
         child: AcceptPaymentPage(
           debts: [vm.state.debt],
-          isCard: vm.state.isCard
+          isCard: vm.state.isCard,
+          isLink: false
         )
       ),
       barrierDismissible: false
@@ -198,7 +199,7 @@ class _DebtViewState extends State<_DebtView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
+        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(false) : null,
       ),
       ElevatedButton(
@@ -206,7 +207,7 @@ class _DebtViewState extends State<_DebtView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить картой', style: TextStyle(color: Colors.white)),
+        child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(true) : null,
       )
     ];

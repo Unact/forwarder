@@ -1,10 +1,57 @@
 part of 'accept_payment_page.dart';
 
 class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPaymentStateStatus> {
+  static const int _kNumOfTries = 5;
+
   final AppRepository appRepository;
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
-  Iboxpro iboxpro = Iboxpro();
+  late Iboxpro iboxpro = Iboxpro(
+    onError: (String error) => emit(state.copyWith(message: error, status: AcceptPaymentStateStatus.failure)),
+    onLogin: _startPayment,
+    onConnected: _getPaymentCredentials,
+    onStart: (String id) {
+      emit(state.copyWith(
+        isCancelable: state.isLink,
+        message: 'Обработка оплаты',
+        status: AcceptPaymentStateStatus.paymentStarted
+      ));
+    },
+    onComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
+      emit(state.copyWith(
+        isRequiredSignature: requiredSignature,
+        message: 'Подтверждение оплаты',
+        status: AcceptPaymentStateStatus.paymentFinished
+      ));
+
+      if (!requiredSignature) {
+        _savePayment(transaction);
+      } else {
+        emit(state.copyWith(
+          isRequiredSignature: requiredSignature,
+          message: 'Для завершения оплаты\nнеобходимо указать подпись',
+          status: AcceptPaymentStateStatus.requiredSignature
+        ));
+      }
+    },
+    onAdjust: _savePayment,
+    onCheck: (Map<String, dynamic> transaction, bool finished) {
+      if (finished) {
+        _savePayment(transaction);
+      } else {
+        _checkPayment();
+      }
+    },
+    onNeedExternalComplete: (String value) {
+      emit(state.copyWith(
+        message: 'Для оплаты отсканируйте QR-код',
+        externalPaymentQR: value,
+        status: AcceptPaymentStateStatus.waitingForExternalPayment
+      ));
+
+      _checkPayment();
+    }
+  );
 
   AcceptPaymentViewModel(
     this.appRepository,
@@ -12,10 +59,11 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     this.paymentsRepository,
     {
       required List<Debt> debts,
-      required bool isCard
+      required bool isCard,
+      required bool isLink
     }
   ) : super(
-    AcceptPaymentState(debts: debts, isCard: isCard, message: 'Инициализация платежа'),
+    AcceptPaymentState(debts: debts, isCard: isCard, isLink: isLink, message: 'Инициализация платежа'),
     [appRepository, ordersRepository, paymentsRepository]
   );
 
@@ -37,6 +85,27 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   Future<void> initViewModel() async {
     await super.initViewModel();
     await _checkOrders();
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+    iboxpro.dispose();
+  }
+
+  Future<void> _checkPayment() async {
+    emit(state.copyWith(paymentChecked: state.paymentChecked + 1));
+
+    if (state.paymentChecked > _kNumOfTries) {
+      emit(state.copyWith(
+        message: 'Истекло время ожидания оплаты СБП',
+        status: AcceptPaymentStateStatus.failure
+      ));
+    }
+
+    await Future.delayed(const Duration(seconds: 30));
+
+    await iboxpro.checkPayment();
   }
 
   Future<void> _checkOrders() async {
@@ -61,9 +130,15 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
 
     if (!state.isCard) {
       _savePayment();
-    } else {
-      _connectToDevice();
+      return;
     }
+
+    if (state.isLink) {
+      _getPaymentCredentials();
+      return;
+    }
+
+    _connectToDevice();
   }
 
   Future<void> cancelPayment() async {
@@ -83,10 +158,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       status: AcceptPaymentStateStatus.searchingForDevice
     ));
 
-    iboxpro.connectToDevice(
-      onError: (String error) => emit(state.copyWith(message: error, status: AcceptPaymentStateStatus.failure)),
-      onConnected: _getPaymentCredentials
-    );
+    await iboxpro.connectToDevice();
   }
 
   Future<void> _getPaymentCredentials() async {
@@ -114,12 +186,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       status: AcceptPaymentStateStatus.paymentAuthorization
     ));
 
-    await iboxpro.apiLogin(
-      login: login,
-      password: password,
-      onError: (String error) => emit(state.copyWith(message: error, status: AcceptPaymentStateStatus.failure)),
-      onLogin: _startPayment
-    );
+    await iboxpro.apiLogin(login: login, password: password);
   }
 
   Future<void> _startPayment() async {
@@ -133,31 +200,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     await iboxpro.startPayment(
       amount: state.debts.fold(0, (sum, e) => sum + e.paymentSum!),
       description: 'Оплата за заказ ${state.debts.map((debt) => debt.orderName).join(', ')}',
-      onError: (String error) => emit(state.copyWith(message: error, status: AcceptPaymentStateStatus.failure)),
-      onPaymentStart: (_) {
-        emit(state.copyWith(
-          isCancelable: false,
-          message: 'Обработка оплаты',
-          status: AcceptPaymentStateStatus.paymentStarted
-        ));
-      },
-      onPaymentComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
-        emit(state.copyWith(
-          isRequiredSignature: requiredSignature,
-          message: 'Подтверждение оплаты',
-          status: AcceptPaymentStateStatus.paymentFinished
-        ));
-
-        if (!requiredSignature) {
-          _savePayment(transaction);
-        } else {
-          emit(state.copyWith(
-            isRequiredSignature: requiredSignature,
-            message: 'Для завершения оплаты\nнеобходимо указать подпись',
-            status: AcceptPaymentStateStatus.requiredSignature
-          ));
-        }
-      }
+      isLink: state.isLink
     );
   }
 
@@ -168,11 +211,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       status: AcceptPaymentStateStatus.savingSignature
     ));
 
-    await iboxpro.adjustPayment(
-      signature: signature,
-      onError: (String error) => emit(state.copyWith(message: error, status: AcceptPaymentStateStatus.failure)),
-      onPaymentAdjust: _savePayment
-    );
+    await iboxpro.adjustPayment(signature: signature);
   }
 
   Future<void> _savePayment([Map<String, dynamic>? transaction]) async {

@@ -86,7 +86,8 @@ class _OrderViewState extends State<_OrderView> {
         onWillPop: () async => false,
         child: AcceptPaymentPage(
           debts: [vm.state.debt!],
-          isCard: vm.state.isCard
+          isCard: vm.state.isCard,
+          isLink: vm.state.isLink,
         )
       ),
       barrierDismissible: false
@@ -264,16 +265,24 @@ class _OrderViewState extends State<_OrderView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить наличными', style: TextStyle(color: Colors.white)),
-        onPressed: () => vm.tryStartPayment(false)
+        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
+        onPressed: () => vm.tryStartPayment(false, false)
       ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Оплатить картой', style: TextStyle(color: Colors.white)),
-        onPressed: () => vm.tryStartPayment(true)
+        child: const Text('Карта', style: TextStyle(color: Colors.white)),
+        onPressed: () => vm.tryStartPayment(true, false)
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          backgroundColor: Colors.blue
+        ),
+        child: const Text('СБП', style: TextStyle(color: Colors.white)),
+        onPressed: () => vm.tryStartPayment(true, true),
       )
     ];
   }
