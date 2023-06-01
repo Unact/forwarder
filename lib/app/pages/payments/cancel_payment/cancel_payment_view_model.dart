@@ -3,7 +3,35 @@ part of 'cancel_payment_page.dart';
 class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPaymentStateStatus> {
   final AppRepository appRepository;
   final PaymentsRepository paymentsRepository;
-  final Iboxpro iboxpro = Iboxpro();
+  late final Iboxpro iboxpro = Iboxpro(
+    onError: (String error) => emit(state.copyWith(message: error, status: CancelPaymentStateStatus.failure)),
+    onConnected: _getPaymentCredentials,
+    onLogin: _startReversePayment,
+    onStart: (_) {
+      emit(state.copyWith(
+        isCancelable: false,
+        message: 'Обработка отмены',
+        status: CancelPaymentStateStatus.paymentStarted
+      ));
+    },
+    onComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
+      emit(state.copyWith(
+        isRequiredSignature: requiredSignature,
+        message: 'Подтверждение отмены',
+        status: CancelPaymentStateStatus.paymentFinished
+      ));
+
+      if (!requiredSignature) {
+        _savePayment(transaction);
+      } else {
+        emit(state.copyWith(
+          message: 'Для завершения отмены\nнеобходимо указать подпись',
+          status: CancelPaymentStateStatus.requiredSignature
+        ));
+      }
+    },
+    onReverseAdjust: _savePayment
+  );
 
   CancelPaymentViewModel(
     this.appRepository,
@@ -25,6 +53,12 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
   @override
   Future<void> initViewModel() async {
     await super.initViewModel();
+
+    if (state.cardPayment.isLink) {
+      _getPaymentCredentials();
+      return;
+    }
+
     _connectToDevice();
   }
 
@@ -45,10 +79,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
       status: CancelPaymentStateStatus.searchingForDevice
     ));
 
-    iboxpro.connectToDevice(
-      onError: (String error) => emit(state.copyWith(message: error, status: CancelPaymentStateStatus.failure)),
-      onConnected: _getPaymentCredentials
-    );
+    iboxpro.connectToDevice();
   }
 
   Future<void> _getPaymentCredentials() async {
@@ -73,12 +104,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
 
     emit(state.copyWith(message: 'Авторизация оплаты', status: CancelPaymentStateStatus.paymentAuthorization));
 
-    await iboxpro.apiLogin(
-      login: login,
-      password: password,
-      onError: (String error) => emit(state.copyWith(message: error, status: CancelPaymentStateStatus.failure)),
-      onLogin: _startReversePayment
-    );
+    await iboxpro.apiLogin(login: login, password: password);
   }
 
   Future<void> _startReversePayment() async {
@@ -89,31 +115,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
     await iboxpro.startReversePayment(
       id: state.cardPayment.transactionId!,
       amount: state.cardPayment.summ,
-      description: 'Отмена заказа',
-      onError: (String error) => emit(state.copyWith(message: error, status: CancelPaymentStateStatus.failure)),
-      onPaymentStart: (_) {
-        emit(state.copyWith(
-          isCancelable: false,
-          message: 'Обработка отмены',
-          status: CancelPaymentStateStatus.paymentStarted
-        ));
-      },
-      onPaymentComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
-        emit(state.copyWith(
-          isRequiredSignature: requiredSignature,
-          message: 'Подтверждение отмены',
-          status: CancelPaymentStateStatus.paymentFinished
-        ));
-
-        if (!requiredSignature) {
-          _savePayment(transaction);
-        } else {
-          emit(state.copyWith(
-            message: 'Для завершения отмены\nнеобходимо указать подпись',
-            status: CancelPaymentStateStatus.requiredSignature
-          ));
-        }
-      }
+      description: 'Отмена заказа'
     );
   }
 
@@ -124,11 +126,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
       status: CancelPaymentStateStatus.savingSignature
     ));
 
-    await iboxpro.adjustReversePayment(
-      signature: signature,
-      onError: (String error) => emit(state.copyWith(message: error, status: CancelPaymentStateStatus.failure)),
-      onReversePaymentAdjust: _savePayment
-    );
+    await iboxpro.adjustReversePayment(signature: signature);
   }
 
   Future<void> _savePayment(Map<String, dynamic> transaction) async {

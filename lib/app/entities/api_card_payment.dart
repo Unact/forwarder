@@ -8,6 +8,7 @@ class ApiCardPayment extends Equatable {
   final DateTime ddate;
   final String? transactionId;
   final int canceled;
+  final int isLink;
 
   const ApiCardPayment({
     required this.id,
@@ -16,7 +17,8 @@ class ApiCardPayment extends Equatable {
     required this.summ,
     required this.ddate,
     this.transactionId,
-    required this.canceled
+    required this.canceled,
+    required this.isLink
   });
 
   factory ApiCardPayment.fromJson(dynamic json) {
@@ -27,7 +29,8 @@ class ApiCardPayment extends Equatable {
       summ: Parsing.parseDouble(json['summ'])!,
       ddate: Parsing.parseDate(json['ddate'])!,
       transactionId: json['transaction_id'],
-      canceled: json['canceled']
+      canceled: json['canceled'],
+      isLink: json['is_link']
     );
   }
 
@@ -39,7 +42,8 @@ class ApiCardPayment extends Equatable {
       summ: summ,
       ddate: ddate,
       transactionId: transactionId,
-      canceled: canceled == 1
+      canceled: canceled == 1,
+      isLink: isLink == 1
     );
   }
 
@@ -51,6 +55,7 @@ class ApiCardPayment extends Equatable {
     summ,
     ddate,
     transactionId,
-    canceled
+    canceled,
+    isLink
   ];
 }

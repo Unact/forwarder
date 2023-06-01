@@ -99,7 +99,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     emit(state.copyWith(status: OrderStateStatus.paymentFinished, message: result));
   }
 
-  void tryStartPayment(bool isCard) {
+  void tryStartPayment(bool isCard, bool isLink) {
     if (state.debt == null) {
       emit(state.copyWith(status: OrderStateStatus.paymentFailure, message: 'Не найдена задолженность для заказа'));
 
@@ -109,6 +109,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     emit(state.copyWith(
       status: OrderStateStatus.needUserConfirmation,
       isCard: isCard,
+      isLink: isLink,
       message: 'Вы уверены, что хотите внести оплату ${Format.numberStr(state.debt!.paymentSum)} руб.?\n'
         'Изменить потом будет нельзя.',
       confirmationCallback: startPayment

@@ -37,7 +37,6 @@ class DebtViewModel extends PageViewModel<DebtState, DebtStateStatus> {
     if (state.debt.paymentSum == null) {
       emit(state.copyWith(
         status: DebtStateStatus.paymentFailure,
-        isCard: isCard,
         confirmationCallback: startPayment,
         message: 'Указана некорректная сумма'
       ));

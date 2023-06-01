@@ -1029,6 +1029,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
   final DateTime ddate;
   final String? transactionId;
   final bool canceled;
+  final bool isLink;
   CardPayment(
       {required this.id,
       required this.buyerId,
@@ -1036,7 +1037,8 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
       required this.summ,
       required this.ddate,
       this.transactionId,
-      required this.canceled});
+      required this.canceled,
+      required this.isLink});
   factory CardPayment.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return CardPayment(
@@ -1054,6 +1056,8 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           .mapFromDatabaseResponse(data['${effectivePrefix}transaction_id']),
       canceled: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}canceled'])!,
+      isLink: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_link'])!,
     );
   }
   @override
@@ -1068,6 +1072,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
       map['transaction_id'] = Variable<String?>(transactionId);
     }
     map['canceled'] = Variable<bool>(canceled);
+    map['is_link'] = Variable<bool>(isLink);
     return map;
   }
 
@@ -1082,6 +1087,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           ? const Value.absent()
           : Value(transactionId),
       canceled: Value(canceled),
+      isLink: Value(isLink),
     );
   }
 
@@ -1096,6 +1102,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
       ddate: serializer.fromJson<DateTime>(json['ddate']),
       transactionId: serializer.fromJson<String?>(json['transactionId']),
       canceled: serializer.fromJson<bool>(json['canceled']),
+      isLink: serializer.fromJson<bool>(json['isLink']),
     );
   }
   @override
@@ -1109,6 +1116,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
       'ddate': serializer.toJson<DateTime>(ddate),
       'transactionId': serializer.toJson<String?>(transactionId),
       'canceled': serializer.toJson<bool>(canceled),
+      'isLink': serializer.toJson<bool>(isLink),
     };
   }
 
@@ -1119,7 +1127,8 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           double? summ,
           DateTime? ddate,
           String? transactionId,
-          bool? canceled}) =>
+          bool? canceled,
+          bool? isLink}) =>
       CardPayment(
         id: id ?? this.id,
         buyerId: buyerId ?? this.buyerId,
@@ -1128,6 +1137,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
         ddate: ddate ?? this.ddate,
         transactionId: transactionId ?? this.transactionId,
         canceled: canceled ?? this.canceled,
+        isLink: isLink ?? this.isLink,
       );
   @override
   String toString() {
@@ -1138,14 +1148,15 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           ..write('summ: $summ, ')
           ..write('ddate: $ddate, ')
           ..write('transactionId: $transactionId, ')
-          ..write('canceled: $canceled')
+          ..write('canceled: $canceled, ')
+          ..write('isLink: $isLink')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, buyerId, orderId, summ, ddate, transactionId, canceled);
+  int get hashCode => Object.hash(
+      id, buyerId, orderId, summ, ddate, transactionId, canceled, isLink);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1156,7 +1167,8 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           other.summ == this.summ &&
           other.ddate == this.ddate &&
           other.transactionId == this.transactionId &&
-          other.canceled == this.canceled);
+          other.canceled == this.canceled &&
+          other.isLink == this.isLink);
 }
 
 class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
@@ -1167,6 +1179,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
   final Value<DateTime> ddate;
   final Value<String?> transactionId;
   final Value<bool> canceled;
+  final Value<bool> isLink;
   const CardPaymentsCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
@@ -1175,6 +1188,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
     this.ddate = const Value.absent(),
     this.transactionId = const Value.absent(),
     this.canceled = const Value.absent(),
+    this.isLink = const Value.absent(),
   });
   CardPaymentsCompanion.insert({
     this.id = const Value.absent(),
@@ -1184,11 +1198,13 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
     required DateTime ddate,
     this.transactionId = const Value.absent(),
     required bool canceled,
+    required bool isLink,
   })  : buyerId = Value(buyerId),
         orderId = Value(orderId),
         summ = Value(summ),
         ddate = Value(ddate),
-        canceled = Value(canceled);
+        canceled = Value(canceled),
+        isLink = Value(isLink);
   static Insertable<CardPayment> custom({
     Expression<int>? id,
     Expression<int>? buyerId,
@@ -1197,6 +1213,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
     Expression<DateTime>? ddate,
     Expression<String?>? transactionId,
     Expression<bool>? canceled,
+    Expression<bool>? isLink,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1206,6 +1223,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
       if (ddate != null) 'ddate': ddate,
       if (transactionId != null) 'transaction_id': transactionId,
       if (canceled != null) 'canceled': canceled,
+      if (isLink != null) 'is_link': isLink,
     });
   }
 
@@ -1216,7 +1234,8 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
       Value<double>? summ,
       Value<DateTime>? ddate,
       Value<String?>? transactionId,
-      Value<bool>? canceled}) {
+      Value<bool>? canceled,
+      Value<bool>? isLink}) {
     return CardPaymentsCompanion(
       id: id ?? this.id,
       buyerId: buyerId ?? this.buyerId,
@@ -1225,6 +1244,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
       ddate: ddate ?? this.ddate,
       transactionId: transactionId ?? this.transactionId,
       canceled: canceled ?? this.canceled,
+      isLink: isLink ?? this.isLink,
     );
   }
 
@@ -1252,6 +1272,9 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
     if (canceled.present) {
       map['canceled'] = Variable<bool>(canceled.value);
     }
+    if (isLink.present) {
+      map['is_link'] = Variable<bool>(isLink.value);
+    }
     return map;
   }
 
@@ -1264,7 +1287,8 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
           ..write('summ: $summ, ')
           ..write('ddate: $ddate, ')
           ..write('transactionId: $transactionId, ')
-          ..write('canceled: $canceled')
+          ..write('canceled: $canceled, ')
+          ..write('isLink: $isLink')
           ..write(')'))
         .toString();
   }
@@ -1316,9 +1340,16 @@ class $CardPaymentsTable extends CardPayments
       type: const BoolType(),
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (canceled IN (0, 1))');
+  final VerificationMeta _isLinkMeta = const VerificationMeta('isLink');
+  @override
+  late final GeneratedColumn<bool?> isLink = GeneratedColumn<bool?>(
+      'is_link', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (is_link IN (0, 1))');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, buyerId, orderId, summ, ddate, transactionId, canceled];
+      [id, buyerId, orderId, summ, ddate, transactionId, canceled, isLink];
   @override
   String get aliasedName => _alias ?? 'card_payments';
   @override
@@ -1366,6 +1397,12 @@ class $CardPaymentsTable extends CardPayments
           canceled.isAcceptableOrUnknown(data['canceled']!, _canceledMeta));
     } else if (isInserting) {
       context.missing(_canceledMeta);
+    }
+    if (data.containsKey('is_link')) {
+      context.handle(_isLinkMeta,
+          isLink.isAcceptableOrUnknown(data['is_link']!, _isLinkMeta));
+    } else if (isInserting) {
+      context.missing(_isLinkMeta);
     }
     return context;
   }
