@@ -193,7 +193,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     if (state.canceled) return;
 
     emit(state.copyWith(
-      message: 'Ожидание ответа от терминала',
+      message: 'Ожидание ответа',
       status: AcceptPaymentStateStatus.waitingForPayment
     ));
 

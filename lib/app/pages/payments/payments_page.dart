@@ -43,13 +43,14 @@ class _PaymentsView extends StatefulWidget {
 class _PaymentsViewState extends State<_PaymentsView> {
   Future<void> showCancelPaymentDialog() async {
     PaymentsViewModel vm = context.read<PaymentsViewModel>();
-    String result = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (BuildContext context) => CancelPaymentPage(cardPayment: vm.state.cardPaymentToCancel!)
-      )
-    ) ?? 'Платеж отменен';
+    String result = await showDialog(
+      context: context,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: CancelPaymentPage(cardPayment: vm.state.cardPaymentToCancel!)
+      ),
+      barrierDismissible: false
+    ) ?? 'Возврат отменен';
 
     vm.finishCancelPayment(result);
   }

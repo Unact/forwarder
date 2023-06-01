@@ -65,7 +65,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
   Future<void> cancelPayment() async {
     await iboxpro.cancelPayment();
 
-    emit(state.copyWith(message: 'Платеж отменен', canceled: true, status: CancelPaymentStateStatus.failure));
+    emit(state.copyWith(message: 'Возврат отменен', canceled: true, status: CancelPaymentStateStatus.failure));
   }
 
   Future<void> _connectToDevice() async {
@@ -110,7 +110,7 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
   Future<void> _startReversePayment() async {
     if (state.canceled) return;
 
-    emit(state.copyWith(message: 'Ожидание ответа от терминала', status: CancelPaymentStateStatus.waitingForPayment));
+    emit(state.copyWith(message: 'Ожидание ответа', status: CancelPaymentStateStatus.waitingForPayment));
 
     await iboxpro.startReversePayment(
       id: state.cardPayment.transactionId!,

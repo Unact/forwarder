@@ -29,7 +29,7 @@ dependencies:
       url: git@github.com:rickcasson/flutter_bluetooth_serial.git
       ref: android-12-fixes
   flutter_signature_pad: ^3.0.0
-  iboxpro_flutter: ^2.0.0
+  iboxpro_flutter: ^2.0.1
   permission_handler: ^10.2.0
   quiver: ^3.0.1
   drift: ^1.5.0
