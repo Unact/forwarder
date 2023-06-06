@@ -38,6 +38,11 @@ class OrderState {
 
   bool get needPayment => debt != null && debt!.paymentSum != null && debt!.paidSum == 0;
 
+  double get totalSum => codeLines.map((e) => e.orderLine.vol * e.orderLine.price).fold<double>(0, (sum, e) => sum + e);
+  double get scannedSum => codeLines
+    .map((e) => e.orderLineCodes.fold<double>(0, (sum, ei) => sum + ei.amount) * e.orderLine.price)
+    .fold<double>(0, (sum, e) => sum + e);
+
   OrderState copyWith({
     OrderStateStatus? status,
     Order? order,

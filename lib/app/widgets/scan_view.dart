@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:soundpool/soundpool.dart';
+import 'package:vibration/vibration.dart';
 
 class ScanView extends StatefulWidget {
   final Widget child;
@@ -30,6 +31,10 @@ class _ScanViewState extends State<ScanView> {
 
   static Future<void> _beep() async {
     await _kPool.play(await _kBeepId);
+  }
+
+  static Future<void> _vibrate() async {
+    if (await Vibration.hasVibrator() ?? false) Vibration.vibrate();
   }
 
   @override
@@ -109,6 +114,7 @@ class _ScanViewState extends State<ScanView> {
 
                     setState(() => _paused = true);
                     await _beep();
+                    await _vibrate();
                     await widget.onRead(scanData.code ?? '');
                     setState(() => _paused = false);
                   }

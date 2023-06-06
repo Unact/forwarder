@@ -166,11 +166,16 @@ class _OrderViewState extends State<_OrderView> {
         trailing: Text(
           state.order.isDelivered ? Strings.yes : (state.order.isUndelivered ? Strings.no : Strings.inProcess)
         )
-      )
+      ),
+      InfoRow(title: const Text('Итого'), trailing: Text(Format.numberStr(state.totalSum)))
     ];
 
+    if (!vm.state.order.isDelivered && vm.state.order.physical) {
+      children.add(InfoRow(title: const Text('К оплате'), trailing: Text(Format.numberStr(state.scannedSum))));
+    }
+
     if (vm.state.order.isDelivered && vm.state.needPayment) {
-      children.add(InfoRow(title: const Text('Оплата'), trailing: Text(Format.numberStr(state.debt!.paymentSum))));
+      children.add(InfoRow(title: const Text('К оплате'), trailing: Text(Format.numberStr(state.debt!.paymentSum))));
     }
 
     return ListView(
@@ -208,6 +213,20 @@ class _OrderViewState extends State<_OrderView> {
       return ListTile(
         dense: true,
         title: Text(codeLine.orderLine.name),
+        subtitle: RichText(
+          text: TextSpan(
+            children: <TextSpan>[
+              TextSpan(
+                text: "Стоимость: ${Format.numberStr(codeLine.orderLine.price)}\n",
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+              ),
+              TextSpan(
+                text: "Итого: ${Format.numberStr(codeLine.orderLine.price * codeLine.orderLine.vol)}\n",
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+              ),
+            ]
+          )
+        ),
         trailing: Text(codeLine.orderLine.vol.toInt().toString()),
       );
     }
@@ -219,6 +238,24 @@ class _OrderViewState extends State<_OrderView> {
       child: ListTile(
         dense: true,
         title: Text(codeLine.orderLine.name),
+        subtitle: RichText(
+          text: TextSpan(
+            children: <TextSpan>[
+              TextSpan(
+                text: "Стоимость: ${Format.numberStr(codeLine.orderLine.price)}\n",
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+              ),
+              TextSpan(
+                text: "Итого: ${Format.numberStr(codeLine.orderLine.price * codeLine.orderLine.vol)}\n",
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+              ),
+              TextSpan(
+                text: "К оплате: ${Format.numberStr(codeLine.orderLine.price * amount)}",
+                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+              ),
+            ]
+          )
+        ),
         trailing: Text("$amount из ${codeLine.orderLine.vol.toInt()}")
       )
     );
@@ -235,6 +272,8 @@ class _OrderViewState extends State<_OrderView> {
 
   List<Widget> _buildDeliveryButtons(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
+    bool hasScanned = !vm.state.order.physical ||
+      (vm.state.order.physical && vm.state.codeLines.any((e) => e.orderLineCodes.isNotEmpty));
 
     return [
       ElevatedButton(
@@ -243,7 +282,7 @@ class _OrderViewState extends State<_OrderView> {
           backgroundColor: Colors.blue
         ),
         child: const Text('Доставлен', style: TextStyle(color: Colors.white)),
-        onPressed: !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(true) : null,
+        onPressed: hasScanned && !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(true) : null,
       ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(

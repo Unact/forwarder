@@ -38,6 +38,7 @@ dependencies:
   soundpool: ^2.3.0
   gs1_barcode_parser: ^1.0.4
   barcode_widget: ^2.0.2
+  vibration: ^1.7.5
 
 dev_dependencies:
   drift_dev: ^1.5.2
