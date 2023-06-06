@@ -111,7 +111,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       return;
     }
 
-    emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Не найден товар с указанным кодом'));
+    emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
     return;
   }
 

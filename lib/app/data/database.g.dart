@@ -2809,6 +2809,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   final String name;
   final String gtin;
   final double vol;
+  final double price;
   final bool needMarking;
   final List<String> barcodes;
   OrderLine(
@@ -2817,6 +2818,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       required this.name,
       required this.gtin,
       required this.vol,
+      required this.price,
       required this.needMarking,
       required this.barcodes});
   factory OrderLine.fromData(Map<String, dynamic> data, {String? prefix}) {
@@ -2832,6 +2834,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           .mapFromDatabaseResponse(data['${effectivePrefix}gtin'])!,
       vol: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}vol'])!,
+      price: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}price'])!,
       needMarking: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}need_marking'])!,
       barcodes: $OrderLinesTable.$converter0.mapToDart(const StringType()
@@ -2846,6 +2850,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['name'] = Variable<String>(name);
     map['gtin'] = Variable<String>(gtin);
     map['vol'] = Variable<double>(vol);
+    map['price'] = Variable<double>(price);
     map['need_marking'] = Variable<bool>(needMarking);
     {
       final converter = $OrderLinesTable.$converter0;
@@ -2861,6 +2866,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       name: Value(name),
       gtin: Value(gtin),
       vol: Value(vol),
+      price: Value(price),
       needMarking: Value(needMarking),
       barcodes: Value(barcodes),
     );
@@ -2875,6 +2881,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       name: serializer.fromJson<String>(json['name']),
       gtin: serializer.fromJson<String>(json['gtin']),
       vol: serializer.fromJson<double>(json['vol']),
+      price: serializer.fromJson<double>(json['price']),
       needMarking: serializer.fromJson<bool>(json['needMarking']),
       barcodes: serializer.fromJson<List<String>>(json['barcodes']),
     );
@@ -2888,6 +2895,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       'name': serializer.toJson<String>(name),
       'gtin': serializer.toJson<String>(gtin),
       'vol': serializer.toJson<double>(vol),
+      'price': serializer.toJson<double>(price),
       'needMarking': serializer.toJson<bool>(needMarking),
       'barcodes': serializer.toJson<List<String>>(barcodes),
     };
@@ -2899,6 +2907,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           String? name,
           String? gtin,
           double? vol,
+          double? price,
           bool? needMarking,
           List<String>? barcodes}) =>
       OrderLine(
@@ -2907,6 +2916,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
         name: name ?? this.name,
         gtin: gtin ?? this.gtin,
         vol: vol ?? this.vol,
+        price: price ?? this.price,
         needMarking: needMarking ?? this.needMarking,
         barcodes: barcodes ?? this.barcodes,
       );
@@ -2918,6 +2928,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           ..write('name: $name, ')
           ..write('gtin: $gtin, ')
           ..write('vol: $vol, ')
+          ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
           ..write('barcodes: $barcodes')
           ..write(')'))
@@ -2925,8 +2936,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(orderId, subid, name, gtin, vol, needMarking, barcodes);
+  int get hashCode => Object.hash(
+      orderId, subid, name, gtin, vol, price, needMarking, barcodes);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2936,6 +2947,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           other.name == this.name &&
           other.gtin == this.gtin &&
           other.vol == this.vol &&
+          other.price == this.price &&
           other.needMarking == this.needMarking &&
           other.barcodes == this.barcodes);
 }
@@ -2946,6 +2958,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
   final Value<String> name;
   final Value<String> gtin;
   final Value<double> vol;
+  final Value<double> price;
   final Value<bool> needMarking;
   final Value<List<String>> barcodes;
   const OrderLinesCompanion({
@@ -2954,6 +2967,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     this.name = const Value.absent(),
     this.gtin = const Value.absent(),
     this.vol = const Value.absent(),
+    this.price = const Value.absent(),
     this.needMarking = const Value.absent(),
     this.barcodes = const Value.absent(),
   });
@@ -2963,6 +2977,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     required String name,
     required String gtin,
     required double vol,
+    required double price,
     required bool needMarking,
     required List<String> barcodes,
   })  : orderId = Value(orderId),
@@ -2970,6 +2985,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
         name = Value(name),
         gtin = Value(gtin),
         vol = Value(vol),
+        price = Value(price),
         needMarking = Value(needMarking),
         barcodes = Value(barcodes);
   static Insertable<OrderLine> custom({
@@ -2978,6 +2994,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Expression<String>? name,
     Expression<String>? gtin,
     Expression<double>? vol,
+    Expression<double>? price,
     Expression<bool>? needMarking,
     Expression<List<String>>? barcodes,
   }) {
@@ -2987,6 +3004,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       if (name != null) 'name': name,
       if (gtin != null) 'gtin': gtin,
       if (vol != null) 'vol': vol,
+      if (price != null) 'price': price,
       if (needMarking != null) 'need_marking': needMarking,
       if (barcodes != null) 'barcodes': barcodes,
     });
@@ -2998,6 +3016,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       Value<String>? name,
       Value<String>? gtin,
       Value<double>? vol,
+      Value<double>? price,
       Value<bool>? needMarking,
       Value<List<String>>? barcodes}) {
     return OrderLinesCompanion(
@@ -3006,6 +3025,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       name: name ?? this.name,
       gtin: gtin ?? this.gtin,
       vol: vol ?? this.vol,
+      price: price ?? this.price,
       needMarking: needMarking ?? this.needMarking,
       barcodes: barcodes ?? this.barcodes,
     );
@@ -3029,6 +3049,9 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     if (vol.present) {
       map['vol'] = Variable<double>(vol.value);
     }
+    if (price.present) {
+      map['price'] = Variable<double>(price.value);
+    }
     if (needMarking.present) {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
@@ -3047,6 +3070,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
           ..write('name: $name, ')
           ..write('gtin: $gtin, ')
           ..write('vol: $vol, ')
+          ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
           ..write('barcodes: $barcodes')
           ..write(')'))
@@ -3085,6 +3109,11 @@ class $OrderLinesTable extends OrderLines
   late final GeneratedColumn<double?> vol = GeneratedColumn<double?>(
       'vol', aliasedName, false,
       type: const RealType(), requiredDuringInsert: true);
+  final VerificationMeta _priceMeta = const VerificationMeta('price');
+  @override
+  late final GeneratedColumn<double?> price = GeneratedColumn<double?>(
+      'price', aliasedName, false,
+      type: const RealType(), requiredDuringInsert: true);
   final VerificationMeta _needMarkingMeta =
       const VerificationMeta('needMarking');
   @override
@@ -3101,7 +3130,7 @@ class $OrderLinesTable extends OrderLines
           .withConverter<List<String>>($OrderLinesTable.$converter0);
   @override
   List<GeneratedColumn> get $columns =>
-      [orderId, subid, name, gtin, vol, needMarking, barcodes];
+      [orderId, subid, name, gtin, vol, price, needMarking, barcodes];
   @override
   String get aliasedName => _alias ?? 'order_lines';
   @override
@@ -3140,6 +3169,12 @@ class $OrderLinesTable extends OrderLines
           _volMeta, vol.isAcceptableOrUnknown(data['vol']!, _volMeta));
     } else if (isInserting) {
       context.missing(_volMeta);
+    }
+    if (data.containsKey('price')) {
+      context.handle(
+          _priceMeta, price.isAcceptableOrUnknown(data['price']!, _priceMeta));
+    } else if (isInserting) {
+      context.missing(_priceMeta);
     }
     if (data.containsKey('need_marking')) {
       context.handle(
