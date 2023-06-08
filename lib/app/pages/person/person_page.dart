@@ -97,7 +97,7 @@ class _PersonViewState extends State<_PersonView> {
                   backgroundColor: Colors.blueAccent
                 ),
                 child: const Text('Обновить приложение'),
-                onPressed: vm.apiLogout,
+                onPressed: vm.launchAppUpdate,
               )
             ],
           )
