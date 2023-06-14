@@ -109,12 +109,12 @@ class _ScanViewState extends State<ScanView> {
 
                   if (_paused) return;
 
-                  if (lastScan == null || currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
+                  if (lastScan == null || currentScan.difference(lastScan!) > const Duration(milliseconds: 500)) {
                     lastScan = currentScan;
 
                     setState(() => _paused = true);
-                    await _beep();
-                    await _vibrate();
+                    _beep();
+                    _vibrate();
                     await widget.onRead(scanData.code ?? '');
                     setState(() => _paused = false);
                   }
