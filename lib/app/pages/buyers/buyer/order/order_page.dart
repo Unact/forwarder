@@ -170,6 +170,10 @@ class _OrderViewState extends State<_OrderView> {
       InfoRow(title: const Text('Итого'), trailing: Text(Format.numberStr(state.totalSum)))
     ];
 
+    if (vm.state.debt != null) {
+      children.add(InfoRow(title: const Text('Оплачено'), trailing: Text(Format.numberStr(state.debt!.paidSum))));
+    }
+
     if (!vm.state.order.isDelivered && vm.state.order.physical) {
       children.add(InfoRow(title: const Text('К оплате'), trailing: Text(Format.numberStr(state.scannedSum))));
     }
