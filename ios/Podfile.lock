@@ -12,9 +12,6 @@ PODS:
     - Protobuf (~> 3.21)
   - flutter_secure_storage (6.0.0):
     - Flutter
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
   - iboxpro_flutter (0.0.1):
     - Flutter
   - location (0.0.1):
@@ -40,9 +37,6 @@ PODS:
   - SentryPrivate (8.7.3)
   - soundpool (0.0.1):
     - Flutter
-  - sqflite (0.0.3):
-    - Flutter
-    - FMDB (>= 2.7.5)
   - sqlite3 (3.41.2):
     - sqlite3/common (= 3.41.2)
   - sqlite3/common (3.41.2)
@@ -77,14 +71,12 @@ DEPENDENCIES:
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - soundpool (from `.symlinks/plugins/soundpool/ios`)
-  - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - vibration (from `.symlinks/plugins/vibration/ios`)
 
 SPEC REPOS:
   trunk:
-    - FMDB
     - MTBBarcodeScanner
     - Protobuf
     - Sentry
@@ -118,8 +110,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sentry_flutter/ios"
   soundpool:
     :path: ".symlinks/plugins/soundpool/ios"
-  sqflite:
-    :path: ".symlinks/plugins/sqflite/ios"
   sqlite3_flutter_libs:
     :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
   url_launcher_ios:
@@ -133,7 +123,6 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_blue_plus: 316ac8d1179789616d2c148e8a03c37720e63933
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   iboxpro_flutter: fe944bd0a3f50fa4f18a7c633ead63603611016d
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
@@ -146,7 +135,6 @@ SPEC CHECKSUMS:
   sentry_flutter: f2710a4f537e9a7143b02562b8754ccdc8224751
   SentryPrivate: 2eaabf598a46d4b9b8822aef766df2a84caf2e6f
   soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
-  sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   sqlite3: fd89671d969f3e73efe503ce203e28b016b58f68
   sqlite3_flutter_libs: 04ba0d14a04335a2fbf9a331e8664f401fbccdd5
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
