@@ -42,7 +42,6 @@ class Api {
     _dio = _createDio(_url, _version, _accessToken);
   }
 
-
   static Future<Api> init() async {
     return Api._(
       await _storage.read(key: _kUrlKey) ?? '',
@@ -182,8 +181,8 @@ class Api {
   Future<dynamic> _sendRawRequest(Future<Response> Function() rawRequest) async {
     try {
       return (await rawRequest.call()).data;
-    } on DioError catch(e) {
-      _onDioError(e);
+    } on DioException catch(e) {
+      _onDioException(e);
     }
   }
 
@@ -206,7 +205,7 @@ class Api {
     ));
   }
 
-  static void _onDioError(DioError e) {
+  static void _onDioException(DioException e) {
     if (e.response != null) {
       final int statusCode = e.response!.statusCode!;
       final dynamic body = e.response!.data;
@@ -235,7 +234,7 @@ class Api {
         e.error is SocketException ||
         e.error is HandshakeException ||
         e.error is HttpException ||
-        e.type == DioErrorType.connectionTimeout
+        e.type == DioExceptionType.connectionTimeout
       ) {
         throw ApiConnException();
       }

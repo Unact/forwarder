@@ -39,7 +39,7 @@ class _LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<_LoginView> {
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
-  final TextEditingController _loginController = TextEditingController(text: '7');
+  final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
 
