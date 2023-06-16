@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart' show Value;
-
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
@@ -8,7 +6,9 @@ import '/app/services/api.dart';
 import '/app/utils/misc.dart';
 
 class UsersRepository extends BaseRepository {
-  UsersRepository(AppDataStore dataStore) : super(dataStore);
+  UsersRepository(AppDataStore dataStore, Api api) : super(dataStore, api);
+
+  bool get isLoggedIn => api.isLoggedIn;
 
   Future<User> getUser() {
     return dataStore.usersDao.getUser();
@@ -30,7 +30,7 @@ class UsersRepository extends BaseRepository {
 
   Future<void> login(String url, String login, String password) async {
     try {
-      await Api(dataStore: dataStore).login(url: url, login: login, password: password);
+      await api.login(url: url, login: login, password: password);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -39,13 +39,12 @@ class UsersRepository extends BaseRepository {
     }
 
     await loadUserData();
-    await dataStore.updatePref(PrefsCompanion(lastLogin: Value(DateTime.now())));
     notifyListeners();
   }
 
   Future<void> logout() async {
     try {
-      await Api(dataStore: dataStore).logout();
+      await api.logout();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {

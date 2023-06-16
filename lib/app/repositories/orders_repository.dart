@@ -8,7 +8,7 @@ import '/app/services/api.dart';
 import '/app/utils/misc.dart';
 
 class OrdersRepository extends BaseRepository {
-  OrdersRepository(AppDataStore dataStore) : super(dataStore);
+  OrdersRepository(AppDataStore dataStore, Api api) : super(dataStore, api);
 
   Future<List<Buyer>> getBuyers() async {
     return dataStore.ordersDao.getBuyers();

@@ -10,7 +10,7 @@ import '/app/services/api.dart';
 import '/app/utils/misc.dart';
 
 class AppRepository extends BaseRepository {
-  AppRepository(AppDataStore dataStore) : super(dataStore);
+  AppRepository(AppDataStore dataStore, Api api) : super(dataStore, api);
 
   Future<bool> get newVersionAvailable async {
     String currentVersion = (await PackageInfo.fromPlatform()).version;

@@ -3498,236 +3498,12 @@ class $OrderLineCodesTable extends OrderLineCodes
   }
 }
 
-class ApiCredential extends DataClass implements Insertable<ApiCredential> {
-  final String accessToken;
-  final String refreshToken;
-  final String url;
-  ApiCredential(
-      {required this.accessToken,
-      required this.refreshToken,
-      required this.url});
-  factory ApiCredential.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ApiCredential(
-      accessToken: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}access_token'])!,
-      refreshToken: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}refresh_token'])!,
-      url: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}url'])!,
-    );
-  }
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['access_token'] = Variable<String>(accessToken);
-    map['refresh_token'] = Variable<String>(refreshToken);
-    map['url'] = Variable<String>(url);
-    return map;
-  }
-
-  ApiCredentialsCompanion toCompanion(bool nullToAbsent) {
-    return ApiCredentialsCompanion(
-      accessToken: Value(accessToken),
-      refreshToken: Value(refreshToken),
-      url: Value(url),
-    );
-  }
-
-  factory ApiCredential.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ApiCredential(
-      accessToken: serializer.fromJson<String>(json['accessToken']),
-      refreshToken: serializer.fromJson<String>(json['refreshToken']),
-      url: serializer.fromJson<String>(json['url']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'accessToken': serializer.toJson<String>(accessToken),
-      'refreshToken': serializer.toJson<String>(refreshToken),
-      'url': serializer.toJson<String>(url),
-    };
-  }
-
-  ApiCredential copyWith(
-          {String? accessToken, String? refreshToken, String? url}) =>
-      ApiCredential(
-        accessToken: accessToken ?? this.accessToken,
-        refreshToken: refreshToken ?? this.refreshToken,
-        url: url ?? this.url,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('ApiCredential(')
-          ..write('accessToken: $accessToken, ')
-          ..write('refreshToken: $refreshToken, ')
-          ..write('url: $url')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(accessToken, refreshToken, url);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ApiCredential &&
-          other.accessToken == this.accessToken &&
-          other.refreshToken == this.refreshToken &&
-          other.url == this.url);
-}
-
-class ApiCredentialsCompanion extends UpdateCompanion<ApiCredential> {
-  final Value<String> accessToken;
-  final Value<String> refreshToken;
-  final Value<String> url;
-  const ApiCredentialsCompanion({
-    this.accessToken = const Value.absent(),
-    this.refreshToken = const Value.absent(),
-    this.url = const Value.absent(),
-  });
-  ApiCredentialsCompanion.insert({
-    required String accessToken,
-    required String refreshToken,
-    required String url,
-  })  : accessToken = Value(accessToken),
-        refreshToken = Value(refreshToken),
-        url = Value(url);
-  static Insertable<ApiCredential> custom({
-    Expression<String>? accessToken,
-    Expression<String>? refreshToken,
-    Expression<String>? url,
-  }) {
-    return RawValuesInsertable({
-      if (accessToken != null) 'access_token': accessToken,
-      if (refreshToken != null) 'refresh_token': refreshToken,
-      if (url != null) 'url': url,
-    });
-  }
-
-  ApiCredentialsCompanion copyWith(
-      {Value<String>? accessToken,
-      Value<String>? refreshToken,
-      Value<String>? url}) {
-    return ApiCredentialsCompanion(
-      accessToken: accessToken ?? this.accessToken,
-      refreshToken: refreshToken ?? this.refreshToken,
-      url: url ?? this.url,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (accessToken.present) {
-      map['access_token'] = Variable<String>(accessToken.value);
-    }
-    if (refreshToken.present) {
-      map['refresh_token'] = Variable<String>(refreshToken.value);
-    }
-    if (url.present) {
-      map['url'] = Variable<String>(url.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ApiCredentialsCompanion(')
-          ..write('accessToken: $accessToken, ')
-          ..write('refreshToken: $refreshToken, ')
-          ..write('url: $url')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $ApiCredentialsTable extends ApiCredentials
-    with TableInfo<$ApiCredentialsTable, ApiCredential> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ApiCredentialsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _accessTokenMeta =
-      const VerificationMeta('accessToken');
-  @override
-  late final GeneratedColumn<String?> accessToken = GeneratedColumn<String?>(
-      'access_token', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _refreshTokenMeta =
-      const VerificationMeta('refreshToken');
-  @override
-  late final GeneratedColumn<String?> refreshToken = GeneratedColumn<String?>(
-      'refresh_token', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _urlMeta = const VerificationMeta('url');
-  @override
-  late final GeneratedColumn<String?> url = GeneratedColumn<String?>(
-      'url', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [accessToken, refreshToken, url];
-  @override
-  String get aliasedName => _alias ?? 'api_credentials';
-  @override
-  String get actualTableName => 'api_credentials';
-  @override
-  VerificationContext validateIntegrity(Insertable<ApiCredential> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('access_token')) {
-      context.handle(
-          _accessTokenMeta,
-          accessToken.isAcceptableOrUnknown(
-              data['access_token']!, _accessTokenMeta));
-    } else if (isInserting) {
-      context.missing(_accessTokenMeta);
-    }
-    if (data.containsKey('refresh_token')) {
-      context.handle(
-          _refreshTokenMeta,
-          refreshToken.isAcceptableOrUnknown(
-              data['refresh_token']!, _refreshTokenMeta));
-    } else if (isInserting) {
-      context.missing(_refreshTokenMeta);
-    }
-    if (data.containsKey('url')) {
-      context.handle(
-          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
-    } else if (isInserting) {
-      context.missing(_urlMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
-  @override
-  ApiCredential map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ApiCredential.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
-  }
-
-  @override
-  $ApiCredentialsTable createAlias(String alias) {
-    return $ApiCredentialsTable(attachedDatabase, alias);
-  }
-}
-
 class Pref extends DataClass implements Insertable<Pref> {
-  final DateTime? lastLogin;
   final DateTime? lastSyncTime;
-  Pref({this.lastLogin, this.lastSyncTime});
+  Pref({this.lastSyncTime});
   factory Pref.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Pref(
-      lastLogin: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}last_login']),
       lastSyncTime: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}last_sync_time']),
     );
@@ -3735,9 +3511,6 @@ class Pref extends DataClass implements Insertable<Pref> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || lastLogin != null) {
-      map['last_login'] = Variable<DateTime?>(lastLogin);
-    }
     if (!nullToAbsent || lastSyncTime != null) {
       map['last_sync_time'] = Variable<DateTime?>(lastSyncTime);
     }
@@ -3746,9 +3519,6 @@ class Pref extends DataClass implements Insertable<Pref> {
 
   PrefsCompanion toCompanion(bool nullToAbsent) {
     return PrefsCompanion(
-      lastLogin: lastLogin == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastLogin),
       lastSyncTime: lastSyncTime == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncTime),
@@ -3759,7 +3529,6 @@ class Pref extends DataClass implements Insertable<Pref> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Pref(
-      lastLogin: serializer.fromJson<DateTime?>(json['lastLogin']),
       lastSyncTime: serializer.fromJson<DateTime?>(json['lastSyncTime']),
     );
   }
@@ -3767,59 +3536,47 @@ class Pref extends DataClass implements Insertable<Pref> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'lastLogin': serializer.toJson<DateTime?>(lastLogin),
       'lastSyncTime': serializer.toJson<DateTime?>(lastSyncTime),
     };
   }
 
-  Pref copyWith({DateTime? lastLogin, DateTime? lastSyncTime}) => Pref(
-        lastLogin: lastLogin ?? this.lastLogin,
+  Pref copyWith({DateTime? lastSyncTime}) => Pref(
         lastSyncTime: lastSyncTime ?? this.lastSyncTime,
       );
   @override
   String toString() {
     return (StringBuffer('Pref(')
-          ..write('lastLogin: $lastLogin, ')
           ..write('lastSyncTime: $lastSyncTime')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(lastLogin, lastSyncTime);
+  int get hashCode => lastSyncTime.hashCode;
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Pref &&
-          other.lastLogin == this.lastLogin &&
-          other.lastSyncTime == this.lastSyncTime);
+      (other is Pref && other.lastSyncTime == this.lastSyncTime);
 }
 
 class PrefsCompanion extends UpdateCompanion<Pref> {
-  final Value<DateTime?> lastLogin;
   final Value<DateTime?> lastSyncTime;
   const PrefsCompanion({
-    this.lastLogin = const Value.absent(),
     this.lastSyncTime = const Value.absent(),
   });
   PrefsCompanion.insert({
-    this.lastLogin = const Value.absent(),
     this.lastSyncTime = const Value.absent(),
   });
   static Insertable<Pref> custom({
-    Expression<DateTime?>? lastLogin,
     Expression<DateTime?>? lastSyncTime,
   }) {
     return RawValuesInsertable({
-      if (lastLogin != null) 'last_login': lastLogin,
       if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
     });
   }
 
-  PrefsCompanion copyWith(
-      {Value<DateTime?>? lastLogin, Value<DateTime?>? lastSyncTime}) {
+  PrefsCompanion copyWith({Value<DateTime?>? lastSyncTime}) {
     return PrefsCompanion(
-      lastLogin: lastLogin ?? this.lastLogin,
       lastSyncTime: lastSyncTime ?? this.lastSyncTime,
     );
   }
@@ -3827,9 +3584,6 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (lastLogin.present) {
-      map['last_login'] = Variable<DateTime?>(lastLogin.value);
-    }
     if (lastSyncTime.present) {
       map['last_sync_time'] = Variable<DateTime?>(lastSyncTime.value);
     }
@@ -3839,7 +3593,6 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   @override
   String toString() {
     return (StringBuffer('PrefsCompanion(')
-          ..write('lastLogin: $lastLogin, ')
           ..write('lastSyncTime: $lastSyncTime')
           ..write(')'))
         .toString();
@@ -3851,11 +3604,6 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PrefsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _lastLoginMeta = const VerificationMeta('lastLogin');
-  @override
-  late final GeneratedColumn<DateTime?> lastLogin = GeneratedColumn<DateTime?>(
-      'last_login', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _lastSyncTimeMeta =
       const VerificationMeta('lastSyncTime');
   @override
@@ -3863,7 +3611,7 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
       GeneratedColumn<DateTime?>('last_sync_time', aliasedName, true,
           type: const IntType(), requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [lastLogin, lastSyncTime];
+  List<GeneratedColumn> get $columns => [lastSyncTime];
   @override
   String get aliasedName => _alias ?? 'prefs';
   @override
@@ -3873,10 +3621,6 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('last_login')) {
-      context.handle(_lastLoginMeta,
-          lastLogin.isAcceptableOrUnknown(data['last_login']!, _lastLoginMeta));
-    }
     if (data.containsKey('last_sync_time')) {
       context.handle(
           _lastSyncTimeMeta,
@@ -3912,10 +3656,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $OrdersTable orders = $OrdersTable(this);
   late final $OrderLinesTable orderLines = $OrderLinesTable(this);
   late final $OrderLineCodesTable orderLineCodes = $OrderLineCodesTable(this);
-  late final $ApiCredentialsTable apiCredentials = $ApiCredentialsTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
-  late final ApiCredentialsDao apiCredentialsDao =
-      ApiCredentialsDao(this as AppDataStore);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
@@ -3933,7 +3674,6 @@ abstract class _$AppDataStore extends GeneratedDatabase {
         orders,
         orderLines,
         orderLineCodes,
-        apiCredentials,
         prefs
       ];
 }
@@ -3942,9 +3682,6 @@ abstract class _$AppDataStore extends GeneratedDatabase {
 // DaoGenerator
 // **************************************************************************
 
-mixin _$ApiCredentialsDaoMixin on DatabaseAccessor<AppDataStore> {
-  $ApiCredentialsTable get apiCredentials => attachedDatabase.apiCredentials;
-}
 mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $BuyersTable get buyers => attachedDatabase.buyers;
   $IncomesTable get incomes => attachedDatabase.incomes;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '/app/constants/strings.dart';
 import '/app/entities/entities.dart';
@@ -38,7 +39,7 @@ class _LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<_LoginView> {
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
-  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _loginController = TextEditingController(text: '7');
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
 
@@ -92,6 +93,57 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
+  Widget _loginField(BuildContext context) {
+    LoginViewModel vm = context.read<LoginViewModel>();
+
+    if (vm.state.optsEnabled) {
+      return TextField(
+        controller: _loginController,
+        keyboardType: TextInputType.url,
+        decoration: const InputDecoration(labelText: 'Телефон или e-mail или login')
+      );
+    }
+
+    return TextField(
+      controller: _loginController,
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        labelText: 'Телефон',
+        hintText: '+7 (###) ###-##-##'
+      ),
+      inputFormatters: [
+        MaskTextInputFormatter(
+          mask: '+7 (###) ###-##-##',
+          filter: { "#": RegExp(r'[0-9]') },
+          type: MaskAutoCompletionType.lazy
+        )
+      ]
+    );
+  }
+
+  Widget _passwordField(BuildContext context) {
+    return TextField(
+      controller: _passwordController,
+      keyboardType: TextInputType.number,
+      obscureText: true,
+      decoration: const InputDecoration(labelText: 'Пароль')
+    );
+  }
+
+  Widget _urlField(BuildContext context) {
+    LoginViewModel vm = context.read<LoginViewModel>();
+
+    if (vm.state.optsEnabled) {
+      return TextField(
+        controller: _urlController,
+        keyboardType: TextInputType.url,
+        decoration: const InputDecoration(labelText: 'Url')
+      );
+    }
+
+    return Container();
+  }
+
   Widget _buildLoginForm(BuildContext context) {
     LoginViewModel vm = context.read<LoginViewModel>();
 
@@ -100,28 +152,9 @@ class _LoginViewState extends State<_LoginView> {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
         children: <Widget>[
-          TextField(
-            controller: _loginController,
-            keyboardType: TextInputType.url,
-            decoration: const InputDecoration(
-              labelText: 'Телефон или e-mail или login',
-            ),
-          ),
-          TextField(
-            controller: _passwordController,
-            keyboardType: TextInputType.number,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Пароль'
-            ),
-          ),
-          vm.state.showUrl ? TextField(
-            controller: _urlController,
-            keyboardType: TextInputType.url,
-            decoration: const InputDecoration(
-              labelText: 'Url'
-            ),
-          ) : Container(),
+          _loginField(context),
+          _passwordField(context),
+          _urlField(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

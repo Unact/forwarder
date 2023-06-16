@@ -1,7 +1,6 @@
 part of 'database.dart';
 
 class Prefs extends Table {
-  DateTimeColumn get lastLogin => dateTime().nullable()();
   DateTimeColumn get lastSyncTime => dateTime().nullable()();
 }
 
@@ -14,12 +13,6 @@ class Users extends Table {
   BoolColumn get closed => boolean()();
   TextColumn get version => text()();
   RealColumn get total => real()();
-}
-
-class ApiCredentials extends Table {
-  TextColumn get accessToken => text()();
-  TextColumn get refreshToken => text()();
-  TextColumn get url => text()();
 }
 
 class Recepts extends Table {
