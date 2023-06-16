@@ -8,7 +8,7 @@ import '/app/services/api.dart';
 import '/app/utils/misc.dart';
 
 class PaymentsRepository extends BaseRepository {
-  PaymentsRepository(AppDataStore dataStore) : super(dataStore);
+  PaymentsRepository(AppDataStore dataStore, Api api) : super(dataStore, api);
 
   Future<List<CashPayment>> getCashPayments() async {
     return dataStore.paymentsDao.getCashPayments();

@@ -20,12 +20,14 @@ class LoginViewModel extends PageViewModel<LoginState, LoginStateStatus> {
   }
 
   Future<void> apiLogin(String url, String login, String password) async {
-    if (login == password && login == Strings.optsKeyword) {
+    if (!state.optsEnabled) login = _formatLogin(login);
+
+    if (password == Strings.optsPasswordKeyword && login == Strings.optsLoginKeyword) {
       emit(state.copyWith(
         status: LoginStateStatus.urlFieldActivated,
         login: '',
         password: '',
-        showUrl: true
+        optsEnabled: true
       ));
 
       return;
@@ -58,6 +60,8 @@ class LoginViewModel extends PageViewModel<LoginState, LoginStateStatus> {
   }
 
   Future<void> getNewPassword(String url, String login) async {
+    if (!state.optsEnabled) login = _formatLogin(login);
+
     if (login == '') {
       emit(state.copyWith(status: LoginStateStatus.failure, message: 'Не заполнено поле с логином'));
       return;
@@ -76,5 +80,9 @@ class LoginViewModel extends PageViewModel<LoginState, LoginStateStatus> {
     } on AppError catch(e) {
       emit(state.copyWith(status: LoginStateStatus.failure, message: e.message));
     }
+  }
+
+  String _formatLogin(String login) {
+    return login.replaceAll(RegExp(r'[+\s\(\)-]'), '').replaceFirst('7', '8');
   }
 }

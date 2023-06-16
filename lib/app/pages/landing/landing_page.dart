@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '/app/data/database.dart';
 import '/app/pages/home/home_page.dart';
 import '/app/pages/login/login_page.dart';
 import '/app/pages/shared/page_view_model.dart';
@@ -35,7 +34,7 @@ class _LandingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LandingViewModel, LandingState>(
       builder: (context, state) {
-        return state.isLogged ? HomePage() : LoginPage();
+        return state.isLoggedIn ? HomePage() : LoginPage();
       }
     );
   }

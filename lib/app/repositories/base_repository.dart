@@ -7,5 +7,5 @@ class BaseRepository extends ChangeNotifier {
   final AppDataStore dataStore;
   final Api api;
 
-  BaseRepository(this.dataStore) : api = Api(dataStore: dataStore);
+  BaseRepository(this.dataStore, this.api);
 }

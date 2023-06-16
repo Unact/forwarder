@@ -25,7 +25,7 @@ class LoginState {
     this.login = '',
     this.password = '',
     this.url = '${const String.fromEnvironment('FORWARDER_RENEW_URL')}/api/',
-    this.showUrl = false,
+    this.optsEnabled = false,
     this.message = '',
     this.fullVersion = ''
   });
@@ -33,7 +33,7 @@ class LoginState {
   final String login;
   final String password;
   final String url;
-  final bool showUrl;
+  final bool optsEnabled;
   final LoginStateStatus status;
   final String message;
   final String fullVersion;
@@ -43,7 +43,7 @@ class LoginState {
     String? login,
     String? password,
     String? url,
-    bool? showUrl,
+    bool? optsEnabled,
     String? message,
     String? fullVersion
   }) {
@@ -52,7 +52,7 @@ class LoginState {
       login: login ?? this.login,
       password: password ?? this.password,
       url: url ?? this.url,
-      showUrl: showUrl ?? this.showUrl,
+      optsEnabled: optsEnabled ?? this.optsEnabled,
       message: message ?? this.message,
       fullVersion: fullVersion ?? this.fullVersion
     );

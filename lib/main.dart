@@ -15,6 +15,7 @@ import 'app/repositories/app_repository.dart';
 import 'app/repositories/orders_repository.dart';
 import 'app/repositories/payments_repository.dart';
 import 'app/repositories/users_repository.dart';
+import 'app/services/api.dart';
 import 'app/utils/misc.dart';
 
 void main() async {
@@ -28,11 +29,12 @@ void main() async {
   await PackageInfo.fromPlatform();
   await FkUserAgent.init();
 
+  Api api = await Api.init();
   AppDataStore dataStore = AppDataStore(logStatements: isDebug);
-  AppRepository appRepository = AppRepository(dataStore);
-  OrdersRepository ordersRepository = OrdersRepository(dataStore);
-  PaymentsRepository paymentsRepository = PaymentsRepository(dataStore);
-  UsersRepository usersRepository = UsersRepository(dataStore);
+  AppRepository appRepository = AppRepository(dataStore, api);
+  OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
+  PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
+  UsersRepository usersRepository = UsersRepository(dataStore, api);
 
   await _initSentry(
     dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),

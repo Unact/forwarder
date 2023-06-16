@@ -11,7 +11,6 @@ import '/app/utils/format.dart';
 
 part 'schema.dart';
 part 'database.g.dart';
-part 'api_credentials_dao.dart';
 part 'orders_dao.dart';
 part 'payments_dao.dart';
 part 'users_dao.dart';
@@ -28,11 +27,9 @@ part 'users_dao.dart';
     Orders,
     OrderLines,
     OrderLineCodes,
-    ApiCredentials,
     Prefs
   ],
   daos: [
-    ApiCredentialsDao,
     OrdersDao,
     PaymentsDao,
     UsersDao
@@ -78,17 +75,12 @@ class AppDataStore extends _$AppDataStore {
         total: 0,
         closed: false
       ));
-      batch.insert(apiCredentials, ApiCredential(
-        refreshToken: '',
-        url: '',
-        accessToken: ''
-      ));
       batch.insert(prefs, Pref());
     });
   }
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

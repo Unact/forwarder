@@ -12,7 +12,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   equatable: ^2.0.5
-  dio: ^5.1.1
+  dio: ^5.2.1
   device_info_plus: ^8.2.2
   fk_user_agent: ^2.1.0
   pub_semver: ^2.1.1
@@ -39,6 +39,8 @@ dependencies:
   gs1_barcode_parser: ^1.0.4
   barcode_widget: ^2.0.2
   vibration: ^1.7.5
+  mask_text_input_formatter: ^2.4.0
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   drift_dev: ^1.5.2
