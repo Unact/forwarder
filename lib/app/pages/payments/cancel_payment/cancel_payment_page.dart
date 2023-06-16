@@ -97,8 +97,8 @@ class _CancelPaymentViewState extends State<_CancelPaymentView> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
             backgroundColor: Colors.white
           ),
-          child: const Text('Отмена', style: TextStyle(color: Colors.black)),
-          onPressed: vm.cancelPayment
+          onPressed: vm.cancelPayment,
+          child: const Text('Отмена', style: TextStyle(color: Colors.black))
         ) : Container()
       ),
       Container(height: 40)

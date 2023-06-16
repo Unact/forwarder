@@ -285,16 +285,16 @@ class _OrderViewState extends State<_OrderView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Доставлен', style: TextStyle(color: Colors.white)),
         onPressed: hasScanned && !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(true) : null,
+        child: const Text('Доставлен', style: TextStyle(color: Colors.white)),
       ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Не доставлен', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(false) : null,
+        child: const Text('Не доставлен', style: TextStyle(color: Colors.white)),
       ),
     ];
   }

@@ -87,7 +87,7 @@ class _BuyersViewState extends State<_BuyersView> {
         text: TextSpan(
           children: <TextSpan>[
             TextSpan(
-              text: buyer.address + '\n',
+              text: '${buyer.address}\n',
               style: const TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
             TextSpan(

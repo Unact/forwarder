@@ -11,7 +11,7 @@ class ProgressDialog {
     _context = context;
 
   Future<void> open() async {
-    DialogRoute _route = DialogRoute(
+    DialogRoute route = DialogRoute(
       context: _context,
       builder: (_) => WillPopScope(
         onWillPop: () async => false,
@@ -19,9 +19,10 @@ class ProgressDialog {
       ),
       barrierDismissible: false
     );
-    Navigator.of(_context).push(_route);
+    NavigatorState state = Navigator.of(_context);
+    state.push(route);
     await _dialogCompleter.future;
-    Navigator.of(_context).removeRoute(_route);
+    state.removeRoute(route);
   }
 
   void close() {

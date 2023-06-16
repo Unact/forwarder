@@ -18,10 +18,10 @@ class ScanView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ScanViewState createState() => _ScanViewState();
+  ScanViewState createState() => ScanViewState();
 }
 
-class _ScanViewState extends State<ScanView> {
+class ScanViewState extends State<ScanView> {
   final GlobalKey _qrKey = GlobalKey();
   QRViewController? _controller;
   StreamSubscription? _subscription;

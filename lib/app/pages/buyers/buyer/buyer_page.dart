@@ -148,16 +148,16 @@ class _BuyerViewState extends State<_BuyerView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
+        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
       ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(true),
+        child: const Text('Карта', style: TextStyle(color: Colors.white)),
       )
     ];
   }
@@ -225,11 +225,11 @@ class _BuyerViewState extends State<_BuyerView> {
         text: TextSpan(
           children: <TextSpan>[
             TextSpan(
-              text: order.ndoc + '\n',
+              text: '${order.ndoc}\n',
               style: const TextStyle(color: Colors.black, fontSize: 14.0)
             ),
             TextSpan(
-              text: order.info + '\n',
+              text: '${order.info}\n',
               style: const TextStyle(color: Colors.grey, fontSize: 12.0),
             ),
             TextSpan(

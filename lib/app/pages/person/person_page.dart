@@ -96,8 +96,8 @@ class _PersonViewState extends State<_PersonView> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
                   backgroundColor: Colors.blueAccent
                 ),
-                child: const Text('Обновить приложение'),
                 onPressed: vm.launchAppUpdate,
+                child: const Text('Обновить приложение'),
               )
             ],
           )
@@ -113,8 +113,8 @@ class _PersonViewState extends State<_PersonView> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
                   backgroundColor: Colors.red
                 ),
-                child: const Text('Выйти', style: TextStyle(color: Colors.white)),
                 onPressed: vm.apiLogout,
+                child: const Text('Выйти', style: TextStyle(color: Colors.white)),
               )
             ]
           )

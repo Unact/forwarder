@@ -199,16 +199,16 @@ class _DebtViewState extends State<_DebtView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(false) : null,
+        child: const Text('Наличные', style: TextStyle(color: Colors.white)),
       ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Colors.blue
         ),
-        child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(true) : null,
+        child: const Text('Карта', style: TextStyle(color: Colors.white)),
       )
     ];
   }

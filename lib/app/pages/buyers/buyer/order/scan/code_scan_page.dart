@@ -54,8 +54,8 @@ class _CodeScanViewState extends State<_CodeScanView> {
         _controller.text = '';
 
         return ScanView(
-          child: _lastLineInfoWidget(context),
-          onRead: vm.readCode
+          onRead: vm.readCode,
+          child: _lastLineInfoWidget(context)
         );
       },
       listener: (context, state) {
@@ -126,6 +126,8 @@ class _CodeScanViewState extends State<_CodeScanView> {
             icon: const Icon(Icons.remove, color: Colors.white)
           ),
           SizedBox(
+            width: 60,
+            height: 30,
             child: TextField(
               style: textStyle,
               controller: _controller,
@@ -138,8 +140,6 @@ class _CodeScanViewState extends State<_CodeScanView> {
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 3, color: Colors.white)),
               ),
             ),
-            width: 60,
-            height: 30,
           ),
           IconButton(
             onPressed: () => vm.increaseAmount(codeLine),

@@ -106,8 +106,8 @@ LazyDatabase _openConnection(bool logStatements) {
 }
 
 extension DebtX on Debt {
-  String get orderName => orderNdoc + ' от ' + Format.dateStr(orderDdate);
-  String get fullname => ndoc + ' от ' + Format.dateStr(ddate) + ' (' + orderNdoc + ')';
+  String get orderName => '$orderNdoc от ${Format.dateStr(orderDdate)}';
+  String get fullname => '$ndoc от ${Format.dateStr(ddate)} ($orderNdoc)';
 }
 
 extension OrderX on Order {

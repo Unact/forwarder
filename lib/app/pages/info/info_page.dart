@@ -153,8 +153,8 @@ class _InfoViewState extends State<_InfoView> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
               backgroundColor: Colors.blue
             ),
-            child: Text('${vm.state.closed ? 'Открыть' : 'Закрыть'} день'),
-            onPressed: vm.reverseDay
+            onPressed: vm.reverseDay,
+            child: Text('${vm.state.closed ? 'Открыть' : 'Закрыть'} день')
           )
         ),
       ),

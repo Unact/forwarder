@@ -22,7 +22,7 @@ class AppRepository extends BaseRepository {
   Future<String> get fullVersion async {
     PackageInfo info = await PackageInfo.fromPlatform();
 
-    return info.version + '+' + info.buildNumber;
+    return '${info.version}+${info.buildNumber}';
   }
 
   Future<Pref> getPref() {

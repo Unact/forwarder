@@ -14,10 +14,10 @@ class ExpandingText extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ExpandingTextState createState() => _ExpandingTextState();
+  ExpandingTextState createState() => ExpandingTextState();
 }
 
-class _ExpandingTextState extends State<ExpandingText> {
+class ExpandingTextState extends State<ExpandingText> {
   bool _showAll = false;
 
   @override
