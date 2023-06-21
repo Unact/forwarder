@@ -151,7 +151,7 @@ class _PaymentsViewState extends State<_PaymentsView> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
               backgroundColor: Colors.blue
             ),
-            onPressed: cardPayment.canceled ? null : () => vm.startCancelPayment(cardPayment),
+            onPressed: cardPayment.canceled || cardPayment.isLink ? null : () => vm.startCancelPayment(cardPayment),
             child: const Text('Отменить', style: TextStyle(color: Colors.white))
           ),
           Container(width: 6),
