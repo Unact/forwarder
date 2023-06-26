@@ -88,6 +88,7 @@ class OrderLines extends Table {
   TextColumn get name => text()();
   TextColumn get gtin => text()();
   RealColumn get vol => real()();
+  RealColumn get deliveredVol => real()();
   RealColumn get price => real()();
   BoolColumn get needMarking => boolean()();
   TextColumn get barcodes => text().map(const JsonListConverter())();

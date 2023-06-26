@@ -6,6 +6,7 @@ class ApiOrderLine extends Equatable {
   final String name;
   final String gtin;
   final double vol;
+  final double deliveredVol;
   final double price;
   final bool needMarking;
   final List<String> barcodes;
@@ -16,6 +17,7 @@ class ApiOrderLine extends Equatable {
     required this.name,
     required this.gtin,
     required this.vol,
+    required this.deliveredVol,
     required this.price,
     required this.needMarking,
     required this.barcodes
@@ -28,6 +30,7 @@ class ApiOrderLine extends Equatable {
       name: json['name'],
       gtin: json['gtin'],
       vol: Parsing.parseDouble(json['vol'])!,
+      deliveredVol: Parsing.parseDouble(json['delivered_vol'])!,
       price: Parsing.parseDouble(json['price'])!,
       needMarking: json['need_marking'],
       barcodes: json['barcodes'].split(',')
@@ -41,6 +44,7 @@ class ApiOrderLine extends Equatable {
       name: name,
       gtin: gtin,
       vol: vol,
+      deliveredVol: deliveredVol,
       price: price,
       needMarking: needMarking,
       barcodes: barcodes
@@ -54,6 +58,7 @@ class ApiOrderLine extends Equatable {
     name,
     gtin,
     vol,
+    deliveredVol,
     price,
     needMarking,
     barcodes
