@@ -42,6 +42,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       return;
     }
 
+    if (!codeLine.orderLine.needMarking) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Нельзя сканировать ЧЗ для обычного товара'));
+      return;
+    }
+
     await ordersRepository.addOrderLineCode(
       orderLine: codeLine.orderLine,
       code: barcode,
