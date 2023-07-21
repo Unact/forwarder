@@ -3258,12 +3258,14 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   final String code;
   final int amount;
   final bool isDataMatrix;
+  final DateTime localTs;
   OrderLineCode(
       {required this.orderId,
       required this.subid,
       required this.code,
       required this.amount,
-      required this.isDataMatrix});
+      required this.isDataMatrix,
+      required this.localTs});
   factory OrderLineCode.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return OrderLineCode(
@@ -3277,6 +3279,8 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
       isDataMatrix: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}is_data_matrix'])!,
+      localTs: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}local_ts'])!,
     );
   }
   @override
@@ -3287,6 +3291,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
     map['code'] = Variable<String>(code);
     map['amount'] = Variable<int>(amount);
     map['is_data_matrix'] = Variable<bool>(isDataMatrix);
+    map['local_ts'] = Variable<DateTime>(localTs);
     return map;
   }
 
@@ -3297,6 +3302,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       code: Value(code),
       amount: Value(amount),
       isDataMatrix: Value(isDataMatrix),
+      localTs: Value(localTs),
     );
   }
 
@@ -3309,6 +3315,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       code: serializer.fromJson<String>(json['code']),
       amount: serializer.fromJson<int>(json['amount']),
       isDataMatrix: serializer.fromJson<bool>(json['isDataMatrix']),
+      localTs: serializer.fromJson<DateTime>(json['localTs']),
     );
   }
   @override
@@ -3320,6 +3327,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
       'code': serializer.toJson<String>(code),
       'amount': serializer.toJson<int>(amount),
       'isDataMatrix': serializer.toJson<bool>(isDataMatrix),
+      'localTs': serializer.toJson<DateTime>(localTs),
     };
   }
 
@@ -3328,13 +3336,15 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
           int? subid,
           String? code,
           int? amount,
-          bool? isDataMatrix}) =>
+          bool? isDataMatrix,
+          DateTime? localTs}) =>
       OrderLineCode(
         orderId: orderId ?? this.orderId,
         subid: subid ?? this.subid,
         code: code ?? this.code,
         amount: amount ?? this.amount,
         isDataMatrix: isDataMatrix ?? this.isDataMatrix,
+        localTs: localTs ?? this.localTs,
       );
   @override
   String toString() {
@@ -3343,13 +3353,15 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
           ..write('subid: $subid, ')
           ..write('code: $code, ')
           ..write('amount: $amount, ')
-          ..write('isDataMatrix: $isDataMatrix')
+          ..write('isDataMatrix: $isDataMatrix, ')
+          ..write('localTs: $localTs')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(orderId, subid, code, amount, isDataMatrix);
+  int get hashCode =>
+      Object.hash(orderId, subid, code, amount, isDataMatrix, localTs);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3358,7 +3370,8 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
           other.subid == this.subid &&
           other.code == this.code &&
           other.amount == this.amount &&
-          other.isDataMatrix == this.isDataMatrix);
+          other.isDataMatrix == this.isDataMatrix &&
+          other.localTs == this.localTs);
 }
 
 class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
@@ -3367,12 +3380,14 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   final Value<String> code;
   final Value<int> amount;
   final Value<bool> isDataMatrix;
+  final Value<DateTime> localTs;
   const OrderLineCodesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
     this.code = const Value.absent(),
     this.amount = const Value.absent(),
     this.isDataMatrix = const Value.absent(),
+    this.localTs = const Value.absent(),
   });
   OrderLineCodesCompanion.insert({
     required int orderId,
@@ -3380,17 +3395,20 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     required String code,
     required int amount,
     required bool isDataMatrix,
+    required DateTime localTs,
   })  : orderId = Value(orderId),
         subid = Value(subid),
         code = Value(code),
         amount = Value(amount),
-        isDataMatrix = Value(isDataMatrix);
+        isDataMatrix = Value(isDataMatrix),
+        localTs = Value(localTs);
   static Insertable<OrderLineCode> custom({
     Expression<int>? orderId,
     Expression<int>? subid,
     Expression<String>? code,
     Expression<int>? amount,
     Expression<bool>? isDataMatrix,
+    Expression<DateTime>? localTs,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
@@ -3398,6 +3416,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
       if (code != null) 'code': code,
       if (amount != null) 'amount': amount,
       if (isDataMatrix != null) 'is_data_matrix': isDataMatrix,
+      if (localTs != null) 'local_ts': localTs,
     });
   }
 
@@ -3406,13 +3425,15 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
       Value<int>? subid,
       Value<String>? code,
       Value<int>? amount,
-      Value<bool>? isDataMatrix}) {
+      Value<bool>? isDataMatrix,
+      Value<DateTime>? localTs}) {
     return OrderLineCodesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
       code: code ?? this.code,
       amount: amount ?? this.amount,
       isDataMatrix: isDataMatrix ?? this.isDataMatrix,
+      localTs: localTs ?? this.localTs,
     );
   }
 
@@ -3434,6 +3455,9 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     if (isDataMatrix.present) {
       map['is_data_matrix'] = Variable<bool>(isDataMatrix.value);
     }
+    if (localTs.present) {
+      map['local_ts'] = Variable<DateTime>(localTs.value);
+    }
     return map;
   }
 
@@ -3444,7 +3468,8 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
           ..write('subid: $subid, ')
           ..write('code: $code, ')
           ..write('amount: $amount, ')
-          ..write('isDataMatrix: $isDataMatrix')
+          ..write('isDataMatrix: $isDataMatrix, ')
+          ..write('localTs: $localTs')
           ..write(')'))
         .toString();
   }
@@ -3484,9 +3509,14 @@ class $OrderLineCodesTable extends OrderLineCodes
       type: const BoolType(),
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (is_data_matrix IN (0, 1))');
+  final VerificationMeta _localTsMeta = const VerificationMeta('localTs');
+  @override
+  late final GeneratedColumn<DateTime?> localTs = GeneratedColumn<DateTime?>(
+      'local_ts', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [orderId, subid, code, amount, isDataMatrix];
+      [orderId, subid, code, amount, isDataMatrix, localTs];
   @override
   String get aliasedName => _alias ?? 'order_line_codes';
   @override
@@ -3527,6 +3557,12 @@ class $OrderLineCodesTable extends OrderLineCodes
               data['is_data_matrix']!, _isDataMatrixMeta));
     } else if (isInserting) {
       context.missing(_isDataMatrixMeta);
+    }
+    if (data.containsKey('local_ts')) {
+      context.handle(_localTsMeta,
+          localTs.isAcceptableOrUnknown(data['local_ts']!, _localTsMeta));
+    } else if (isInserting) {
+      context.missing(_localTsMeta);
     }
     return context;
   }

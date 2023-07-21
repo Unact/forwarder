@@ -103,6 +103,7 @@ class OrderLineCodes extends Table {
   TextColumn get code => text()();
   IntColumn get amount => integer()();
   BoolColumn get isDataMatrix => boolean()();
+  DateTimeColumn get localTs => dateTime()();
 
   @override
   Set<Column> get primaryKey => {orderId, subid, code};

@@ -49,7 +49,8 @@ class OrdersRepository extends BaseRepository {
       subid: Value(orderLine.subid),
       code: Value(code),
       amount: Value(amount),
-      isDataMatrix: Value(isDataMatrix)
+      isDataMatrix: Value(isDataMatrix),
+      localTs: Value(DateTime.now())
     );
 
     await dataStore.ordersDao.upsertOrderLineCode(newOrderLineCode);
@@ -72,7 +73,8 @@ class OrdersRepository extends BaseRepository {
       'subid': e.subid,
       'code': e.code,
       'markirovka': e.isDataMatrix,
-      'amount': e.amount
+      'amount': e.amount,
+      'local_ts': e.localTs.toIso8601String()
     }).toList();
 
     try {
