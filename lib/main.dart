@@ -19,30 +19,28 @@ import 'app/services/api.dart';
 import 'app/utils/misc.dart';
 
 void main() async {
-  Provider.debugCheckInvalidValueType = null;
-
-  bool isDebug = false;
-  assert(isDebug = true);
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await PackageInfo.fromPlatform();
-  await FkUserAgent.init();
-
-  Api api = await Api.init();
-  AppDataStore dataStore = AppDataStore(logStatements: isDebug);
-  AppRepository appRepository = AppRepository(dataStore, api);
-  OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
-  PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
-  UsersRepository usersRepository = UsersRepository(dataStore, api);
-
-  await _initSentry(
-    dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
-    capture: !isDebug,
-    repository: usersRepository
-  );
-
   runZonedGuarded<Future<void>>(() async {
+    Provider.debugCheckInvalidValueType = null;
+
+    bool isDebug = false;
+    assert(isDebug = true);
+
+    await PackageInfo.fromPlatform();
+    await FkUserAgent.init();
+
+    Api api = await Api.init();
+    AppDataStore dataStore = AppDataStore(logStatements: isDebug);
+    AppRepository appRepository = AppRepository(dataStore, api);
+    OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
+    PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
+    UsersRepository usersRepository = UsersRepository(dataStore, api);
+
+    await _initSentry(
+      dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
+      capture: !isDebug,
+      repository: usersRepository
+    );
+
     runApp(
       MultiRepositoryProvider(
         providers: [
