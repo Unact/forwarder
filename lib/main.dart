@@ -25,6 +25,8 @@ void main() async {
     bool isDebug = false;
     assert(isDebug = true);
 
+    WidgetsFlutterBinding.ensureInitialized();
+
     await PackageInfo.fromPlatform();
     await FkUserAgent.init();
 
