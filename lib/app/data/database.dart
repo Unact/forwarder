@@ -80,7 +80,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -114,4 +114,18 @@ extension OrderX on Order {
   bool get isDelivered => didDelivery && delivered! == true;
   bool get isUndelivered => didDelivery && delivered! == false;
   bool get didDelivery => delivered != null;
+}
+
+class OrderLineBarcode {
+  int rel;
+  String barcode;
+
+  OrderLineBarcode(this.barcode, this.rel);
+
+  factory OrderLineBarcode.fromDart(String value) => OrderLineBarcode(
+    value.split('-').first,
+    int.parse(value.split('-').last)
+  );
+
+  String toDart() => "$barcode-$rel";
 }
