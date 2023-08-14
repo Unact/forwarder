@@ -2812,7 +2812,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   final double deliveredVol;
   final double price;
   final bool needMarking;
-  final List<String> barcodes;
+  final List<OrderLineBarcode> barcodeRels;
   OrderLine(
       {required this.orderId,
       required this.subid,
@@ -2822,7 +2822,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       required this.deliveredVol,
       required this.price,
       required this.needMarking,
-      required this.barcodes});
+      required this.barcodeRels});
   factory OrderLine.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return OrderLine(
@@ -2842,8 +2842,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           .mapFromDatabaseResponse(data['${effectivePrefix}price'])!,
       needMarking: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}need_marking'])!,
-      barcodes: $OrderLinesTable.$converter0.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}barcodes']))!,
+      barcodeRels: $OrderLinesTable.$converter0.mapToDart(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}barcode_rels']))!,
     );
   }
   @override
@@ -2859,7 +2859,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['need_marking'] = Variable<bool>(needMarking);
     {
       final converter = $OrderLinesTable.$converter0;
-      map['barcodes'] = Variable<String>(converter.mapToSql(barcodes)!);
+      map['barcode_rels'] = Variable<String>(converter.mapToSql(barcodeRels)!);
     }
     return map;
   }
@@ -2874,7 +2874,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       deliveredVol: Value(deliveredVol),
       price: Value(price),
       needMarking: Value(needMarking),
-      barcodes: Value(barcodes),
+      barcodeRels: Value(barcodeRels),
     );
   }
 
@@ -2890,7 +2890,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       deliveredVol: serializer.fromJson<double>(json['deliveredVol']),
       price: serializer.fromJson<double>(json['price']),
       needMarking: serializer.fromJson<bool>(json['needMarking']),
-      barcodes: serializer.fromJson<List<String>>(json['barcodes']),
+      barcodeRels:
+          serializer.fromJson<List<OrderLineBarcode>>(json['barcodeRels']),
     );
   }
   @override
@@ -2905,7 +2906,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       'deliveredVol': serializer.toJson<double>(deliveredVol),
       'price': serializer.toJson<double>(price),
       'needMarking': serializer.toJson<bool>(needMarking),
-      'barcodes': serializer.toJson<List<String>>(barcodes),
+      'barcodeRels': serializer.toJson<List<OrderLineBarcode>>(barcodeRels),
     };
   }
 
@@ -2918,7 +2919,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           double? deliveredVol,
           double? price,
           bool? needMarking,
-          List<String>? barcodes}) =>
+          List<OrderLineBarcode>? barcodeRels}) =>
       OrderLine(
         orderId: orderId ?? this.orderId,
         subid: subid ?? this.subid,
@@ -2928,7 +2929,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
         deliveredVol: deliveredVol ?? this.deliveredVol,
         price: price ?? this.price,
         needMarking: needMarking ?? this.needMarking,
-        barcodes: barcodes ?? this.barcodes,
+        barcodeRels: barcodeRels ?? this.barcodeRels,
       );
   @override
   String toString() {
@@ -2941,14 +2942,14 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           ..write('deliveredVol: $deliveredVol, ')
           ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
-          ..write('barcodes: $barcodes')
+          ..write('barcodeRels: $barcodeRels')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(orderId, subid, name, gtin, vol, deliveredVol,
-      price, needMarking, barcodes);
+      price, needMarking, barcodeRels);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2961,7 +2962,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           other.deliveredVol == this.deliveredVol &&
           other.price == this.price &&
           other.needMarking == this.needMarking &&
-          other.barcodes == this.barcodes);
+          other.barcodeRels == this.barcodeRels);
 }
 
 class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
@@ -2973,7 +2974,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
   final Value<double> deliveredVol;
   final Value<double> price;
   final Value<bool> needMarking;
-  final Value<List<String>> barcodes;
+  final Value<List<OrderLineBarcode>> barcodeRels;
   const OrderLinesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
@@ -2983,7 +2984,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     this.deliveredVol = const Value.absent(),
     this.price = const Value.absent(),
     this.needMarking = const Value.absent(),
-    this.barcodes = const Value.absent(),
+    this.barcodeRels = const Value.absent(),
   });
   OrderLinesCompanion.insert({
     required int orderId,
@@ -2994,7 +2995,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     required double deliveredVol,
     required double price,
     required bool needMarking,
-    required List<String> barcodes,
+    required List<OrderLineBarcode> barcodeRels,
   })  : orderId = Value(orderId),
         subid = Value(subid),
         name = Value(name),
@@ -3003,7 +3004,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
         deliveredVol = Value(deliveredVol),
         price = Value(price),
         needMarking = Value(needMarking),
-        barcodes = Value(barcodes);
+        barcodeRels = Value(barcodeRels);
   static Insertable<OrderLine> custom({
     Expression<int>? orderId,
     Expression<int>? subid,
@@ -3013,7 +3014,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Expression<double>? deliveredVol,
     Expression<double>? price,
     Expression<bool>? needMarking,
-    Expression<List<String>>? barcodes,
+    Expression<List<OrderLineBarcode>>? barcodeRels,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
@@ -3024,7 +3025,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       if (deliveredVol != null) 'delivered_vol': deliveredVol,
       if (price != null) 'price': price,
       if (needMarking != null) 'need_marking': needMarking,
-      if (barcodes != null) 'barcodes': barcodes,
+      if (barcodeRels != null) 'barcode_rels': barcodeRels,
     });
   }
 
@@ -3037,7 +3038,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       Value<double>? deliveredVol,
       Value<double>? price,
       Value<bool>? needMarking,
-      Value<List<String>>? barcodes}) {
+      Value<List<OrderLineBarcode>>? barcodeRels}) {
     return OrderLinesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
@@ -3047,7 +3048,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       deliveredVol: deliveredVol ?? this.deliveredVol,
       price: price ?? this.price,
       needMarking: needMarking ?? this.needMarking,
-      barcodes: barcodes ?? this.barcodes,
+      barcodeRels: barcodeRels ?? this.barcodeRels,
     );
   }
 
@@ -3078,9 +3079,10 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     if (needMarking.present) {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
-    if (barcodes.present) {
+    if (barcodeRels.present) {
       final converter = $OrderLinesTable.$converter0;
-      map['barcodes'] = Variable<String>(converter.mapToSql(barcodes.value)!);
+      map['barcode_rels'] =
+          Variable<String>(converter.mapToSql(barcodeRels.value)!);
     }
     return map;
   }
@@ -3096,7 +3098,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
           ..write('deliveredVol: $deliveredVol, ')
           ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
-          ..write('barcodes: $barcodes')
+          ..write('barcodeRels: $barcodeRels')
           ..write(')'))
         .toString();
   }
@@ -3152,12 +3154,13 @@ class $OrderLinesTable extends OrderLines
       type: const BoolType(),
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (need_marking IN (0, 1))');
-  final VerificationMeta _barcodesMeta = const VerificationMeta('barcodes');
+  final VerificationMeta _barcodeRelsMeta =
+      const VerificationMeta('barcodeRels');
   @override
-  late final GeneratedColumnWithTypeConverter<List<String>, String?> barcodes =
-      GeneratedColumn<String?>('barcodes', aliasedName, false,
+  late final GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String?>
+      barcodeRels = GeneratedColumn<String?>('barcode_rels', aliasedName, false,
               type: const StringType(), requiredDuringInsert: true)
-          .withConverter<List<String>>($OrderLinesTable.$converter0);
+          .withConverter<List<OrderLineBarcode>>($OrderLinesTable.$converter0);
   @override
   List<GeneratedColumn> get $columns => [
         orderId,
@@ -3168,7 +3171,7 @@ class $OrderLinesTable extends OrderLines
         deliveredVol,
         price,
         needMarking,
-        barcodes
+        barcodeRels
       ];
   @override
   String get aliasedName => _alias ?? 'order_lines';
@@ -3231,7 +3234,7 @@ class $OrderLinesTable extends OrderLines
     } else if (isInserting) {
       context.missing(_needMarkingMeta);
     }
-    context.handle(_barcodesMeta, const VerificationResult.success());
+    context.handle(_barcodeRelsMeta, const VerificationResult.success());
     return context;
   }
 
@@ -3248,8 +3251,8 @@ class $OrderLinesTable extends OrderLines
     return $OrderLinesTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<List<String>, String> $converter0 =
-      const JsonListConverter();
+  static TypeConverter<List<OrderLineBarcode>, String> $converter0 =
+      const OrderLineBarcodeListConverter();
 }
 
 class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {

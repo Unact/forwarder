@@ -64,6 +64,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     OrderLineWithCode? codeLine = codeLines.firstWhereOrNull(
       (e) => e.orderLineCodes.isEmpty || e.orderLineCodes.firstWhereOrNull((el) => e.orderLine.vol > el.amount) != null
     );
+    int? rel = codeLine?.orderLine.barcodeRels.firstWhere((e) => e.barcode == barcode).rel;
 
     if (codeLine == null) {
       emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
@@ -79,13 +80,13 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       await ordersRepository.addOrderLineCode(
         orderLine: codeLine.orderLine,
         code: barcode,
-        amount: 1,
+        amount: rel!,
         isDataMatrix: false
       );
     } else {
       await ordersRepository.updateOrderLineCode(
         orderLineCode: codeLine.orderLineCodes.first,
-        amount: codeLine.orderLineCodes.first.amount + 1
+        amount: min(codeLine.orderLineCodes.first.amount + rel!, codeLine.orderLine.vol.toInt())
       );
     }
 
@@ -108,7 +109,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     }
 
     List<OrderLineWithCode> barcodeCodeLines = state.codeLines.where(
-      (e) => e.orderLine.barcodes.contains(barcode)
+      (e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(barcode)
     ).toList();
 
     if (barcodeCodeLines.isNotEmpty) {

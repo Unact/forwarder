@@ -91,11 +91,12 @@ class OrderLines extends Table {
   RealColumn get deliveredVol => real()();
   RealColumn get price => real()();
   BoolColumn get needMarking => boolean()();
-  TextColumn get barcodes => text().map(const JsonListConverter())();
+  TextColumn get barcodeRels => text().map(const OrderLineBarcodeListConverter())();
 
   @override
   Set<Column> get primaryKey => {orderId, subid};
 }
+
 
 class OrderLineCodes extends Table {
   IntColumn get orderId => integer()();
@@ -109,16 +110,16 @@ class OrderLineCodes extends Table {
   Set<Column> get primaryKey => {orderId, subid, code};
 }
 
-class JsonListConverter extends TypeConverter<List<String>, String> {
-  const JsonListConverter();
+class OrderLineBarcodeListConverter extends TypeConverter<List<OrderLineBarcode>, String> {
+  const OrderLineBarcodeListConverter();
 
   @override
-  List<String>? mapToDart(String? fromDb) {
-    return (json.decode(fromDb!) as List).cast<String>();
+  List<OrderLineBarcode>? mapToDart(String? fromDb) {
+    return (json.decode(fromDb!) as List).map((e) => OrderLineBarcode.fromDart(e)).toList();
   }
 
   @override
-  String? mapToSql(List<String>? value) {
-    return json.encode(value);
+  String? mapToSql(List<OrderLineBarcode>? value) {
+    return json.encode(value?.map((e) => e.toDart()).toList());
   }
 }
