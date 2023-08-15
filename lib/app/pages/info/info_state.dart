@@ -71,6 +71,7 @@ class InfoState {
   }) {
     return InfoState(
       status: status ?? this.status,
+      newVersionAvailable: newVersionAvailable ?? this.newVersionAvailable,
       message: message ?? this.message,
       user: user ?? this.user,
       pref: pref ?? this.pref,
