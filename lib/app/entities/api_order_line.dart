@@ -33,7 +33,7 @@ class ApiOrderLine extends Equatable {
       deliveredVol: Parsing.parseDouble(json['delivered_vol'])!,
       price: Parsing.parseDouble(json['price'])!,
       needMarking: json['need_marking'],
-      barcodeRels: json['barcode_rels'].split(',')
+      barcodeRels: (json['barcode_rels'] as String).split(',').where((e) => e.isNotEmpty).toList()
     );
   }
 
