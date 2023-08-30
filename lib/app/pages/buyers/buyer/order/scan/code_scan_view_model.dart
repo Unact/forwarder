@@ -76,17 +76,24 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       return;
     }
 
+    int newAmount = (codeLine.orderLineCodes.firstOrNull?.amount ?? 0) + rel!;
+
+    if (newAmount > codeLine.orderLine.vol) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Отсканированное кол-во больше чем в заказе'));
+      return;
+    }
+
     if (codeLine.orderLineCodes.isEmpty) {
       await ordersRepository.addOrderLineCode(
         orderLine: codeLine.orderLine,
         code: barcode,
-        amount: rel!,
+        amount: newAmount,
         isDataMatrix: false
       );
     } else {
       await ordersRepository.updateOrderLineCode(
         orderLineCode: codeLine.orderLineCodes.first,
-        amount: min(codeLine.orderLineCodes.first.amount + rel!, codeLine.orderLine.vol.toInt())
+        amount: newAmount
       );
     }
 
