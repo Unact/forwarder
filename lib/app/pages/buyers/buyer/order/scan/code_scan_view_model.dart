@@ -65,6 +65,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       (e) => e.orderLineCodes.isEmpty || e.orderLineCodes.firstWhereOrNull((el) => e.orderLine.vol > el.amount) != null
     );
     int? rel = codeLine?.orderLine.barcodeRels.firstWhere((e) => e.barcode == barcode).rel;
+    double? vol = codeLine?.orderLine.vol;
 
     if (codeLine == null) {
       emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
@@ -78,8 +79,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
     int newAmount = (codeLine.orderLineCodes.firstOrNull?.amount ?? 0) + rel!;
 
-    if (newAmount > codeLine.orderLine.vol) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Отсканированное кол-во больше чем в заказе'));
+    if (newAmount > vol!) {
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Отсканировано $newAmount шт., в заказе ${vol.toInt()} шт. - количество больше, чем в заказе')
+      );
       return;
     }
 
