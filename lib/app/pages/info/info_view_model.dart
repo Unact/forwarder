@@ -77,7 +77,7 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
       await usersRepository.reverseDay();
       emit(state.copyWith(
         status: InfoStateStatus.reverseSuccess,
-        message: 'День успешно ${state.closed ? 'закрыт' : 'открыт'}'
+        message: 'День успешно ${state.closed ? 'открыт' : 'закрыт'}'
       ));
     } on AppError catch(e) {
       emit(state.copyWith(status: InfoStateStatus.reverseFailure, message: e.message));
