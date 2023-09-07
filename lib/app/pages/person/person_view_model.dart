@@ -30,6 +30,7 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
 
     try {
       await usersRepository.logout();
+      await appRepository.clearData();
 
       emit(state.copyWith(status: PersonStateStatus.loggedOut));
     } on AppError catch(e) {
