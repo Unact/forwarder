@@ -114,12 +114,12 @@ class OrderLineBarcodeListConverter extends TypeConverter<List<OrderLineBarcode>
   const OrderLineBarcodeListConverter();
 
   @override
-  List<OrderLineBarcode>? mapToDart(String? fromDb) {
+  List<OrderLineBarcode> fromSql(String? fromDb) {
     return (json.decode(fromDb!) as List).map((e) => OrderLineBarcode.fromDart(e)).toList();
   }
 
   @override
-  String? mapToSql(List<OrderLineBarcode>? value) {
+  String toSql(List<OrderLineBarcode>? value) {
     return json.encode(value?.map((e) => e.toDart()).toList());
   }
 }

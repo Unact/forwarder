@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -10,9 +11,6 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
-import '/app/utils/format.dart';
-import '/app/utils/misc.dart';
-import '/app/widgets/widgets.dart';
 
 part 'payments_state.dart';
 part 'payments_view_model.dart';
