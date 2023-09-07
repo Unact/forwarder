@@ -13,7 +13,7 @@ dependencies:
   equatable: ^2.0.5
   flutter:
     sdk: flutter
-  flutter_blue_plus: ^1.14.11
+  flutter_blue_plus: ^1.14.23
   flutter_bluetooth_serial:
     git:
       url: git@github.com:rickcasson/flutter_bluetooth_serial.git
