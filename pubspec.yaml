@@ -1,7 +1,7 @@
 name: forwarder
 description: Приложение для экспедиторов
 publish_to: 'none'
-version: 1.7.12+93
+version: 1.7.12+94
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
