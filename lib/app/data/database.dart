@@ -5,9 +5,9 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
-import '/app/utils/format.dart';
 
 part 'schema.dart';
 part 'database.g.dart';
@@ -65,7 +65,7 @@ class AppDataStore extends _$AppDataStore {
 
   Future<void> _populateData() async {
     await batch((batch) {
-      batch.insert(users, User(
+      batch.insert(users, const User(
         id: UsersDao.kGuestId,
         username: UsersDao.kGuestUsername,
         email: '',
@@ -75,7 +75,7 @@ class AppDataStore extends _$AppDataStore {
         total: 0,
         closed: false
       ));
-      batch.insert(prefs, Pref());
+      batch.insert(prefs, const Pref());
     });
   }
 

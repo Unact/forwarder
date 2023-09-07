@@ -2,11 +2,158 @@
 
 part of 'database.dart';
 
-// **************************************************************************
-// MoorGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
+class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UsersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _usernameMeta =
+      const VerificationMeta('username');
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+      'username', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _salesmanNameMeta =
+      const VerificationMeta('salesmanName');
+  @override
+  late final GeneratedColumn<String> salesmanName = GeneratedColumn<String>(
+      'salesman_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _salesmanNumMeta =
+      const VerificationMeta('salesmanNum');
+  @override
+  late final GeneratedColumn<String> salesmanNum = GeneratedColumn<String>(
+      'salesman_num', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+      'email', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _closedMeta = const VerificationMeta('closed');
+  @override
+  late final GeneratedColumn<bool> closed = GeneratedColumn<bool>(
+      'closed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("closed" IN (0, 1))'));
+  static const VerificationMeta _versionMeta =
+      const VerificationMeta('version');
+  @override
+  late final GeneratedColumn<String> version = GeneratedColumn<String>(
+      'version', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _totalMeta = const VerificationMeta('total');
+  @override
+  late final GeneratedColumn<double> total = GeneratedColumn<double>(
+      'total', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, username, salesmanName, salesmanNum, email, closed, version, total];
+  @override
+  String get aliasedName => _alias ?? 'users';
+  @override
+  String get actualTableName => 'users';
+  @override
+  VerificationContext validateIntegrity(Insertable<User> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('username')) {
+      context.handle(_usernameMeta,
+          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    if (data.containsKey('salesman_name')) {
+      context.handle(
+          _salesmanNameMeta,
+          salesmanName.isAcceptableOrUnknown(
+              data['salesman_name']!, _salesmanNameMeta));
+    } else if (isInserting) {
+      context.missing(_salesmanNameMeta);
+    }
+    if (data.containsKey('salesman_num')) {
+      context.handle(
+          _salesmanNumMeta,
+          salesmanNum.isAcceptableOrUnknown(
+              data['salesman_num']!, _salesmanNumMeta));
+    } else if (isInserting) {
+      context.missing(_salesmanNumMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+          _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
+    } else if (isInserting) {
+      context.missing(_emailMeta);
+    }
+    if (data.containsKey('closed')) {
+      context.handle(_closedMeta,
+          closed.isAcceptableOrUnknown(data['closed']!, _closedMeta));
+    } else if (isInserting) {
+      context.missing(_closedMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(_versionMeta,
+          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('total')) {
+      context.handle(
+          _totalMeta, total.isAcceptableOrUnknown(data['total']!, _totalMeta));
+    } else if (isInserting) {
+      context.missing(_totalMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  User map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return User(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      username: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}username'])!,
+      salesmanName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}salesman_name'])!,
+      salesmanNum: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}salesman_num'])!,
+      email: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
+      closed: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}closed'])!,
+      version: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}version'])!,
+      total: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}total'])!,
+    );
+  }
+
+  @override
+  $UsersTable createAlias(String alias) {
+    return $UsersTable(attachedDatabase, alias);
+  }
+}
+
 class User extends DataClass implements Insertable<User> {
   final int id;
   final String username;
@@ -16,7 +163,7 @@ class User extends DataClass implements Insertable<User> {
   final bool closed;
   final String version;
   final double total;
-  User(
+  const User(
       {required this.id,
       required this.username,
       required this.salesmanName,
@@ -25,27 +172,6 @@ class User extends DataClass implements Insertable<User> {
       required this.closed,
       required this.version,
       required this.total});
-  factory User.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return User(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      username: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}username'])!,
-      salesmanName: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}salesman_name'])!,
-      salesmanNum: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}salesman_num'])!,
-      email: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}email'])!,
-      closed: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}closed'])!,
-      version: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}version'])!,
-      total: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}total'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -277,117 +403,55 @@ class UsersCompanion extends UpdateCompanion<User> {
   }
 }
 
-class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+class $ReceptsTable extends Recepts with TableInfo<$ReceptsTable, Recept> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UsersTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $ReceptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _usernameMeta = const VerificationMeta('username');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
   @override
-  late final GeneratedColumn<String?> username = GeneratedColumn<String?>(
-      'username', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _salesmanNameMeta =
-      const VerificationMeta('salesmanName');
+  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
+      'ddate', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _summMeta = const VerificationMeta('summ');
   @override
-  late final GeneratedColumn<String?> salesmanName = GeneratedColumn<String?>(
-      'salesman_name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _salesmanNumMeta =
-      const VerificationMeta('salesmanNum');
+  late final GeneratedColumn<double> summ = GeneratedColumn<double>(
+      'summ', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<String?> salesmanNum = GeneratedColumn<String?>(
-      'salesman_num', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _emailMeta = const VerificationMeta('email');
+  List<GeneratedColumn> get $columns => [id, ddate, summ];
   @override
-  late final GeneratedColumn<String?> email = GeneratedColumn<String?>(
-      'email', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _closedMeta = const VerificationMeta('closed');
+  String get aliasedName => _alias ?? 'recepts';
   @override
-  late final GeneratedColumn<bool?> closed = GeneratedColumn<bool?>(
-      'closed', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (closed IN (0, 1))');
-  final VerificationMeta _versionMeta = const VerificationMeta('version');
+  String get actualTableName => 'recepts';
   @override
-  late final GeneratedColumn<String?> version = GeneratedColumn<String?>(
-      'version', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _totalMeta = const VerificationMeta('total');
-  @override
-  late final GeneratedColumn<double?> total = GeneratedColumn<double?>(
-      'total', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, username, salesmanName, salesmanNum, email, closed, version, total];
-  @override
-  String get aliasedName => _alias ?? 'users';
-  @override
-  String get actualTableName => 'users';
-  @override
-  VerificationContext validateIntegrity(Insertable<User> instance,
+  VerificationContext validateIntegrity(Insertable<Recept> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('username')) {
-      context.handle(_usernameMeta,
-          username.isAcceptableOrUnknown(data['username']!, _usernameMeta));
-    } else if (isInserting) {
-      context.missing(_usernameMeta);
-    }
-    if (data.containsKey('salesman_name')) {
+    if (data.containsKey('ddate')) {
       context.handle(
-          _salesmanNameMeta,
-          salesmanName.isAcceptableOrUnknown(
-              data['salesman_name']!, _salesmanNameMeta));
+          _ddateMeta, ddate.isAcceptableOrUnknown(data['ddate']!, _ddateMeta));
     } else if (isInserting) {
-      context.missing(_salesmanNameMeta);
+      context.missing(_ddateMeta);
     }
-    if (data.containsKey('salesman_num')) {
+    if (data.containsKey('summ')) {
       context.handle(
-          _salesmanNumMeta,
-          salesmanNum.isAcceptableOrUnknown(
-              data['salesman_num']!, _salesmanNumMeta));
+          _summMeta, summ.isAcceptableOrUnknown(data['summ']!, _summMeta));
     } else if (isInserting) {
-      context.missing(_salesmanNumMeta);
-    }
-    if (data.containsKey('email')) {
-      context.handle(
-          _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
-    } else if (isInserting) {
-      context.missing(_emailMeta);
-    }
-    if (data.containsKey('closed')) {
-      context.handle(_closedMeta,
-          closed.isAcceptableOrUnknown(data['closed']!, _closedMeta));
-    } else if (isInserting) {
-      context.missing(_closedMeta);
-    }
-    if (data.containsKey('version')) {
-      context.handle(_versionMeta,
-          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
-    } else if (isInserting) {
-      context.missing(_versionMeta);
-    }
-    if (data.containsKey('total')) {
-      context.handle(
-          _totalMeta, total.isAcceptableOrUnknown(data['total']!, _totalMeta));
-    } else if (isInserting) {
-      context.missing(_totalMeta);
+      context.missing(_summMeta);
     }
     return context;
   }
@@ -395,14 +459,21 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  User map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return User.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Recept map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Recept(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      ddate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}ddate'])!,
+      summ: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}summ'])!,
+    );
   }
 
   @override
-  $UsersTable createAlias(String alias) {
-    return $UsersTable(attachedDatabase, alias);
+  $ReceptsTable createAlias(String alias) {
+    return $ReceptsTable(attachedDatabase, alias);
   }
 }
 
@@ -410,18 +481,7 @@ class Recept extends DataClass implements Insertable<Recept> {
   final int id;
   final DateTime ddate;
   final double summ;
-  Recept({required this.id, required this.ddate, required this.summ});
-  factory Recept.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Recept(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      ddate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ddate'])!,
-      summ: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}summ'])!,
-    );
-  }
+  const Recept({required this.id, required this.ddate, required this.summ});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -546,36 +606,38 @@ class ReceptsCompanion extends UpdateCompanion<Recept> {
   }
 }
 
-class $ReceptsTable extends Recepts with TableInfo<$ReceptsTable, Recept> {
+class $IncomesTable extends Incomes with TableInfo<$IncomesTable, Income> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ReceptsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $IncomesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
   @override
-  late final GeneratedColumn<DateTime?> ddate = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
       'ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _summMeta = const VerificationMeta('summ');
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _summMeta = const VerificationMeta('summ');
   @override
-  late final GeneratedColumn<double?> summ = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> summ = GeneratedColumn<double>(
       'summ', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, ddate, summ];
   @override
-  String get aliasedName => _alias ?? 'recepts';
+  String get aliasedName => _alias ?? 'incomes';
   @override
-  String get actualTableName => 'recepts';
+  String get actualTableName => 'incomes';
   @override
-  VerificationContext validateIntegrity(Insertable<Recept> instance,
+  VerificationContext validateIntegrity(Insertable<Income> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -600,14 +662,21 @@ class $ReceptsTable extends Recepts with TableInfo<$ReceptsTable, Recept> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Recept map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Recept.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Income map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Income(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      ddate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}ddate'])!,
+      summ: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}summ'])!,
+    );
   }
 
   @override
-  $ReceptsTable createAlias(String alias) {
-    return $ReceptsTable(attachedDatabase, alias);
+  $IncomesTable createAlias(String alias) {
+    return $IncomesTable(attachedDatabase, alias);
   }
 }
 
@@ -615,18 +684,7 @@ class Income extends DataClass implements Insertable<Income> {
   final int id;
   final DateTime ddate;
   final double summ;
-  Income({required this.id, required this.ddate, required this.summ});
-  factory Income.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Income(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      ddate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ddate'])!,
-      summ: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}summ'])!,
-    );
-  }
+  const Income({required this.id, required this.ddate, required this.summ});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -751,53 +809,56 @@ class IncomesCompanion extends UpdateCompanion<Income> {
   }
 }
 
-class $IncomesTable extends Incomes with TableInfo<$IncomesTable, Income> {
+class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $IncomesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $BuyersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<DateTime?> ddate = GeneratedColumn<DateTime?>(
-      'ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _summMeta = const VerificationMeta('summ');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _addressMeta =
+      const VerificationMeta('address');
   @override
-  late final GeneratedColumn<double?> summ = GeneratedColumn<double?>(
-      'summ', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+      'address', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, ddate, summ];
+  List<GeneratedColumn> get $columns => [id, name, address];
   @override
-  String get aliasedName => _alias ?? 'incomes';
+  String get aliasedName => _alias ?? 'buyers';
   @override
-  String get actualTableName => 'incomes';
+  String get actualTableName => 'buyers';
   @override
-  VerificationContext validateIntegrity(Insertable<Income> instance,
+  VerificationContext validateIntegrity(Insertable<Buyer> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('ddate')) {
+    if (data.containsKey('name')) {
       context.handle(
-          _ddateMeta, ddate.isAcceptableOrUnknown(data['ddate']!, _ddateMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
-      context.missing(_ddateMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('summ')) {
-      context.handle(
-          _summMeta, summ.isAcceptableOrUnknown(data['summ']!, _summMeta));
+    if (data.containsKey('address')) {
+      context.handle(_addressMeta,
+          address.isAcceptableOrUnknown(data['address']!, _addressMeta));
     } else if (isInserting) {
-      context.missing(_summMeta);
+      context.missing(_addressMeta);
     }
     return context;
   }
@@ -805,14 +866,21 @@ class $IncomesTable extends Incomes with TableInfo<$IncomesTable, Income> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Income map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Income.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Buyer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Buyer(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      address: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+    );
   }
 
   @override
-  $IncomesTable createAlias(String alias) {
-    return $IncomesTable(attachedDatabase, alias);
+  $BuyersTable createAlias(String alias) {
+    return $BuyersTable(attachedDatabase, alias);
   }
 }
 
@@ -820,18 +888,7 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   final int id;
   final String name;
   final String address;
-  Buyer({required this.id, required this.name, required this.address});
-  factory Buyer.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Buyer(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      address: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}address'])!,
-    );
-  }
+  const Buyer({required this.id, required this.name, required this.address});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -956,53 +1013,122 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
   }
 }
 
-class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
+class $CardPaymentsTable extends CardPayments
+    with TableInfo<$CardPaymentsTable, CardPayment> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $BuyersTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $CardPaymentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _buyerIdMeta =
+      const VerificationMeta('buyerId');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _addressMeta = const VerificationMeta('address');
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
+      'buyer_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
   @override
-  late final GeneratedColumn<String?> address = GeneratedColumn<String?>(
-      'address', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
+      'order_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _summMeta = const VerificationMeta('summ');
   @override
-  List<GeneratedColumn> get $columns => [id, name, address];
+  late final GeneratedColumn<double> summ = GeneratedColumn<double>(
+      'summ', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
   @override
-  String get aliasedName => _alias ?? 'buyers';
+  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
+      'ddate', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _transactionIdMeta =
+      const VerificationMeta('transactionId');
   @override
-  String get actualTableName => 'buyers';
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+      'transaction_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _canceledMeta =
+      const VerificationMeta('canceled');
   @override
-  VerificationContext validateIntegrity(Insertable<Buyer> instance,
+  late final GeneratedColumn<bool> canceled = GeneratedColumn<bool>(
+      'canceled', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("canceled" IN (0, 1))'));
+  static const VerificationMeta _isLinkMeta = const VerificationMeta('isLink');
+  @override
+  late final GeneratedColumn<bool> isLink = GeneratedColumn<bool>(
+      'is_link', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_link" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, buyerId, orderId, summ, ddate, transactionId, canceled, isLink];
+  @override
+  String get aliasedName => _alias ?? 'card_payments';
+  @override
+  String get actualTableName => 'card_payments';
+  @override
+  VerificationContext validateIntegrity(Insertable<CardPayment> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    if (data.containsKey('buyer_id')) {
+      context.handle(_buyerIdMeta,
+          buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_buyerIdMeta);
     }
-    if (data.containsKey('address')) {
-      context.handle(_addressMeta,
-          address.isAcceptableOrUnknown(data['address']!, _addressMeta));
+    if (data.containsKey('order_id')) {
+      context.handle(_orderIdMeta,
+          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
     } else if (isInserting) {
-      context.missing(_addressMeta);
+      context.missing(_orderIdMeta);
+    }
+    if (data.containsKey('summ')) {
+      context.handle(
+          _summMeta, summ.isAcceptableOrUnknown(data['summ']!, _summMeta));
+    } else if (isInserting) {
+      context.missing(_summMeta);
+    }
+    if (data.containsKey('ddate')) {
+      context.handle(
+          _ddateMeta, ddate.isAcceptableOrUnknown(data['ddate']!, _ddateMeta));
+    } else if (isInserting) {
+      context.missing(_ddateMeta);
+    }
+    if (data.containsKey('transaction_id')) {
+      context.handle(
+          _transactionIdMeta,
+          transactionId.isAcceptableOrUnknown(
+              data['transaction_id']!, _transactionIdMeta));
+    }
+    if (data.containsKey('canceled')) {
+      context.handle(_canceledMeta,
+          canceled.isAcceptableOrUnknown(data['canceled']!, _canceledMeta));
+    } else if (isInserting) {
+      context.missing(_canceledMeta);
+    }
+    if (data.containsKey('is_link')) {
+      context.handle(_isLinkMeta,
+          isLink.isAcceptableOrUnknown(data['is_link']!, _isLinkMeta));
+    } else if (isInserting) {
+      context.missing(_isLinkMeta);
     }
     return context;
   }
@@ -1010,14 +1136,31 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Buyer map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Buyer.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  CardPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardPayment(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      buyerId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}buyer_id'])!,
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      summ: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}summ'])!,
+      ddate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}ddate'])!,
+      transactionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}transaction_id']),
+      canceled: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}canceled'])!,
+      isLink: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_link'])!,
+    );
   }
 
   @override
-  $BuyersTable createAlias(String alias) {
-    return $BuyersTable(attachedDatabase, alias);
+  $CardPaymentsTable createAlias(String alias) {
+    return $CardPaymentsTable(attachedDatabase, alias);
   }
 }
 
@@ -1030,7 +1173,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
   final String? transactionId;
   final bool canceled;
   final bool isLink;
-  CardPayment(
+  const CardPayment(
       {required this.id,
       required this.buyerId,
       required this.orderId,
@@ -1039,27 +1182,6 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
       this.transactionId,
       required this.canceled,
       required this.isLink});
-  factory CardPayment.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CardPayment(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      buyerId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}buyer_id'])!,
-      orderId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
-      summ: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}summ'])!,
-      ddate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ddate'])!,
-      transactionId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}transaction_id']),
-      canceled: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}canceled'])!,
-      isLink: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_link'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1069,7 +1191,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
     map['summ'] = Variable<double>(summ);
     map['ddate'] = Variable<DateTime>(ddate);
     if (!nullToAbsent || transactionId != null) {
-      map['transaction_id'] = Variable<String?>(transactionId);
+      map['transaction_id'] = Variable<String>(transactionId);
     }
     map['canceled'] = Variable<bool>(canceled);
     map['is_link'] = Variable<bool>(isLink);
@@ -1126,7 +1248,7 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
           int? orderId,
           double? summ,
           DateTime? ddate,
-          String? transactionId,
+          Value<String?> transactionId = const Value.absent(),
           bool? canceled,
           bool? isLink}) =>
       CardPayment(
@@ -1135,7 +1257,8 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
         orderId: orderId ?? this.orderId,
         summ: summ ?? this.summ,
         ddate: ddate ?? this.ddate,
-        transactionId: transactionId ?? this.transactionId,
+        transactionId:
+            transactionId.present ? transactionId.value : this.transactionId,
         canceled: canceled ?? this.canceled,
         isLink: isLink ?? this.isLink,
       );
@@ -1211,7 +1334,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
     Expression<int>? orderId,
     Expression<double>? summ,
     Expression<DateTime>? ddate,
-    Expression<String?>? transactionId,
+    Expression<String>? transactionId,
     Expression<bool>? canceled,
     Expression<bool>? isLink,
   }) {
@@ -1267,7 +1390,7 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
       map['ddate'] = Variable<DateTime>(ddate.value);
     }
     if (transactionId.present) {
-      map['transaction_id'] = Variable<String?>(transactionId.value);
+      map['transaction_id'] = Variable<String>(transactionId.value);
     }
     if (canceled.present) {
       map['canceled'] = Variable<bool>(canceled.value);
@@ -1294,68 +1417,61 @@ class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
   }
 }
 
-class $CardPaymentsTable extends CardPayments
-    with TableInfo<$CardPaymentsTable, CardPayment> {
+class $CashPaymentsTable extends CashPayments
+    with TableInfo<$CashPaymentsTable, CashPayment> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CardPaymentsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $CashPaymentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _buyerIdMeta = const VerificationMeta('buyerId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _buyerIdMeta =
+      const VerificationMeta('buyerId');
   @override
-  late final GeneratedColumn<int?> buyerId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
       'buyer_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
   @override
-  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
       'order_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _summMeta = const VerificationMeta('summ');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _summMeta = const VerificationMeta('summ');
   @override
-  late final GeneratedColumn<double?> summ = GeneratedColumn<double?>(
+  late final GeneratedColumn<double> summ = GeneratedColumn<double>(
       'summ', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
   @override
-  late final GeneratedColumn<DateTime?> ddate = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
       'ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _transactionIdMeta =
-      const VerificationMeta('transactionId');
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _kkmprintedMeta =
+      const VerificationMeta('kkmprinted');
   @override
-  late final GeneratedColumn<String?> transactionId = GeneratedColumn<String?>(
-      'transaction_id', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _canceledMeta = const VerificationMeta('canceled');
-  @override
-  late final GeneratedColumn<bool?> canceled = GeneratedColumn<bool?>(
-      'canceled', aliasedName, false,
-      type: const BoolType(),
+  late final GeneratedColumn<bool> kkmprinted = GeneratedColumn<bool>(
+      'kkmprinted', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (canceled IN (0, 1))');
-  final VerificationMeta _isLinkMeta = const VerificationMeta('isLink');
-  @override
-  late final GeneratedColumn<bool?> isLink = GeneratedColumn<bool?>(
-      'is_link', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_link IN (0, 1))');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("kkmprinted" IN (0, 1))'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, buyerId, orderId, summ, ddate, transactionId, canceled, isLink];
+      [id, buyerId, orderId, summ, ddate, kkmprinted];
   @override
-  String get aliasedName => _alias ?? 'card_payments';
+  String get aliasedName => _alias ?? 'cash_payments';
   @override
-  String get actualTableName => 'card_payments';
+  String get actualTableName => 'cash_payments';
   @override
-  VerificationContext validateIntegrity(Insertable<CardPayment> instance,
+  VerificationContext validateIntegrity(Insertable<CashPayment> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1386,23 +1502,13 @@ class $CardPaymentsTable extends CardPayments
     } else if (isInserting) {
       context.missing(_ddateMeta);
     }
-    if (data.containsKey('transaction_id')) {
+    if (data.containsKey('kkmprinted')) {
       context.handle(
-          _transactionIdMeta,
-          transactionId.isAcceptableOrUnknown(
-              data['transaction_id']!, _transactionIdMeta));
-    }
-    if (data.containsKey('canceled')) {
-      context.handle(_canceledMeta,
-          canceled.isAcceptableOrUnknown(data['canceled']!, _canceledMeta));
+          _kkmprintedMeta,
+          kkmprinted.isAcceptableOrUnknown(
+              data['kkmprinted']!, _kkmprintedMeta));
     } else if (isInserting) {
-      context.missing(_canceledMeta);
-    }
-    if (data.containsKey('is_link')) {
-      context.handle(_isLinkMeta,
-          isLink.isAcceptableOrUnknown(data['is_link']!, _isLinkMeta));
-    } else if (isInserting) {
-      context.missing(_isLinkMeta);
+      context.missing(_kkmprintedMeta);
     }
     return context;
   }
@@ -1410,14 +1516,27 @@ class $CardPaymentsTable extends CardPayments
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  CardPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CardPayment.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  CashPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CashPayment(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      buyerId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}buyer_id'])!,
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      summ: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}summ'])!,
+      ddate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}ddate'])!,
+      kkmprinted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}kkmprinted'])!,
+    );
   }
 
   @override
-  $CardPaymentsTable createAlias(String alias) {
-    return $CardPaymentsTable(attachedDatabase, alias);
+  $CashPaymentsTable createAlias(String alias) {
+    return $CashPaymentsTable(attachedDatabase, alias);
   }
 }
 
@@ -1428,30 +1547,13 @@ class CashPayment extends DataClass implements Insertable<CashPayment> {
   final double summ;
   final DateTime ddate;
   final bool kkmprinted;
-  CashPayment(
+  const CashPayment(
       {required this.id,
       required this.buyerId,
       required this.orderId,
       required this.summ,
       required this.ddate,
       required this.kkmprinted});
-  factory CashPayment.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CashPayment(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      buyerId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}buyer_id'])!,
-      orderId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
-      summ: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}summ'])!,
-      ddate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ddate'])!,
-      kkmprinted: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}kkmprinted'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1643,55 +1745,118 @@ class CashPaymentsCompanion extends UpdateCompanion<CashPayment> {
   }
 }
 
-class $CashPaymentsTable extends CashPayments
-    with TableInfo<$CashPaymentsTable, CashPayment> {
+class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CashPaymentsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $DebtsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _buyerIdMeta = const VerificationMeta('buyerId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _buyerIdMeta =
+      const VerificationMeta('buyerId');
   @override
-  late final GeneratedColumn<int?> buyerId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
       'buyer_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
   @override
-  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
       'order_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _summMeta = const VerificationMeta('summ');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ndocMeta = const VerificationMeta('ndoc');
   @override
-  late final GeneratedColumn<double?> summ = GeneratedColumn<double?>(
-      'summ', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+  late final GeneratedColumn<String> ndoc = GeneratedColumn<String>(
+      'ndoc', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _orderNdocMeta =
+      const VerificationMeta('orderNdoc');
   @override
-  late final GeneratedColumn<DateTime?> ddate = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<String> orderNdoc = GeneratedColumn<String>(
+      'order_ndoc', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+  @override
+  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
       'ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _kkmprintedMeta = const VerificationMeta('kkmprinted');
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _orderDdateMeta =
+      const VerificationMeta('orderDdate');
   @override
-  late final GeneratedColumn<bool?> kkmprinted = GeneratedColumn<bool?>(
-      'kkmprinted', aliasedName, false,
-      type: const BoolType(),
+  late final GeneratedColumn<DateTime> orderDdate = GeneratedColumn<DateTime>(
+      'order_ddate', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _isCheckMeta =
+      const VerificationMeta('isCheck');
+  @override
+  late final GeneratedColumn<bool> isCheck = GeneratedColumn<bool>(
+      'is_check', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (kkmprinted IN (0, 1))');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_check" IN (0, 1))'));
+  static const VerificationMeta _debtSumMeta =
+      const VerificationMeta('debtSum');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, buyerId, orderId, summ, ddate, kkmprinted];
+  late final GeneratedColumn<double> debtSum = GeneratedColumn<double>(
+      'debt_sum', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _orderSumMeta =
+      const VerificationMeta('orderSum');
   @override
-  String get aliasedName => _alias ?? 'cash_payments';
+  late final GeneratedColumn<double> orderSum = GeneratedColumn<double>(
+      'order_sum', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _paidSumMeta =
+      const VerificationMeta('paidSum');
   @override
-  String get actualTableName => 'cash_payments';
+  late final GeneratedColumn<double> paidSum = GeneratedColumn<double>(
+      'paid_sum', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _paymentSumMeta =
+      const VerificationMeta('paymentSum');
   @override
-  VerificationContext validateIntegrity(Insertable<CashPayment> instance,
+  late final GeneratedColumn<double> paymentSum = GeneratedColumn<double>(
+      'payment_sum', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _physicalMeta =
+      const VerificationMeta('physical');
+  @override
+  late final GeneratedColumn<bool> physical = GeneratedColumn<bool>(
+      'physical', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("physical" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        buyerId,
+        orderId,
+        ndoc,
+        orderNdoc,
+        ddate,
+        orderDdate,
+        isCheck,
+        debtSum,
+        orderSum,
+        paidSum,
+        paymentSum,
+        physical
+      ];
+  @override
+  String get aliasedName => _alias ?? 'debts';
+  @override
+  String get actualTableName => 'debts';
+  @override
+  VerificationContext validateIntegrity(Insertable<Debt> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1710,11 +1875,17 @@ class $CashPaymentsTable extends CashPayments
     } else if (isInserting) {
       context.missing(_orderIdMeta);
     }
-    if (data.containsKey('summ')) {
+    if (data.containsKey('ndoc')) {
       context.handle(
-          _summMeta, summ.isAcceptableOrUnknown(data['summ']!, _summMeta));
+          _ndocMeta, ndoc.isAcceptableOrUnknown(data['ndoc']!, _ndocMeta));
     } else if (isInserting) {
-      context.missing(_summMeta);
+      context.missing(_ndocMeta);
+    }
+    if (data.containsKey('order_ndoc')) {
+      context.handle(_orderNdocMeta,
+          orderNdoc.isAcceptableOrUnknown(data['order_ndoc']!, _orderNdocMeta));
+    } else if (isInserting) {
+      context.missing(_orderNdocMeta);
     }
     if (data.containsKey('ddate')) {
       context.handle(
@@ -1722,13 +1893,47 @@ class $CashPaymentsTable extends CashPayments
     } else if (isInserting) {
       context.missing(_ddateMeta);
     }
-    if (data.containsKey('kkmprinted')) {
+    if (data.containsKey('order_ddate')) {
       context.handle(
-          _kkmprintedMeta,
-          kkmprinted.isAcceptableOrUnknown(
-              data['kkmprinted']!, _kkmprintedMeta));
+          _orderDdateMeta,
+          orderDdate.isAcceptableOrUnknown(
+              data['order_ddate']!, _orderDdateMeta));
     } else if (isInserting) {
-      context.missing(_kkmprintedMeta);
+      context.missing(_orderDdateMeta);
+    }
+    if (data.containsKey('is_check')) {
+      context.handle(_isCheckMeta,
+          isCheck.isAcceptableOrUnknown(data['is_check']!, _isCheckMeta));
+    } else if (isInserting) {
+      context.missing(_isCheckMeta);
+    }
+    if (data.containsKey('debt_sum')) {
+      context.handle(_debtSumMeta,
+          debtSum.isAcceptableOrUnknown(data['debt_sum']!, _debtSumMeta));
+    } else if (isInserting) {
+      context.missing(_debtSumMeta);
+    }
+    if (data.containsKey('order_sum')) {
+      context.handle(_orderSumMeta,
+          orderSum.isAcceptableOrUnknown(data['order_sum']!, _orderSumMeta));
+    } else if (isInserting) {
+      context.missing(_orderSumMeta);
+    }
+    if (data.containsKey('paid_sum')) {
+      context.handle(_paidSumMeta,
+          paidSum.isAcceptableOrUnknown(data['paid_sum']!, _paidSumMeta));
+    }
+    if (data.containsKey('payment_sum')) {
+      context.handle(
+          _paymentSumMeta,
+          paymentSum.isAcceptableOrUnknown(
+              data['payment_sum']!, _paymentSumMeta));
+    }
+    if (data.containsKey('physical')) {
+      context.handle(_physicalMeta,
+          physical.isAcceptableOrUnknown(data['physical']!, _physicalMeta));
+    } else if (isInserting) {
+      context.missing(_physicalMeta);
     }
     return context;
   }
@@ -1736,14 +1941,41 @@ class $CashPaymentsTable extends CashPayments
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  CashPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CashPayment.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Debt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Debt(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      buyerId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}buyer_id'])!,
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      ndoc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ndoc'])!,
+      orderNdoc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}order_ndoc'])!,
+      ddate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}ddate'])!,
+      orderDdate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}order_ddate'])!,
+      isCheck: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_check'])!,
+      debtSum: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}debt_sum'])!,
+      orderSum: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}order_sum'])!,
+      paidSum: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}paid_sum']),
+      paymentSum: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}payment_sum']),
+      physical: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}physical'])!,
+    );
   }
 
   @override
-  $CashPaymentsTable createAlias(String alias) {
-    return $CashPaymentsTable(attachedDatabase, alias);
+  $DebtsTable createAlias(String alias) {
+    return $DebtsTable(attachedDatabase, alias);
   }
 }
 
@@ -1761,7 +1993,7 @@ class Debt extends DataClass implements Insertable<Debt> {
   final double? paidSum;
   final double? paymentSum;
   final bool physical;
-  Debt(
+  const Debt(
       {required this.id,
       required this.buyerId,
       required this.orderId,
@@ -1775,37 +2007,6 @@ class Debt extends DataClass implements Insertable<Debt> {
       this.paidSum,
       this.paymentSum,
       required this.physical});
-  factory Debt.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Debt(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      buyerId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}buyer_id'])!,
-      orderId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
-      ndoc: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ndoc'])!,
-      orderNdoc: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_ndoc'])!,
-      ddate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ddate'])!,
-      orderDdate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_ddate'])!,
-      isCheck: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_check'])!,
-      debtSum: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}debt_sum'])!,
-      orderSum: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_sum'])!,
-      paidSum: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}paid_sum']),
-      paymentSum: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_sum']),
-      physical: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}physical'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1820,10 +2021,10 @@ class Debt extends DataClass implements Insertable<Debt> {
     map['debt_sum'] = Variable<double>(debtSum);
     map['order_sum'] = Variable<double>(orderSum);
     if (!nullToAbsent || paidSum != null) {
-      map['paid_sum'] = Variable<double?>(paidSum);
+      map['paid_sum'] = Variable<double>(paidSum);
     }
     if (!nullToAbsent || paymentSum != null) {
-      map['payment_sum'] = Variable<double?>(paymentSum);
+      map['payment_sum'] = Variable<double>(paymentSum);
     }
     map['physical'] = Variable<bool>(physical);
     return map;
@@ -1901,8 +2102,8 @@ class Debt extends DataClass implements Insertable<Debt> {
           bool? isCheck,
           double? debtSum,
           double? orderSum,
-          double? paidSum,
-          double? paymentSum,
+          Value<double?> paidSum = const Value.absent(),
+          Value<double?> paymentSum = const Value.absent(),
           bool? physical}) =>
       Debt(
         id: id ?? this.id,
@@ -1915,8 +2116,8 @@ class Debt extends DataClass implements Insertable<Debt> {
         isCheck: isCheck ?? this.isCheck,
         debtSum: debtSum ?? this.debtSum,
         orderSum: orderSum ?? this.orderSum,
-        paidSum: paidSum ?? this.paidSum,
-        paymentSum: paymentSum ?? this.paymentSum,
+        paidSum: paidSum.present ? paidSum.value : this.paidSum,
+        paymentSum: paymentSum.present ? paymentSum.value : this.paymentSum,
         physical: physical ?? this.physical,
       );
   @override
@@ -2025,8 +2226,8 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
     Expression<bool>? isCheck,
     Expression<double>? debtSum,
     Expression<double>? orderSum,
-    Expression<double?>? paidSum,
-    Expression<double?>? paymentSum,
+    Expression<double>? paidSum,
+    Expression<double>? paymentSum,
     Expression<bool>? physical,
   }) {
     return RawValuesInsertable({
@@ -2111,10 +2312,10 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
       map['order_sum'] = Variable<double>(orderSum.value);
     }
     if (paidSum.present) {
-      map['paid_sum'] = Variable<double?>(paidSum.value);
+      map['paid_sum'] = Variable<double>(paidSum.value);
     }
     if (paymentSum.present) {
-      map['payment_sum'] = Variable<double?>(paymentSum.value);
+      map['payment_sum'] = Variable<double>(paymentSum.value);
     }
     if (physical.present) {
       map['physical'] = Variable<bool>(physical.value);
@@ -2143,104 +2344,87 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   }
 }
 
-class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
+class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $DebtsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $OrdersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _buyerIdMeta = const VerificationMeta('buyerId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _buyerIdMeta =
+      const VerificationMeta('buyerId');
   @override
-  late final GeneratedColumn<int?> buyerId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
       'buyer_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ordMeta = const VerificationMeta('ord');
   @override
-  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
-      'order_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _ndocMeta = const VerificationMeta('ndoc');
+  late final GeneratedColumn<int> ord = GeneratedColumn<int>(
+      'ord', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _ndocMeta = const VerificationMeta('ndoc');
   @override
-  late final GeneratedColumn<String?> ndoc = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> ndoc = GeneratedColumn<String>(
       'ndoc', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _orderNdocMeta = const VerificationMeta('orderNdoc');
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _infoMeta = const VerificationMeta('info');
   @override
-  late final GeneratedColumn<String?> orderNdoc = GeneratedColumn<String?>(
-      'order_ndoc', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _ddateMeta = const VerificationMeta('ddate');
+  late final GeneratedColumn<String> info = GeneratedColumn<String>(
+      'info', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isIncMeta = const VerificationMeta('isInc');
   @override
-  late final GeneratedColumn<DateTime?> ddate = GeneratedColumn<DateTime?>(
-      'ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _orderDdateMeta = const VerificationMeta('orderDdate');
-  @override
-  late final GeneratedColumn<DateTime?> orderDdate = GeneratedColumn<DateTime?>(
-      'order_ddate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _isCheckMeta = const VerificationMeta('isCheck');
-  @override
-  late final GeneratedColumn<bool?> isCheck = GeneratedColumn<bool?>(
-      'is_check', aliasedName, false,
-      type: const BoolType(),
+  late final GeneratedColumn<bool> isInc = GeneratedColumn<bool>(
+      'is_inc', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_check IN (0, 1))');
-  final VerificationMeta _debtSumMeta = const VerificationMeta('debtSum');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_inc" IN (0, 1))'));
+  static const VerificationMeta _goodsCntMeta =
+      const VerificationMeta('goodsCnt');
   @override
-  late final GeneratedColumn<double?> debtSum = GeneratedColumn<double?>(
-      'debt_sum', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _orderSumMeta = const VerificationMeta('orderSum');
+  late final GeneratedColumn<int> goodsCnt = GeneratedColumn<int>(
+      'goods_cnt', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _mcMeta = const VerificationMeta('mc');
   @override
-  late final GeneratedColumn<double?> orderSum = GeneratedColumn<double?>(
-      'order_sum', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _paidSumMeta = const VerificationMeta('paidSum');
+  late final GeneratedColumn<double> mc = GeneratedColumn<double>(
+      'mc', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _deliveredMeta =
+      const VerificationMeta('delivered');
   @override
-  late final GeneratedColumn<double?> paidSum = GeneratedColumn<double?>(
-      'paid_sum', aliasedName, true,
-      type: const RealType(), requiredDuringInsert: false);
-  final VerificationMeta _paymentSumMeta = const VerificationMeta('paymentSum');
+  late final GeneratedColumn<bool> delivered = GeneratedColumn<bool>(
+      'delivered', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("delivered" IN (0, 1))'));
+  static const VerificationMeta _physicalMeta =
+      const VerificationMeta('physical');
   @override
-  late final GeneratedColumn<double?> paymentSum = GeneratedColumn<double?>(
-      'payment_sum', aliasedName, true,
-      type: const RealType(), requiredDuringInsert: false);
-  final VerificationMeta _physicalMeta = const VerificationMeta('physical');
-  @override
-  late final GeneratedColumn<bool?> physical = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> physical = GeneratedColumn<bool>(
       'physical', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (physical IN (0, 1))');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("physical" IN (0, 1))'));
   @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        buyerId,
-        orderId,
-        ndoc,
-        orderNdoc,
-        ddate,
-        orderDdate,
-        isCheck,
-        debtSum,
-        orderSum,
-        paidSum,
-        paymentSum,
-        physical
-      ];
+  List<GeneratedColumn> get $columns =>
+      [id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical];
   @override
-  String get aliasedName => _alias ?? 'debts';
+  String get aliasedName => _alias ?? 'orders';
   @override
-  String get actualTableName => 'debts';
+  String get actualTableName => 'orders';
   @override
-  VerificationContext validateIntegrity(Insertable<Debt> instance,
+  VerificationContext validateIntegrity(Insertable<Order> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -2253,11 +2437,11 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
     } else if (isInserting) {
       context.missing(_buyerIdMeta);
     }
-    if (data.containsKey('order_id')) {
-      context.handle(_orderIdMeta,
-          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
+    if (data.containsKey('ord')) {
+      context.handle(
+          _ordMeta, ord.isAcceptableOrUnknown(data['ord']!, _ordMeta));
     } else if (isInserting) {
-      context.missing(_orderIdMeta);
+      context.missing(_ordMeta);
     }
     if (data.containsKey('ndoc')) {
       context.handle(
@@ -2265,53 +2449,32 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
     } else if (isInserting) {
       context.missing(_ndocMeta);
     }
-    if (data.containsKey('order_ndoc')) {
-      context.handle(_orderNdocMeta,
-          orderNdoc.isAcceptableOrUnknown(data['order_ndoc']!, _orderNdocMeta));
-    } else if (isInserting) {
-      context.missing(_orderNdocMeta);
-    }
-    if (data.containsKey('ddate')) {
+    if (data.containsKey('info')) {
       context.handle(
-          _ddateMeta, ddate.isAcceptableOrUnknown(data['ddate']!, _ddateMeta));
+          _infoMeta, info.isAcceptableOrUnknown(data['info']!, _infoMeta));
     } else if (isInserting) {
-      context.missing(_ddateMeta);
+      context.missing(_infoMeta);
     }
-    if (data.containsKey('order_ddate')) {
+    if (data.containsKey('is_inc')) {
       context.handle(
-          _orderDdateMeta,
-          orderDdate.isAcceptableOrUnknown(
-              data['order_ddate']!, _orderDdateMeta));
+          _isIncMeta, isInc.isAcceptableOrUnknown(data['is_inc']!, _isIncMeta));
     } else if (isInserting) {
-      context.missing(_orderDdateMeta);
+      context.missing(_isIncMeta);
     }
-    if (data.containsKey('is_check')) {
-      context.handle(_isCheckMeta,
-          isCheck.isAcceptableOrUnknown(data['is_check']!, _isCheckMeta));
+    if (data.containsKey('goods_cnt')) {
+      context.handle(_goodsCntMeta,
+          goodsCnt.isAcceptableOrUnknown(data['goods_cnt']!, _goodsCntMeta));
     } else if (isInserting) {
-      context.missing(_isCheckMeta);
+      context.missing(_goodsCntMeta);
     }
-    if (data.containsKey('debt_sum')) {
-      context.handle(_debtSumMeta,
-          debtSum.isAcceptableOrUnknown(data['debt_sum']!, _debtSumMeta));
+    if (data.containsKey('mc')) {
+      context.handle(_mcMeta, mc.isAcceptableOrUnknown(data['mc']!, _mcMeta));
     } else if (isInserting) {
-      context.missing(_debtSumMeta);
+      context.missing(_mcMeta);
     }
-    if (data.containsKey('order_sum')) {
-      context.handle(_orderSumMeta,
-          orderSum.isAcceptableOrUnknown(data['order_sum']!, _orderSumMeta));
-    } else if (isInserting) {
-      context.missing(_orderSumMeta);
-    }
-    if (data.containsKey('paid_sum')) {
-      context.handle(_paidSumMeta,
-          paidSum.isAcceptableOrUnknown(data['paid_sum']!, _paidSumMeta));
-    }
-    if (data.containsKey('payment_sum')) {
-      context.handle(
-          _paymentSumMeta,
-          paymentSum.isAcceptableOrUnknown(
-              data['payment_sum']!, _paymentSumMeta));
+    if (data.containsKey('delivered')) {
+      context.handle(_deliveredMeta,
+          delivered.isAcceptableOrUnknown(data['delivered']!, _deliveredMeta));
     }
     if (data.containsKey('physical')) {
       context.handle(_physicalMeta,
@@ -2325,14 +2488,35 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Debt map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Debt.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Order map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Order(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      buyerId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}buyer_id'])!,
+      ord: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}ord'])!,
+      ndoc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ndoc'])!,
+      info: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}info'])!,
+      isInc: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_inc'])!,
+      goodsCnt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}goods_cnt'])!,
+      mc: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}mc'])!,
+      delivered: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}delivered']),
+      physical: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}physical'])!,
+    );
   }
 
   @override
-  $DebtsTable createAlias(String alias) {
-    return $DebtsTable(attachedDatabase, alias);
+  $OrdersTable createAlias(String alias) {
+    return $OrdersTable(attachedDatabase, alias);
   }
 }
 
@@ -2347,7 +2531,7 @@ class Order extends DataClass implements Insertable<Order> {
   final double mc;
   final bool? delivered;
   final bool physical;
-  Order(
+  const Order(
       {required this.id,
       required this.buyerId,
       required this.ord,
@@ -2358,31 +2542,6 @@ class Order extends DataClass implements Insertable<Order> {
       required this.mc,
       this.delivered,
       required this.physical});
-  factory Order.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Order(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      buyerId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}buyer_id'])!,
-      ord: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ord'])!,
-      ndoc: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ndoc'])!,
-      info: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}info'])!,
-      isInc: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_inc'])!,
-      goodsCnt: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}goods_cnt'])!,
-      mc: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}mc'])!,
-      delivered: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}delivered']),
-      physical: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}physical'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2395,7 +2554,7 @@ class Order extends DataClass implements Insertable<Order> {
     map['goods_cnt'] = Variable<int>(goodsCnt);
     map['mc'] = Variable<double>(mc);
     if (!nullToAbsent || delivered != null) {
-      map['delivered'] = Variable<bool?>(delivered);
+      map['delivered'] = Variable<bool>(delivered);
     }
     map['physical'] = Variable<bool>(physical);
     return map;
@@ -2460,7 +2619,7 @@ class Order extends DataClass implements Insertable<Order> {
           bool? isInc,
           int? goodsCnt,
           double? mc,
-          bool? delivered,
+          Value<bool?> delivered = const Value.absent(),
           bool? physical}) =>
       Order(
         id: id ?? this.id,
@@ -2471,7 +2630,7 @@ class Order extends DataClass implements Insertable<Order> {
         isInc: isInc ?? this.isInc,
         goodsCnt: goodsCnt ?? this.goodsCnt,
         mc: mc ?? this.mc,
-        delivered: delivered ?? this.delivered,
+        delivered: delivered.present ? delivered.value : this.delivered,
         physical: physical ?? this.physical,
       );
   @override
@@ -2561,7 +2720,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Expression<bool>? isInc,
     Expression<int>? goodsCnt,
     Expression<double>? mc,
-    Expression<bool?>? delivered,
+    Expression<bool>? delivered,
     Expression<bool>? physical,
   }) {
     return RawValuesInsertable({
@@ -2631,7 +2790,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       map['mc'] = Variable<double>(mc.value);
     }
     if (delivered.present) {
-      map['delivered'] = Variable<bool?>(delivered.value);
+      map['delivered'] = Variable<bool>(delivered.value);
     }
     if (physical.present) {
       map['physical'] = Variable<bool>(physical.value);
@@ -2657,150 +2816,178 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   }
 }
 
-class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
+class $OrderLinesTable extends OrderLines
+    with TableInfo<$OrderLinesTable, OrderLine> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $OrdersTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $OrderLinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _buyerIdMeta = const VerificationMeta('buyerId');
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
+      'order_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _subidMeta = const VerificationMeta('subid');
   @override
-  late final GeneratedColumn<int?> buyerId = GeneratedColumn<int?>(
-      'buyer_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _ordMeta = const VerificationMeta('ord');
+  late final GeneratedColumn<int> subid = GeneratedColumn<int>(
+      'subid', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<int?> ord = GeneratedColumn<int?>(
-      'ord', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _ndocMeta = const VerificationMeta('ndoc');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _gtinMeta = const VerificationMeta('gtin');
   @override
-  late final GeneratedColumn<String?> ndoc = GeneratedColumn<String?>(
-      'ndoc', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _infoMeta = const VerificationMeta('info');
+  late final GeneratedColumn<String> gtin = GeneratedColumn<String>(
+      'gtin', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _volMeta = const VerificationMeta('vol');
   @override
-  late final GeneratedColumn<String?> info = GeneratedColumn<String?>(
-      'info', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _isIncMeta = const VerificationMeta('isInc');
+  late final GeneratedColumn<double> vol = GeneratedColumn<double>(
+      'vol', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _deliveredVolMeta =
+      const VerificationMeta('deliveredVol');
   @override
-  late final GeneratedColumn<bool?> isInc = GeneratedColumn<bool?>(
-      'is_inc', aliasedName, false,
-      type: const BoolType(),
+  late final GeneratedColumn<double> deliveredVol = GeneratedColumn<double>(
+      'delivered_vol', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _priceMeta = const VerificationMeta('price');
+  @override
+  late final GeneratedColumn<double> price = GeneratedColumn<double>(
+      'price', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _needMarkingMeta =
+      const VerificationMeta('needMarking');
+  @override
+  late final GeneratedColumn<bool> needMarking = GeneratedColumn<bool>(
+      'need_marking', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_inc IN (0, 1))');
-  final VerificationMeta _goodsCntMeta = const VerificationMeta('goodsCnt');
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("need_marking" IN (0, 1))'));
+  static const VerificationMeta _barcodeRelsMeta =
+      const VerificationMeta('barcodeRels');
   @override
-  late final GeneratedColumn<int?> goodsCnt = GeneratedColumn<int?>(
-      'goods_cnt', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _mcMeta = const VerificationMeta('mc');
+  late final GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String>
+      barcodeRels = GeneratedColumn<String>('barcode_rels', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<List<OrderLineBarcode>>(
+              $OrderLinesTable.$converterbarcodeRels);
   @override
-  late final GeneratedColumn<double?> mc = GeneratedColumn<double?>(
-      'mc', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _deliveredMeta = const VerificationMeta('delivered');
+  List<GeneratedColumn> get $columns => [
+        orderId,
+        subid,
+        name,
+        gtin,
+        vol,
+        deliveredVol,
+        price,
+        needMarking,
+        barcodeRels
+      ];
   @override
-  late final GeneratedColumn<bool?> delivered = GeneratedColumn<bool?>(
-      'delivered', aliasedName, true,
-      type: const BoolType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'CHECK (delivered IN (0, 1))');
-  final VerificationMeta _physicalMeta = const VerificationMeta('physical');
+  String get aliasedName => _alias ?? 'order_lines';
   @override
-  late final GeneratedColumn<bool?> physical = GeneratedColumn<bool?>(
-      'physical', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (physical IN (0, 1))');
+  String get actualTableName => 'order_lines';
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical];
-  @override
-  String get aliasedName => _alias ?? 'orders';
-  @override
-  String get actualTableName => 'orders';
-  @override
-  VerificationContext validateIntegrity(Insertable<Order> instance,
+  VerificationContext validateIntegrity(Insertable<OrderLine> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('buyer_id')) {
-      context.handle(_buyerIdMeta,
-          buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta));
+    if (data.containsKey('order_id')) {
+      context.handle(_orderIdMeta,
+          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
     } else if (isInserting) {
-      context.missing(_buyerIdMeta);
+      context.missing(_orderIdMeta);
     }
-    if (data.containsKey('ord')) {
+    if (data.containsKey('subid')) {
       context.handle(
-          _ordMeta, ord.isAcceptableOrUnknown(data['ord']!, _ordMeta));
+          _subidMeta, subid.isAcceptableOrUnknown(data['subid']!, _subidMeta));
     } else if (isInserting) {
-      context.missing(_ordMeta);
+      context.missing(_subidMeta);
     }
-    if (data.containsKey('ndoc')) {
+    if (data.containsKey('name')) {
       context.handle(
-          _ndocMeta, ndoc.isAcceptableOrUnknown(data['ndoc']!, _ndocMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
-      context.missing(_ndocMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('info')) {
+    if (data.containsKey('gtin')) {
       context.handle(
-          _infoMeta, info.isAcceptableOrUnknown(data['info']!, _infoMeta));
+          _gtinMeta, gtin.isAcceptableOrUnknown(data['gtin']!, _gtinMeta));
     } else if (isInserting) {
-      context.missing(_infoMeta);
+      context.missing(_gtinMeta);
     }
-    if (data.containsKey('is_inc')) {
+    if (data.containsKey('vol')) {
       context.handle(
-          _isIncMeta, isInc.isAcceptableOrUnknown(data['is_inc']!, _isIncMeta));
+          _volMeta, vol.isAcceptableOrUnknown(data['vol']!, _volMeta));
     } else if (isInserting) {
-      context.missing(_isIncMeta);
+      context.missing(_volMeta);
     }
-    if (data.containsKey('goods_cnt')) {
-      context.handle(_goodsCntMeta,
-          goodsCnt.isAcceptableOrUnknown(data['goods_cnt']!, _goodsCntMeta));
+    if (data.containsKey('delivered_vol')) {
+      context.handle(
+          _deliveredVolMeta,
+          deliveredVol.isAcceptableOrUnknown(
+              data['delivered_vol']!, _deliveredVolMeta));
     } else if (isInserting) {
-      context.missing(_goodsCntMeta);
+      context.missing(_deliveredVolMeta);
     }
-    if (data.containsKey('mc')) {
-      context.handle(_mcMeta, mc.isAcceptableOrUnknown(data['mc']!, _mcMeta));
+    if (data.containsKey('price')) {
+      context.handle(
+          _priceMeta, price.isAcceptableOrUnknown(data['price']!, _priceMeta));
     } else if (isInserting) {
-      context.missing(_mcMeta);
+      context.missing(_priceMeta);
     }
-    if (data.containsKey('delivered')) {
-      context.handle(_deliveredMeta,
-          delivered.isAcceptableOrUnknown(data['delivered']!, _deliveredMeta));
-    }
-    if (data.containsKey('physical')) {
-      context.handle(_physicalMeta,
-          physical.isAcceptableOrUnknown(data['physical']!, _physicalMeta));
+    if (data.containsKey('need_marking')) {
+      context.handle(
+          _needMarkingMeta,
+          needMarking.isAcceptableOrUnknown(
+              data['need_marking']!, _needMarkingMeta));
     } else if (isInserting) {
-      context.missing(_physicalMeta);
+      context.missing(_needMarkingMeta);
     }
+    context.handle(_barcodeRelsMeta, const VerificationResult.success());
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid};
   @override
-  Order map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Order.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  OrderLine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OrderLine(
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      subid: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}subid'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      gtin: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}gtin'])!,
+      vol: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}vol'])!,
+      deliveredVol: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}delivered_vol'])!,
+      price: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}price'])!,
+      needMarking: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}need_marking'])!,
+      barcodeRels: $OrderLinesTable.$converterbarcodeRels.fromSql(
+          attachedDatabase.typeMapping.read(
+              DriftSqlType.string, data['${effectivePrefix}barcode_rels'])!),
+    );
   }
 
   @override
-  $OrdersTable createAlias(String alias) {
-    return $OrdersTable(attachedDatabase, alias);
+  $OrderLinesTable createAlias(String alias) {
+    return $OrderLinesTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<OrderLineBarcode>, String> $converterbarcodeRels =
+      const OrderLineBarcodeListConverter();
 }
 
 class OrderLine extends DataClass implements Insertable<OrderLine> {
@@ -2813,7 +3000,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   final double price;
   final bool needMarking;
   final List<OrderLineBarcode> barcodeRels;
-  OrderLine(
+  const OrderLine(
       {required this.orderId,
       required this.subid,
       required this.name,
@@ -2823,29 +3010,6 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       required this.price,
       required this.needMarking,
       required this.barcodeRels});
-  factory OrderLine.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return OrderLine(
-      orderId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
-      subid: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}subid'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      gtin: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}gtin'])!,
-      vol: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}vol'])!,
-      deliveredVol: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}delivered_vol'])!,
-      price: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}price'])!,
-      needMarking: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}need_marking'])!,
-      barcodeRels: $OrderLinesTable.$converter0.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}barcode_rels']))!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2858,8 +3022,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['price'] = Variable<double>(price);
     map['need_marking'] = Variable<bool>(needMarking);
     {
-      final converter = $OrderLinesTable.$converter0;
-      map['barcode_rels'] = Variable<String>(converter.mapToSql(barcodeRels)!);
+      final converter = $OrderLinesTable.$converterbarcodeRels;
+      map['barcode_rels'] = Variable<String>(converter.toSql(barcodeRels));
     }
     return map;
   }
@@ -2975,6 +3139,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
   final Value<double> price;
   final Value<bool> needMarking;
   final Value<List<OrderLineBarcode>> barcodeRels;
+  final Value<int> rowid;
   const OrderLinesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
@@ -2985,6 +3150,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     this.price = const Value.absent(),
     this.needMarking = const Value.absent(),
     this.barcodeRels = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   OrderLinesCompanion.insert({
     required int orderId,
@@ -2996,6 +3162,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     required double price,
     required bool needMarking,
     required List<OrderLineBarcode> barcodeRels,
+    this.rowid = const Value.absent(),
   })  : orderId = Value(orderId),
         subid = Value(subid),
         name = Value(name),
@@ -3014,7 +3181,8 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Expression<double>? deliveredVol,
     Expression<double>? price,
     Expression<bool>? needMarking,
-    Expression<List<OrderLineBarcode>>? barcodeRels,
+    Expression<String>? barcodeRels,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
@@ -3026,6 +3194,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       if (price != null) 'price': price,
       if (needMarking != null) 'need_marking': needMarking,
       if (barcodeRels != null) 'barcode_rels': barcodeRels,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3038,7 +3207,8 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       Value<double>? deliveredVol,
       Value<double>? price,
       Value<bool>? needMarking,
-      Value<List<OrderLineBarcode>>? barcodeRels}) {
+      Value<List<OrderLineBarcode>>? barcodeRels,
+      Value<int>? rowid}) {
     return OrderLinesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
@@ -3049,6 +3219,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       price: price ?? this.price,
       needMarking: needMarking ?? this.needMarking,
       barcodeRels: barcodeRels ?? this.barcodeRels,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3080,9 +3251,12 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
     if (barcodeRels.present) {
-      final converter = $OrderLinesTable.$converter0;
+      final converter = $OrderLinesTable.$converterbarcodeRels;
       map['barcode_rels'] =
-          Variable<String>(converter.mapToSql(barcodeRels.value)!);
+          Variable<String>(converter.toSql(barcodeRels.value));
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -3098,87 +3272,64 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
           ..write('deliveredVol: $deliveredVol, ')
           ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
-          ..write('barcodeRels: $barcodeRels')
+          ..write('barcodeRels: $barcodeRels, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $OrderLinesTable extends OrderLines
-    with TableInfo<$OrderLinesTable, OrderLine> {
+class $OrderLineCodesTable extends OrderLineCodes
+    with TableInfo<$OrderLineCodesTable, OrderLineCode> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $OrderLinesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+  $OrderLineCodesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
   @override
-  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
       'order_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _subidMeta = const VerificationMeta('subid');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _subidMeta = const VerificationMeta('subid');
   @override
-  late final GeneratedColumn<int?> subid = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> subid = GeneratedColumn<int>(
       'subid', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _gtinMeta = const VerificationMeta('gtin');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<String?> gtin = GeneratedColumn<String?>(
-      'gtin', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _volMeta = const VerificationMeta('vol');
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isDataMatrixMeta =
+      const VerificationMeta('isDataMatrix');
   @override
-  late final GeneratedColumn<double?> vol = GeneratedColumn<double?>(
-      'vol', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _deliveredVolMeta =
-      const VerificationMeta('deliveredVol');
-  @override
-  late final GeneratedColumn<double?> deliveredVol = GeneratedColumn<double?>(
-      'delivered_vol', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _priceMeta = const VerificationMeta('price');
-  @override
-  late final GeneratedColumn<double?> price = GeneratedColumn<double?>(
-      'price', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  final VerificationMeta _needMarkingMeta =
-      const VerificationMeta('needMarking');
-  @override
-  late final GeneratedColumn<bool?> needMarking = GeneratedColumn<bool?>(
-      'need_marking', aliasedName, false,
-      type: const BoolType(),
+  late final GeneratedColumn<bool> isDataMatrix = GeneratedColumn<bool>(
+      'is_data_matrix', aliasedName, false,
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (need_marking IN (0, 1))');
-  final VerificationMeta _barcodeRelsMeta =
-      const VerificationMeta('barcodeRels');
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_data_matrix" IN (0, 1))'));
+  static const VerificationMeta _localTsMeta =
+      const VerificationMeta('localTs');
   @override
-  late final GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String?>
-      barcodeRels = GeneratedColumn<String?>('barcode_rels', aliasedName, false,
-              type: const StringType(), requiredDuringInsert: true)
-          .withConverter<List<OrderLineBarcode>>($OrderLinesTable.$converter0);
+  late final GeneratedColumn<DateTime> localTs = GeneratedColumn<DateTime>(
+      'local_ts', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [
-        orderId,
-        subid,
-        name,
-        gtin,
-        vol,
-        deliveredVol,
-        price,
-        needMarking,
-        barcodeRels
-      ];
+  List<GeneratedColumn> get $columns =>
+      [orderId, subid, code, amount, isDataMatrix, localTs];
   @override
-  String get aliasedName => _alias ?? 'order_lines';
+  String get aliasedName => _alias ?? 'order_line_codes';
   @override
-  String get actualTableName => 'order_lines';
+  String get actualTableName => 'order_line_codes';
   @override
-  VerificationContext validateIntegrity(Insertable<OrderLine> instance,
+  VerificationContext validateIntegrity(Insertable<OrderLineCode> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -3194,65 +3345,60 @@ class $OrderLinesTable extends OrderLines
     } else if (isInserting) {
       context.missing(_subidMeta);
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('code')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_codeMeta);
     }
-    if (data.containsKey('gtin')) {
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('is_data_matrix')) {
       context.handle(
-          _gtinMeta, gtin.isAcceptableOrUnknown(data['gtin']!, _gtinMeta));
+          _isDataMatrixMeta,
+          isDataMatrix.isAcceptableOrUnknown(
+              data['is_data_matrix']!, _isDataMatrixMeta));
     } else if (isInserting) {
-      context.missing(_gtinMeta);
+      context.missing(_isDataMatrixMeta);
     }
-    if (data.containsKey('vol')) {
-      context.handle(
-          _volMeta, vol.isAcceptableOrUnknown(data['vol']!, _volMeta));
+    if (data.containsKey('local_ts')) {
+      context.handle(_localTsMeta,
+          localTs.isAcceptableOrUnknown(data['local_ts']!, _localTsMeta));
     } else if (isInserting) {
-      context.missing(_volMeta);
+      context.missing(_localTsMeta);
     }
-    if (data.containsKey('delivered_vol')) {
-      context.handle(
-          _deliveredVolMeta,
-          deliveredVol.isAcceptableOrUnknown(
-              data['delivered_vol']!, _deliveredVolMeta));
-    } else if (isInserting) {
-      context.missing(_deliveredVolMeta);
-    }
-    if (data.containsKey('price')) {
-      context.handle(
-          _priceMeta, price.isAcceptableOrUnknown(data['price']!, _priceMeta));
-    } else if (isInserting) {
-      context.missing(_priceMeta);
-    }
-    if (data.containsKey('need_marking')) {
-      context.handle(
-          _needMarkingMeta,
-          needMarking.isAcceptableOrUnknown(
-              data['need_marking']!, _needMarkingMeta));
-    } else if (isInserting) {
-      context.missing(_needMarkingMeta);
-    }
-    context.handle(_barcodeRelsMeta, const VerificationResult.success());
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {orderId, subid};
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid, code};
   @override
-  OrderLine map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return OrderLine.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  OrderLineCode map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OrderLineCode(
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      subid: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}subid'])!,
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+      isDataMatrix: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_data_matrix'])!,
+      localTs: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}local_ts'])!,
+    );
   }
 
   @override
-  $OrderLinesTable createAlias(String alias) {
-    return $OrderLinesTable(attachedDatabase, alias);
+  $OrderLineCodesTable createAlias(String alias) {
+    return $OrderLineCodesTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<List<OrderLineBarcode>, String> $converter0 =
-      const OrderLineBarcodeListConverter();
 }
 
 class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
@@ -3262,30 +3408,13 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   final int amount;
   final bool isDataMatrix;
   final DateTime localTs;
-  OrderLineCode(
+  const OrderLineCode(
       {required this.orderId,
       required this.subid,
       required this.code,
       required this.amount,
       required this.isDataMatrix,
       required this.localTs});
-  factory OrderLineCode.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return OrderLineCode(
-      orderId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}order_id'])!,
-      subid: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}subid'])!,
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      amount: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      isDataMatrix: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_data_matrix'])!,
-      localTs: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}local_ts'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3384,6 +3513,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   final Value<int> amount;
   final Value<bool> isDataMatrix;
   final Value<DateTime> localTs;
+  final Value<int> rowid;
   const OrderLineCodesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
@@ -3391,6 +3521,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     this.amount = const Value.absent(),
     this.isDataMatrix = const Value.absent(),
     this.localTs = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   OrderLineCodesCompanion.insert({
     required int orderId,
@@ -3399,6 +3530,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     required int amount,
     required bool isDataMatrix,
     required DateTime localTs,
+    this.rowid = const Value.absent(),
   })  : orderId = Value(orderId),
         subid = Value(subid),
         code = Value(code),
@@ -3412,6 +3544,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     Expression<int>? amount,
     Expression<bool>? isDataMatrix,
     Expression<DateTime>? localTs,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (orderId != null) 'order_id': orderId,
@@ -3420,6 +3553,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
       if (amount != null) 'amount': amount,
       if (isDataMatrix != null) 'is_data_matrix': isDataMatrix,
       if (localTs != null) 'local_ts': localTs,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3429,7 +3563,8 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
       Value<String>? code,
       Value<int>? amount,
       Value<bool>? isDataMatrix,
-      Value<DateTime>? localTs}) {
+      Value<DateTime>? localTs,
+      Value<int>? rowid}) {
     return OrderLineCodesCompanion(
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
@@ -3437,6 +3572,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
       amount: amount ?? this.amount,
       isDataMatrix: isDataMatrix ?? this.isDataMatrix,
       localTs: localTs ?? this.localTs,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3461,6 +3597,9 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     if (localTs.present) {
       map['local_ts'] = Variable<DateTime>(localTs.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3472,133 +3611,69 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
           ..write('code: $code, ')
           ..write('amount: $amount, ')
           ..write('isDataMatrix: $isDataMatrix, ')
-          ..write('localTs: $localTs')
+          ..write('localTs: $localTs, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $OrderLineCodesTable extends OrderLineCodes
-    with TableInfo<$OrderLineCodesTable, OrderLineCode> {
+class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $OrderLineCodesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _orderIdMeta = const VerificationMeta('orderId');
+  $PrefsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _lastSyncTimeMeta =
+      const VerificationMeta('lastSyncTime');
   @override
-  late final GeneratedColumn<int?> orderId = GeneratedColumn<int?>(
-      'order_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _subidMeta = const VerificationMeta('subid');
+  late final GeneratedColumn<DateTime> lastSyncTime = GeneratedColumn<DateTime>(
+      'last_sync_time', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  late final GeneratedColumn<int?> subid = GeneratedColumn<int?>(
-      'subid', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  List<GeneratedColumn> get $columns => [lastSyncTime];
   @override
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
-      'code', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  String get aliasedName => _alias ?? 'prefs';
   @override
-  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
-      'amount', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _isDataMatrixMeta =
-      const VerificationMeta('isDataMatrix');
+  String get actualTableName => 'prefs';
   @override
-  late final GeneratedColumn<bool?> isDataMatrix = GeneratedColumn<bool?>(
-      'is_data_matrix', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_data_matrix IN (0, 1))');
-  final VerificationMeta _localTsMeta = const VerificationMeta('localTs');
-  @override
-  late final GeneratedColumn<DateTime?> localTs = GeneratedColumn<DateTime?>(
-      'local_ts', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [orderId, subid, code, amount, isDataMatrix, localTs];
-  @override
-  String get aliasedName => _alias ?? 'order_line_codes';
-  @override
-  String get actualTableName => 'order_line_codes';
-  @override
-  VerificationContext validateIntegrity(Insertable<OrderLineCode> instance,
+  VerificationContext validateIntegrity(Insertable<Pref> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('order_id')) {
-      context.handle(_orderIdMeta,
-          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
-    } else if (isInserting) {
-      context.missing(_orderIdMeta);
-    }
-    if (data.containsKey('subid')) {
+    if (data.containsKey('last_sync_time')) {
       context.handle(
-          _subidMeta, subid.isAcceptableOrUnknown(data['subid']!, _subidMeta));
-    } else if (isInserting) {
-      context.missing(_subidMeta);
-    }
-    if (data.containsKey('code')) {
-      context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
-    } else if (isInserting) {
-      context.missing(_codeMeta);
-    }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('is_data_matrix')) {
-      context.handle(
-          _isDataMatrixMeta,
-          isDataMatrix.isAcceptableOrUnknown(
-              data['is_data_matrix']!, _isDataMatrixMeta));
-    } else if (isInserting) {
-      context.missing(_isDataMatrixMeta);
-    }
-    if (data.containsKey('local_ts')) {
-      context.handle(_localTsMeta,
-          localTs.isAcceptableOrUnknown(data['local_ts']!, _localTsMeta));
-    } else if (isInserting) {
-      context.missing(_localTsMeta);
+          _lastSyncTimeMeta,
+          lastSyncTime.isAcceptableOrUnknown(
+              data['last_sync_time']!, _lastSyncTimeMeta));
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {orderId, subid, code};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  OrderLineCode map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return OrderLineCode.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Pref map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Pref(
+      lastSyncTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_sync_time']),
+    );
   }
 
   @override
-  $OrderLineCodesTable createAlias(String alias) {
-    return $OrderLineCodesTable(attachedDatabase, alias);
+  $PrefsTable createAlias(String alias) {
+    return $PrefsTable(attachedDatabase, alias);
   }
 }
 
 class Pref extends DataClass implements Insertable<Pref> {
   final DateTime? lastSyncTime;
-  Pref({this.lastSyncTime});
-  factory Pref.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Pref(
-      lastSyncTime: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}last_sync_time']),
-    );
-  }
+  const Pref({this.lastSyncTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || lastSyncTime != null) {
-      map['last_sync_time'] = Variable<DateTime?>(lastSyncTime);
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
     }
     return map;
   }
@@ -3626,8 +3701,9 @@ class Pref extends DataClass implements Insertable<Pref> {
     };
   }
 
-  Pref copyWith({DateTime? lastSyncTime}) => Pref(
-        lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+  Pref copyWith({Value<DateTime?> lastSyncTime = const Value.absent()}) => Pref(
+        lastSyncTime:
+            lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
       );
   @override
   String toString() {
@@ -3647,23 +3723,29 @@ class Pref extends DataClass implements Insertable<Pref> {
 
 class PrefsCompanion extends UpdateCompanion<Pref> {
   final Value<DateTime?> lastSyncTime;
+  final Value<int> rowid;
   const PrefsCompanion({
     this.lastSyncTime = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   PrefsCompanion.insert({
     this.lastSyncTime = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   static Insertable<Pref> custom({
-    Expression<DateTime?>? lastSyncTime,
+    Expression<DateTime>? lastSyncTime,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
-  PrefsCompanion copyWith({Value<DateTime?>? lastSyncTime}) {
+  PrefsCompanion copyWith({Value<DateTime?>? lastSyncTime, Value<int>? rowid}) {
     return PrefsCompanion(
       lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3671,7 +3753,10 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (lastSyncTime.present) {
-      map['last_sync_time'] = Variable<DateTime?>(lastSyncTime.value);
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -3679,59 +3764,15 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   @override
   String toString() {
     return (StringBuffer('PrefsCompanion(')
-          ..write('lastSyncTime: $lastSyncTime')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PrefsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _lastSyncTimeMeta =
-      const VerificationMeta('lastSyncTime');
-  @override
-  late final GeneratedColumn<DateTime?> lastSyncTime =
-      GeneratedColumn<DateTime?>('last_sync_time', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns => [lastSyncTime];
-  @override
-  String get aliasedName => _alias ?? 'prefs';
-  @override
-  String get actualTableName => 'prefs';
-  @override
-  VerificationContext validateIntegrity(Insertable<Pref> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('last_sync_time')) {
-      context.handle(
-          _lastSyncTimeMeta,
-          lastSyncTime.isAcceptableOrUnknown(
-              data['last_sync_time']!, _lastSyncTimeMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
-  @override
-  Pref map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Pref.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
-  }
-
-  @override
-  $PrefsTable createAlias(String alias) {
-    return $PrefsTable(attachedDatabase, alias);
-  }
-}
-
 abstract class _$AppDataStore extends GeneratedDatabase {
-  _$AppDataStore(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$AppDataStore(QueryExecutor e) : super(e);
   late final $UsersTable users = $UsersTable(this);
   late final $ReceptsTable recepts = $ReceptsTable(this);
   late final $IncomesTable incomes = $IncomesTable(this);
@@ -3747,7 +3788,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         users,
@@ -3763,10 +3805,6 @@ abstract class _$AppDataStore extends GeneratedDatabase {
         prefs
       ];
 }
-
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
 
 mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $BuyersTable get buyers => attachedDatabase.buyers;

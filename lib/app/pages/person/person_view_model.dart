@@ -1,8 +1,6 @@
 part of 'person_page.dart';
 
 class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
-  static const String _kManifestRepoUrl = 'https://unact.github.io/mobile_apps/forwarder';
-  static const String _kAppRepoUrl = 'https://github.com/Unact/forwarder';
   final AppRepository appRepository;
   final UsersRepository usersRepository;
 
@@ -40,15 +38,10 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
   }
 
   Future<void> launchAppUpdate() async {
-    String version = state.user!.version;
-    String androidUpdateUrl = '$_kAppRepoUrl/releases/download/$version/app-release.apk';
-    String iosUpdateUrl = 'itms-services://?action=download-manifest&url=$_kManifestRepoUrl/manifest.plist';
-    Uri uri = Uri.parse(Platform.isIOS ? iosUpdateUrl : androidUpdateUrl);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      emit(state.copyWith(status: PersonStateStatus.failure, message: Strings.genericErrorMsg));
-    }
+    Misc.launchAppUpdate(
+      repoName: Strings.repoName,
+      version: state.user!.version,
+      onError: () => emit(state.copyWith(status: PersonStateStatus.failure, message: Strings.genericErrorMsg))
+    );
   }
 }
