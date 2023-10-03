@@ -40,8 +40,6 @@ class InfoState {
 
   bool get closed => user?.closed ?? false;
   double get total => user?.total ?? 0;
-  String get salesmanNum => user?.salesmanNum ?? 'Не удалось опредилить';
-
 
   bool get isBusy => [
     InfoStateStatus.inProgress,

@@ -8,7 +8,6 @@ class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get username => text()();
   TextColumn get salesmanName => text()();
-  TextColumn get salesmanNum => text()();
   TextColumn get email => text()();
   BoolColumn get closed => boolean()();
   TextColumn get version => text()();
