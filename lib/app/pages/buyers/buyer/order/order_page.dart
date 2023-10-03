@@ -334,14 +334,6 @@ class _OrderViewState extends State<_OrderView> {
         ),
         child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: () => vm.tryStartPayment(true, false)
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
-        ),
-        child: const Text('СБП', style: TextStyle(color: Colors.white)),
-        onPressed: () => vm.tryStartPayment(true, true),
       )
     ];
   }
