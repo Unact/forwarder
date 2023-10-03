@@ -70,7 +70,6 @@ class AppDataStore extends _$AppDataStore {
         username: UsersDao.kGuestUsername,
         email: '',
         salesmanName: '',
-        salesmanNum: '',
         version: '0.0.0',
         total: 0,
         closed: false
@@ -80,7 +79,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

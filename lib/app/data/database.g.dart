@@ -29,12 +29,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   late final GeneratedColumn<String> salesmanName = GeneratedColumn<String>(
       'salesman_name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _salesmanNumMeta =
-      const VerificationMeta('salesmanNum');
-  @override
-  late final GeneratedColumn<String> salesmanNum = GeneratedColumn<String>(
-      'salesman_num', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
@@ -61,7 +55,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       type: DriftSqlType.double, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, username, salesmanName, salesmanNum, email, closed, version, total];
+      [id, username, salesmanName, email, closed, version, total];
   @override
   String get aliasedName => _alias ?? 'users';
   @override
@@ -87,14 +81,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
               data['salesman_name']!, _salesmanNameMeta));
     } else if (isInserting) {
       context.missing(_salesmanNameMeta);
-    }
-    if (data.containsKey('salesman_num')) {
-      context.handle(
-          _salesmanNumMeta,
-          salesmanNum.isAcceptableOrUnknown(
-              data['salesman_num']!, _salesmanNumMeta));
-    } else if (isInserting) {
-      context.missing(_salesmanNumMeta);
     }
     if (data.containsKey('email')) {
       context.handle(
@@ -135,8 +121,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           .read(DriftSqlType.string, data['${effectivePrefix}username'])!,
       salesmanName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}salesman_name'])!,
-      salesmanNum: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}salesman_num'])!,
       email: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
       closed: attachedDatabase.typeMapping
@@ -158,7 +142,6 @@ class User extends DataClass implements Insertable<User> {
   final int id;
   final String username;
   final String salesmanName;
-  final String salesmanNum;
   final String email;
   final bool closed;
   final String version;
@@ -167,7 +150,6 @@ class User extends DataClass implements Insertable<User> {
       {required this.id,
       required this.username,
       required this.salesmanName,
-      required this.salesmanNum,
       required this.email,
       required this.closed,
       required this.version,
@@ -178,7 +160,6 @@ class User extends DataClass implements Insertable<User> {
     map['id'] = Variable<int>(id);
     map['username'] = Variable<String>(username);
     map['salesman_name'] = Variable<String>(salesmanName);
-    map['salesman_num'] = Variable<String>(salesmanNum);
     map['email'] = Variable<String>(email);
     map['closed'] = Variable<bool>(closed);
     map['version'] = Variable<String>(version);
@@ -191,7 +172,6 @@ class User extends DataClass implements Insertable<User> {
       id: Value(id),
       username: Value(username),
       salesmanName: Value(salesmanName),
-      salesmanNum: Value(salesmanNum),
       email: Value(email),
       closed: Value(closed),
       version: Value(version),
@@ -206,7 +186,6 @@ class User extends DataClass implements Insertable<User> {
       id: serializer.fromJson<int>(json['id']),
       username: serializer.fromJson<String>(json['username']),
       salesmanName: serializer.fromJson<String>(json['salesmanName']),
-      salesmanNum: serializer.fromJson<String>(json['salesmanNum']),
       email: serializer.fromJson<String>(json['email']),
       closed: serializer.fromJson<bool>(json['closed']),
       version: serializer.fromJson<String>(json['version']),
@@ -220,7 +199,6 @@ class User extends DataClass implements Insertable<User> {
       'id': serializer.toJson<int>(id),
       'username': serializer.toJson<String>(username),
       'salesmanName': serializer.toJson<String>(salesmanName),
-      'salesmanNum': serializer.toJson<String>(salesmanNum),
       'email': serializer.toJson<String>(email),
       'closed': serializer.toJson<bool>(closed),
       'version': serializer.toJson<String>(version),
@@ -232,7 +210,6 @@ class User extends DataClass implements Insertable<User> {
           {int? id,
           String? username,
           String? salesmanName,
-          String? salesmanNum,
           String? email,
           bool? closed,
           String? version,
@@ -241,7 +218,6 @@ class User extends DataClass implements Insertable<User> {
         id: id ?? this.id,
         username: username ?? this.username,
         salesmanName: salesmanName ?? this.salesmanName,
-        salesmanNum: salesmanNum ?? this.salesmanNum,
         email: email ?? this.email,
         closed: closed ?? this.closed,
         version: version ?? this.version,
@@ -253,7 +229,6 @@ class User extends DataClass implements Insertable<User> {
           ..write('id: $id, ')
           ..write('username: $username, ')
           ..write('salesmanName: $salesmanName, ')
-          ..write('salesmanNum: $salesmanNum, ')
           ..write('email: $email, ')
           ..write('closed: $closed, ')
           ..write('version: $version, ')
@@ -263,8 +238,8 @@ class User extends DataClass implements Insertable<User> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, username, salesmanName, salesmanNum, email, closed, version, total);
+  int get hashCode =>
+      Object.hash(id, username, salesmanName, email, closed, version, total);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -272,7 +247,6 @@ class User extends DataClass implements Insertable<User> {
           other.id == this.id &&
           other.username == this.username &&
           other.salesmanName == this.salesmanName &&
-          other.salesmanNum == this.salesmanNum &&
           other.email == this.email &&
           other.closed == this.closed &&
           other.version == this.version &&
@@ -283,7 +257,6 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<int> id;
   final Value<String> username;
   final Value<String> salesmanName;
-  final Value<String> salesmanNum;
   final Value<String> email;
   final Value<bool> closed;
   final Value<String> version;
@@ -292,7 +265,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.id = const Value.absent(),
     this.username = const Value.absent(),
     this.salesmanName = const Value.absent(),
-    this.salesmanNum = const Value.absent(),
     this.email = const Value.absent(),
     this.closed = const Value.absent(),
     this.version = const Value.absent(),
@@ -302,14 +274,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.id = const Value.absent(),
     required String username,
     required String salesmanName,
-    required String salesmanNum,
     required String email,
     required bool closed,
     required String version,
     required double total,
   })  : username = Value(username),
         salesmanName = Value(salesmanName),
-        salesmanNum = Value(salesmanNum),
         email = Value(email),
         closed = Value(closed),
         version = Value(version),
@@ -318,7 +288,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<int>? id,
     Expression<String>? username,
     Expression<String>? salesmanName,
-    Expression<String>? salesmanNum,
     Expression<String>? email,
     Expression<bool>? closed,
     Expression<String>? version,
@@ -328,7 +297,6 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (id != null) 'id': id,
       if (username != null) 'username': username,
       if (salesmanName != null) 'salesman_name': salesmanName,
-      if (salesmanNum != null) 'salesman_num': salesmanNum,
       if (email != null) 'email': email,
       if (closed != null) 'closed': closed,
       if (version != null) 'version': version,
@@ -340,7 +308,6 @@ class UsersCompanion extends UpdateCompanion<User> {
       {Value<int>? id,
       Value<String>? username,
       Value<String>? salesmanName,
-      Value<String>? salesmanNum,
       Value<String>? email,
       Value<bool>? closed,
       Value<String>? version,
@@ -349,7 +316,6 @@ class UsersCompanion extends UpdateCompanion<User> {
       id: id ?? this.id,
       username: username ?? this.username,
       salesmanName: salesmanName ?? this.salesmanName,
-      salesmanNum: salesmanNum ?? this.salesmanNum,
       email: email ?? this.email,
       closed: closed ?? this.closed,
       version: version ?? this.version,
@@ -368,9 +334,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (salesmanName.present) {
       map['salesman_name'] = Variable<String>(salesmanName.value);
-    }
-    if (salesmanNum.present) {
-      map['salesman_num'] = Variable<String>(salesmanNum.value);
     }
     if (email.present) {
       map['email'] = Variable<String>(email.value);
@@ -393,7 +356,6 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('id: $id, ')
           ..write('username: $username, ')
           ..write('salesmanName: $salesmanName, ')
-          ..write('salesmanNum: $salesmanNum, ')
           ..write('email: $email, ')
           ..write('closed: $closed, ')
           ..write('version: $version, ')

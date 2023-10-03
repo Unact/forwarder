@@ -182,10 +182,6 @@ class _InfoViewState extends State<_InfoView> {
             style: const TextStyle(color: Colors.grey),
             children: <TextSpan>[
               TextSpan(
-                text: 'Номер вносителя: ${vm.state.salesmanNum}\n',
-                style: const TextStyle(fontSize: 12.0)
-              ),
-              TextSpan(
                 text: 'Остаток в кассе: ${Format.numberStr(vm.state.total)}\n',
                 style: const TextStyle(fontSize: 12.0)
               )
