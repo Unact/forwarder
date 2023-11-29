@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:u_app_utils/u_app_utils.dart';
@@ -287,6 +288,7 @@ class _OrderViewState extends State<_OrderView> {
     if (vm.state.order.isDelivered && vm.state.needPayment) return _buildPayButtons(context);
     if (!vm.state.order.didDelivery) return _buildDeliveryButtons(context);
 
+
     return [];
   }
 
@@ -294,6 +296,8 @@ class _OrderViewState extends State<_OrderView> {
     OrderViewModel vm = context.read<OrderViewModel>();
     bool hasScanned = !vm.state.order.physical ||
       (vm.state.order.physical && vm.state.codeLines.any((e) => e.orderLineCodes.isNotEmpty));
+
+      //
 
     return [
       ElevatedButton(
@@ -311,7 +315,7 @@ class _OrderViewState extends State<_OrderView> {
         ),
         onPressed: !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(false) : null,
         child: const Text('Не доставлен', style: TextStyle(color: Colors.white)),
-      ),
+      )
     ];
   }
 
@@ -334,7 +338,17 @@ class _OrderViewState extends State<_OrderView> {
         ),
         child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: () => vm.tryStartPayment(true, false)
-      )
-    ];
+      ),
+      vm.state.order.physical && !vm.state.order.paid ?
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Colors.blue
+          ),
+          child: const Text('Отменить', style: TextStyle(color: Colors.white)),
+          onPressed: () => vm.tryCancelOrderDelivery()
+        ) :
+        null
+    ].whereNotNull().toList();
   }
 }

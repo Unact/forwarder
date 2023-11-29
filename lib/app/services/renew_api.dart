@@ -47,6 +47,15 @@ extension RenewApiX on RenewApi {
     );
   }
 
+  Future<void> cancelOrderDelivery(int orderId) async {
+    await post(
+      'v1/forwarder/cancel_delivery',
+      dataGenerator: () => {
+        'sale_order_id': orderId
+      }
+    );
+  }
+
   Future<void> acceptPayment(
     List<Map<String, dynamic>> payments,
     Map<String, dynamic>? transaction,

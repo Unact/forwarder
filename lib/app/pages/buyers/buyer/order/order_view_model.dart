@@ -115,4 +115,28 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
       confirmationCallback: startPayment
     ));
   }
+
+  void tryCancelOrderDelivery() {
+    emit(state.copyWith(
+      status: OrderStateStatus.needUserConfirmation,
+
+      message: 'Вы уверены, что хотите отменить доставку заказа?',
+      confirmationCallback: cancelOrderDelivery
+    ));
+  }
+
+  Future<void> cancelOrderDelivery(bool confirmed) async {
+    if (!confirmed) return;
+
+    emit(state.copyWith(status: OrderStateStatus.inProgress));
+
+    try {
+      await ordersRepository.cancelOrderDelivery(state.order);
+      await appRepository.loadData();
+
+      emit(state.copyWith(status: OrderStateStatus.success, message: 'Доставка успешно отменена'));
+    } on AppError catch(e) {
+      emit(state.copyWith(status: OrderStateStatus.failure, message: e.message));
+    }
+  }
 }

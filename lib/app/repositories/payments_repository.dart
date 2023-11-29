@@ -50,7 +50,14 @@ class PaymentsRepository extends BaseRepository {
     notifyListeners();
   }
 
-  Future<void> acceptPayment(List<Debt> debts, Map<String, dynamic>? transaction, Location location) async {
+  Future<void> acceptPayment(
+    List<Order> orders,
+    List<Debt> debts,
+    Map<String, dynamic>? transaction,
+    Location location
+  ) async {
+    List<OrdersCompanion> updatedOrders = orders
+      .map((e) => e.toCompanion(true).copyWith(paid: const Value(true))).toList();
     List<DebtsCompanion> updatedDebts = debts.map((e) {
       double paidSum = (e.paidSum ?? 0) + e.paymentSum!;
 
@@ -74,8 +81,12 @@ class PaymentsRepository extends BaseRepository {
     }
 
     await dataStore.transaction(() async {
-      for (var i = 0; i < updatedDebts.length; i++) {
-        await dataStore.paymentsDao.upsertDebt(updatedDebts[i]);
+      for (var updatedDebt in updatedDebts) {
+        await dataStore.paymentsDao.upsertDebt(updatedDebt);
+      }
+
+      for (var updatedOrder in updatedOrders) {
+        await dataStore.ordersDao.upsertOrder(updatedOrder);
       }
     });
 
