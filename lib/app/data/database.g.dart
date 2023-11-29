@@ -2369,6 +2369,14 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("delivered" IN (0, 1))'));
+  static const VerificationMeta _paidMeta = const VerificationMeta('paid');
+  @override
+  late final GeneratedColumn<bool> paid = GeneratedColumn<bool>(
+      'paid', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("paid" IN (0, 1))'));
   static const VerificationMeta _physicalMeta =
       const VerificationMeta('physical');
   @override
@@ -2379,8 +2387,19 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("physical" IN (0, 1))'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical];
+  List<GeneratedColumn> get $columns => [
+        id,
+        buyerId,
+        ord,
+        ndoc,
+        info,
+        isInc,
+        goodsCnt,
+        mc,
+        delivered,
+        paid,
+        physical
+      ];
   @override
   String get aliasedName => _alias ?? 'orders';
   @override
@@ -2438,6 +2457,12 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       context.handle(_deliveredMeta,
           delivered.isAcceptableOrUnknown(data['delivered']!, _deliveredMeta));
     }
+    if (data.containsKey('paid')) {
+      context.handle(
+          _paidMeta, paid.isAcceptableOrUnknown(data['paid']!, _paidMeta));
+    } else if (isInserting) {
+      context.missing(_paidMeta);
+    }
     if (data.containsKey('physical')) {
       context.handle(_physicalMeta,
           physical.isAcceptableOrUnknown(data['physical']!, _physicalMeta));
@@ -2471,6 +2496,8 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
           .read(DriftSqlType.double, data['${effectivePrefix}mc'])!,
       delivered: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}delivered']),
+      paid: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}paid'])!,
       physical: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}physical'])!,
     );
@@ -2492,6 +2519,7 @@ class Order extends DataClass implements Insertable<Order> {
   final int goodsCnt;
   final double mc;
   final bool? delivered;
+  final bool paid;
   final bool physical;
   const Order(
       {required this.id,
@@ -2503,6 +2531,7 @@ class Order extends DataClass implements Insertable<Order> {
       required this.goodsCnt,
       required this.mc,
       this.delivered,
+      required this.paid,
       required this.physical});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2518,6 +2547,7 @@ class Order extends DataClass implements Insertable<Order> {
     if (!nullToAbsent || delivered != null) {
       map['delivered'] = Variable<bool>(delivered);
     }
+    map['paid'] = Variable<bool>(paid);
     map['physical'] = Variable<bool>(physical);
     return map;
   }
@@ -2535,6 +2565,7 @@ class Order extends DataClass implements Insertable<Order> {
       delivered: delivered == null && nullToAbsent
           ? const Value.absent()
           : Value(delivered),
+      paid: Value(paid),
       physical: Value(physical),
     );
   }
@@ -2552,6 +2583,7 @@ class Order extends DataClass implements Insertable<Order> {
       goodsCnt: serializer.fromJson<int>(json['goodsCnt']),
       mc: serializer.fromJson<double>(json['mc']),
       delivered: serializer.fromJson<bool?>(json['delivered']),
+      paid: serializer.fromJson<bool>(json['paid']),
       physical: serializer.fromJson<bool>(json['physical']),
     );
   }
@@ -2568,6 +2600,7 @@ class Order extends DataClass implements Insertable<Order> {
       'goodsCnt': serializer.toJson<int>(goodsCnt),
       'mc': serializer.toJson<double>(mc),
       'delivered': serializer.toJson<bool?>(delivered),
+      'paid': serializer.toJson<bool>(paid),
       'physical': serializer.toJson<bool>(physical),
     };
   }
@@ -2582,6 +2615,7 @@ class Order extends DataClass implements Insertable<Order> {
           int? goodsCnt,
           double? mc,
           Value<bool?> delivered = const Value.absent(),
+          bool? paid,
           bool? physical}) =>
       Order(
         id: id ?? this.id,
@@ -2593,6 +2627,7 @@ class Order extends DataClass implements Insertable<Order> {
         goodsCnt: goodsCnt ?? this.goodsCnt,
         mc: mc ?? this.mc,
         delivered: delivered.present ? delivered.value : this.delivered,
+        paid: paid ?? this.paid,
         physical: physical ?? this.physical,
       );
   @override
@@ -2607,14 +2642,15 @@ class Order extends DataClass implements Insertable<Order> {
           ..write('goodsCnt: $goodsCnt, ')
           ..write('mc: $mc, ')
           ..write('delivered: $delivered, ')
+          ..write('paid: $paid, ')
           ..write('physical: $physical')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, buyerId, ord, ndoc, info, isInc, goodsCnt, mc, delivered, physical);
+  int get hashCode => Object.hash(id, buyerId, ord, ndoc, info, isInc, goodsCnt,
+      mc, delivered, paid, physical);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2628,6 +2664,7 @@ class Order extends DataClass implements Insertable<Order> {
           other.goodsCnt == this.goodsCnt &&
           other.mc == this.mc &&
           other.delivered == this.delivered &&
+          other.paid == this.paid &&
           other.physical == this.physical);
 }
 
@@ -2641,6 +2678,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   final Value<int> goodsCnt;
   final Value<double> mc;
   final Value<bool?> delivered;
+  final Value<bool> paid;
   final Value<bool> physical;
   const OrdersCompanion({
     this.id = const Value.absent(),
@@ -2652,6 +2690,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     this.goodsCnt = const Value.absent(),
     this.mc = const Value.absent(),
     this.delivered = const Value.absent(),
+    this.paid = const Value.absent(),
     this.physical = const Value.absent(),
   });
   OrdersCompanion.insert({
@@ -2664,6 +2703,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     required int goodsCnt,
     required double mc,
     this.delivered = const Value.absent(),
+    required bool paid,
     required bool physical,
   })  : buyerId = Value(buyerId),
         ord = Value(ord),
@@ -2672,6 +2712,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
         isInc = Value(isInc),
         goodsCnt = Value(goodsCnt),
         mc = Value(mc),
+        paid = Value(paid),
         physical = Value(physical);
   static Insertable<Order> custom({
     Expression<int>? id,
@@ -2683,6 +2724,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Expression<int>? goodsCnt,
     Expression<double>? mc,
     Expression<bool>? delivered,
+    Expression<bool>? paid,
     Expression<bool>? physical,
   }) {
     return RawValuesInsertable({
@@ -2695,6 +2737,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       if (goodsCnt != null) 'goods_cnt': goodsCnt,
       if (mc != null) 'mc': mc,
       if (delivered != null) 'delivered': delivered,
+      if (paid != null) 'paid': paid,
       if (physical != null) 'physical': physical,
     });
   }
@@ -2709,6 +2752,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       Value<int>? goodsCnt,
       Value<double>? mc,
       Value<bool?>? delivered,
+      Value<bool>? paid,
       Value<bool>? physical}) {
     return OrdersCompanion(
       id: id ?? this.id,
@@ -2720,6 +2764,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       goodsCnt: goodsCnt ?? this.goodsCnt,
       mc: mc ?? this.mc,
       delivered: delivered ?? this.delivered,
+      paid: paid ?? this.paid,
       physical: physical ?? this.physical,
     );
   }
@@ -2754,6 +2799,9 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     if (delivered.present) {
       map['delivered'] = Variable<bool>(delivered.value);
     }
+    if (paid.present) {
+      map['paid'] = Variable<bool>(paid.value);
+    }
     if (physical.present) {
       map['physical'] = Variable<bool>(physical.value);
     }
@@ -2772,6 +2820,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
           ..write('goodsCnt: $goodsCnt, ')
           ..write('mc: $mc, ')
           ..write('delivered: $delivered, ')
+          ..write('paid: $paid, ')
           ..write('physical: $physical')
           ..write(')'))
         .toString();

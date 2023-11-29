@@ -96,6 +96,23 @@ class OrdersRepository extends BaseRepository {
     notifyListeners();
   }
 
+  Future<void> cancelOrderDelivery(Order order) async {
+    OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: const Value.absent());
+
+    try {
+      await api.cancelOrderDelivery(order.id);
+    } on ApiException catch(e) {
+      throw AppError(e.errorMsg);
+    } catch(e, trace) {
+      await Misc.reportError(e, trace);
+      throw AppError(Strings.genericErrorMsg);
+    }
+
+    await dataStore.ordersDao.upsertOrder(updatedOrder);
+    await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
+    notifyListeners();
+  }
+
   Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {
     await dataStore.ordersDao.clearOrderLineCodesByOrderLineSubid(orderLine.orderId, orderLine.subid);
     notifyListeners();

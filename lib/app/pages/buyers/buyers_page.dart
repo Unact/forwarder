@@ -7,6 +7,7 @@ import '/app/pages/buyers/buyer/buyer_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
+import '/app/repositories/payments_repository.dart';
 
 part 'buyers_state.dart';
 part 'buyers_view_model.dart';
@@ -22,6 +23,7 @@ class BuyersPage extends StatelessWidget {
       create: (context) => BuyersViewModel(
         RepositoryProvider.of<AppRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
+        RepositoryProvider.of<PaymentsRepository>(context),
       ),
       child: _BuyersView(),
     );
@@ -53,14 +55,14 @@ class _BuyersViewState extends State<_BuyersView> {
                 tilePadding: const EdgeInsets.all(0),
                 childrenPadding: const EdgeInsets.only(left: 8),
                 title: const Text('Выполнено'),
-                children: vm.buyersWithDel.map((e) => _buyerTile(context, e)).toList()
+                children: vm.finishedBuyers.map((e) => _buyerTile(context, e)).toList()
               ),
               ExpansionTile(
                 initiallyExpanded: true,
                 tilePadding: const EdgeInsets.all(0),
                 childrenPadding: const EdgeInsets.only(left: 8),
                 title: const Text('Активно'),
-                children: vm.buyersWithoutDel.map((e) => _buyerTile(context, e)).toList()
+                children: vm.notFinishedBuyers.map((e) => _buyerTile(context, e)).toList()
               ),
             ]
           );

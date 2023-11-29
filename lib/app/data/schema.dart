@@ -78,6 +78,7 @@ class Orders extends Table {
   IntColumn get goodsCnt => integer()();
   RealColumn get mc => real()();
   BoolColumn get delivered => boolean().nullable()();
+  BoolColumn get paid => boolean()();
   BoolColumn get physical => boolean()();
 }
 

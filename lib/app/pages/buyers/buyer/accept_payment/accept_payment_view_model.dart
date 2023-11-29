@@ -222,7 +222,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     ));
 
     try {
-      await paymentsRepository.acceptPayment(state.debts, transaction, state.location!);
+      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.location!);
 
       emit(state.copyWith(
         message: 'Оплата успешно сохранена',
