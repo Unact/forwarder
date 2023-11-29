@@ -297,8 +297,6 @@ class _OrderViewState extends State<_OrderView> {
     bool hasScanned = !vm.state.order.physical ||
       (vm.state.order.physical && vm.state.codeLines.any((e) => e.orderLineCodes.isNotEmpty));
 
-      //
-
     return [
       ElevatedButton(
         style: ElevatedButton.styleFrom(
