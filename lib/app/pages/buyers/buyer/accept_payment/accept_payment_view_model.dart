@@ -62,24 +62,10 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       required bool isCard,
       required bool isLink
     }
-  ) : super(
-    AcceptPaymentState(debts: debts, isCard: isCard, isLink: isLink, message: 'Инициализация платежа'),
-    [appRepository, ordersRepository, paymentsRepository]
-  );
+  ) : super(AcceptPaymentState(debts: debts, isCard: isCard, isLink: isLink, message: 'Инициализация платежа'),);
 
   @override
   AcceptPaymentStateStatus get status => state.status;
-
-  @override
-  Future<void> loadData() async {
-    List<int> orderIds = state.debts.map(((e) => e.orderId)).toList();
-    List<Order> orders = (await ordersRepository.getOrders()).where((e) => orderIds.contains(e.id)).toList();
-
-    emit(state.copyWith(
-      status: AcceptPaymentStateStatus.dataLoaded,
-      orders: orders
-    ));
-  }
 
   @override
   Future<void> initViewModel() async {
@@ -109,6 +95,11 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   }
 
   Future<void> _checkOrders() async {
+    List<int> orderIds = state.debts.map(((e) => e.orderId)).toList();
+    List<Order> orders = (await ordersRepository.watchOrders().first).where((e) => orderIds.contains(e.id)).toList();
+
+    emit(state.copyWith(status: AcceptPaymentStateStatus.dataLoaded, orders: orders));
+
     if (state.orders.any((element) => element.isUndelivered && element.physical)) {
       emit(state.copyWith(
         message: 'Присутствуют не доставленные заказы физ. лиц',

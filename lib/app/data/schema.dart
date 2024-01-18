@@ -1,7 +1,7 @@
 part of 'database.dart';
 
 class Prefs extends Table {
-  DateTimeColumn get lastSyncTime => dateTime().nullable()();
+  DateTimeColumn get lastLoadTime => dateTime().nullable()();
 }
 
 class Users extends Table {

@@ -4,20 +4,10 @@ class LoginViewModel extends PageViewModel<LoginState, LoginStateStatus> {
   final AppRepository appRepository;
   final UsersRepository usersRepository;
 
-  LoginViewModel(this.appRepository, this.usersRepository) : super(LoginState(), [appRepository, usersRepository]);
+  LoginViewModel(this.appRepository, this.usersRepository) : super(LoginState());
 
   @override
   LoginStateStatus get status => state.status;
-
-  @override
-  Future<void> loadData() async {
-    String fullVersion = await appRepository.fullVersion;
-
-    emit(state.copyWith(
-      status: LoginStateStatus.dataLoaded,
-      fullVersion: fullVersion
-    ));
-  }
 
   Future<void> apiLogin(String url, String login, String password) async {
     if (!state.optsEnabled) login = _formatLogin(login);

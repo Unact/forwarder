@@ -252,42 +252,21 @@ class _BuyerViewState extends State<_BuyerView> {
       _controllers[debt.id] = controller;
     }
 
-    if (debt.paymentSum == null) {
-      controller.text = '';
-    }
-
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.only(left: 8),
       title: Text(debt.fullname),
-      trailing: !debtIsEditable ?
-        null :
-        GestureDetector(
-          child: SizedBox(
-            width: 104,
-            height: 48,
-            child:
-              TextFormField(
-                textAlign: TextAlign.end,
-                controller: controller,
-                enabled: debtIsEditable,
-                maxLines: 1,
-                style: const TextStyle(fontSize: 14.0, color: Colors.black),
-                decoration: InputDecoration(
-                  errorMaxLines: 2,
-                  isDense: true,
-                  errorText: _paymentSumErrorText(controller.text),
-                  border: debtIsEditable ? const UnderlineInputBorder() : InputBorder.none
-                ),
-                onChanged: (newValue) => vm.updateDebtPaymentSum(debt,  Parsing.parseDouble(newValue))
-              )
-          ),
-          onHorizontalDragEnd: (_) {
-            controller!.text = debt.debtSum.toString();
-            vm.updateDebtPaymentSum(debt, debt.debtSum);
-            Misc.unfocus(context);
-          },
-        ),
+      trailing: SizedBox(
+        width: 104,
+        height: 48,
+        child: NumTextField(
+          textAlign: TextAlign.end,
+          controller: controller,
+          enabled: debtIsEditable,
+          style: const TextStyle(fontSize: 14.0, color: Colors.black),
+          onTap: () => vm.updateDebtPaymentSum(debt, Parsing.parseDouble(controller!.text))
+        )
+      ),
       subtitle: RichText(
         text: TextSpan(
           children: <TextSpan>[

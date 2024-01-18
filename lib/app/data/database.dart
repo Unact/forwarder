@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
@@ -33,15 +36,30 @@ part 'users_dao.dart';
     OrdersDao,
     PaymentsDao,
     UsersDao
-  ]
+  ],
+   queries: {
+    'appInfo': '''
+      SELECT
+        prefs.*,
+        (SELECT COUNT(*) FROM orders) orders_total,
+        (SELECT COUNT(*) FROM orders WHERE is_inc = 1) +
+          (
+            SELECT COUNT(*)
+            FROM orders
+            WHERE NOT EXISTS(SELECT 1 FROM buyers WHERE buyers.id = orders.buyer_id) = 1
+          ) inc_orders_total,
+        (SELECT COUNT(*) FROM buyers) buyers_total
+      FROM prefs
+    '''
+  },
 )
 class AppDataStore extends _$AppDataStore {
   AppDataStore({
     required bool logStatements
   }) : super(_openConnection(logStatements));
 
-  Future<Pref> getPref() async {
-    return select(prefs).getSingle();
+  Stream<AppInfoResult> watchAppInfo() {
+    return appInfo().watchSingle();
   }
 
   Future<int> updatePref(PrefsCompanion pref) {
@@ -79,7 +97,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -113,6 +131,14 @@ extension OrderX on Order {
   bool get isDelivered => didDelivery && delivered! == true;
   bool get isUndelivered => didDelivery && delivered! == false;
   bool get didDelivery => delivered != null;
+}
+
+extension UserX on User {
+  Future<bool> get newVersionAvailable async {
+    final currentVersion = (await PackageInfo.fromPlatform()).version;
+
+    return Version.parse(version) > Version.parse(currentVersion);
+  }
 }
 
 class OrderLineBarcode {

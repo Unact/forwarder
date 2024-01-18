@@ -4,25 +4,32 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
   final AppRepository appRepository;
   final UsersRepository usersRepository;
 
-  PersonViewModel(this.appRepository, this.usersRepository) : super(PersonState(), [appRepository, usersRepository]);
+  StreamSubscription<AppInfoResult>? appInfoSubscription;
+  StreamSubscription<User>? userSubscription;
+
+  PersonViewModel(this.appRepository, this.usersRepository) : super(PersonState());
 
   @override
   PersonStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    User user = await usersRepository.getCurrentUser();
-    Pref pref = await appRepository.getPref();
-    String fullVersion = await appRepository.fullVersion;
-    bool newVersionAvailable = await appRepository.newVersionAvailable;
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: PersonStateStatus.dataLoaded,
-      user: user,
-      pref: pref,
-      fullVersion: fullVersion,
-      newVersionAvailable: newVersionAvailable
-    ));
+    userSubscription = usersRepository.watchUser().listen((event) {
+      emit(state.copyWith(status: PersonStateStatus.dataLoaded, user: event));
+    });
+    appInfoSubscription = appRepository.watchAppInfo().listen((event) {
+      emit(state.copyWith(status: PersonStateStatus.dataLoaded, appInfo: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await userSubscription?.cancel();
+    await appInfoSubscription?.cancel();
   }
 
   Future<void> apiLogout() async {

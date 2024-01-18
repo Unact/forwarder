@@ -5,6 +5,11 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
+  StreamSubscription<List<Order>>? orderSubscription;
+  StreamSubscription<List<Debt>>? debtsSubscription;
+  StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
+  StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
+
   BuyerViewModel(
     this.appRepository,
     this.ordersRepository,
@@ -14,29 +19,37 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       required bool isInc
     }
   ) :
-    super(
-      BuyerState(buyer: buyer, isInc: isInc, confirmationCallback: () {}),
-      [appRepository, ordersRepository, paymentsRepository]
-    );
+    super(BuyerState(buyer: buyer, isInc: isInc, confirmationCallback: () {}));
 
   @override
   BuyerStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    List<Order> orders = await ordersRepository.getOrdersByBuyerId(state.buyer.id);
-    List<Debt> debts = (await paymentsRepository.getDebtsByBuyerId(state.buyer.id))
-      .where((el) => !el.physical).toList();
-    List<CardPayment> cardPayments = await paymentsRepository.getCardPaymentsByBuyerId(state.buyer.id);
-    List<CashPayment> cashPayments = await paymentsRepository.getCashPaymentsByBuyerId(state.buyer.id);
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: BuyerStateStatus.dataLoaded,
-      orders: orders,
-      debts: debts,
-      cardPayments: cardPayments,
-      cashPayments: cashPayments
-    ));
+    orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.id).listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
+    });
+    debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.id).listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event));
+    });
+    cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.id).listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
+    });
+    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.id).listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cardPayments: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await orderSubscription?.cancel();
+    await debtsSubscription?.cancel();
+    await cashPaymentsSubscription?.cancel();
+    await cardPaymentsSubscription?.cancel();
   }
 
   Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {

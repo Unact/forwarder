@@ -11,44 +11,42 @@ import '/app/services/forwarder_api.dart';
 class PaymentsRepository extends BaseRepository {
   PaymentsRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
 
-  Future<List<CashPayment>> getCashPayments() async {
-    return dataStore.paymentsDao.getCashPayments();
+  Stream<List<CashPayment>> watchCashPayments() {
+    return dataStore.paymentsDao.watchCashPayments();
   }
 
-  Future<List<CardPayment>> getCardPayments() async {
-    return dataStore.paymentsDao.getCardPayments();
+  Stream<List<CardPayment>> watchCardPayments() {
+    return dataStore.paymentsDao.watchCardPayments();
   }
 
-  Future<List<Debt>> getDebts() async {
-    return dataStore.paymentsDao.getDebts();
+  Stream<List<Debt>> watchDebts() {
+    return dataStore.paymentsDao.watchDebts();
   }
 
-  Future<List<Debt>> getDebtsByBuyerId(int buyerId) async {
-    return dataStore.paymentsDao.getDebtsByBuyerId(buyerId);
+  Stream<List<Debt>> watchDebtsByBuyerId(int buyerId) {
+    return dataStore.paymentsDao.watchDebtsByBuyerId(buyerId);
   }
 
-  Future<Debt> getDebtById(int id) async {
-    return dataStore.paymentsDao.getDebtById(id);
+  Stream<Debt> watchDebtById(int id) {
+    return dataStore.paymentsDao.watchDebtById(id);
   }
 
-  Future<Debt?> getDebtByOrderId(int orderId) async {
-    return dataStore.paymentsDao.getDebtByOrderId(orderId);
+  Stream<Debt?> watchDebtByOrderId(int orderId) {
+    return dataStore.paymentsDao.watchDebtByOrderId(orderId);
   }
 
-  Future<List<CardPayment>> getCardPaymentsByBuyerId(int buyerId) async {
-    return dataStore.paymentsDao.getCardPaymentsByBuyerId(buyerId);
+  Stream<List<CardPayment>> watchCardPaymentsByBuyerId(int buyerId) {
+    return dataStore.paymentsDao.watchCardPaymentsByBuyerId(buyerId);
   }
 
-  Future<List<CashPayment>> getCashPaymentsByBuyerId(int buyerId) async {
-    return dataStore.paymentsDao.getCashPaymentsByBuyerId(buyerId);
+  Stream<List<CashPayment>> watchCashPaymentsByBuyerId(int buyerId) {
+    return dataStore.paymentsDao.watchCashPaymentsByBuyerId(buyerId);
   }
 
   Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {
     DebtsCompanion updatedDebt = debt.toCompanion(true).copyWith(paymentSum: Value(newValue));
 
     await dataStore.paymentsDao.upsertDebt(updatedDebt);
-
-    notifyListeners();
   }
 
   Future<void> acceptPayment(
@@ -99,12 +97,10 @@ class PaymentsRepository extends BaseRepository {
         await dataStore.ordersDao.upsertOrder(updatedOrder);
       }
     });
-
-    notifyListeners();
   }
 
   Future<void> cancelCardPayment(CardPayment cardPayment, Map<String, dynamic> transaction) async {
-    Debt paymentDebt = (await dataStore.paymentsDao.getDebtByOrderId(cardPayment.orderId))!;
+    Debt paymentDebt = (await dataStore.paymentsDao.watchDebtByOrderId(cardPayment.orderId).first)!;
     CardPaymentsCompanion updatedCardPayment = cardPayment.toCompanion(true).copyWith(canceled: const Value(true));
     DebtsCompanion updatedDebt = paymentDebt.toCompanion(true).copyWith(
       paidSum: const Value(null),
@@ -122,7 +118,5 @@ class PaymentsRepository extends BaseRepository {
 
     await dataStore.paymentsDao.upsertCardPayment(updatedCardPayment);
     await dataStore.paymentsDao.upsertDebt(updatedDebt);
-
-    notifyListeners();
   }
 }

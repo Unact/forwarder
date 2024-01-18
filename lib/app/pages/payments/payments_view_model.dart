@@ -5,24 +5,37 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
-  PaymentsViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) :
-    super(PaymentsState(), [appRepository, ordersRepository, paymentsRepository]);
+  StreamSubscription<List<Buyer>>? buyersSubscription;
+  StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
+  StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
+
+  PaymentsViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) : super(PaymentsState());
 
   @override
   PaymentsStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    List<Buyer> buyers = await ordersRepository.getBuyers();
-    List<CardPayment> cardPayments = await paymentsRepository.getCardPayments();
-    List<CashPayment> cashPayments = await paymentsRepository.getCashPayments();
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: PaymentsStateStatus.dataLoaded,
-      buyers: buyers,
-      cardPayments: cardPayments,
-      cashPayments: cashPayments
-    ));
+    buyersSubscription = ordersRepository.watchBuyers().listen((event) {
+      emit(state.copyWith(status: PaymentsStateStatus.dataLoaded, buyers: event));
+    });
+    cardPaymentsSubscription = paymentsRepository.watchCardPayments().listen((event) {
+      emit(state.copyWith(status: PaymentsStateStatus.dataLoaded, cardPayments: event));
+    });
+    cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {
+      emit(state.copyWith(status: PaymentsStateStatus.dataLoaded, cashPayments: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await buyersSubscription?.cancel();
+    await cardPaymentsSubscription?.cancel();
+    await cashPaymentsSubscription?.cancel();
   }
 
   List<CashPayment> get cashPayments => state.cashPayments..sort((cashPayment1, cashPayment2) {

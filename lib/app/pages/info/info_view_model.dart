@@ -6,12 +6,17 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   final PaymentsRepository paymentsRepository;
   final UsersRepository usersRepository;
 
+  StreamSubscription<User>? userSubscription;
+  StreamSubscription<AppInfoResult>? appInfoSubscription;
+  StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
+  StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
+
   InfoViewModel(
     this.appRepository,
     this.ordersRepository,
     this.paymentsRepository,
     this.usersRepository
-  ) : super(InfoState(), [appRepository, ordersRepository, paymentsRepository, usersRepository]);
+  ) : super(InfoState());
 
   @override
   InfoStateStatus get status => state.status;
@@ -19,29 +24,31 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   @override
   Future<void> initViewModel() async {
     await super.initViewModel();
+
+    userSubscription = usersRepository.watchUser().listen((event) {
+      emit(state.copyWith(status: InfoStateStatus.dataLoaded, user: event));
+    });
+    appInfoSubscription = appRepository.watchAppInfo().listen((event) {
+      emit(state.copyWith(status: InfoStateStatus.dataLoaded, appInfo: event));
+    });
+    cardPaymentsSubscription = paymentsRepository.watchCardPayments().listen((event) {
+      emit(state.copyWith(status: InfoStateStatus.dataLoaded, cardPayments: event));
+    });
+    cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {
+      emit(state.copyWith(status: InfoStateStatus.dataLoaded, cashPayments: event));
+    });
+
     await _checkNeedRefresh();
   }
 
   @override
-  Future<void> loadData() async {
-    bool newVersionAvailable = await appRepository.newVersionAvailable;
-    User user = await usersRepository.getCurrentUser();
-    Pref pref = await appRepository.getPref();
-    List<Buyer> buyers = await ordersRepository.getBuyers();
-    List<Order> orders = await ordersRepository.getOrders();
-    List<CardPayment> cardPayments = await paymentsRepository.getCardPayments();
-    List<CashPayment> cashPayments = await paymentsRepository.getCashPayments();
+  Future<void> close() async {
+    await super.close();
 
-    emit(state.copyWith(
-      status: InfoStateStatus.dataLoaded,
-      newVersionAvailable: newVersionAvailable,
-      user: user,
-      pref: pref,
-      buyers: buyers,
-      orders: orders,
-      cardPayments: cardPayments,
-      cashPayments: cashPayments
-    ));
+    await userSubscription?.cancel();
+    await appInfoSubscription?.cancel();
+    await cardPaymentsSubscription?.cancel();
+    await cashPaymentsSubscription?.cancel();
   }
 
   Future<void> getData() async {
@@ -76,12 +83,14 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   Future<void> _checkNeedRefresh() async {
     if (state.isBusy) return;
 
-    if (state.pref?.lastSyncTime == null) {
+    final pref = await appRepository.watchAppInfo().first;
+
+    if (pref.lastLoadTime == null) {
       emit(state.copyWith(status: InfoStateStatus.startLoad));
       return;
     }
 
-    DateTime lastAttempt = state.pref!.lastSyncTime!;
+    DateTime lastAttempt = pref.lastLoadTime!;
     DateTime time = DateTime.now();
 
     if (lastAttempt.year != time.year || lastAttempt.month != time.month || lastAttempt.day != time.day) {

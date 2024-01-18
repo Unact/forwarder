@@ -24,7 +24,4 @@ class LandingViewModel extends PageViewModel<LandingState, LandingStateStatus> {
 
     await isLoggedInSubscription?.cancel();
   }
-
-  @override
-  Future<void> loadData() async {}
 }

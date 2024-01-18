@@ -85,24 +85,44 @@ class _PersonViewState extends State<_PersonView> {
       children: [
         InfoRow(title: const Text('Логин'), trailing: Text(state.username)),
         InfoRow(title: const Text('Экспедитор'), trailing: Text(state.salesmanName)),
-        InfoRow(title: const Text('Обновление БД'), trailing: Text(state.lastSyncTime)),
-        InfoRow(title: const Text('Версия'), trailing: Text(state.fullVersion)),
-        !state.newVersionAvailable ? Container() : Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                  backgroundColor: Theme.of(context).colorScheme.primary
-                ),
-                onPressed: vm.launchAppUpdate,
-                child: const Text('Обновить приложение'),
-              )
-            ],
+        InfoRow(
+          title: const Text('Данные загружены'),
+          trailing: Text(
+            state.appInfo?.lastLoadTime != null ?
+              Format.dateTimeStr(state.appInfo?.lastLoadTime!) :
+              'Загрузка не проводилась',
           )
+        ),
+        InfoRow(
+          title: const Text('Версия'),
+          trailing: FutureBuilder(
+            future: Misc.fullVersion,
+            builder: (context, snapshot) => Text(snapshot.data ?? ''),
+          )
+        ),
+        FutureBuilder(
+          future: vm.state.user?.newVersionAvailable,
+          builder: (context, snapshot) {
+            if (!(snapshot.data ?? false)) return Container();
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                      backgroundColor: Theme.of(context).colorScheme.primary
+                    ),
+                    onPressed: vm.launchAppUpdate,
+                    child: const Text('Обновить приложение'),
+                  )
+                ],
+              )
+            );
+          }
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),

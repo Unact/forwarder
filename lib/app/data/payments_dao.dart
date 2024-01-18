@@ -31,40 +31,40 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
     });
   }
 
-  Future<List<CashPayment>> getCashPayments() async {
-    return select(cashPayments).get();
+  Stream<List<CashPayment>> watchCashPayments() {
+    return select(cashPayments).watch();
   }
 
-  Future<List<CardPayment>> getCardPayments() async {
-    return select(cardPayments).get();
+  Stream<List<CardPayment>> watchCardPayments() {
+    return select(cardPayments).watch();
   }
 
-  Future<List<Debt>> getDebts() async {
-    return select(debts).get();
+  Stream<List<Debt>> watchDebts() {
+    return select(debts).watch();
   }
 
-  Future<Debt?> getDebtByOrderId(int orderId) async {
-    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).getSingleOrNull();
+  Stream<Debt?> watchDebtByOrderId(int orderId) {
+    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).watchSingleOrNull();
   }
 
-  Future<Debt> getDebtById(int id) async {
-    return (select(debts)..where((tbl) => tbl.id.equals(id))).getSingle();
+  Stream<Debt> watchDebtById(int id) {
+    return (select(debts)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
 
-  Future<List<Debt>> getDebtsByBuyerId(int buyerId) async {
+  Stream<List<Debt>> watchDebtsByBuyerId(int buyerId) {
     return (
       select(debts)
         ..where((tbl) => tbl.buyerId.equals(buyerId))
         ..orderBy([(u) => OrderingTerm(expression: u.ndoc)])
-    ).get();
+    ).watch();
   }
 
-  Future<List<CashPayment>> getCashPaymentsByBuyerId(int buyerId) async {
-    return (select(cashPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).get();
+  Stream<List<CashPayment>> watchCashPaymentsByBuyerId(int buyerId) {
+    return (select(cashPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).watch();
   }
 
-  Future<List<CardPayment>> getCardPaymentsByBuyerId(int buyerId) async {
-    return (select(cardPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).get();
+  Stream<List<CardPayment>> watchCardPaymentsByBuyerId(int buyerId) {
+    return (select(cardPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).watch();
   }
 
   Future<int> upsertCardPayment(CardPaymentsCompanion cardPayment) {

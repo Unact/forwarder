@@ -5,20 +5,28 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   final OrdersRepository ordersRepository;
   final GS1BarcodeParser parser = GS1BarcodeParser.defaultParser();
 
+  StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
+
   CodeScanViewModel(this.appRepository, this.ordersRepository, {required Order order}) :
-    super(CodeScanState(order: order), [appRepository, ordersRepository]);
+    super(CodeScanState(order: order));
 
   @override
   CodeScanStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    List<OrderLineWithCode> codeLines = await ordersRepository.getOrderLinesByOrderId(state.order.id);
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: CodeScanStateStatus.dataLoaded,
-      codeLines: codeLines
-    ));
+    orderLineWithCodeListSubscription = ordersRepository.watchOrderLinesByOrderId(state.order.id).listen((event) {
+      emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, codeLines: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await orderLineWithCodeListSubscription?.cancel();
   }
 
   String? _parseBarcode(String barcode) {

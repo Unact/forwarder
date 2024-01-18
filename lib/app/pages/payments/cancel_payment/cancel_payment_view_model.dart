@@ -39,16 +39,10 @@ class CancelPaymentViewModel extends PageViewModel<CancelPaymentState, CancelPay
     {
       required CardPayment cardPayment
     }
-  ) : super(
-    CancelPaymentState(message: 'Инициализация отмены', cardPayment: cardPayment),
-    [appRepository, paymentsRepository]
-  );
+  ) : super(CancelPaymentState(message: 'Инициализация отмены', cardPayment: cardPayment));
 
   @override
   CancelPaymentStateStatus get status => state.status;
-
-  @override
-  Future<void> loadData() async {}
 
   @override
   Future<void> initViewModel() async {

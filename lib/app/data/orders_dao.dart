@@ -48,44 +48,50 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     });
   }
 
-  Future<List<Order>> getOrders() async {
-    return select(orders).get();
+  Stream<List<Order>> watchOrders() {
+    return select(orders).watch();
   }
 
-  Future<List<OrderLineWithCode>> getOrderLinesByOrderId(int orderId) async {
-    final orderLineRows = await (select(orderLines)..where((tbl) => tbl.orderId.equals(orderId))).get();
-    final orderLineCodeRows = await select(orderLineCodes).get();
+  Stream<List<OrderLineWithCode>> watchOrderLinesByOrderId(int orderId) {
+    final orderLineStream = (select(orderLines)..where((tbl) => tbl.orderId.equals(orderId))).watch();
+    final orderLineCodeStream = select(orderLineCodes).watch();
 
-    return orderLineRows.map(((e) {
-      return OrderLineWithCode(
-        e,
-        orderLineCodeRows.where((element) => element.orderId == e.orderId && element.subid == e.subid).toList()
-      );
-    })).toList();
+    return Rx.combineLatest2(
+      orderLineStream,
+      orderLineCodeStream,
+      (orderLineRows, orderLineCodeRows) {
+        return orderLineRows.map(((e) {
+          return OrderLineWithCode(
+            e,
+            orderLineCodeRows.where((element) => element.orderId == e.orderId && element.subid == e.subid).toList()
+          );
+        })).toList();
+      }
+    );
   }
 
-  Future<List<Income>> getIncomes() async {
-    return select(incomes).get();
+  Stream<List<Income>> watchIncomes() {
+    return select(incomes).watch();
   }
 
-  Future<List<Recept>> getRecepts() async {
-    return select(recepts).get();
+  Stream<List<Recept>> watchRecepts() {
+    return select(recepts).watch();
   }
 
-  Future<List<Buyer>> getBuyers() async {
-    return (select(buyers)..orderBy([(u) => OrderingTerm(expression: u.name)])).get();
+  Stream<List<Buyer>> watchBuyers() {
+    return (select(buyers)..orderBy([(u) => OrderingTerm(expression: u.name)])).watch();
   }
 
-  Future<List<Order>> getOrdersByBuyerId(int buyerId) async {
+  Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
     return (
       select(orders)
         ..where((tbl) => tbl.buyerId.equals(buyerId))
         ..orderBy([(u) => OrderingTerm(expression: u.ndoc)])
-    ).get();
+    ).watch();
   }
 
-  Future<Order> getOrderById(int id) async {
-    return (select(orders)..where((tbl) => tbl.id.equals(id))).getSingle();
+  Stream<Order> watchOrderById(int id) {
+    return (select(orders)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
 
   Future<int> upsertOrder(OrdersCompanion order) {

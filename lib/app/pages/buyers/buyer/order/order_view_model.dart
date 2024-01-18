@@ -5,24 +5,38 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
+  StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
+  StreamSubscription<Order>? orderSubscription;
+  StreamSubscription<Debt?>? debtSubscription;
+
   OrderViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository, {required Order order}) :
-    super(OrderState(order: order, confirmationCallback: () {}), [appRepository, ordersRepository, paymentsRepository]);
+    super(OrderState(order: order, confirmationCallback: () {}));
 
   @override
   OrderStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    List<OrderLineWithCode> codeLines = await ordersRepository.getOrderLinesByOrderId(state.order.id);
-    Order order = await ordersRepository.getOrderById(state.order.id);
-    Debt? debt = await paymentsRepository.getDebtByOrderId(state.order.id);
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: OrderStateStatus.dataLoaded,
-      codeLines: codeLines,
-      order: order,
-      debt: debt
-    ));
+    orderLineWithCodeListSubscription = ordersRepository.watchOrderLinesByOrderId(state.order.id).listen((event) {
+      emit(state.copyWith(status: OrderStateStatus.dataLoaded, codeLines: event));
+    });
+    orderSubscription = ordersRepository.watchOrderById(state.order.id).listen((event) {
+      emit(state.copyWith(status: OrderStateStatus.dataLoaded, order: event));
+    });
+    debtSubscription = paymentsRepository.watchDebtByOrderId(state.order.id).listen((event) {
+      emit(state.copyWith(status: OrderStateStatus.dataLoaded, debt: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await orderLineWithCodeListSubscription?.cancel();
+    await orderSubscription?.cancel();
+    await debtSubscription?.cancel();
   }
 
   Future<void> clearOrderLineCodes(OrderLineWithCode codeLine) async {
