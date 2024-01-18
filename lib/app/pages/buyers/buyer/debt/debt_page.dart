@@ -72,8 +72,8 @@ class _DebtViewState extends State<_DebtView> {
         title: const Text('Предупреждение'),
         content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
         actions: <Widget>[
-          TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
-          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false)),
+          TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true))
         ],
       )
     ) ?? false;

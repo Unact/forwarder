@@ -52,18 +52,8 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   }
 
   Future<void> getData() async {
-    if (state.isBusy) return;
-
-    emit(state.copyWith(status: InfoStateStatus.inProgress));
-
-    try {
-      await usersRepository.loadUserData();
-      await appRepository.loadData();
-
-      emit(state.copyWith(status: InfoStateStatus.success, message: 'Данные успешно обновлены'));
-    } on AppError catch(e) {
-      emit(state.copyWith(status: InfoStateStatus.failure, message: e.message));
-    }
+    await usersRepository.loadUserData();
+    await appRepository.loadData();
   }
 
   Future<void> reverseDay() async {
@@ -81,8 +71,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   }
 
   Future<void> _checkNeedRefresh() async {
-    if (state.isBusy) return;
-
     final pref = await appRepository.watchAppInfo().first;
 
     if (pref.lastLoadTime == null) {

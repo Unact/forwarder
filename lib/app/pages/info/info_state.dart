@@ -4,9 +4,6 @@ enum InfoStateStatus {
   initial,
   startLoad,
   dataLoaded,
-  success,
-  failure,
-  inProgress,
   reverseInProgress,
   reverseSuccess,
   reverseFailure
@@ -35,11 +32,6 @@ class InfoState {
 
   bool get closed => user?.closed ?? false;
   double get total => user?.total ?? 0;
-
-  bool get isBusy => [
-    InfoStateStatus.inProgress,
-    InfoStateStatus.reverseInProgress
-  ].contains(status);
 
   double get cardPaymentsSum => cardPayments.fold(0, (sum, payment) => sum + payment.summ);
   double get cashPaymentsSum => cashPayments.fold(0, (sum, payment) => sum + payment.summ);

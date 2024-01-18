@@ -69,8 +69,8 @@ class _OrderViewState extends State<_OrderView> {
         title: const Text('Подтверждение'),
         content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
         actions: <Widget>[
-          TextButton(child: const Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
-          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false)),
+          TextButton(child: const Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true))
         ],
       )
     ) ?? false;
