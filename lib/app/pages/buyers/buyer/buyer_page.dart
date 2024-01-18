@@ -50,12 +50,6 @@ class _BuyerView extends StatefulWidget {
 class _BuyerViewState extends State<_BuyerView> {
   final Map<int, TextEditingController> _controllers = {};
 
-  String? _paymentSumErrorText(String value) {
-    double? parsedValue = Parsing.parseDouble(value);
-
-    return value != '' && (parsedValue == null || parsedValue < 0 || parsedValue == 0) ? 'Некорректное значение' : null;
-  }
-
   Future<void> showAcceptPaymentDialog() async {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String result = await showDialog(
