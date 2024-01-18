@@ -25,7 +25,7 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   @override
   Future<void> loadData() async {
     bool newVersionAvailable = await appRepository.newVersionAvailable;
-    User user = await usersRepository.getUser();
+    User user = await usersRepository.getCurrentUser();
     Pref pref = await appRepository.getPref();
     List<Buyer> buyers = await ordersRepository.getBuyers();
     List<Order> orders = await ordersRepository.getOrders();
@@ -46,17 +46,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
 
   Future<void> getData() async {
     if (state.isBusy) return;
-
-    Location? location = await GeoLoc.getCurrentLocation();
-
-    if (location == null) {
-      emit(state.copyWith(
-        status: InfoStateStatus.failure,
-        message: 'Для работы с приложением необходимо разрешить определение местоположения'
-      ));
-
-      return;
-    }
 
     emit(state.copyWith(status: InfoStateStatus.inProgress));
 

@@ -60,13 +60,10 @@ class _BuyerViewState extends State<_BuyerView> {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String result = await showDialog(
       context: context,
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false,
-        child: AcceptPaymentPage(
-          debts: vm.state.debtsToPay,
-          isCard: vm.state.isCard,
-          isLink: false
-        )
+      builder: (_) => AcceptPaymentPage(
+        debts: vm.state.debtsToPay,
+        isCard: vm.state.isCard,
+        isLink: false
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';
@@ -79,16 +76,13 @@ class _BuyerViewState extends State<_BuyerView> {
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () async => false,
-        child: AlertDialog(
-          title: const Text('Предупреждение'),
-          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
-          actions: <Widget>[
-            TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
-            TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
-          ],
-        )
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Предупреждение'),
+        content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+        actions: <Widget>[
+          TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+        ],
       )
     ) ?? false;
 
@@ -143,7 +137,7 @@ class _BuyerViewState extends State<_BuyerView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
@@ -151,7 +145,7 @@ class _BuyerViewState extends State<_BuyerView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(true),
         child: const Text('Карта', style: TextStyle(color: Colors.white)),

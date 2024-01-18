@@ -7,14 +7,14 @@ import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/repositories/base_repository.dart';
-import '/app/services/renew_api.dart';
+import '/app/services/forwarder_api.dart';
 
 class AppRepository extends BaseRepository {
   AppRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
 
   Future<bool> get newVersionAvailable async {
     String currentVersion = (await PackageInfo.fromPlatform()).version;
-    String remoteVersion = (await dataStore.usersDao.getUser()).version;
+    String remoteVersion = (await dataStore.usersDao.getCurrentUser()).version;
 
     return Version.parse(remoteVersion) > Version.parse(currentVersion);
   }

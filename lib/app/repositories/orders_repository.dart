@@ -1,11 +1,12 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/repositories/base_repository.dart';
-import '/app/services/renew_api.dart';
+import '/app/services/forwarder_api.dart';
 
 class OrdersRepository extends BaseRepository {
   OrdersRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
@@ -67,7 +68,7 @@ class OrdersRepository extends BaseRepository {
     notifyListeners();
   }
 
-  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Location location) async {
+  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Position position) async {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: Value(delivered));
     List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
       'subid': e.subid,
@@ -76,6 +77,15 @@ class OrdersRepository extends BaseRepository {
       'amount': e.amount,
       'local_ts': e.localTs.toIso8601String()
     }).toList();
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
 
     try {
       await api.deliverOrder(

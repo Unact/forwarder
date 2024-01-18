@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
@@ -14,7 +15,6 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
-import '/app/services/geo_loc.dart';
 
 part 'order_state.dart';
 part 'order_view_model.dart';
@@ -53,22 +53,25 @@ class _OrderViewState extends State<_OrderView> {
   final TextStyle defaultTextStyle = const TextStyle(fontSize: 14.0, color: Colors.black);
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
 
+  @override
+  void dispose() {
+    _progressDialog.close();
+    super.dispose();
+  }
+
   Future<void> showConfirmationDialog(String message) async {
     OrderViewModel vm = context.read<OrderViewModel>();
 
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () async => false,
-        child: AlertDialog(
-          title: const Text('Подтверждение'),
-          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
-          actions: <Widget>[
-            TextButton(child: const Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
-            TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
-          ],
-        )
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Подтверждение'),
+        content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+        actions: <Widget>[
+          TextButton(child: const Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true)),
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
+        ],
       )
     ) ?? false;
 
@@ -80,13 +83,10 @@ class _OrderViewState extends State<_OrderView> {
 
     String result = await showDialog(
       context: context,
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false,
-        child: AcceptPaymentPage(
-          debts: [vm.state.debt!],
-          isCard: vm.state.isCard,
-          isLink: vm.state.isLink,
-        )
+      builder: (_) => AcceptPaymentPage(
+        debts: [vm.state.debt!],
+        isCard: vm.state.isCard,
+        isLink: vm.state.isLink,
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';
@@ -301,7 +301,7 @@ class _OrderViewState extends State<_OrderView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: hasScanned && !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(true) : null,
         child: const Text('Доставлен', style: TextStyle(color: Colors.white)),
@@ -309,7 +309,7 @@ class _OrderViewState extends State<_OrderView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: !vm.state.order.didDelivery ? () => vm.tryDeliverOrder(false) : null,
         child: const Text('Не доставлен', style: TextStyle(color: Colors.white)),
@@ -324,7 +324,7 @@ class _OrderViewState extends State<_OrderView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
         onPressed: () => vm.tryStartPayment(false, false)
@@ -332,7 +332,7 @@ class _OrderViewState extends State<_OrderView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         child: const Text('Карта', style: TextStyle(color: Colors.white)),
         onPressed: () => vm.tryStartPayment(true, false)
@@ -341,7 +341,7 @@ class _OrderViewState extends State<_OrderView> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-            backgroundColor: Colors.blue
+            backgroundColor: Theme.of(context).colorScheme.primary
           ),
           child: const Text('Отменить', style: TextStyle(color: Colors.white)),
           onPressed: () => vm.tryCancelOrderDelivery()

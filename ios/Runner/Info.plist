@@ -35,6 +35,8 @@
 	<string>Для определения места проведения платежа и доставки</string>
 	<key>NSLocationUsageDescription</key>
 	<string>Для определения места проведения платежа и доставки</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Для определения места проведения платежа и доставки</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Для определения места проведения платежа и доставки</string>
 	<key>NSMicrophoneUsageDescription</key>

@@ -1,11 +1,12 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/repositories/base_repository.dart';
-import '/app/services/renew_api.dart';
+import '/app/services/forwarder_api.dart';
 
 class PaymentsRepository extends BaseRepository {
   PaymentsRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
@@ -54,7 +55,7 @@ class PaymentsRepository extends BaseRepository {
     List<Order> orders,
     List<Debt> debts,
     Map<String, dynamic>? transaction,
-    Location location
+    Position position
   ) async {
     List<OrdersCompanion> updatedOrders = orders
       .map((e) => e.toCompanion(true).copyWith(paid: const Value(true))).toList();
@@ -70,6 +71,15 @@ class PaymentsRepository extends BaseRepository {
       'id': e.id.value,
       'payment_sum': e.paymentSum.value
     }).toList();
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
 
     try {
       await api.acceptPayment(payments, transaction, location);

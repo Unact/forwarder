@@ -14,7 +14,6 @@ import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/repositories/users_repository.dart';
-import '/app/services/geo_loc.dart';
 
 part 'info_state.dart';
 part 'info_view_model.dart';
@@ -47,6 +46,12 @@ class _InfoViewState extends State<_InfoView> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
   Completer<void> _refresherCompleter = Completer();
+
+  @override
+  void dispose() {
+    _progressDialog.close();
+    super.dispose();
+  }
 
   Future<void> openRefresher() async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -149,7 +154,7 @@ class _InfoViewState extends State<_InfoView> {
           trailing: ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              backgroundColor: Colors.blue
+              backgroundColor: Theme.of(context).colorScheme.primary
             ),
             onPressed: vm.reverseDay,
             child: Text('${vm.state.closed ? 'Открыть' : 'Закрыть'} день')

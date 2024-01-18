@@ -37,7 +37,7 @@ class AcceptPaymentState {
   final List<Debt> debts;
   final bool isCard;
   final bool isLink;
-  final Location? location;
+  final Position? location;
   final String message;
   final String externalPaymentQR;
   final AcceptPaymentStateStatus status;
@@ -52,7 +52,7 @@ class AcceptPaymentState {
     bool? isCard,
     bool? isLink,
     List<Order>? orders,
-    Location? location,
+    Position? location,
     bool? canceled,
     bool? isCancelable,
     bool? isRequiredSignature,

@@ -43,10 +43,7 @@ class _PaymentsViewState extends State<_PaymentsView> {
     PaymentsViewModel vm = context.read<PaymentsViewModel>();
     String result = await showDialog(
       context: context,
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false,
-        child: CancelPaymentPage(cardPayment: vm.state.cardPaymentToCancel!)
-      ),
+      builder: (_) => CancelPaymentPage(cardPayment: vm.state.cardPaymentToCancel!),
       barrierDismissible: false
     ) ?? 'Возврат отменен';
 
@@ -147,7 +144,7 @@ class _PaymentsViewState extends State<_PaymentsView> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              backgroundColor: Colors.blue
+              backgroundColor: Theme.of(context).colorScheme.primary
             ),
             onPressed: cardPayment.canceled || cardPayment.isLink ? null : () => vm.startCancelPayment(cardPayment),
             child: const Text('Отменить', style: TextStyle(color: Colors.white))

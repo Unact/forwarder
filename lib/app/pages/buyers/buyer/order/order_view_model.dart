@@ -68,12 +68,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     emit(state.copyWith(status: OrderStateStatus.inProgress));
 
     try {
-      Location? location = await GeoLoc.getCurrentLocation();
-
-      if (location == null) {
-        emit(state.copyWith(status: OrderStateStatus.failure, message: Strings.locationNotFound));
-        return;
-      }
+      final location = await Geolocator.getCurrentPosition();
 
       await ordersRepository.deliveryOrder(
         state.order,
