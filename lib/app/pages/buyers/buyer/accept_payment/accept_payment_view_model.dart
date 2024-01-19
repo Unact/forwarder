@@ -112,12 +112,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   }
 
   Future<void> _getLocation() async {
-    emit(state.copyWith(location: await Geolocator.getCurrentPosition()));
-
-    if (state.location == null) {
-      emit(state.copyWith(message: Strings.locationNotFound, status: AcceptPaymentStateStatus.failure));
-      return;
-    }
+    emit(state.copyWith(position: await Geolocator.getCurrentPosition()));
 
     if (!state.isCard) {
       _savePayment();
@@ -213,7 +208,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     ));
 
     try {
-      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.location!);
+      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.position!);
 
       emit(state.copyWith(
         message: 'Оплата успешно сохранена',
