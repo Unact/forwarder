@@ -3634,14 +3634,14 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PrefsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _lastSyncTimeMeta =
-      const VerificationMeta('lastSyncTime');
+  static const VerificationMeta _lastLoadTimeMeta =
+      const VerificationMeta('lastLoadTime');
   @override
-  late final GeneratedColumn<DateTime> lastSyncTime = GeneratedColumn<DateTime>(
-      'last_sync_time', aliasedName, true,
+  late final GeneratedColumn<DateTime> lastLoadTime = GeneratedColumn<DateTime>(
+      'last_load_time', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [lastSyncTime];
+  List<GeneratedColumn> get $columns => [lastLoadTime];
   @override
   String get aliasedName => _alias ?? 'prefs';
   @override
@@ -3651,11 +3651,11 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('last_sync_time')) {
+    if (data.containsKey('last_load_time')) {
       context.handle(
-          _lastSyncTimeMeta,
-          lastSyncTime.isAcceptableOrUnknown(
-              data['last_sync_time']!, _lastSyncTimeMeta));
+          _lastLoadTimeMeta,
+          lastLoadTime.isAcceptableOrUnknown(
+              data['last_load_time']!, _lastLoadTimeMeta));
     }
     return context;
   }
@@ -3666,8 +3666,8 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   Pref map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Pref(
-      lastSyncTime: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}last_sync_time']),
+      lastLoadTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_load_time']),
     );
   }
 
@@ -3678,22 +3678,22 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
 }
 
 class Pref extends DataClass implements Insertable<Pref> {
-  final DateTime? lastSyncTime;
-  const Pref({this.lastSyncTime});
+  final DateTime? lastLoadTime;
+  const Pref({this.lastLoadTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || lastSyncTime != null) {
-      map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
+    if (!nullToAbsent || lastLoadTime != null) {
+      map['last_load_time'] = Variable<DateTime>(lastLoadTime);
     }
     return map;
   }
 
   PrefsCompanion toCompanion(bool nullToAbsent) {
     return PrefsCompanion(
-      lastSyncTime: lastSyncTime == null && nullToAbsent
+      lastLoadTime: lastLoadTime == null && nullToAbsent
           ? const Value.absent()
-          : Value(lastSyncTime),
+          : Value(lastLoadTime),
     );
   }
 
@@ -3701,61 +3701,61 @@ class Pref extends DataClass implements Insertable<Pref> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Pref(
-      lastSyncTime: serializer.fromJson<DateTime?>(json['lastSyncTime']),
+      lastLoadTime: serializer.fromJson<DateTime?>(json['lastLoadTime']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'lastSyncTime': serializer.toJson<DateTime?>(lastSyncTime),
+      'lastLoadTime': serializer.toJson<DateTime?>(lastLoadTime),
     };
   }
 
-  Pref copyWith({Value<DateTime?> lastSyncTime = const Value.absent()}) => Pref(
-        lastSyncTime:
-            lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
+  Pref copyWith({Value<DateTime?> lastLoadTime = const Value.absent()}) => Pref(
+        lastLoadTime:
+            lastLoadTime.present ? lastLoadTime.value : this.lastLoadTime,
       );
   @override
   String toString() {
     return (StringBuffer('Pref(')
-          ..write('lastSyncTime: $lastSyncTime')
+          ..write('lastLoadTime: $lastLoadTime')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => lastSyncTime.hashCode;
+  int get hashCode => lastLoadTime.hashCode;
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Pref && other.lastSyncTime == this.lastSyncTime);
+      (other is Pref && other.lastLoadTime == this.lastLoadTime);
 }
 
 class PrefsCompanion extends UpdateCompanion<Pref> {
-  final Value<DateTime?> lastSyncTime;
+  final Value<DateTime?> lastLoadTime;
   final Value<int> rowid;
   const PrefsCompanion({
-    this.lastSyncTime = const Value.absent(),
+    this.lastLoadTime = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PrefsCompanion.insert({
-    this.lastSyncTime = const Value.absent(),
+    this.lastLoadTime = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   static Insertable<Pref> custom({
-    Expression<DateTime>? lastSyncTime,
+    Expression<DateTime>? lastLoadTime,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+      if (lastLoadTime != null) 'last_load_time': lastLoadTime,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  PrefsCompanion copyWith({Value<DateTime?>? lastSyncTime, Value<int>? rowid}) {
+  PrefsCompanion copyWith({Value<DateTime?>? lastLoadTime, Value<int>? rowid}) {
     return PrefsCompanion(
-      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      lastLoadTime: lastLoadTime ?? this.lastLoadTime,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3763,8 +3763,8 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (lastSyncTime.present) {
-      map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    if (lastLoadTime.present) {
+      map['last_load_time'] = Variable<DateTime>(lastLoadTime.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3775,7 +3775,7 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
   @override
   String toString() {
     return (StringBuffer('PrefsCompanion(')
-          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('lastLoadTime: $lastLoadTime, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3798,6 +3798,22 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
+  Selectable<AppInfoResult> appInfo() {
+    return customSelect(
+        'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
+        variables: [],
+        readsFrom: {
+          orders,
+          buyers,
+          prefs,
+        }).map((QueryRow row) => AppInfoResult(
+          lastLoadTime: row.readNullable<DateTime>('last_load_time'),
+          ordersTotal: row.read<int>('orders_total'),
+          incOrdersTotal: row.read<int>('inc_orders_total'),
+          buyersTotal: row.read<int>('buyers_total'),
+        ));
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3815,6 +3831,19 @@ abstract class _$AppDataStore extends GeneratedDatabase {
         orderLineCodes,
         prefs
       ];
+}
+
+class AppInfoResult {
+  final DateTime? lastLoadTime;
+  final int ordersTotal;
+  final int incOrdersTotal;
+  final int buyersTotal;
+  AppInfoResult({
+    this.lastLoadTime,
+    required this.ordersTotal,
+    required this.incOrdersTotal,
+    required this.buyersTotal,
+  });
 }
 
 mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {

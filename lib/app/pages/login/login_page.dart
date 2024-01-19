@@ -43,6 +43,12 @@ class _LoginViewState extends State<_LoginView> {
   final TextEditingController _urlController = TextEditingController();
 
   @override
+  void dispose() {
+    _progressDialog.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +73,10 @@ class _LoginViewState extends State<_LoginView> {
               Expanded(child: Container()),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-                child: Text('Версия ${state.fullVersion}')
+                child: FutureBuilder(
+                  future: Misc.fullVersion,
+                  builder: (context, snapshot) => Text('Версия ${snapshot.data ?? ''}'),
+                )
               )
             ]
           );
@@ -164,7 +173,7 @@ class _LoginViewState extends State<_LoginView> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {
                       Misc.unfocus(context);
@@ -181,7 +190,7 @@ class _LoginViewState extends State<_LoginView> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Theme.of(context).colorScheme.primary
                     ),
                     onPressed: () {
                       Misc.unfocus(context);

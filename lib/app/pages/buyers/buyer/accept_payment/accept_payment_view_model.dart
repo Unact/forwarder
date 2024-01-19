@@ -62,24 +62,10 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       required bool isCard,
       required bool isLink
     }
-  ) : super(
-    AcceptPaymentState(debts: debts, isCard: isCard, isLink: isLink, message: 'Инициализация платежа'),
-    [appRepository, ordersRepository, paymentsRepository]
-  );
+  ) : super(AcceptPaymentState(debts: debts, isCard: isCard, isLink: isLink, message: 'Инициализация платежа'),);
 
   @override
   AcceptPaymentStateStatus get status => state.status;
-
-  @override
-  Future<void> loadData() async {
-    List<int> orderIds = state.debts.map(((e) => e.orderId)).toList();
-    List<Order> orders = (await ordersRepository.getOrders()).where((e) => orderIds.contains(e.id)).toList();
-
-    emit(state.copyWith(
-      status: AcceptPaymentStateStatus.dataLoaded,
-      orders: orders
-    ));
-  }
 
   @override
   Future<void> initViewModel() async {
@@ -109,6 +95,11 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   }
 
   Future<void> _checkOrders() async {
+    List<int> orderIds = state.debts.map(((e) => e.orderId)).toList();
+    List<Order> orders = (await ordersRepository.watchOrders().first).where((e) => orderIds.contains(e.id)).toList();
+
+    emit(state.copyWith(status: AcceptPaymentStateStatus.dataLoaded, orders: orders));
+
     if (state.orders.any((element) => element.isUndelivered && element.physical)) {
       emit(state.copyWith(
         message: 'Присутствуют не доставленные заказы физ. лиц',
@@ -121,12 +112,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   }
 
   Future<void> _getLocation() async {
-    emit(state.copyWith(location: await GeoLoc.getCurrentLocation()));
-
-    if (state.location == null) {
-      emit(state.copyWith(message: Strings.locationNotFound, status: AcceptPaymentStateStatus.failure));
-      return;
-    }
+    emit(state.copyWith(position: await Geolocator.getCurrentPosition()));
 
     if (!state.isCard) {
       _savePayment();
@@ -222,7 +208,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     ));
 
     try {
-      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.location!);
+      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.position!);
 
       emit(state.copyWith(
         message: 'Оплата успешно сохранена',

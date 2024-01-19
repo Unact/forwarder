@@ -1,5 +1,6 @@
-import 'dart:async';
+import 'dart:ui';
 
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -17,32 +18,37 @@ import 'app/repositories/payments_repository.dart';
 import 'app/repositories/users_repository.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    Provider.debugCheckInvalidValueType = null;
-    WidgetsFlutterBinding.ensureInitialized();
+  Provider.debugCheckInvalidValueType = null;
+  WidgetsFlutterBinding.ensureInitialized();
+  await PackageInfo.fromPlatform();
 
-    await PackageInfo.fromPlatform();
+  bool isDebug = Misc.isDebug();
+  RenewApi api = await RenewApi.init(appName: Strings.appName);
+  AppDataStore dataStore = AppDataStore(logStatements: isDebug);
+  AppRepository appRepository = AppRepository(dataStore, api);
+  OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
+  PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
+  UsersRepository usersRepository = UsersRepository(dataStore, api);
 
-    bool isDebug = Misc.isDebug();
-    RenewApi api = await RenewApi.init(appName: Strings.appName);
-    AppDataStore dataStore = AppDataStore(logStatements: isDebug);
-    AppRepository appRepository = AppRepository(dataStore, api);
-    OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
-    PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
-    UsersRepository usersRepository = UsersRepository(dataStore, api);
+  FlutterError.onError = (errorDetails) {
+    Misc.logError(errorDetails.exception, errorDetails.stack);
+  };
 
-    await Initialization.initializeSentry(
-      dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
-      isDebug: isDebug,
-      userGenerator: () async {
-        User user = await usersRepository.getUser();
+  PlatformDispatcher.instance.onError = (error, stack) {
+    Misc.logError(error, stack);
+    return true;
+  };
 
-        return SentryUser(id: user.id.toString(), username: user.username, email: user.email);
-      }
-    );
-    Initialization.intializeFlogs(isDebug: isDebug);
+  Initialization.intializeFlogs(isDebug: isDebug);
+  await Initialization.initializeSentry(
+    dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
+    isDebug: false,
+    userGenerator: () async {
+      User user = await usersRepository.getCurrentUser();
 
-    runApp(
+      return SentryUser(id: user.id.toString(), username: user.username, email: user.email);
+    },
+    appRunner: () => runApp(
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider.value(value: appRepository),
@@ -52,8 +58,15 @@ void main() async {
         ],
         child: MaterialApp(
           title: Strings.ruAppName,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+          theme: FlexThemeData.light(
+            scheme: FlexScheme.blue,
+            subThemesData: const FlexSubThemesData(
+              inputDecoratorBorderType: FlexInputBorderType.underline,
+              inputDecoratorFocusedBorderWidth: 0,
+              inputDecoratorBackgroundAlpha: 0,
+              inputDecoratorFillColor: Colors.transparent,
+              bottomSheetRadius: 0
+            ),
             platform: TargetPlatform.android,
             visualDensity: VisualDensity.adaptivePlatformDensity
           ),
@@ -70,8 +83,6 @@ void main() async {
           ]
         )
       )
-    );
-  }, (Object error, StackTrace stackTrace) {
-    Misc.reportError(error, stackTrace);
-  });
+    )
+  );
 }

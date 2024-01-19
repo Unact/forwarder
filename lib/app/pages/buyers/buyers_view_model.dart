@@ -5,22 +5,32 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
-  BuyersViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) :
-    super(BuyersState(), [appRepository, ordersRepository, paymentsRepository]);
+  StreamSubscription<List<Buyer>>? buyersSubscription;
+  StreamSubscription<List<Order>>? ordersSubscription;
+
+  BuyersViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) : super(BuyersState());
 
   @override
   BuyersStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    List<Buyer> buyers = await ordersRepository.getBuyers();
-    List<Order> orders = await ordersRepository.getOrders();
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: BuyersStateStatus.dataLoaded,
-      buyers: buyers,
-      orders: orders
-    ));
+    buyersSubscription = ordersRepository.watchBuyers().listen((event) {
+      emit(state.copyWith(status: BuyersStateStatus.dataLoaded, buyers: event));
+    });
+    ordersSubscription = ordersRepository.watchOrders().listen((event) {
+      emit(state.copyWith(status: BuyersStateStatus.dataLoaded, orders: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await buyersSubscription?.cancel();
+    await ordersSubscription?.cancel();
   }
 
   List<Order> buyerOrders(Buyer buyer) => state.orders.where((e) => e.buyerId == buyer.id).toList();

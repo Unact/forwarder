@@ -47,23 +47,14 @@ class _DebtViewState extends State<_DebtView> {
   final TextStyle defaultTextStyle = const TextStyle(fontSize: 14.0, color: Colors.black);
   final TextEditingController _controller = TextEditingController();
 
-  String? _paymentSumErrorText(String value) {
-    double? parsedValue = Parsing.parseDouble(value);
-
-    return value != '' && (parsedValue == null || parsedValue < 0 || parsedValue == 0) ? 'Некорректное значение' : null;
-  }
-
   Future<void> showAcceptPaymentDialog() async {
     DebtViewModel vm = context.read<DebtViewModel>();
     String result = await showDialog(
       context: context,
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false,
-        child: AcceptPaymentPage(
-          debts: [vm.state.debt],
-          isCard: vm.state.isCard,
-          isLink: false
-        )
+      builder: (_) => AcceptPaymentPage(
+        debts: [vm.state.debt],
+        isCard: vm.state.isCard,
+        isLink: false
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';
@@ -77,16 +68,13 @@ class _DebtViewState extends State<_DebtView> {
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () async => false,
-        child: AlertDialog(
-          title: const Text('Предупреждение'),
-          content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
-          actions: <Widget>[
-            TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true)),
-            TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false))
-          ],
-        )
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Предупреждение'),
+        content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+        actions: <Widget>[
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false)),
+          TextButton(child: const Text(Strings.ok), onPressed: () => Navigator.of(context).pop(true))
+        ],
       )
     ) ?? false;
 
@@ -132,8 +120,6 @@ class _DebtViewState extends State<_DebtView> {
     DebtViewModel vm = context.read<DebtViewModel>();
     DebtState state = vm.state;
 
-    _controller.text = state.debt.paymentSum?.toString() ?? '';
-
     return Column(
       children: [
         Padding(
@@ -145,40 +131,17 @@ class _DebtViewState extends State<_DebtView> {
               InfoRow(title: const Text('Долг'), trailing: Text(Format.numberStr(state.debt.debtSum))),
               InfoRow(title: const Text('Оплачено'), trailing: Text(Format.numberStr(state.debt.paidSum))),
               InfoRow(title: const Text('Чек'), trailing: Text(state.debt.isCheck ? 'Да' : 'Нет')),
-              ListTile(
-                dense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              InfoRow(
                 title: const Text('Оплата', style: TextStyle(fontSize: 14.0)),
                 trailing: !vm.state.isEditable ?
-                  null :
-                  GestureDetector(
-                    child: SizedBox(
-                      width: 104,
-                      height: 48,
-                      child: TextFormField(
-                        textAlign: TextAlign.end,
-                        autofocus: true,
-                        controller: _controller,
-                        enabled: vm.state.isEditable,
-                        maxLines: 1,
-                        style: defaultTextStyle,
-                        decoration: InputDecoration(
-                          labelText: '',
-                          border: const UnderlineInputBorder(),
-                          contentPadding: const EdgeInsets.only(),
-                          errorMaxLines: 2,
-                          isDense: true,
-                          errorText: _paymentSumErrorText(_controller.text),
-                        ),
-                        onChanged: (newValue) => vm.updatePaymentSum(Parsing.parseDouble(newValue))
-                      )
-                    ),
-                    onHorizontalDragEnd: (_) {
-                      _controller.text = state.debt.debtSum.toString();
-                      vm.updatePaymentSum(state.debt.debtSum);
-                      Misc.unfocus(context);
-                    },
-                  ),
+                  Text(Format.numberStr(state.debt.debtSum), style: defaultTextStyle) :
+                  NumTextField(
+                    textAlign: TextAlign.end,
+                    controller: _controller,
+                    enabled: vm.state.isEditable,
+                    style: defaultTextStyle,
+                    onTap: () => vm.updatePaymentSum(Parsing.parseDouble(_controller.text))
+                  )
               )
             ],
           )
@@ -194,7 +157,7 @@ class _DebtViewState extends State<_DebtView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(false) : null,
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
@@ -202,7 +165,7 @@ class _DebtViewState extends State<_DebtView> {
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Colors.blue
+          backgroundColor: Theme.of(context).colorScheme.primary
         ),
         onPressed: vm.state.isEditable ? () => vm.tryStartPayment(true) : null,
         child: const Text('Карта', style: TextStyle(color: Colors.white)),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:u_app_utils/u_app_utils.dart';
@@ -14,7 +15,6 @@ import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/repositories/users_repository.dart';
-import '/app/services/geo_loc.dart';
 
 part 'info_state.dart';
 part 'info_view_model.dart';
@@ -44,19 +44,14 @@ class _InfoView extends StatefulWidget {
 }
 
 class _InfoViewState extends State<_InfoView> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final ScrollController scrollController = ScrollController();
+  final EasyRefreshController refreshController = EasyRefreshController();
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
-  Completer<void> _refresherCompleter = Completer();
 
-  Future<void> openRefresher() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshIndicatorKey.currentState!.show();
-    });
-  }
-
-  void closeRefresher() {
-    _refresherCompleter.complete();
-    _refresherCompleter = Completer();
+  @override
+  void dispose() {
+    _progressDialog.close();
+    super.dispose();
   }
 
   void _changePage(int index) {
@@ -70,6 +65,9 @@ class _InfoViewState extends State<_InfoView> {
     return BlocConsumer<InfoViewModel, InfoState>(
       builder: (context, state) {
         InfoViewModel vm = context.read<InfoViewModel>();
+        final lastLoadTime = state.appInfo?.lastLoadTime != null ?
+          Format.dateTimeStr(state.appInfo?.lastLoadTime) :
+          'Загрузка не проводилась';
 
         return Scaffold(
           appBar: AppBar(
@@ -91,14 +89,17 @@ class _InfoViewState extends State<_InfoView> {
               )
             ]
           ),
-          body: RefreshIndicator(
-            key: _refreshIndicatorKey,
-            onRefresh: () async {
-              vm.getData();
-              return _refresherCompleter.future;
+          body: Refreshable(
+            scrollController: scrollController,
+            refreshController: refreshController,
+            confirmRefresh: false,
+            messageText: 'Последнее обновление: $lastLoadTime',
+            onRefresh: vm.getData,
+            onError: (error, stackTrace) {
+              if (error is! AppError) Misc.reportError(error, stackTrace);
             },
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
+            childBuilder: (context, physics) => ListView(
+              physics: physics,
               padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
               children: <Widget>[
                 Column(
@@ -114,12 +115,7 @@ class _InfoViewState extends State<_InfoView> {
       listener: (context, state) {
         switch (state.status) {
           case InfoStateStatus.startLoad:
-            openRefresher();
-            break;
-          case InfoStateStatus.failure:
-          case InfoStateStatus.success:
-            Misc.showMessage(context, state.message);
-            closeRefresher();
+            refreshController.callRefresh(scrollController: scrollController);
             break;
           case InfoStateStatus.reverseInProgress:
             _progressDialog.open();
@@ -149,7 +145,7 @@ class _InfoViewState extends State<_InfoView> {
           trailing: ElevatedButton(
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              backgroundColor: Colors.blue
+              backgroundColor: Theme.of(context).colorScheme.primary
             ),
             onPressed: vm.reverseDay,
             child: Text('${vm.state.closed ? 'Открыть' : 'Закрыть'} день')
@@ -242,14 +238,19 @@ class _InfoViewState extends State<_InfoView> {
   Widget _buildInfoCard(BuildContext context) {
     InfoViewModel vm = context.read<InfoViewModel>();
 
-    if (!vm.state.newVersionAvailable) return Container();
+    return FutureBuilder(
+      future: vm.state.user?.newVersionAvailable,
+      builder: (context, snapshot) {
+        if (!(snapshot.data ?? false)) return Container();
 
-    return const Card(
-      child: ListTile(
-        isThreeLine: true,
-        title: Text('Информация'),
-        subtitle: Text('Доступна новая версия приложения'),
-      )
+        return const Card(
+          child: ListTile(
+            isThreeLine: true,
+            title: Text('Информация'),
+            subtitle: Text('Доступна новая версия приложения'),
+          )
+        );
+      }
     );
   }
 }

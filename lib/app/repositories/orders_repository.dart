@@ -1,41 +1,42 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/repositories/base_repository.dart';
-import '/app/services/renew_api.dart';
+import '/app/services/forwarder_api.dart';
 
 class OrdersRepository extends BaseRepository {
   OrdersRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
 
-  Future<List<Buyer>> getBuyers() async {
-    return dataStore.ordersDao.getBuyers();
+  Stream<List<Buyer>> watchBuyers() {
+    return dataStore.ordersDao.watchBuyers();
   }
 
-  Future<List<Income>> getIncomes() async {
-    return dataStore.ordersDao.getIncomes();
+  Stream<List<Income>> watchIncomes() {
+    return dataStore.ordersDao.watchIncomes();
   }
 
-  Future<List<Recept>> getRecepts() async {
-    return dataStore.ordersDao.getRecepts();
+  Stream<List<Recept>> watchRecepts() {
+    return dataStore.ordersDao.watchRecepts();
   }
 
-  Future<List<Order>> getOrders() async {
-    return dataStore.ordersDao.getOrders();
+  Stream<List<Order>> watchOrders() {
+    return dataStore.ordersDao.watchOrders();
   }
 
-  Future<List<Order>> getOrdersByBuyerId(int buyerId) async {
-    return dataStore.ordersDao.getOrdersByBuyerId(buyerId);
+  Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
+    return dataStore.ordersDao.watchOrdersByBuyerId(buyerId);
   }
 
-  Future<List<OrderLineWithCode>> getOrderLinesByOrderId(int orderId) async {
-    return dataStore.ordersDao.getOrderLinesByOrderId(orderId);
+  Stream<List<OrderLineWithCode>> watchOrderLinesByOrderId(int orderId) {
+    return dataStore.ordersDao.watchOrderLinesByOrderId(orderId);
   }
 
-  Future<Order> getOrderById(int id) async {
-    return dataStore.ordersDao.getOrderById(id);
+  Stream<Order> watchOrderById(int id) {
+    return dataStore.ordersDao.watchOrderById(id);
   }
 
   Future<void> addOrderLineCode({
@@ -54,7 +55,6 @@ class OrdersRepository extends BaseRepository {
     );
 
     await dataStore.ordersDao.upsertOrderLineCode(newOrderLineCode);
-    notifyListeners();
   }
 
   Future<void> updateOrderLineCode({
@@ -64,10 +64,9 @@ class OrdersRepository extends BaseRepository {
     OrderLineCodesCompanion updatedOrderLineCode = orderLineCode.toCompanion(false).copyWith(amount: Value(amount));
 
     await dataStore.ordersDao.upsertOrderLineCode(updatedOrderLineCode);
-    notifyListeners();
   }
 
-  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Location location) async {
+  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Position position) async {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: Value(delivered));
     List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
       'subid': e.subid,
@@ -76,6 +75,15 @@ class OrdersRepository extends BaseRepository {
       'amount': e.amount,
       'local_ts': e.localTs.toIso8601String()
     }).toList();
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
 
     try {
       await api.deliverOrder(
@@ -93,7 +101,6 @@ class OrdersRepository extends BaseRepository {
 
     await dataStore.ordersDao.upsertOrder(updatedOrder);
     await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
-    notifyListeners();
   }
 
   Future<void> cancelOrderDelivery(Order order) async {
@@ -110,11 +117,9 @@ class OrdersRepository extends BaseRepository {
 
     await dataStore.ordersDao.upsertOrder(updatedOrder);
     await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
-    notifyListeners();
   }
 
   Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {
     await dataStore.ordersDao.clearOrderLineCodesByOrderLineSubid(orderLine.orderId, orderLine.subid);
-    notifyListeners();
   }
 }

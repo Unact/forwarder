@@ -4,29 +4,33 @@ class DebtViewModel extends PageViewModel<DebtState, DebtStateStatus> {
   final AppRepository appRepository;
   final PaymentsRepository paymentsRepository;
 
+  StreamSubscription<Debt>? debtSubscription;
+
   DebtViewModel(
     this.appRepository,
     this.paymentsRepository,
     {
       required Debt debt
     }
-  ) :
-    super(
-      DebtState(debt: debt, confirmationCallback: () {}),
-      [appRepository, paymentsRepository]
-    );
+  ) : super(DebtState(debt: debt, confirmationCallback: () {}));
 
   @override
   DebtStateStatus get status => state.status;
 
   @override
-  Future<void> loadData() async {
-    Debt debt = await paymentsRepository.getDebtById(state.debt.id);
+  Future<void> initViewModel() async {
+    await super.initViewModel();
 
-    emit(state.copyWith(
-      status: DebtStateStatus.dataLoaded,
-      debt: debt
-    ));
+    debtSubscription = paymentsRepository.watchDebtById(state.debt.id).listen((event) {
+      emit(state.copyWith(status: DebtStateStatus.dataLoaded, debt: event));
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await super.close();
+
+    await debtSubscription?.cancel();
   }
 
   Future<void> updatePaymentSum(double? newValue) async {

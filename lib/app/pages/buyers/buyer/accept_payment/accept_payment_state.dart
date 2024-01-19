@@ -24,7 +24,7 @@ class AcceptPaymentState {
     required this.isCard,
     required this.isLink,
     this.orders = const [],
-    this.location,
+    this.position,
     this.canceled = false,
     this.isCancelable = true,
     this.isRequiredSignature = false,
@@ -37,7 +37,7 @@ class AcceptPaymentState {
   final List<Debt> debts;
   final bool isCard;
   final bool isLink;
-  final Location? location;
+  final Position? position;
   final String message;
   final String externalPaymentQR;
   final AcceptPaymentStateStatus status;
@@ -52,7 +52,7 @@ class AcceptPaymentState {
     bool? isCard,
     bool? isLink,
     List<Order>? orders,
-    Location? location,
+    Position? position,
     bool? canceled,
     bool? isCancelable,
     bool? isRequiredSignature,
@@ -66,7 +66,7 @@ class AcceptPaymentState {
       isCard: isCard ?? this.isCard,
       isLink: isLink ?? this.isLink,
       orders: orders ?? this.orders,
-      location: location ?? this.location,
+      position: position ?? this.position,
       canceled: canceled ?? this.canceled,
       isCancelable: isCancelable ?? this.isCancelable,
       isRequiredSignature: isRequiredSignature ?? this.isRequiredSignature,

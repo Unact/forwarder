@@ -15,4 +15,3 @@ part 'api_payment_credentials.dart';
 part 'api_recept.dart';
 part 'api_user_data.dart';
 part 'app_error.dart';
-part 'location.dart';

@@ -4,7 +4,7 @@ import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/entities/entities.dart';
 
-extension RenewApiX on RenewApi {
+extension ForwarderApi on RenewApi {
   Future<ApiUserData> getUserData() async {
     final result = await get('v1/forwarder/user_info');
 
@@ -26,22 +26,19 @@ extension RenewApiX on RenewApi {
     );
   }
 
-  Future<void> deliverOrder(int orderId, List<Map<String, dynamic>> codes, bool delivered, Location location) async {
+  Future<void> deliverOrder(
+    int orderId,
+    List<Map<String, dynamic>> codes,
+    bool delivered,
+    Map<String, dynamic> location
+  ) async {
     await post(
       'v1/forwarder/confirm_delivery',
       dataGenerator: () => {
         'sale_order_id': orderId,
         'codes': codes,
         'delivered': delivered,
-        'location': {
-          'latitude': location.latitude,
-          'longitude': location.longitude,
-          'accuracy': location.accuracy,
-          'altitude': location.altitude,
-          'speed': location.speed,
-          'heading': location.heading,
-          'point_ts': location.pointTs?.toIso8601String()
-        },
+        'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
     );
@@ -59,22 +56,14 @@ extension RenewApiX on RenewApi {
   Future<void> acceptPayment(
     List<Map<String, dynamic>> payments,
     Map<String, dynamic>? transaction,
-    Location location
+    Map<String, dynamic> location
   ) async {
     await post(
       'v1/forwarder/save',
       dataGenerator: () => {
         'payments': payments,
         'payment_transaction': transaction,
-        'location': {
-          'latitude': location.latitude,
-          'longitude': location.longitude,
-          'accuracy': location.accuracy,
-          'altitude': location.altitude,
-          'speed': location.speed,
-          'heading': location.heading,
-          'point_ts': location.pointTs?.toIso8601String()
-        },
+        'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
     );

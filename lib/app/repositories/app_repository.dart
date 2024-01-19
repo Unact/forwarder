@@ -1,32 +1,17 @@
 import 'package:drift/drift.dart' show Value;
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/repositories/base_repository.dart';
-import '/app/services/renew_api.dart';
+import '/app/services/forwarder_api.dart';
 
 class AppRepository extends BaseRepository {
   AppRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
 
-  Future<bool> get newVersionAvailable async {
-    String currentVersion = (await PackageInfo.fromPlatform()).version;
-    String remoteVersion = (await dataStore.usersDao.getUser()).version;
-
-    return Version.parse(remoteVersion) > Version.parse(currentVersion);
-  }
-
-  Future<String> get fullVersion async {
-    PackageInfo info = await PackageInfo.fromPlatform();
-
-    return '${info.version}+${info.buildNumber}';
-  }
-
-  Future<Pref> getPref() {
-    return dataStore.getPref();
+  Stream<AppInfoResult> watchAppInfo() {
+    return dataStore.watchAppInfo();
   }
 
   Future<ApiPaymentCredentials> getApiPaymentCredentials() async {
@@ -62,9 +47,8 @@ class AppRepository extends BaseRepository {
         await dataStore.paymentsDao.loadDebts(debts);
         await dataStore.paymentsDao.loadCashPayments(cashPayments);
         await dataStore.paymentsDao.loadCardPayments(cardPayments);
-        await dataStore.updatePref(PrefsCompanion(lastSyncTime: Value(DateTime.now())));
+        await dataStore.updatePref(PrefsCompanion(lastLoadTime: Value(DateTime.now())));
       });
-      notifyListeners();
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
