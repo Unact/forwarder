@@ -75,8 +75,8 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
 
   @override
   Future<void> close() async {
-    await super.close();
     iboxpro.dispose();
+    await super.close();
   }
 
   Future<void> _checkPayment() async {
