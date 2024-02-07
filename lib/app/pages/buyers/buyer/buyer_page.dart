@@ -241,7 +241,9 @@ class _BuyerViewState extends State<_BuyerView> {
     bool debtIsEditable = debt.debtSum > 0;
 
     if (controller == null) {
-      controller = TextEditingController(text: debt.paymentSum?.toString());
+      controller = TextEditingController(
+        text: debt.paymentSum?.toStringAsFixed(2).replaceAll('.', ',')
+      );
 
       _controllers[debt.id] = controller;
     }
@@ -251,13 +253,30 @@ class _BuyerViewState extends State<_BuyerView> {
       contentPadding: const EdgeInsets.only(left: 8),
       title: Text(debt.fullname),
       trailing: SizedBox(
-        width: 104,
+        width: 124,
         height: 48,
         child: NumTextField(
           textAlign: TextAlign.end,
           controller: controller,
           enabled: debtIsEditable,
           style: const TextStyle(fontSize: 14.0, color: Colors.black),
+          decoration: InputDecoration(
+            suffixIcon: (debt.paymentSum ?? 0) != 0 ?
+              IconButton(
+                icon: const Icon(Icons.clear),
+                tooltip: 'Очистить',
+                onPressed: () => updateDebtPaymentSumAndText(controller!, debt, null)
+              ) :
+              IconButton(
+                icon: const Icon(Icons.price_change),
+                tooltip: 'Указать весь долг',
+                onPressed: () => updateDebtPaymentSumAndText(controller!, debt, debt.debtSum)
+              ),
+            labelText: '',
+            contentPadding: const EdgeInsets.only(),
+            errorMaxLines: 2,
+            isDense: true
+          ),
           onTap: () => vm.updateDebtPaymentSum(debt, Parsing.parseDouble(controller!.text))
         )
       ),
@@ -283,12 +302,21 @@ class _BuyerViewState extends State<_BuyerView> {
           ]
         )
       ),
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) => DebtPage(debt: debt))
         );
+        setState(() => _controllers.remove(debt.id));
       },
     );
+  }
+
+  void updateDebtPaymentSumAndText(TextEditingController controller, Debt debt, double? sum) {
+    final vm = context.read<BuyerViewModel>();
+
+    controller.text = Format.numberStr(sum);
+    vm.updateDebtPaymentSum(debt, sum);
+    Misc.unfocus(context);
   }
 }
