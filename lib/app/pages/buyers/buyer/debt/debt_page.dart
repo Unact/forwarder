@@ -45,7 +45,7 @@ class _DebtViewState extends State<_DebtView> {
   final EdgeInsets firstColumnPadding = const EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = const EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = const TextStyle(fontSize: 14.0, color: Colors.black);
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController? _controller;
 
   Future<void> showAcceptPaymentDialog() async {
     DebtViewModel vm = context.read<DebtViewModel>();
@@ -84,7 +84,11 @@ class _DebtViewState extends State<_DebtView> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<DebtViewModel, DebtState>(
-      builder: (context, vm) {
+      builder: (context, state) {
+        _controller ??= TextEditingController(
+          text: state.debt.paymentSum?.toStringAsFixed(2).replaceAll('.', ',')
+        );
+
         return Scaffold(
           persistentFooterButtons: _buildPayButtons(context),
           appBar: AppBar(
@@ -140,7 +144,24 @@ class _DebtViewState extends State<_DebtView> {
                     controller: _controller,
                     enabled: vm.state.isEditable,
                     style: defaultTextStyle,
-                    onTap: () => vm.updatePaymentSum(Parsing.parseDouble(_controller.text))
+                    decoration: InputDecoration(
+                      suffixIcon: (state.debt.paymentSum ?? 0) != 0 ?
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          tooltip: 'Очистить',
+                          onPressed: () => updatePaymentSumAndText(null)
+                        ) :
+                        IconButton(
+                          icon: const Icon(Icons.price_change),
+                          tooltip: 'Указать весь долг',
+                          onPressed: () => updatePaymentSumAndText(state.debt.debtSum)
+                        ),
+                      labelText: '',
+                      contentPadding: const EdgeInsets.only(),
+                      errorMaxLines: 2,
+                      isDense: true
+                    ),
+                    onTap: () => vm.updatePaymentSum(Parsing.parseDouble(_controller!.text))
                   )
               )
             ],
@@ -171,5 +192,13 @@ class _DebtViewState extends State<_DebtView> {
         child: const Text('Карта', style: TextStyle(color: Colors.white)),
       )
     ];
+  }
+
+  void updatePaymentSumAndText(double? sum) {
+    final vm = context.read<DebtViewModel>();
+
+    _controller!.text = Format.numberStr(sum);
+    vm.updatePaymentSum(sum);
+    Misc.unfocus(context);
   }
 }
