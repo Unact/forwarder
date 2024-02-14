@@ -19,16 +19,16 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     },
     onComplete: (Map<String, dynamic> transaction, bool requiredSignature) {
       emit(state.copyWith(
+        transaction: transaction,
         isRequiredSignature: requiredSignature,
         message: 'Подтверждение оплаты',
         status: AcceptPaymentStateStatus.paymentFinished
       ));
 
       if (!requiredSignature) {
-        _savePayment(transaction);
+        _savePayment();
       } else {
         emit(state.copyWith(
-          isRequiredSignature: requiredSignature,
           message: 'Для завершения оплаты\nнеобходимо указать подпись',
           status: AcceptPaymentStateStatus.requiredSignature
         ));
@@ -36,8 +36,10 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     },
     onAdjust: _savePayment,
     onCheck: (Map<String, dynamic> transaction, bool finished) {
+      emit(state.copyWith(transaction: transaction));
+
       if (finished) {
-        _savePayment(transaction);
+        _savePayment();
       } else {
         _checkPayment();
       }
@@ -200,7 +202,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     await iboxpro.adjustPayment(signature: signature);
   }
 
-  Future<void> _savePayment([Map<String, dynamic>? transaction]) async {
+  Future<void> _savePayment() async {
     emit(state.copyWith(
       isCancelable: false,
       message: 'Сохранение информации об оплате',
@@ -208,7 +210,7 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
     ));
 
     try {
-      await paymentsRepository.acceptPayment(state.orders, state.debts, transaction, state.position!);
+      await paymentsRepository.acceptPayment(state.orders, state.debts, state.transaction, state.position!);
 
       emit(state.copyWith(
         message: 'Оплата успешно сохранена',
