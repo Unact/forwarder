@@ -32,7 +32,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
     });
     debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.id).listen((event) {
-      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event));
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event.where((e) => !e.physical).toList()));
     });
     cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.id).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
