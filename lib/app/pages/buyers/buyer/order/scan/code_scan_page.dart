@@ -136,6 +136,7 @@ class _CodeScanViewState extends State<_CodeScanView> {
               onSubmitted: (value) => vm.updateAmount(codeLine, int.tryParse(value) ?? 0, true),
               cursorColor: Colors.white,
               decoration: const InputDecoration(
+                fillColor: Colors.transparent,
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 3, color: Colors.white)),
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 3, color: Colors.white)),
               ),
