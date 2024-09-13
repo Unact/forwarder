@@ -40,7 +40,7 @@ dependencies:
   u_app_utils:
     git:
       url: git@github.com:Unact/u_app_utils.git
-      ref: 7979dd0
+      ref: ef823b4
 
 dev_dependencies:
   build_runner: ^2.4.5
