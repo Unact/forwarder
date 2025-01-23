@@ -55,9 +55,7 @@ class _BuyerViewState extends State<_BuyerView> {
     String result = await showDialog(
       context: context,
       builder: (_) => AcceptPaymentPage(
-        debts: vm.state.debtsToPay,
-        isCard: vm.state.isCard,
-        isLink: false
+        debts: vm.state.debtsToPay
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';

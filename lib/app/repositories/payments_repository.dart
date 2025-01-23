@@ -52,7 +52,6 @@ class PaymentsRepository extends BaseRepository {
   Future<void> acceptPayment(
     List<Order> orders,
     List<Debt> debts,
-    Map<String, dynamic>? transaction,
     Position position
   ) async {
     List<OrdersCompanion> updatedOrders = orders
@@ -80,7 +79,7 @@ class PaymentsRepository extends BaseRepository {
     };
 
     try {
-      await api.acceptPayment(payments, transaction, location);
+      await api.acceptPayment(payments, location);
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {

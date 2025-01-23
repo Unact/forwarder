@@ -19,7 +19,6 @@ class BuyerState {
     this.orders = const [],
     this.debts = const [],
     required this.confirmationCallback,
-    this.isCard = false,
     this.debtsToPay = const [],
     this.message = ''
   });
@@ -32,7 +31,6 @@ class BuyerState {
   final List<Order> orders;
   final List<Debt> debts;
   final Function confirmationCallback;
-  final bool isCard;
   final List<Debt> debtsToPay;
   final String message;
 
@@ -51,7 +49,6 @@ class BuyerState {
     List<Order>? orders,
     List<Debt>? debts,
     Function? confirmationCallback,
-    bool? isCard,
     List<Debt>? debtsToPay,
     String? message
   }) {
@@ -64,7 +61,6 @@ class BuyerState {
       orders: orders ?? this.orders,
       debts: debts ?? this.debts,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
-      isCard: isCard ?? this.isCard,
       debtsToPay: debtsToPay ?? this.debtsToPay,
       message: message ?? this.message
     );

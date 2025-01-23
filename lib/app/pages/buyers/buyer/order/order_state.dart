@@ -21,9 +21,7 @@ class OrderState {
     this.codeLines = const [],
     this.message = '',
     this.delivered = false,
-    this.debt,
-    this.isLink = false,
-    this.isCard = false
+    this.debt
   });
 
   final OrderStateStatus status;
@@ -33,8 +31,6 @@ class OrderState {
   final String message;
   final bool delivered;
   final Debt? debt;
-  final bool isLink;
-  final bool isCard;
 
   bool get needPayment => debt != null && debt!.paymentSum != null && debt!.paidSum == 0;
 
@@ -50,9 +46,7 @@ class OrderState {
     Function? confirmationCallback,
     String? message,
     bool? delivered,
-    Debt? debt,
-    bool? isLink,
-    bool? isCard
+    Debt? debt
   }) {
     return OrderState(
       status: status ?? this.status,
@@ -61,9 +55,7 @@ class OrderState {
       codeLines: codeLines ?? this.codeLines,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       message: message ?? this.message,
-      delivered: delivered ?? this.delivered,
-      isLink: isLink ?? this.isLink,
-      isCard: isCard ?? this.isCard
+      delivered: delivered ?? this.delivered
     );
   }
 }

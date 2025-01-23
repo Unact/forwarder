@@ -62,7 +62,6 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
-      isCard: isCard,
       confirmationCallback: startPayment,
       debtsToPay: debtsToPay,
       message: 'Вы уверены, что хотите внести оплату ${Format.numberStr(paymentSumTotal)} руб.?\n'
