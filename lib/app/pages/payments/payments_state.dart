@@ -13,8 +13,7 @@ class PaymentsState {
     this.cashPayments = const [],
     this.cardPayments = const [],
     this.buyers = const [],
-    this.message = '',
-    this.cardPaymentToCancel
+    this.message = ''
   });
 
   final PaymentsStateStatus status;
@@ -24,23 +23,19 @@ class PaymentsState {
   final List<CardPayment> cardPayments;
   final List<Buyer> buyers;
 
-  final CardPayment? cardPaymentToCancel;
-
   PaymentsState copyWith({
     PaymentsStateStatus? status,
     List<CashPayment>? cashPayments,
     List<CardPayment>? cardPayments,
     List<Buyer>? buyers,
-    String? message,
-    CardPayment? cardPaymentToCancel
+    String? message
   }) {
     return PaymentsState(
       status: status ?? this.status,
       message: message ?? this.message,
       cashPayments: cashPayments ?? this.cashPayments,
       cardPayments: cardPayments ?? this.cardPayments,
-      buyers: buyers ?? this.buyers,
-      cardPaymentToCancel: cardPaymentToCancel ?? this.cardPaymentToCancel
+      buyers: buyers ?? this.buyers
     );
   }
 }

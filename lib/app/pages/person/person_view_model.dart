@@ -44,12 +44,4 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
       emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
     }
   }
-
-  Future<void> launchAppUpdate() async {
-    Misc.launchAppUpdate(
-      repoName: Strings.repoName,
-      version: state.user!.version,
-      onError: () => emit(state.copyWith(status: PersonStateStatus.failure, message: Strings.genericErrorMsg))
-    );
-  }
 }

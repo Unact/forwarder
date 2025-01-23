@@ -14,17 +14,6 @@ class AppRepository extends BaseRepository {
     return dataStore.watchAppInfo();
   }
 
-  Future<ApiPaymentCredentials> getApiPaymentCredentials() async {
-    try {
-      return await api.getPaymentCredentials();
-    } on ApiException catch(e) {
-      throw AppError(e.errorMsg);
-    } catch(e, trace) {
-      await Misc.reportError(e, trace);
-      throw AppError(Strings.genericErrorMsg);
-    }
-  }
-
   Future<void> loadData() async {
     try {
       ApiData data = await api.getData();

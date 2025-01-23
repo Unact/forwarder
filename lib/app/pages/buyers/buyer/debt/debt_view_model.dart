@@ -37,7 +37,7 @@ class DebtViewModel extends PageViewModel<DebtState, DebtStateStatus> {
     await paymentsRepository.updateDebtPaymentSum(state.debt, newValue);
   }
 
-  void tryStartPayment(bool isCard) {
+  void tryStartPayment() {
     if (state.debt.paymentSum == null) {
       emit(state.copyWith(
         status: DebtStateStatus.paymentFailure,
@@ -50,7 +50,6 @@ class DebtViewModel extends PageViewModel<DebtState, DebtStateStatus> {
 
     emit(state.copyWith(
       status: DebtStateStatus.needUserConfirmation,
-      isCard: isCard,
       confirmationCallback: startPayment,
       message: 'Вы уверены, что хотите внести оплату ${Format.numberStr(state.debt.paymentSum)} руб.?\n'
         'Изменить потом будет нельзя.'

@@ -1,4 +1,4 @@
-package ru.unact.forwarder
+package com.selvis.forwarder
 
 import io.flutter.embedding.android.FlutterActivity
 

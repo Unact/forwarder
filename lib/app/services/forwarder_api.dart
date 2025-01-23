@@ -55,14 +55,13 @@ extension ForwarderApi on RenewApi {
 
   Future<void> acceptPayment(
     List<Map<String, dynamic>> payments,
-    Map<String, dynamic>? transaction,
     Map<String, dynamic> location
   ) async {
     await post(
       'v1/forwarder/save',
       dataGenerator: () => {
         'payments': payments,
-        'payment_transaction': transaction,
+        'payment_transaction': null,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
@@ -78,11 +77,5 @@ extension ForwarderApi on RenewApi {
         'local_ts': DateTime.now().toIso8601String()
       }
     );
-  }
-
-  Future<ApiPaymentCredentials> getPaymentCredentials() async {
-    final result = await get('v1/forwarder/credentials');
-
-    return ApiPaymentCredentials.fromJson(result);
   }
 }

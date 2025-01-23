@@ -6,7 +6,6 @@ import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
-import '/app/pages/payments/cancel_payment/cancel_payment_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
@@ -39,24 +38,13 @@ class _PaymentsView extends StatefulWidget {
 }
 
 class _PaymentsViewState extends State<_PaymentsView> {
-  Future<void> showCancelPaymentDialog() async {
-    PaymentsViewModel vm = context.read<PaymentsViewModel>();
-    String result = await showDialog(
-      context: context,
-      builder: (_) => CancelPaymentPage(cardPayment: vm.state.cardPaymentToCancel!),
-      barrierDismissible: false
-    ) ?? 'Возврат отменен';
-
-    vm.finishCancelPayment(result);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(Strings.paymentsPageName),
       ),
-      body: BlocConsumer<PaymentsViewModel, PaymentsState>(
+      body: BlocBuilder<PaymentsViewModel, PaymentsState>(
         builder: (context, state) {
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -78,20 +66,6 @@ class _PaymentsViewState extends State<_PaymentsView> {
               )
             ]
           );
-        },
-        listener: (context, state) async {
-          switch (state.status) {
-            case PaymentsStateStatus.cancelStarted:
-              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                await showCancelPaymentDialog();
-              });
-              break;
-            case PaymentsStateStatus.cancelFinished:
-              Misc.showMessage(context, state.message);
-              break;
-            default:
-              break;
-          }
         }
       )
     );
@@ -138,28 +112,14 @@ class _PaymentsViewState extends State<_PaymentsView> {
           )
         ]
       ),
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-              backgroundColor: Theme.of(context).colorScheme.primary
-            ),
-            onPressed: cardPayment.canceled || cardPayment.isLink ? null : () => vm.startCancelPayment(cardPayment),
-            child: const Text('Отменить', style: TextStyle(color: Colors.white))
-          ),
-          Container(width: 6),
-          SizedBox(
-            width: 60,
-            child: Text(
-              Format.numberStr(cardPayment.summ),
-              style: TextStyle(color: summColor),
-              textAlign: TextAlign.end,
-            )
-          )
-        ]
-      ),
+      trailing: SizedBox(
+        width: 60,
+        child: Text(
+          Format.numberStr(cardPayment.summ),
+          style: TextStyle(color: summColor),
+          textAlign: TextAlign.end,
+        )
+      )
     );
   }
 }

@@ -55,15 +55,4 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
 
   Buyer buyerForCardPayment(CardPayment cardPayment) => state.buyers.firstWhere((e) => e.id == cardPayment.buyerId);
   Buyer buyerForCashPayment(CashPayment cashPayment) => state.buyers.firstWhere((e) => e.id == cashPayment.buyerId);
-
-  void startCancelPayment(CardPayment cardPayment) {
-    emit(state.copyWith(
-      status: PaymentsStateStatus.cancelStarted,
-      cardPaymentToCancel: cardPayment
-    ));
-  }
-
-  void finishCancelPayment(String result) {
-    emit(state.copyWith(status: PaymentsStateStatus.cancelFinished, message: result));
-  }
 }

@@ -84,9 +84,7 @@ class _OrderViewState extends State<_OrderView> {
     String result = await showDialog(
       context: context,
       builder: (_) => AcceptPaymentPage(
-        debts: [vm.state.debt!],
-        isCard: vm.state.isCard,
-        isLink: vm.state.isLink,
+        debts: [vm.state.debt!]
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';
@@ -327,15 +325,7 @@ class _OrderViewState extends State<_OrderView> {
           backgroundColor: Theme.of(context).colorScheme.primary
         ),
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
-        onPressed: () => vm.tryStartPayment(false, false)
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Theme.of(context).colorScheme.primary
-        ),
-        child: const Text('Карта', style: TextStyle(color: Colors.white)),
-        onPressed: () => vm.tryStartPayment(true, false)
+        onPressed: () => vm.tryStartPayment()
       ),
       vm.state.order.physical && !vm.state.order.paid ?
         ElevatedButton(
