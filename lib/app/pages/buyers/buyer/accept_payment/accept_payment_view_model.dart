@@ -41,6 +41,14 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
   }
 
   Future<void> _getLocation() async {
+    if (!(await Permissions.hasLocationPermissions())) {
+      emit(state.copyWith(
+        message: 'Нет прав на получение местоположения',
+        status: AcceptPaymentStateStatus.failure
+      ));
+      return;
+    }
+
     emit(state.copyWith(position: await Geolocator.getCurrentPosition()));
     _savePayment();
   }
