@@ -20,8 +20,8 @@ class AcceptPaymentPage extends StatelessWidget {
 
   AcceptPaymentPage({
     required this.debts,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

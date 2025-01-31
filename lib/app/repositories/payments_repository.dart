@@ -9,7 +9,7 @@ import '/app/repositories/base_repository.dart';
 import '/app/services/forwarder_api.dart';
 
 class PaymentsRepository extends BaseRepository {
-  PaymentsRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
+  PaymentsRepository(super.dataStore, super.api);
 
   Stream<List<CashPayment>> watchCashPayments() {
     return dataStore.paymentsDao.watchCashPayments();

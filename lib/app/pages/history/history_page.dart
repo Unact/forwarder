@@ -15,8 +15,8 @@ part 'history_view_model.dart';
 
 class HistoryPage extends StatelessWidget {
   HistoryPage({
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

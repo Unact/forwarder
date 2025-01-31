@@ -16,8 +16,8 @@ part 'payments_view_model.dart';
 
 class PaymentsPage extends StatelessWidget {
   PaymentsPage({
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

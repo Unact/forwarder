@@ -16,8 +16,8 @@ part 'buyers_view_model.dart';
 
 class BuyersPage extends StatelessWidget {
   BuyersPage({
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

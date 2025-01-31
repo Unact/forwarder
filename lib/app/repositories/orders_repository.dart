@@ -9,7 +9,7 @@ import '/app/repositories/base_repository.dart';
 import '/app/services/forwarder_api.dart';
 
 class OrdersRepository extends BaseRepository {
-  OrdersRepository(AppDataStore dataStore, RenewApi api) : super(dataStore, api);
+  OrdersRepository(super.dataStore, super.api);
 
   Stream<List<Buyer>> watchBuyers() {
     return dataStore.ordersDao.watchBuyers();
