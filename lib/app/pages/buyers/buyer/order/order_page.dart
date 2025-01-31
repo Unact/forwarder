@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,8 +23,8 @@ class OrderPage extends StatelessWidget {
 
   OrderPage({
     required this.order,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +336,6 @@ class _OrderViewState extends State<_OrderView> {
           onPressed: () => vm.tryCancelOrderDelivery()
         ) :
         null
-    ].whereNotNull().toList();
+    ].nonNulls.toList();
   }
 }

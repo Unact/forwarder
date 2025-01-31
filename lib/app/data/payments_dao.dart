@@ -8,7 +8,7 @@ part of 'database.dart';
   ]
 )
 class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin {
-  PaymentsDao(AppDataStore db) : super(db);
+  PaymentsDao(super.db);
 
   Future<void> loadCashPayments(List<CashPayment> list) async {
     await batch((batch) {

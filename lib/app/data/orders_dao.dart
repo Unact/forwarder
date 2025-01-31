@@ -11,7 +11,7 @@ part of 'database.dart';
   ]
 )
 class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
-  OrdersDao(AppDataStore db) : super(db);
+  OrdersDao(super.db);
 
    Future<void> loadBuyers(List<Buyer> list) async {
     await batch((batch) {

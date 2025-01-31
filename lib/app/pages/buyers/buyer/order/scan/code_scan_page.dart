@@ -19,8 +19,8 @@ class CodeScanPage extends StatelessWidget {
 
   CodeScanPage({
     required this.order,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -39,7 +39,6 @@ void main() async {
     return true;
   };
 
-  Initialization.intializeFlogs(isDebug: isDebug);
   await Initialization.initializeSentry(
     dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
     isDebug: false,
@@ -59,6 +58,7 @@ void main() async {
         child: MaterialApp(
           title: Strings.ruAppName,
           theme: FlexThemeData.light(
+            useMaterial3: false,
             scheme: FlexScheme.blue,
             subThemesData: const FlexSubThemesData(
               inputDecoratorBorderType: FlexInputBorderType.underline,

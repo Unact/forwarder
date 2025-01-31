@@ -24,8 +24,8 @@ class BuyerPage extends StatelessWidget {
   BuyerPage({
     required this.buyer,
     required this.isInc,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -19,8 +19,8 @@ class DebtPage extends StatelessWidget {
 
   DebtPage({
     required this.debt,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
