@@ -13,11 +13,6 @@ PODS:
     - SDWebImageWebPCoder
   - flutter_secure_storage (6.0.0):
     - Flutter
-  - FMDB (2.7.12):
-    - FMDB/standard (= 2.7.12)
-  - FMDB/Core (2.7.12)
-  - FMDB/standard (2.7.12):
-    - FMDB/Core
   - geolocator_apple (1.2.0):
     - Flutter
   - GoogleDataTransport (9.4.1):
@@ -92,7 +87,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.1.1):
+  - permission_handler_apple (9.3.0):
     - Flutter
   - PromisesObjC (2.4.0)
   - SDWebImage (5.20.0):
@@ -111,9 +106,9 @@ PODS:
     - FlutterMacOS
   - soundpool (0.0.1):
     - Flutter
-  - sqflite (0.0.3):
+  - sqflite_darwin (0.0.4):
     - Flutter
-    - FMDB (>= 2.7.5)
+    - FlutterMacOS
   - sqlite3 (3.43.1):
     - sqlite3/common (= 3.43.1)
   - sqlite3/common (3.43.1)
@@ -133,7 +128,7 @@ PODS:
     - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
-  - vibration (1.7.5):
+  - vibration (3.0.0):
     - Flutter
 
 DEPENDENCIES:
@@ -151,7 +146,7 @@ DEPENDENCIES:
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - soundpool (from `.symlinks/plugins/soundpool/ios`)
-  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
   - u_app_utils (from `.symlinks/plugins/u_app_utils/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -159,7 +154,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - FMDB
     - GoogleDataTransport
     - GoogleMLKit
     - GoogleToolboxForMac
@@ -208,8 +202,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   soundpool:
     :path: ".symlinks/plugins/soundpool/ios"
-  sqflite:
-    :path: ".symlinks/plugins/sqflite/ios"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
   sqlite3_flutter_libs:
     :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
   u_app_utils:
@@ -220,14 +214,13 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/vibration/ios"
 
 SPEC CHECKSUMS:
-  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
-  device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
-  fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
+  camera_avfoundation: 04b44aeb14070126c6529e5ab82cc7c9fca107cf
+  device_info_plus: 8b1a7b1cce194cd48521ee7159feb70453ed4854
+  fk_user_agent: 137145b086229251761678fe034da53753f4ce59
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
-  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
-  geolocator_apple: 9157311f654584b9bb72686c55fc02a97b73f461
+  flutter_image_compress_common: 1697a328fd72bfb335507c6bca1a65fa5ad87df1
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
+  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
@@ -240,24 +233,24 @@ SPEC CHECKSUMS:
   MLKitBarcodeScanning: 10ca0845a6d15f2f6e911f682a1998b68b973e8b
   MLKitCommon: afec63980417d29ffbb4790529a1b0a2291699e1
   MLKitVision: e858c5f125ecc288e4a31127928301eaba9ae0c1
-  mobile_scanner: 96e91f2e1fb396bb7df8da40429ba8dfad664740
+  mobile_scanner: 92e8812bf22a8f84131e2a7f9d0f44dad1a4742b
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Sentry: 38ed8bf38eab5812787274bf591e528074c19e02
-  sentry_flutter: 7d1f1df30f3768c411603ed449519bbb90a7d87b
-  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
-  sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
+  sentry_flutter: a72ca0eb6e78335db7c4ddcddd1b9f6c8ed5b764
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  soundpool: cbfc34dbc42a1bb19426aaccf20e9cdd250b45e5
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
   sqlite3: e0a0623a33a20a47cb5921552aebc6e9e437dc91
-  sqlite3_flutter_libs: 878ccbdcfd7b7cb41a774ec238223d876880c5ec
-  u_app_utils: 906ccba4e520504acf7864a60a4b696d6b66b546
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  vibration: 7d883d141656a1c1a6d8d238616b2042a51a1241
+  sqlite3_flutter_libs: 2b5832c4721e10590ce42d68528a241bb586a57e
+  u_app_utils: cc47af3214864396eb5ee047723cd472c27f9f20
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  vibration: 69774ad57825b11c951ee4c46155f455d7a592ce
 
 PODFILE CHECKSUM: 20beac6eff7aabe458eac01e55119623478dbded
 
