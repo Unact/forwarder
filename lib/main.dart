@@ -59,7 +59,7 @@ void main() async {
           title: Strings.ruAppName,
           theme: FlexThemeData.light(
             useMaterial3: false,
-            scheme: FlexScheme.blue,
+            scheme: FlexScheme.red,
             subThemesData: const FlexSubThemesData(
               inputDecoratorBorderType: FlexInputBorderType.underline,
               inputDecoratorFocusedBorderWidth: 0,
