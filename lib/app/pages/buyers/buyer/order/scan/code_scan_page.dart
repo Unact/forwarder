@@ -44,7 +44,6 @@ class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
   final TextEditingController _controller = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CodeScanViewModel, CodeScanState>(
