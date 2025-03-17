@@ -59,13 +59,27 @@ class _CodeScanViewState extends State<_CodeScanView> {
       },
       listener: (context, state) {
         switch (state.status) {
-          case CodeScanStateStatus.success:
           case CodeScanStateStatus.failure:
-            Misc.showMessage(context, state.message);
+            showErrorDialog(context, state.message);
             break;
           default:
             break;
         }
+      }
+    );
+  }
+
+  Future<void> showErrorDialog(BuildContext context, String message) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Ошибка'),
+          content: SingleChildScrollView(child: ListBody(children: [Text(message)])),
+          actions: [
+            TextButton(child: const Text('Закрыть'), onPressed: () => Navigator.of(ctx).pop())
+          ]
+        );
       }
     );
   }
