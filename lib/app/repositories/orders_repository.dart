@@ -27,6 +27,10 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.watchOrders();
   }
 
+  Stream<List<OrderLineCode>> watchOrderLineCodes() {
+    return dataStore.ordersDao.watchOrderLineCodes();
+  }
+
   Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
     return dataStore.ordersDao.watchOrdersByBuyerId(buyerId);
   }
@@ -100,7 +104,6 @@ class OrdersRepository extends BaseRepository {
     }
 
     await dataStore.ordersDao.upsertOrder(updatedOrder);
-    await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
   }
 
   Future<void> cancelOrderDelivery(Order order) async {
