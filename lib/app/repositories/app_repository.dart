@@ -26,6 +26,7 @@ class AppRepository extends BaseRepository {
         List<Buyer> buyers = data.buyers.map((e) => e.toDatabaseEnt()).toList();
         List<Order> orders = data.orders.map((e) => e.toDatabaseEnt()).toList();
         List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
         List<Debt> debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.ordersDao.loadBuyers(buyers);
@@ -33,6 +34,7 @@ class AppRepository extends BaseRepository {
         await dataStore.ordersDao.loadRecepts(recepts);
         await dataStore.ordersDao.loadOrders(orders);
         await dataStore.ordersDao.loadOrderLines(orderLines);
+        await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes);
         await dataStore.paymentsDao.loadDebts(debts);
         await dataStore.paymentsDao.loadCashPayments(cashPayments);
         await dataStore.paymentsDao.loadCardPayments(cardPayments);
