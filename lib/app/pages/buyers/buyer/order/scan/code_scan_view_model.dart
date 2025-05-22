@@ -6,6 +6,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   final GS1BarcodeParser parser = GS1BarcodeParser.defaultParser();
 
   StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
+  StreamSubscription<List<OrderLineCode>>? orderLineCodesSubscription;
 
   CodeScanViewModel(this.appRepository, this.ordersRepository, {required Order order}) :
     super(CodeScanState(order: order));
@@ -20,6 +21,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     orderLineWithCodeListSubscription = ordersRepository.watchOrderLinesByOrderId(state.order.id).listen((event) {
       emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, codeLines: event));
     });
+    orderLineCodesSubscription = ordersRepository.watchOrderLineCodes().listen((event) {
+      emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, allCodeLines: event));
+    });
   }
 
   @override
@@ -27,6 +31,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await super.close();
 
     await orderLineWithCodeListSubscription?.cancel();
+    await orderLineCodesSubscription?.cancel();
   }
 
   String? _parseBarcode(String barcode) {
@@ -38,7 +43,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   }
 
   Future<void> _processDatacode(List<OrderLineWithCode> codeLines, String barcode) async {
-    if (state.allCodes.contains(barcode)) {
+    if (state.allCodeLines.any((e) => formatCode(e.code) == formatCode(barcode))) {
       emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован'));
       return;
     }
@@ -156,5 +161,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     }
 
     await ordersRepository.updateOrderLineCode(orderLineCode: codeLine.orderLineCodes.first, amount: newAmount);
+  }
+
+  String formatCode(String code) {
+    return code.replaceAll('\u001D', '');
   }
 }

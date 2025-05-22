@@ -7,6 +7,7 @@ class ApiData extends Equatable {
   final List<ApiDebt> debts;
   final List<ApiOrder> orders;
   final List<ApiOrderLine> orderLines;
+  final List<ApiOrderLineCode> orderLineCodes;
   final List<ApiIncome> incomes;
   final List<ApiRecept> recepts;
 
@@ -18,7 +19,8 @@ class ApiData extends Equatable {
     required this.orders,
     required this.incomes,
     required this.recepts,
-    required this.orderLines
+    required this.orderLines,
+    required this.orderLineCodes
   });
 
   factory ApiData.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,8 @@ class ApiData extends Equatable {
     List<ApiDebt> debts = json['debts'].map<ApiDebt>((e) => ApiDebt.fromJson(e)).toList();
     List<ApiOrder> orders = json['orders'].map<ApiOrder>((e) => ApiOrder.fromJson(e)).toList();
     List<ApiOrderLine> orderLines = json['order_lines'].map<ApiOrderLine>((e) => ApiOrderLine.fromJson(e)).toList();
+    List<ApiOrderLineCode> orderLineCodes = json['order_line_codes']
+      .map<ApiOrderLineCode>((e) => ApiOrderLineCode.fromJson(e)).toList();
 
     return ApiData(
       buyers: buyers,
@@ -41,7 +45,8 @@ class ApiData extends Equatable {
       orders: orders,
       incomes: incomes,
       recepts: recepts,
-      orderLines: orderLines
+      orderLines: orderLines,
+      orderLineCodes: orderLineCodes
     );
   }
 
@@ -54,6 +59,7 @@ class ApiData extends Equatable {
     orders,
     incomes,
     recepts,
-    orderLines
+    orderLines,
+    orderLineCodes
   ];
 }

@@ -34,6 +34,13 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     });
   }
 
+  Future<void> loadOrderLineCodes(List<OrderLineCode> list) async {
+    await batch((batch) {
+      batch.deleteWhere(orderLineCodes, (row) => const Constant(true));
+      batch.insertAll(orderLineCodes, list, mode: InsertMode.insertOrReplace);
+    });
+  }
+
   Future<void> loadIncomes(List<Income> list) async {
     await batch((batch) {
       batch.deleteWhere(incomes, (row) => const Constant(true));
@@ -68,6 +75,10 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
         })).toList();
       }
     );
+  }
+
+  Stream<List<OrderLineCode>> watchOrderLineCodes() {
+    return select(orderLineCodes).watch();
   }
 
   Stream<List<Income>> watchIncomes() {
