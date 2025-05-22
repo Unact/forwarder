@@ -41,7 +41,7 @@ class _DebtView extends StatefulWidget {
 }
 
 class _DebtViewState extends State<_DebtView> {
-  final TextStyle firstColumnTextStyle = const TextStyle(color: Colors.red);
+  final TextStyle firstColumnTextStyle = const TextStyle(color: Colors.blue);
   final EdgeInsets firstColumnPadding = const EdgeInsets.only(top: 8.0, bottom: 4.0, right: 8.0);
   final EdgeInsets baseColumnPadding = const EdgeInsets.only(top: 8.0, bottom: 4.0);
   final TextStyle defaultTextStyle = const TextStyle(fontSize: 14.0, color: Colors.black);

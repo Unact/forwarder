@@ -96,11 +96,11 @@ class _BuyersViewState extends State<_BuyersView> {
             ),
             TextSpan(
               text: 'Заказов: ${vm.buyerOrders(buyer).length}\n',
-              style: const TextStyle(color: Colors.red, fontSize: 12.0)
+              style: const TextStyle(color: Colors.blue, fontSize: 12.0)
               ),
             TextSpan(
               text: isInc ? 'Требуется инкассация' : '',
-              style: const TextStyle(color: Colors.red, fontSize: 12.0)
+              style: const TextStyle(color: Colors.blue, fontSize: 12.0)
             )
           ]
         )
