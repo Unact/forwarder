@@ -217,7 +217,7 @@ class _BuyerViewState extends State<_BuyerView> {
             ),
             TextSpan(
               text: 'Доставлен: $delivered\n',
-              style: const TextStyle(color: Colors.red, fontSize: 12.0),
+              style: const TextStyle(color: Colors.blue, fontSize: 12.0),
             ),
           ]
         )
