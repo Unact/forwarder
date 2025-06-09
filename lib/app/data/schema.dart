@@ -110,6 +110,16 @@ class OrderLineCodes extends Table {
   Set<Column> get primaryKey => {orderId, subid, code};
 }
 
+class OrderLineStorageCodes extends Table {
+  IntColumn get orderId => integer()();
+  IntColumn get subid => integer()();
+  TextColumn get code => text()();
+  IntColumn get amount => integer()();
+
+  @override
+  Set<Column> get primaryKey => {orderId, subid, code};
+}
+
 class OrderLineBarcodeListConverter extends TypeConverter<List<OrderLineBarcode>, String> {
   const OrderLineBarcodeListConverter();
 
