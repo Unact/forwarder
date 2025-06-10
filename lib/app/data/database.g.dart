@@ -57,9 +57,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   List<GeneratedColumn> get $columns =>
       [id, username, salesmanName, email, closed, version, total];
   @override
-  String get aliasedName => _alias ?? 'users';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'users';
+  String get actualTableName => $name;
+  static const String $name = 'users';
   @override
   VerificationContext validateIntegrity(Insertable<User> instance,
       {bool isInserting = false}) {
@@ -223,6 +224,20 @@ class User extends DataClass implements Insertable<User> {
         version: version ?? this.version,
         total: total ?? this.total,
       );
+  User copyWithCompanion(UsersCompanion data) {
+    return User(
+      id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
+      salesmanName: data.salesmanName.present
+          ? data.salesmanName.value
+          : this.salesmanName,
+      email: data.email.present ? data.email.value : this.email,
+      closed: data.closed.present ? data.closed.value : this.closed,
+      version: data.version.present ? data.version.value : this.version,
+      total: data.total.present ? data.total.value : this.total,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('User(')
@@ -392,9 +407,10 @@ class $ReceptsTable extends Recepts with TableInfo<$ReceptsTable, Recept> {
   @override
   List<GeneratedColumn> get $columns => [id, ddate, summ];
   @override
-  String get aliasedName => _alias ?? 'recepts';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'recepts';
+  String get actualTableName => $name;
+  static const String $name = 'recepts';
   @override
   VerificationContext validateIntegrity(Insertable<Recept> instance,
       {bool isInserting = false}) {
@@ -485,6 +501,14 @@ class Recept extends DataClass implements Insertable<Recept> {
         ddate: ddate ?? this.ddate,
         summ: summ ?? this.summ,
       );
+  Recept copyWithCompanion(ReceptsCompanion data) {
+    return Recept(
+      id: data.id.present ? data.id.value : this.id,
+      ddate: data.ddate.present ? data.ddate.value : this.ddate,
+      summ: data.summ.present ? data.summ.value : this.summ,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Recept(')
@@ -595,9 +619,10 @@ class $IncomesTable extends Incomes with TableInfo<$IncomesTable, Income> {
   @override
   List<GeneratedColumn> get $columns => [id, ddate, summ];
   @override
-  String get aliasedName => _alias ?? 'incomes';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'incomes';
+  String get actualTableName => $name;
+  static const String $name = 'incomes';
   @override
   VerificationContext validateIntegrity(Insertable<Income> instance,
       {bool isInserting = false}) {
@@ -688,6 +713,14 @@ class Income extends DataClass implements Insertable<Income> {
         ddate: ddate ?? this.ddate,
         summ: summ ?? this.summ,
       );
+  Income copyWithCompanion(IncomesCompanion data) {
+    return Income(
+      id: data.id.present ? data.id.value : this.id,
+      ddate: data.ddate.present ? data.ddate.value : this.ddate,
+      summ: data.summ.present ? data.summ.value : this.summ,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Income(')
@@ -799,9 +832,10 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   @override
   List<GeneratedColumn> get $columns => [id, name, address];
   @override
-  String get aliasedName => _alias ?? 'buyers';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'buyers';
+  String get actualTableName => $name;
+  static const String $name = 'buyers';
   @override
   VerificationContext validateIntegrity(Insertable<Buyer> instance,
       {bool isInserting = false}) {
@@ -892,6 +926,14 @@ class Buyer extends DataClass implements Insertable<Buyer> {
         name: name ?? this.name,
         address: address ?? this.address,
       );
+  Buyer copyWithCompanion(BuyersCompanion data) {
+    return Buyer(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      address: data.address.present ? data.address.value : this.address,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Buyer(')
@@ -1039,9 +1081,10 @@ class $CardPaymentsTable extends CardPayments
   List<GeneratedColumn> get $columns =>
       [id, buyerId, orderId, summ, ddate, transactionId, canceled, isLink];
   @override
-  String get aliasedName => _alias ?? 'card_payments';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'card_payments';
+  String get actualTableName => $name;
+  static const String $name = 'card_payments';
   @override
   VerificationContext validateIntegrity(Insertable<CardPayment> instance,
       {bool isInserting = false}) {
@@ -1224,6 +1267,21 @@ class CardPayment extends DataClass implements Insertable<CardPayment> {
         canceled: canceled ?? this.canceled,
         isLink: isLink ?? this.isLink,
       );
+  CardPayment copyWithCompanion(CardPaymentsCompanion data) {
+    return CardPayment(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      summ: data.summ.present ? data.summ.value : this.summ,
+      ddate: data.ddate.present ? data.ddate.value : this.ddate,
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      canceled: data.canceled.present ? data.canceled.value : this.canceled,
+      isLink: data.isLink.present ? data.isLink.value : this.isLink,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('CardPayment(')
@@ -1429,9 +1487,10 @@ class $CashPaymentsTable extends CashPayments
   List<GeneratedColumn> get $columns =>
       [id, buyerId, orderId, summ, ddate, kkmprinted];
   @override
-  String get aliasedName => _alias ?? 'cash_payments';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'cash_payments';
+  String get actualTableName => $name;
+  static const String $name = 'cash_payments';
   @override
   VerificationContext validateIntegrity(Insertable<CashPayment> instance,
       {bool isInserting = false}) {
@@ -1579,6 +1638,18 @@ class CashPayment extends DataClass implements Insertable<CashPayment> {
         ddate: ddate ?? this.ddate,
         kkmprinted: kkmprinted ?? this.kkmprinted,
       );
+  CashPayment copyWithCompanion(CashPaymentsCompanion data) {
+    return CashPayment(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      summ: data.summ.present ? data.summ.value : this.summ,
+      ddate: data.ddate.present ? data.ddate.value : this.ddate,
+      kkmprinted:
+          data.kkmprinted.present ? data.kkmprinted.value : this.kkmprinted,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('CashPayment(')
@@ -1814,9 +1885,10 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
         physical
       ];
   @override
-  String get aliasedName => _alias ?? 'debts';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'debts';
+  String get actualTableName => $name;
+  static const String $name = 'debts';
   @override
   VerificationContext validateIntegrity(Insertable<Debt> instance,
       {bool isInserting = false}) {
@@ -2082,6 +2154,26 @@ class Debt extends DataClass implements Insertable<Debt> {
         paymentSum: paymentSum.present ? paymentSum.value : this.paymentSum,
         physical: physical ?? this.physical,
       );
+  Debt copyWithCompanion(DebtsCompanion data) {
+    return Debt(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      ndoc: data.ndoc.present ? data.ndoc.value : this.ndoc,
+      orderNdoc: data.orderNdoc.present ? data.orderNdoc.value : this.orderNdoc,
+      ddate: data.ddate.present ? data.ddate.value : this.ddate,
+      orderDdate:
+          data.orderDdate.present ? data.orderDdate.value : this.orderDdate,
+      isCheck: data.isCheck.present ? data.isCheck.value : this.isCheck,
+      debtSum: data.debtSum.present ? data.debtSum.value : this.debtSum,
+      orderSum: data.orderSum.present ? data.orderSum.value : this.orderSum,
+      paidSum: data.paidSum.present ? data.paidSum.value : this.paidSum,
+      paymentSum:
+          data.paymentSum.present ? data.paymentSum.value : this.paymentSum,
+      physical: data.physical.present ? data.physical.value : this.physical,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Debt(')
@@ -2401,9 +2493,10 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
         physical
       ];
   @override
-  String get aliasedName => _alias ?? 'orders';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'orders';
+  String get actualTableName => $name;
+  static const String $name = 'orders';
   @override
   VerificationContext validateIntegrity(Insertable<Order> instance,
       {bool isInserting = false}) {
@@ -2630,6 +2723,22 @@ class Order extends DataClass implements Insertable<Order> {
         paid: paid ?? this.paid,
         physical: physical ?? this.physical,
       );
+  Order copyWithCompanion(OrdersCompanion data) {
+    return Order(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      ord: data.ord.present ? data.ord.value : this.ord,
+      ndoc: data.ndoc.present ? data.ndoc.value : this.ndoc,
+      info: data.info.present ? data.info.value : this.info,
+      isInc: data.isInc.present ? data.isInc.value : this.isInc,
+      goodsCnt: data.goodsCnt.present ? data.goodsCnt.value : this.goodsCnt,
+      mc: data.mc.present ? data.mc.value : this.mc,
+      delivered: data.delivered.present ? data.delivered.value : this.delivered,
+      paid: data.paid.present ? data.paid.value : this.paid,
+      physical: data.physical.present ? data.physical.value : this.physical,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Order(')
@@ -2879,8 +2988,6 @@ class $OrderLinesTable extends OrderLines
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("need_marking" IN (0, 1))'));
-  static const VerificationMeta _barcodeRelsMeta =
-      const VerificationMeta('barcodeRels');
   @override
   late final GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String>
       barcodeRels = GeneratedColumn<String>('barcode_rels', aliasedName, false,
@@ -2900,9 +3007,10 @@ class $OrderLinesTable extends OrderLines
         barcodeRels
       ];
   @override
-  String get aliasedName => _alias ?? 'order_lines';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'order_lines';
+  String get actualTableName => $name;
+  static const String $name = 'order_lines';
   @override
   VerificationContext validateIntegrity(Insertable<OrderLine> instance,
       {bool isInserting = false}) {
@@ -2960,7 +3068,6 @@ class $OrderLinesTable extends OrderLines
     } else if (isInserting) {
       context.missing(_needMarkingMeta);
     }
-    context.handle(_barcodeRelsMeta, const VerificationResult.success());
     return context;
   }
 
@@ -3033,8 +3140,8 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['price'] = Variable<double>(price);
     map['need_marking'] = Variable<bool>(needMarking);
     {
-      final converter = $OrderLinesTable.$converterbarcodeRels;
-      map['barcode_rels'] = Variable<String>(converter.toSql(barcodeRels));
+      map['barcode_rels'] = Variable<String>(
+          $OrderLinesTable.$converterbarcodeRels.toSql(barcodeRels));
     }
     return map;
   }
@@ -3106,6 +3213,24 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
         needMarking: needMarking ?? this.needMarking,
         barcodeRels: barcodeRels ?? this.barcodeRels,
       );
+  OrderLine copyWithCompanion(OrderLinesCompanion data) {
+    return OrderLine(
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      subid: data.subid.present ? data.subid.value : this.subid,
+      name: data.name.present ? data.name.value : this.name,
+      gtin: data.gtin.present ? data.gtin.value : this.gtin,
+      vol: data.vol.present ? data.vol.value : this.vol,
+      deliveredVol: data.deliveredVol.present
+          ? data.deliveredVol.value
+          : this.deliveredVol,
+      price: data.price.present ? data.price.value : this.price,
+      needMarking:
+          data.needMarking.present ? data.needMarking.value : this.needMarking,
+      barcodeRels:
+          data.barcodeRels.present ? data.barcodeRels.value : this.barcodeRels,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('OrderLine(')
@@ -3262,9 +3387,8 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
     if (barcodeRels.present) {
-      final converter = $OrderLinesTable.$converterbarcodeRels;
-      map['barcode_rels'] =
-          Variable<String>(converter.toSql(barcodeRels.value));
+      map['barcode_rels'] = Variable<String>(
+          $OrderLinesTable.$converterbarcodeRels.toSql(barcodeRels.value));
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3336,9 +3460,10 @@ class $OrderLineCodesTable extends OrderLineCodes
   List<GeneratedColumn> get $columns =>
       [orderId, subid, code, amount, isDataMatrix, localTs];
   @override
-  String get aliasedName => _alias ?? 'order_line_codes';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'order_line_codes';
+  String get actualTableName => $name;
+  static const String $name = 'order_line_codes';
   @override
   VerificationContext validateIntegrity(Insertable<OrderLineCode> instance,
       {bool isInserting = false}) {
@@ -3489,6 +3614,19 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
         isDataMatrix: isDataMatrix ?? this.isDataMatrix,
         localTs: localTs ?? this.localTs,
       );
+  OrderLineCode copyWithCompanion(OrderLineCodesCompanion data) {
+    return OrderLineCode(
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      subid: data.subid.present ? data.subid.value : this.subid,
+      code: data.code.present ? data.code.value : this.code,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      isDataMatrix: data.isDataMatrix.present
+          ? data.isDataMatrix.value
+          : this.isDataMatrix,
+      localTs: data.localTs.present ? data.localTs.value : this.localTs,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('OrderLineCode(')
@@ -3629,6 +3767,276 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   }
 }
 
+class $OrderLineStorageCodesTable extends OrderLineStorageCodes
+    with TableInfo<$OrderLineStorageCodesTable, OrderLineStorageCode> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OrderLineStorageCodesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _orderIdMeta =
+      const VerificationMeta('orderId');
+  @override
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
+      'order_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _subidMeta = const VerificationMeta('subid');
+  @override
+  late final GeneratedColumn<int> subid = GeneratedColumn<int>(
+      'subid', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [orderId, subid, code, amount];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'order_line_storage_codes';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<OrderLineStorageCode> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('order_id')) {
+      context.handle(_orderIdMeta,
+          orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta));
+    } else if (isInserting) {
+      context.missing(_orderIdMeta);
+    }
+    if (data.containsKey('subid')) {
+      context.handle(
+          _subidMeta, subid.isAcceptableOrUnknown(data['subid']!, _subidMeta));
+    } else if (isInserting) {
+      context.missing(_subidMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid, code};
+  @override
+  OrderLineStorageCode map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OrderLineStorageCode(
+      orderId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}order_id'])!,
+      subid: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}subid'])!,
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+    );
+  }
+
+  @override
+  $OrderLineStorageCodesTable createAlias(String alias) {
+    return $OrderLineStorageCodesTable(attachedDatabase, alias);
+  }
+}
+
+class OrderLineStorageCode extends DataClass
+    implements Insertable<OrderLineStorageCode> {
+  final int orderId;
+  final int subid;
+  final String code;
+  final int amount;
+  const OrderLineStorageCode(
+      {required this.orderId,
+      required this.subid,
+      required this.code,
+      required this.amount});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['order_id'] = Variable<int>(orderId);
+    map['subid'] = Variable<int>(subid);
+    map['code'] = Variable<String>(code);
+    map['amount'] = Variable<int>(amount);
+    return map;
+  }
+
+  OrderLineStorageCodesCompanion toCompanion(bool nullToAbsent) {
+    return OrderLineStorageCodesCompanion(
+      orderId: Value(orderId),
+      subid: Value(subid),
+      code: Value(code),
+      amount: Value(amount),
+    );
+  }
+
+  factory OrderLineStorageCode.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OrderLineStorageCode(
+      orderId: serializer.fromJson<int>(json['orderId']),
+      subid: serializer.fromJson<int>(json['subid']),
+      code: serializer.fromJson<String>(json['code']),
+      amount: serializer.fromJson<int>(json['amount']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'orderId': serializer.toJson<int>(orderId),
+      'subid': serializer.toJson<int>(subid),
+      'code': serializer.toJson<String>(code),
+      'amount': serializer.toJson<int>(amount),
+    };
+  }
+
+  OrderLineStorageCode copyWith(
+          {int? orderId, int? subid, String? code, int? amount}) =>
+      OrderLineStorageCode(
+        orderId: orderId ?? this.orderId,
+        subid: subid ?? this.subid,
+        code: code ?? this.code,
+        amount: amount ?? this.amount,
+      );
+  OrderLineStorageCode copyWithCompanion(OrderLineStorageCodesCompanion data) {
+    return OrderLineStorageCode(
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      subid: data.subid.present ? data.subid.value : this.subid,
+      code: data.code.present ? data.code.value : this.code,
+      amount: data.amount.present ? data.amount.value : this.amount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLineStorageCode(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('code: $code, ')
+          ..write('amount: $amount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(orderId, subid, code, amount);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OrderLineStorageCode &&
+          other.orderId == this.orderId &&
+          other.subid == this.subid &&
+          other.code == this.code &&
+          other.amount == this.amount);
+}
+
+class OrderLineStorageCodesCompanion
+    extends UpdateCompanion<OrderLineStorageCode> {
+  final Value<int> orderId;
+  final Value<int> subid;
+  final Value<String> code;
+  final Value<int> amount;
+  final Value<int> rowid;
+  const OrderLineStorageCodesCompanion({
+    this.orderId = const Value.absent(),
+    this.subid = const Value.absent(),
+    this.code = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OrderLineStorageCodesCompanion.insert({
+    required int orderId,
+    required int subid,
+    required String code,
+    required int amount,
+    this.rowid = const Value.absent(),
+  })  : orderId = Value(orderId),
+        subid = Value(subid),
+        code = Value(code),
+        amount = Value(amount);
+  static Insertable<OrderLineStorageCode> custom({
+    Expression<int>? orderId,
+    Expression<int>? subid,
+    Expression<String>? code,
+    Expression<int>? amount,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (orderId != null) 'order_id': orderId,
+      if (subid != null) 'subid': subid,
+      if (code != null) 'code': code,
+      if (amount != null) 'amount': amount,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OrderLineStorageCodesCompanion copyWith(
+      {Value<int>? orderId,
+      Value<int>? subid,
+      Value<String>? code,
+      Value<int>? amount,
+      Value<int>? rowid}) {
+    return OrderLineStorageCodesCompanion(
+      orderId: orderId ?? this.orderId,
+      subid: subid ?? this.subid,
+      code: code ?? this.code,
+      amount: amount ?? this.amount,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (orderId.present) {
+      map['order_id'] = Variable<int>(orderId.value);
+    }
+    if (subid.present) {
+      map['subid'] = Variable<int>(subid.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLineStorageCodesCompanion(')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('code: $code, ')
+          ..write('amount: $amount, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -3643,9 +4051,10 @@ class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   @override
   List<GeneratedColumn> get $columns => [lastLoadTime];
   @override
-  String get aliasedName => _alias ?? 'prefs';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'prefs';
+  String get actualTableName => $name;
+  static const String $name = 'prefs';
   @override
   VerificationContext validateIntegrity(Insertable<Pref> instance,
       {bool isInserting = false}) {
@@ -3716,6 +4125,14 @@ class Pref extends DataClass implements Insertable<Pref> {
         lastLoadTime:
             lastLoadTime.present ? lastLoadTime.value : this.lastLoadTime,
       );
+  Pref copyWithCompanion(PrefsCompanion data) {
+    return Pref(
+      lastLoadTime: data.lastLoadTime.present
+          ? data.lastLoadTime.value
+          : this.lastLoadTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('Pref(')
@@ -3784,6 +4201,7 @@ class PrefsCompanion extends UpdateCompanion<Pref> {
 
 abstract class _$AppDataStore extends GeneratedDatabase {
   _$AppDataStore(QueryExecutor e) : super(e);
+  $AppDataStoreManager get managers => $AppDataStoreManager(this);
   late final $UsersTable users = $UsersTable(this);
   late final $ReceptsTable recepts = $ReceptsTable(this);
   late final $IncomesTable incomes = $IncomesTable(this);
@@ -3794,6 +4212,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $OrdersTable orders = $OrdersTable(this);
   late final $OrderLinesTable orderLines = $OrderLinesTable(this);
   late final $OrderLineCodesTable orderLineCodes = $OrderLineCodesTable(this);
+  late final $OrderLineStorageCodesTable orderLineStorageCodes =
+      $OrderLineStorageCodesTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
@@ -3829,8 +4249,2227 @@ abstract class _$AppDataStore extends GeneratedDatabase {
         orders,
         orderLines,
         orderLineCodes,
+        orderLineStorageCodes,
         prefs
       ];
+}
+
+typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
+  Value<int> id,
+  required String username,
+  required String salesmanName,
+  required String email,
+  required bool closed,
+  required String version,
+  required double total,
+});
+typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
+  Value<int> id,
+  Value<String> username,
+  Value<String> salesmanName,
+  Value<String> email,
+  Value<bool> closed,
+  Value<String> version,
+  Value<double> total,
+});
+
+class $$UsersTableFilterComposer extends Composer<_$AppDataStore, $UsersTable> {
+  $$UsersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get salesmanName => $composableBuilder(
+      column: $table.salesmanName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get closed => $composableBuilder(
+      column: $table.closed, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnFilters(column));
+}
+
+class $$UsersTableOrderingComposer
+    extends Composer<_$AppDataStore, $UsersTable> {
+  $$UsersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get salesmanName => $composableBuilder(
+      column: $table.salesmanName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get closed => $composableBuilder(
+      column: $table.closed, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get total => $composableBuilder(
+      column: $table.total, builder: (column) => ColumnOrderings(column));
+}
+
+class $$UsersTableAnnotationComposer
+    extends Composer<_$AppDataStore, $UsersTable> {
+  $$UsersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get salesmanName => $composableBuilder(
+      column: $table.salesmanName, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<bool> get closed =>
+      $composableBuilder(column: $table.closed, builder: (column) => column);
+
+  GeneratedColumn<String> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<double> get total =>
+      $composableBuilder(column: $table.total, builder: (column) => column);
+}
+
+class $$UsersTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AppDataStore, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()> {
+  $$UsersTableTableManager(_$AppDataStore db, $UsersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UsersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UsersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UsersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> username = const Value.absent(),
+            Value<String> salesmanName = const Value.absent(),
+            Value<String> email = const Value.absent(),
+            Value<bool> closed = const Value.absent(),
+            Value<String> version = const Value.absent(),
+            Value<double> total = const Value.absent(),
+          }) =>
+              UsersCompanion(
+            id: id,
+            username: username,
+            salesmanName: salesmanName,
+            email: email,
+            closed: closed,
+            version: version,
+            total: total,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String username,
+            required String salesmanName,
+            required String email,
+            required bool closed,
+            required String version,
+            required double total,
+          }) =>
+              UsersCompanion.insert(
+            id: id,
+            username: username,
+            salesmanName: salesmanName,
+            email: email,
+            closed: closed,
+            version: version,
+            total: total,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$UsersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AppDataStore, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()>;
+typedef $$ReceptsTableCreateCompanionBuilder = ReceptsCompanion Function({
+  Value<int> id,
+  required DateTime ddate,
+  required double summ,
+});
+typedef $$ReceptsTableUpdateCompanionBuilder = ReceptsCompanion Function({
+  Value<int> id,
+  Value<DateTime> ddate,
+  Value<double> summ,
+});
+
+class $$ReceptsTableFilterComposer
+    extends Composer<_$AppDataStore, $ReceptsTable> {
+  $$ReceptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnFilters(column));
+}
+
+class $$ReceptsTableOrderingComposer
+    extends Composer<_$AppDataStore, $ReceptsTable> {
+  $$ReceptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ReceptsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $ReceptsTable> {
+  $$ReceptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get ddate =>
+      $composableBuilder(column: $table.ddate, builder: (column) => column);
+
+  GeneratedColumn<double> get summ =>
+      $composableBuilder(column: $table.summ, builder: (column) => column);
+}
+
+class $$ReceptsTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $ReceptsTable,
+    Recept,
+    $$ReceptsTableFilterComposer,
+    $$ReceptsTableOrderingComposer,
+    $$ReceptsTableAnnotationComposer,
+    $$ReceptsTableCreateCompanionBuilder,
+    $$ReceptsTableUpdateCompanionBuilder,
+    (Recept, BaseReferences<_$AppDataStore, $ReceptsTable, Recept>),
+    Recept,
+    PrefetchHooks Function()> {
+  $$ReceptsTableTableManager(_$AppDataStore db, $ReceptsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReceptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReceptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReceptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<DateTime> ddate = const Value.absent(),
+            Value<double> summ = const Value.absent(),
+          }) =>
+              ReceptsCompanion(
+            id: id,
+            ddate: ddate,
+            summ: summ,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required DateTime ddate,
+            required double summ,
+          }) =>
+              ReceptsCompanion.insert(
+            id: id,
+            ddate: ddate,
+            summ: summ,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ReceptsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $ReceptsTable,
+    Recept,
+    $$ReceptsTableFilterComposer,
+    $$ReceptsTableOrderingComposer,
+    $$ReceptsTableAnnotationComposer,
+    $$ReceptsTableCreateCompanionBuilder,
+    $$ReceptsTableUpdateCompanionBuilder,
+    (Recept, BaseReferences<_$AppDataStore, $ReceptsTable, Recept>),
+    Recept,
+    PrefetchHooks Function()>;
+typedef $$IncomesTableCreateCompanionBuilder = IncomesCompanion Function({
+  Value<int> id,
+  required DateTime ddate,
+  required double summ,
+});
+typedef $$IncomesTableUpdateCompanionBuilder = IncomesCompanion Function({
+  Value<int> id,
+  Value<DateTime> ddate,
+  Value<double> summ,
+});
+
+class $$IncomesTableFilterComposer
+    extends Composer<_$AppDataStore, $IncomesTable> {
+  $$IncomesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnFilters(column));
+}
+
+class $$IncomesTableOrderingComposer
+    extends Composer<_$AppDataStore, $IncomesTable> {
+  $$IncomesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnOrderings(column));
+}
+
+class $$IncomesTableAnnotationComposer
+    extends Composer<_$AppDataStore, $IncomesTable> {
+  $$IncomesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get ddate =>
+      $composableBuilder(column: $table.ddate, builder: (column) => column);
+
+  GeneratedColumn<double> get summ =>
+      $composableBuilder(column: $table.summ, builder: (column) => column);
+}
+
+class $$IncomesTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $IncomesTable,
+    Income,
+    $$IncomesTableFilterComposer,
+    $$IncomesTableOrderingComposer,
+    $$IncomesTableAnnotationComposer,
+    $$IncomesTableCreateCompanionBuilder,
+    $$IncomesTableUpdateCompanionBuilder,
+    (Income, BaseReferences<_$AppDataStore, $IncomesTable, Income>),
+    Income,
+    PrefetchHooks Function()> {
+  $$IncomesTableTableManager(_$AppDataStore db, $IncomesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$IncomesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$IncomesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$IncomesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<DateTime> ddate = const Value.absent(),
+            Value<double> summ = const Value.absent(),
+          }) =>
+              IncomesCompanion(
+            id: id,
+            ddate: ddate,
+            summ: summ,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required DateTime ddate,
+            required double summ,
+          }) =>
+              IncomesCompanion.insert(
+            id: id,
+            ddate: ddate,
+            summ: summ,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$IncomesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $IncomesTable,
+    Income,
+    $$IncomesTableFilterComposer,
+    $$IncomesTableOrderingComposer,
+    $$IncomesTableAnnotationComposer,
+    $$IncomesTableCreateCompanionBuilder,
+    $$IncomesTableUpdateCompanionBuilder,
+    (Income, BaseReferences<_$AppDataStore, $IncomesTable, Income>),
+    Income,
+    PrefetchHooks Function()>;
+typedef $$BuyersTableCreateCompanionBuilder = BuyersCompanion Function({
+  Value<int> id,
+  required String name,
+  required String address,
+});
+typedef $$BuyersTableUpdateCompanionBuilder = BuyersCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> address,
+});
+
+class $$BuyersTableFilterComposer
+    extends Composer<_$AppDataStore, $BuyersTable> {
+  $$BuyersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnFilters(column));
+}
+
+class $$BuyersTableOrderingComposer
+    extends Composer<_$AppDataStore, $BuyersTable> {
+  $$BuyersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get address => $composableBuilder(
+      column: $table.address, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BuyersTableAnnotationComposer
+    extends Composer<_$AppDataStore, $BuyersTable> {
+  $$BuyersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+}
+
+class $$BuyersTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $BuyersTable,
+    Buyer,
+    $$BuyersTableFilterComposer,
+    $$BuyersTableOrderingComposer,
+    $$BuyersTableAnnotationComposer,
+    $$BuyersTableCreateCompanionBuilder,
+    $$BuyersTableUpdateCompanionBuilder,
+    (Buyer, BaseReferences<_$AppDataStore, $BuyersTable, Buyer>),
+    Buyer,
+    PrefetchHooks Function()> {
+  $$BuyersTableTableManager(_$AppDataStore db, $BuyersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BuyersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BuyersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BuyersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> address = const Value.absent(),
+          }) =>
+              BuyersCompanion(
+            id: id,
+            name: name,
+            address: address,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required String address,
+          }) =>
+              BuyersCompanion.insert(
+            id: id,
+            name: name,
+            address: address,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$BuyersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $BuyersTable,
+    Buyer,
+    $$BuyersTableFilterComposer,
+    $$BuyersTableOrderingComposer,
+    $$BuyersTableAnnotationComposer,
+    $$BuyersTableCreateCompanionBuilder,
+    $$BuyersTableUpdateCompanionBuilder,
+    (Buyer, BaseReferences<_$AppDataStore, $BuyersTable, Buyer>),
+    Buyer,
+    PrefetchHooks Function()>;
+typedef $$CardPaymentsTableCreateCompanionBuilder = CardPaymentsCompanion
+    Function({
+  Value<int> id,
+  required int buyerId,
+  required int orderId,
+  required double summ,
+  required DateTime ddate,
+  Value<String?> transactionId,
+  required bool canceled,
+  required bool isLink,
+});
+typedef $$CardPaymentsTableUpdateCompanionBuilder = CardPaymentsCompanion
+    Function({
+  Value<int> id,
+  Value<int> buyerId,
+  Value<int> orderId,
+  Value<double> summ,
+  Value<DateTime> ddate,
+  Value<String?> transactionId,
+  Value<bool> canceled,
+  Value<bool> isLink,
+});
+
+class $$CardPaymentsTableFilterComposer
+    extends Composer<_$AppDataStore, $CardPaymentsTable> {
+  $$CardPaymentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get transactionId => $composableBuilder(
+      column: $table.transactionId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get canceled => $composableBuilder(
+      column: $table.canceled, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isLink => $composableBuilder(
+      column: $table.isLink, builder: (column) => ColumnFilters(column));
+}
+
+class $$CardPaymentsTableOrderingComposer
+    extends Composer<_$AppDataStore, $CardPaymentsTable> {
+  $$CardPaymentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get transactionId => $composableBuilder(
+      column: $table.transactionId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get canceled => $composableBuilder(
+      column: $table.canceled, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isLink => $composableBuilder(
+      column: $table.isLink, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CardPaymentsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $CardPaymentsTable> {
+  $$CardPaymentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<double> get summ =>
+      $composableBuilder(column: $table.summ, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get ddate =>
+      $composableBuilder(column: $table.ddate, builder: (column) => column);
+
+  GeneratedColumn<String> get transactionId => $composableBuilder(
+      column: $table.transactionId, builder: (column) => column);
+
+  GeneratedColumn<bool> get canceled =>
+      $composableBuilder(column: $table.canceled, builder: (column) => column);
+
+  GeneratedColumn<bool> get isLink =>
+      $composableBuilder(column: $table.isLink, builder: (column) => column);
+}
+
+class $$CardPaymentsTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $CardPaymentsTable,
+    CardPayment,
+    $$CardPaymentsTableFilterComposer,
+    $$CardPaymentsTableOrderingComposer,
+    $$CardPaymentsTableAnnotationComposer,
+    $$CardPaymentsTableCreateCompanionBuilder,
+    $$CardPaymentsTableUpdateCompanionBuilder,
+    (
+      CardPayment,
+      BaseReferences<_$AppDataStore, $CardPaymentsTable, CardPayment>
+    ),
+    CardPayment,
+    PrefetchHooks Function()> {
+  $$CardPaymentsTableTableManager(_$AppDataStore db, $CardPaymentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CardPaymentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CardPaymentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CardPaymentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> buyerId = const Value.absent(),
+            Value<int> orderId = const Value.absent(),
+            Value<double> summ = const Value.absent(),
+            Value<DateTime> ddate = const Value.absent(),
+            Value<String?> transactionId = const Value.absent(),
+            Value<bool> canceled = const Value.absent(),
+            Value<bool> isLink = const Value.absent(),
+          }) =>
+              CardPaymentsCompanion(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            summ: summ,
+            ddate: ddate,
+            transactionId: transactionId,
+            canceled: canceled,
+            isLink: isLink,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int buyerId,
+            required int orderId,
+            required double summ,
+            required DateTime ddate,
+            Value<String?> transactionId = const Value.absent(),
+            required bool canceled,
+            required bool isLink,
+          }) =>
+              CardPaymentsCompanion.insert(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            summ: summ,
+            ddate: ddate,
+            transactionId: transactionId,
+            canceled: canceled,
+            isLink: isLink,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CardPaymentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $CardPaymentsTable,
+    CardPayment,
+    $$CardPaymentsTableFilterComposer,
+    $$CardPaymentsTableOrderingComposer,
+    $$CardPaymentsTableAnnotationComposer,
+    $$CardPaymentsTableCreateCompanionBuilder,
+    $$CardPaymentsTableUpdateCompanionBuilder,
+    (
+      CardPayment,
+      BaseReferences<_$AppDataStore, $CardPaymentsTable, CardPayment>
+    ),
+    CardPayment,
+    PrefetchHooks Function()>;
+typedef $$CashPaymentsTableCreateCompanionBuilder = CashPaymentsCompanion
+    Function({
+  Value<int> id,
+  required int buyerId,
+  required int orderId,
+  required double summ,
+  required DateTime ddate,
+  required bool kkmprinted,
+});
+typedef $$CashPaymentsTableUpdateCompanionBuilder = CashPaymentsCompanion
+    Function({
+  Value<int> id,
+  Value<int> buyerId,
+  Value<int> orderId,
+  Value<double> summ,
+  Value<DateTime> ddate,
+  Value<bool> kkmprinted,
+});
+
+class $$CashPaymentsTableFilterComposer
+    extends Composer<_$AppDataStore, $CashPaymentsTable> {
+  $$CashPaymentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get kkmprinted => $composableBuilder(
+      column: $table.kkmprinted, builder: (column) => ColumnFilters(column));
+}
+
+class $$CashPaymentsTableOrderingComposer
+    extends Composer<_$AppDataStore, $CashPaymentsTable> {
+  $$CashPaymentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get summ => $composableBuilder(
+      column: $table.summ, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get kkmprinted => $composableBuilder(
+      column: $table.kkmprinted, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CashPaymentsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $CashPaymentsTable> {
+  $$CashPaymentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<double> get summ =>
+      $composableBuilder(column: $table.summ, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get ddate =>
+      $composableBuilder(column: $table.ddate, builder: (column) => column);
+
+  GeneratedColumn<bool> get kkmprinted => $composableBuilder(
+      column: $table.kkmprinted, builder: (column) => column);
+}
+
+class $$CashPaymentsTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $CashPaymentsTable,
+    CashPayment,
+    $$CashPaymentsTableFilterComposer,
+    $$CashPaymentsTableOrderingComposer,
+    $$CashPaymentsTableAnnotationComposer,
+    $$CashPaymentsTableCreateCompanionBuilder,
+    $$CashPaymentsTableUpdateCompanionBuilder,
+    (
+      CashPayment,
+      BaseReferences<_$AppDataStore, $CashPaymentsTable, CashPayment>
+    ),
+    CashPayment,
+    PrefetchHooks Function()> {
+  $$CashPaymentsTableTableManager(_$AppDataStore db, $CashPaymentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CashPaymentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CashPaymentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CashPaymentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> buyerId = const Value.absent(),
+            Value<int> orderId = const Value.absent(),
+            Value<double> summ = const Value.absent(),
+            Value<DateTime> ddate = const Value.absent(),
+            Value<bool> kkmprinted = const Value.absent(),
+          }) =>
+              CashPaymentsCompanion(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            summ: summ,
+            ddate: ddate,
+            kkmprinted: kkmprinted,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int buyerId,
+            required int orderId,
+            required double summ,
+            required DateTime ddate,
+            required bool kkmprinted,
+          }) =>
+              CashPaymentsCompanion.insert(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            summ: summ,
+            ddate: ddate,
+            kkmprinted: kkmprinted,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$CashPaymentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $CashPaymentsTable,
+    CashPayment,
+    $$CashPaymentsTableFilterComposer,
+    $$CashPaymentsTableOrderingComposer,
+    $$CashPaymentsTableAnnotationComposer,
+    $$CashPaymentsTableCreateCompanionBuilder,
+    $$CashPaymentsTableUpdateCompanionBuilder,
+    (
+      CashPayment,
+      BaseReferences<_$AppDataStore, $CashPaymentsTable, CashPayment>
+    ),
+    CashPayment,
+    PrefetchHooks Function()>;
+typedef $$DebtsTableCreateCompanionBuilder = DebtsCompanion Function({
+  Value<int> id,
+  required int buyerId,
+  required int orderId,
+  required String ndoc,
+  required String orderNdoc,
+  required DateTime ddate,
+  required DateTime orderDdate,
+  required bool isCheck,
+  required double debtSum,
+  required double orderSum,
+  Value<double?> paidSum,
+  Value<double?> paymentSum,
+  required bool physical,
+});
+typedef $$DebtsTableUpdateCompanionBuilder = DebtsCompanion Function({
+  Value<int> id,
+  Value<int> buyerId,
+  Value<int> orderId,
+  Value<String> ndoc,
+  Value<String> orderNdoc,
+  Value<DateTime> ddate,
+  Value<DateTime> orderDdate,
+  Value<bool> isCheck,
+  Value<double> debtSum,
+  Value<double> orderSum,
+  Value<double?> paidSum,
+  Value<double?> paymentSum,
+  Value<bool> physical,
+});
+
+class $$DebtsTableFilterComposer extends Composer<_$AppDataStore, $DebtsTable> {
+  $$DebtsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ndoc => $composableBuilder(
+      column: $table.ndoc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get orderNdoc => $composableBuilder(
+      column: $table.orderNdoc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get orderDdate => $composableBuilder(
+      column: $table.orderDdate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCheck => $composableBuilder(
+      column: $table.isCheck, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get debtSum => $composableBuilder(
+      column: $table.debtSum, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get orderSum => $composableBuilder(
+      column: $table.orderSum, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get paidSum => $composableBuilder(
+      column: $table.paidSum, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get paymentSum => $composableBuilder(
+      column: $table.paymentSum, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get physical => $composableBuilder(
+      column: $table.physical, builder: (column) => ColumnFilters(column));
+}
+
+class $$DebtsTableOrderingComposer
+    extends Composer<_$AppDataStore, $DebtsTable> {
+  $$DebtsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ndoc => $composableBuilder(
+      column: $table.ndoc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get orderNdoc => $composableBuilder(
+      column: $table.orderNdoc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get ddate => $composableBuilder(
+      column: $table.ddate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get orderDdate => $composableBuilder(
+      column: $table.orderDdate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isCheck => $composableBuilder(
+      column: $table.isCheck, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get debtSum => $composableBuilder(
+      column: $table.debtSum, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get orderSum => $composableBuilder(
+      column: $table.orderSum, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get paidSum => $composableBuilder(
+      column: $table.paidSum, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get paymentSum => $composableBuilder(
+      column: $table.paymentSum, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get physical => $composableBuilder(
+      column: $table.physical, builder: (column) => ColumnOrderings(column));
+}
+
+class $$DebtsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $DebtsTable> {
+  $$DebtsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<String> get ndoc =>
+      $composableBuilder(column: $table.ndoc, builder: (column) => column);
+
+  GeneratedColumn<String> get orderNdoc =>
+      $composableBuilder(column: $table.orderNdoc, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get ddate =>
+      $composableBuilder(column: $table.ddate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get orderDdate => $composableBuilder(
+      column: $table.orderDdate, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCheck =>
+      $composableBuilder(column: $table.isCheck, builder: (column) => column);
+
+  GeneratedColumn<double> get debtSum =>
+      $composableBuilder(column: $table.debtSum, builder: (column) => column);
+
+  GeneratedColumn<double> get orderSum =>
+      $composableBuilder(column: $table.orderSum, builder: (column) => column);
+
+  GeneratedColumn<double> get paidSum =>
+      $composableBuilder(column: $table.paidSum, builder: (column) => column);
+
+  GeneratedColumn<double> get paymentSum => $composableBuilder(
+      column: $table.paymentSum, builder: (column) => column);
+
+  GeneratedColumn<bool> get physical =>
+      $composableBuilder(column: $table.physical, builder: (column) => column);
+}
+
+class $$DebtsTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $DebtsTable,
+    Debt,
+    $$DebtsTableFilterComposer,
+    $$DebtsTableOrderingComposer,
+    $$DebtsTableAnnotationComposer,
+    $$DebtsTableCreateCompanionBuilder,
+    $$DebtsTableUpdateCompanionBuilder,
+    (Debt, BaseReferences<_$AppDataStore, $DebtsTable, Debt>),
+    Debt,
+    PrefetchHooks Function()> {
+  $$DebtsTableTableManager(_$AppDataStore db, $DebtsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DebtsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DebtsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DebtsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> buyerId = const Value.absent(),
+            Value<int> orderId = const Value.absent(),
+            Value<String> ndoc = const Value.absent(),
+            Value<String> orderNdoc = const Value.absent(),
+            Value<DateTime> ddate = const Value.absent(),
+            Value<DateTime> orderDdate = const Value.absent(),
+            Value<bool> isCheck = const Value.absent(),
+            Value<double> debtSum = const Value.absent(),
+            Value<double> orderSum = const Value.absent(),
+            Value<double?> paidSum = const Value.absent(),
+            Value<double?> paymentSum = const Value.absent(),
+            Value<bool> physical = const Value.absent(),
+          }) =>
+              DebtsCompanion(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            ndoc: ndoc,
+            orderNdoc: orderNdoc,
+            ddate: ddate,
+            orderDdate: orderDdate,
+            isCheck: isCheck,
+            debtSum: debtSum,
+            orderSum: orderSum,
+            paidSum: paidSum,
+            paymentSum: paymentSum,
+            physical: physical,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int buyerId,
+            required int orderId,
+            required String ndoc,
+            required String orderNdoc,
+            required DateTime ddate,
+            required DateTime orderDdate,
+            required bool isCheck,
+            required double debtSum,
+            required double orderSum,
+            Value<double?> paidSum = const Value.absent(),
+            Value<double?> paymentSum = const Value.absent(),
+            required bool physical,
+          }) =>
+              DebtsCompanion.insert(
+            id: id,
+            buyerId: buyerId,
+            orderId: orderId,
+            ndoc: ndoc,
+            orderNdoc: orderNdoc,
+            ddate: ddate,
+            orderDdate: orderDdate,
+            isCheck: isCheck,
+            debtSum: debtSum,
+            orderSum: orderSum,
+            paidSum: paidSum,
+            paymentSum: paymentSum,
+            physical: physical,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DebtsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $DebtsTable,
+    Debt,
+    $$DebtsTableFilterComposer,
+    $$DebtsTableOrderingComposer,
+    $$DebtsTableAnnotationComposer,
+    $$DebtsTableCreateCompanionBuilder,
+    $$DebtsTableUpdateCompanionBuilder,
+    (Debt, BaseReferences<_$AppDataStore, $DebtsTable, Debt>),
+    Debt,
+    PrefetchHooks Function()>;
+typedef $$OrdersTableCreateCompanionBuilder = OrdersCompanion Function({
+  Value<int> id,
+  required int buyerId,
+  required int ord,
+  required String ndoc,
+  required String info,
+  required bool isInc,
+  required int goodsCnt,
+  required double mc,
+  Value<bool?> delivered,
+  required bool paid,
+  required bool physical,
+});
+typedef $$OrdersTableUpdateCompanionBuilder = OrdersCompanion Function({
+  Value<int> id,
+  Value<int> buyerId,
+  Value<int> ord,
+  Value<String> ndoc,
+  Value<String> info,
+  Value<bool> isInc,
+  Value<int> goodsCnt,
+  Value<double> mc,
+  Value<bool?> delivered,
+  Value<bool> paid,
+  Value<bool> physical,
+});
+
+class $$OrdersTableFilterComposer
+    extends Composer<_$AppDataStore, $OrdersTable> {
+  $$OrdersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get ord => $composableBuilder(
+      column: $table.ord, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ndoc => $composableBuilder(
+      column: $table.ndoc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get info => $composableBuilder(
+      column: $table.info, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isInc => $composableBuilder(
+      column: $table.isInc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get goodsCnt => $composableBuilder(
+      column: $table.goodsCnt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get mc => $composableBuilder(
+      column: $table.mc, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get delivered => $composableBuilder(
+      column: $table.delivered, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get paid => $composableBuilder(
+      column: $table.paid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get physical => $composableBuilder(
+      column: $table.physical, builder: (column) => ColumnFilters(column));
+}
+
+class $$OrdersTableOrderingComposer
+    extends Composer<_$AppDataStore, $OrdersTable> {
+  $$OrdersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+      column: $table.buyerId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get ord => $composableBuilder(
+      column: $table.ord, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ndoc => $composableBuilder(
+      column: $table.ndoc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get info => $composableBuilder(
+      column: $table.info, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isInc => $composableBuilder(
+      column: $table.isInc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get goodsCnt => $composableBuilder(
+      column: $table.goodsCnt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get mc => $composableBuilder(
+      column: $table.mc, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get delivered => $composableBuilder(
+      column: $table.delivered, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get paid => $composableBuilder(
+      column: $table.paid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get physical => $composableBuilder(
+      column: $table.physical, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OrdersTableAnnotationComposer
+    extends Composer<_$AppDataStore, $OrdersTable> {
+  $$OrdersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get ord =>
+      $composableBuilder(column: $table.ord, builder: (column) => column);
+
+  GeneratedColumn<String> get ndoc =>
+      $composableBuilder(column: $table.ndoc, builder: (column) => column);
+
+  GeneratedColumn<String> get info =>
+      $composableBuilder(column: $table.info, builder: (column) => column);
+
+  GeneratedColumn<bool> get isInc =>
+      $composableBuilder(column: $table.isInc, builder: (column) => column);
+
+  GeneratedColumn<int> get goodsCnt =>
+      $composableBuilder(column: $table.goodsCnt, builder: (column) => column);
+
+  GeneratedColumn<double> get mc =>
+      $composableBuilder(column: $table.mc, builder: (column) => column);
+
+  GeneratedColumn<bool> get delivered =>
+      $composableBuilder(column: $table.delivered, builder: (column) => column);
+
+  GeneratedColumn<bool> get paid =>
+      $composableBuilder(column: $table.paid, builder: (column) => column);
+
+  GeneratedColumn<bool> get physical =>
+      $composableBuilder(column: $table.physical, builder: (column) => column);
+}
+
+class $$OrdersTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $OrdersTable,
+    Order,
+    $$OrdersTableFilterComposer,
+    $$OrdersTableOrderingComposer,
+    $$OrdersTableAnnotationComposer,
+    $$OrdersTableCreateCompanionBuilder,
+    $$OrdersTableUpdateCompanionBuilder,
+    (Order, BaseReferences<_$AppDataStore, $OrdersTable, Order>),
+    Order,
+    PrefetchHooks Function()> {
+  $$OrdersTableTableManager(_$AppDataStore db, $OrdersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OrdersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OrdersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OrdersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> buyerId = const Value.absent(),
+            Value<int> ord = const Value.absent(),
+            Value<String> ndoc = const Value.absent(),
+            Value<String> info = const Value.absent(),
+            Value<bool> isInc = const Value.absent(),
+            Value<int> goodsCnt = const Value.absent(),
+            Value<double> mc = const Value.absent(),
+            Value<bool?> delivered = const Value.absent(),
+            Value<bool> paid = const Value.absent(),
+            Value<bool> physical = const Value.absent(),
+          }) =>
+              OrdersCompanion(
+            id: id,
+            buyerId: buyerId,
+            ord: ord,
+            ndoc: ndoc,
+            info: info,
+            isInc: isInc,
+            goodsCnt: goodsCnt,
+            mc: mc,
+            delivered: delivered,
+            paid: paid,
+            physical: physical,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int buyerId,
+            required int ord,
+            required String ndoc,
+            required String info,
+            required bool isInc,
+            required int goodsCnt,
+            required double mc,
+            Value<bool?> delivered = const Value.absent(),
+            required bool paid,
+            required bool physical,
+          }) =>
+              OrdersCompanion.insert(
+            id: id,
+            buyerId: buyerId,
+            ord: ord,
+            ndoc: ndoc,
+            info: info,
+            isInc: isInc,
+            goodsCnt: goodsCnt,
+            mc: mc,
+            delivered: delivered,
+            paid: paid,
+            physical: physical,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OrdersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $OrdersTable,
+    Order,
+    $$OrdersTableFilterComposer,
+    $$OrdersTableOrderingComposer,
+    $$OrdersTableAnnotationComposer,
+    $$OrdersTableCreateCompanionBuilder,
+    $$OrdersTableUpdateCompanionBuilder,
+    (Order, BaseReferences<_$AppDataStore, $OrdersTable, Order>),
+    Order,
+    PrefetchHooks Function()>;
+typedef $$OrderLinesTableCreateCompanionBuilder = OrderLinesCompanion Function({
+  required int orderId,
+  required int subid,
+  required String name,
+  required String gtin,
+  required double vol,
+  required double deliveredVol,
+  required double price,
+  required bool needMarking,
+  required List<OrderLineBarcode> barcodeRels,
+  Value<int> rowid,
+});
+typedef $$OrderLinesTableUpdateCompanionBuilder = OrderLinesCompanion Function({
+  Value<int> orderId,
+  Value<int> subid,
+  Value<String> name,
+  Value<String> gtin,
+  Value<double> vol,
+  Value<double> deliveredVol,
+  Value<double> price,
+  Value<bool> needMarking,
+  Value<List<OrderLineBarcode>> barcodeRels,
+  Value<int> rowid,
+});
+
+class $$OrderLinesTableFilterComposer
+    extends Composer<_$AppDataStore, $OrderLinesTable> {
+  $$OrderLinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get gtin => $composableBuilder(
+      column: $table.gtin, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get vol => $composableBuilder(
+      column: $table.vol, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get deliveredVol => $composableBuilder(
+      column: $table.deliveredVol, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get price => $composableBuilder(
+      column: $table.price, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get needMarking => $composableBuilder(
+      column: $table.needMarking, builder: (column) => ColumnFilters(column));
+
+  ColumnWithTypeConverterFilters<List<OrderLineBarcode>, List<OrderLineBarcode>,
+          String>
+      get barcodeRels => $composableBuilder(
+          column: $table.barcodeRels,
+          builder: (column) => ColumnWithTypeConverterFilters(column));
+}
+
+class $$OrderLinesTableOrderingComposer
+    extends Composer<_$AppDataStore, $OrderLinesTable> {
+  $$OrderLinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get gtin => $composableBuilder(
+      column: $table.gtin, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get vol => $composableBuilder(
+      column: $table.vol, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get deliveredVol => $composableBuilder(
+      column: $table.deliveredVol,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get price => $composableBuilder(
+      column: $table.price, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get needMarking => $composableBuilder(
+      column: $table.needMarking, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get barcodeRels => $composableBuilder(
+      column: $table.barcodeRels, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OrderLinesTableAnnotationComposer
+    extends Composer<_$AppDataStore, $OrderLinesTable> {
+  $$OrderLinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<int> get subid =>
+      $composableBuilder(column: $table.subid, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get gtin =>
+      $composableBuilder(column: $table.gtin, builder: (column) => column);
+
+  GeneratedColumn<double> get vol =>
+      $composableBuilder(column: $table.vol, builder: (column) => column);
+
+  GeneratedColumn<double> get deliveredVol => $composableBuilder(
+      column: $table.deliveredVol, builder: (column) => column);
+
+  GeneratedColumn<double> get price =>
+      $composableBuilder(column: $table.price, builder: (column) => column);
+
+  GeneratedColumn<bool> get needMarking => $composableBuilder(
+      column: $table.needMarking, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String>
+      get barcodeRels => $composableBuilder(
+          column: $table.barcodeRels, builder: (column) => column);
+}
+
+class $$OrderLinesTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $OrderLinesTable,
+    OrderLine,
+    $$OrderLinesTableFilterComposer,
+    $$OrderLinesTableOrderingComposer,
+    $$OrderLinesTableAnnotationComposer,
+    $$OrderLinesTableCreateCompanionBuilder,
+    $$OrderLinesTableUpdateCompanionBuilder,
+    (OrderLine, BaseReferences<_$AppDataStore, $OrderLinesTable, OrderLine>),
+    OrderLine,
+    PrefetchHooks Function()> {
+  $$OrderLinesTableTableManager(_$AppDataStore db, $OrderLinesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OrderLinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OrderLinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OrderLinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> orderId = const Value.absent(),
+            Value<int> subid = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> gtin = const Value.absent(),
+            Value<double> vol = const Value.absent(),
+            Value<double> deliveredVol = const Value.absent(),
+            Value<double> price = const Value.absent(),
+            Value<bool> needMarking = const Value.absent(),
+            Value<List<OrderLineBarcode>> barcodeRels = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLinesCompanion(
+            orderId: orderId,
+            subid: subid,
+            name: name,
+            gtin: gtin,
+            vol: vol,
+            deliveredVol: deliveredVol,
+            price: price,
+            needMarking: needMarking,
+            barcodeRels: barcodeRels,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int orderId,
+            required int subid,
+            required String name,
+            required String gtin,
+            required double vol,
+            required double deliveredVol,
+            required double price,
+            required bool needMarking,
+            required List<OrderLineBarcode> barcodeRels,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLinesCompanion.insert(
+            orderId: orderId,
+            subid: subid,
+            name: name,
+            gtin: gtin,
+            vol: vol,
+            deliveredVol: deliveredVol,
+            price: price,
+            needMarking: needMarking,
+            barcodeRels: barcodeRels,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OrderLinesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $OrderLinesTable,
+    OrderLine,
+    $$OrderLinesTableFilterComposer,
+    $$OrderLinesTableOrderingComposer,
+    $$OrderLinesTableAnnotationComposer,
+    $$OrderLinesTableCreateCompanionBuilder,
+    $$OrderLinesTableUpdateCompanionBuilder,
+    (OrderLine, BaseReferences<_$AppDataStore, $OrderLinesTable, OrderLine>),
+    OrderLine,
+    PrefetchHooks Function()>;
+typedef $$OrderLineCodesTableCreateCompanionBuilder = OrderLineCodesCompanion
+    Function({
+  required int orderId,
+  required int subid,
+  required String code,
+  required int amount,
+  required bool isDataMatrix,
+  required DateTime localTs,
+  Value<int> rowid,
+});
+typedef $$OrderLineCodesTableUpdateCompanionBuilder = OrderLineCodesCompanion
+    Function({
+  Value<int> orderId,
+  Value<int> subid,
+  Value<String> code,
+  Value<int> amount,
+  Value<bool> isDataMatrix,
+  Value<DateTime> localTs,
+  Value<int> rowid,
+});
+
+class $$OrderLineCodesTableFilterComposer
+    extends Composer<_$AppDataStore, $OrderLineCodesTable> {
+  $$OrderLineCodesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDataMatrix => $composableBuilder(
+      column: $table.isDataMatrix, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get localTs => $composableBuilder(
+      column: $table.localTs, builder: (column) => ColumnFilters(column));
+}
+
+class $$OrderLineCodesTableOrderingComposer
+    extends Composer<_$AppDataStore, $OrderLineCodesTable> {
+  $$OrderLineCodesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDataMatrix => $composableBuilder(
+      column: $table.isDataMatrix,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get localTs => $composableBuilder(
+      column: $table.localTs, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OrderLineCodesTableAnnotationComposer
+    extends Composer<_$AppDataStore, $OrderLineCodesTable> {
+  $$OrderLineCodesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<int> get subid =>
+      $composableBuilder(column: $table.subid, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDataMatrix => $composableBuilder(
+      column: $table.isDataMatrix, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get localTs =>
+      $composableBuilder(column: $table.localTs, builder: (column) => column);
+}
+
+class $$OrderLineCodesTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $OrderLineCodesTable,
+    OrderLineCode,
+    $$OrderLineCodesTableFilterComposer,
+    $$OrderLineCodesTableOrderingComposer,
+    $$OrderLineCodesTableAnnotationComposer,
+    $$OrderLineCodesTableCreateCompanionBuilder,
+    $$OrderLineCodesTableUpdateCompanionBuilder,
+    (
+      OrderLineCode,
+      BaseReferences<_$AppDataStore, $OrderLineCodesTable, OrderLineCode>
+    ),
+    OrderLineCode,
+    PrefetchHooks Function()> {
+  $$OrderLineCodesTableTableManager(
+      _$AppDataStore db, $OrderLineCodesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OrderLineCodesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OrderLineCodesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OrderLineCodesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> orderId = const Value.absent(),
+            Value<int> subid = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<int> amount = const Value.absent(),
+            Value<bool> isDataMatrix = const Value.absent(),
+            Value<DateTime> localTs = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLineCodesCompanion(
+            orderId: orderId,
+            subid: subid,
+            code: code,
+            amount: amount,
+            isDataMatrix: isDataMatrix,
+            localTs: localTs,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int orderId,
+            required int subid,
+            required String code,
+            required int amount,
+            required bool isDataMatrix,
+            required DateTime localTs,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLineCodesCompanion.insert(
+            orderId: orderId,
+            subid: subid,
+            code: code,
+            amount: amount,
+            isDataMatrix: isDataMatrix,
+            localTs: localTs,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OrderLineCodesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $OrderLineCodesTable,
+    OrderLineCode,
+    $$OrderLineCodesTableFilterComposer,
+    $$OrderLineCodesTableOrderingComposer,
+    $$OrderLineCodesTableAnnotationComposer,
+    $$OrderLineCodesTableCreateCompanionBuilder,
+    $$OrderLineCodesTableUpdateCompanionBuilder,
+    (
+      OrderLineCode,
+      BaseReferences<_$AppDataStore, $OrderLineCodesTable, OrderLineCode>
+    ),
+    OrderLineCode,
+    PrefetchHooks Function()>;
+typedef $$OrderLineStorageCodesTableCreateCompanionBuilder
+    = OrderLineStorageCodesCompanion Function({
+  required int orderId,
+  required int subid,
+  required String code,
+  required int amount,
+  Value<int> rowid,
+});
+typedef $$OrderLineStorageCodesTableUpdateCompanionBuilder
+    = OrderLineStorageCodesCompanion Function({
+  Value<int> orderId,
+  Value<int> subid,
+  Value<String> code,
+  Value<int> amount,
+  Value<int> rowid,
+});
+
+class $$OrderLineStorageCodesTableFilterComposer
+    extends Composer<_$AppDataStore, $OrderLineStorageCodesTable> {
+  $$OrderLineStorageCodesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+}
+
+class $$OrderLineStorageCodesTableOrderingComposer
+    extends Composer<_$AppDataStore, $OrderLineStorageCodesTable> {
+  $$OrderLineStorageCodesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get orderId => $composableBuilder(
+      column: $table.orderId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get subid => $composableBuilder(
+      column: $table.subid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OrderLineStorageCodesTableAnnotationComposer
+    extends Composer<_$AppDataStore, $OrderLineStorageCodesTable> {
+  $$OrderLineStorageCodesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<int> get subid =>
+      $composableBuilder(column: $table.subid, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+}
+
+class $$OrderLineStorageCodesTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $OrderLineStorageCodesTable,
+    OrderLineStorageCode,
+    $$OrderLineStorageCodesTableFilterComposer,
+    $$OrderLineStorageCodesTableOrderingComposer,
+    $$OrderLineStorageCodesTableAnnotationComposer,
+    $$OrderLineStorageCodesTableCreateCompanionBuilder,
+    $$OrderLineStorageCodesTableUpdateCompanionBuilder,
+    (
+      OrderLineStorageCode,
+      BaseReferences<_$AppDataStore, $OrderLineStorageCodesTable,
+          OrderLineStorageCode>
+    ),
+    OrderLineStorageCode,
+    PrefetchHooks Function()> {
+  $$OrderLineStorageCodesTableTableManager(
+      _$AppDataStore db, $OrderLineStorageCodesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OrderLineStorageCodesTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OrderLineStorageCodesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OrderLineStorageCodesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> orderId = const Value.absent(),
+            Value<int> subid = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<int> amount = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLineStorageCodesCompanion(
+            orderId: orderId,
+            subid: subid,
+            code: code,
+            amount: amount,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int orderId,
+            required int subid,
+            required String code,
+            required int amount,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OrderLineStorageCodesCompanion.insert(
+            orderId: orderId,
+            subid: subid,
+            code: code,
+            amount: amount,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OrderLineStorageCodesTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDataStore,
+        $OrderLineStorageCodesTable,
+        OrderLineStorageCode,
+        $$OrderLineStorageCodesTableFilterComposer,
+        $$OrderLineStorageCodesTableOrderingComposer,
+        $$OrderLineStorageCodesTableAnnotationComposer,
+        $$OrderLineStorageCodesTableCreateCompanionBuilder,
+        $$OrderLineStorageCodesTableUpdateCompanionBuilder,
+        (
+          OrderLineStorageCode,
+          BaseReferences<_$AppDataStore, $OrderLineStorageCodesTable,
+              OrderLineStorageCode>
+        ),
+        OrderLineStorageCode,
+        PrefetchHooks Function()>;
+typedef $$PrefsTableCreateCompanionBuilder = PrefsCompanion Function({
+  Value<DateTime?> lastLoadTime,
+  Value<int> rowid,
+});
+typedef $$PrefsTableUpdateCompanionBuilder = PrefsCompanion Function({
+  Value<DateTime?> lastLoadTime,
+  Value<int> rowid,
+});
+
+class $$PrefsTableFilterComposer extends Composer<_$AppDataStore, $PrefsTable> {
+  $$PrefsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get lastLoadTime => $composableBuilder(
+      column: $table.lastLoadTime, builder: (column) => ColumnFilters(column));
+}
+
+class $$PrefsTableOrderingComposer
+    extends Composer<_$AppDataStore, $PrefsTable> {
+  $$PrefsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get lastLoadTime => $composableBuilder(
+      column: $table.lastLoadTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$PrefsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $PrefsTable> {
+  $$PrefsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get lastLoadTime => $composableBuilder(
+      column: $table.lastLoadTime, builder: (column) => column);
+}
+
+class $$PrefsTableTableManager extends RootTableManager<
+    _$AppDataStore,
+    $PrefsTable,
+    Pref,
+    $$PrefsTableFilterComposer,
+    $$PrefsTableOrderingComposer,
+    $$PrefsTableAnnotationComposer,
+    $$PrefsTableCreateCompanionBuilder,
+    $$PrefsTableUpdateCompanionBuilder,
+    (Pref, BaseReferences<_$AppDataStore, $PrefsTable, Pref>),
+    Pref,
+    PrefetchHooks Function()> {
+  $$PrefsTableTableManager(_$AppDataStore db, $PrefsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PrefsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PrefsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PrefsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<DateTime?> lastLoadTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PrefsCompanion(
+            lastLoadTime: lastLoadTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<DateTime?> lastLoadTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PrefsCompanion.insert(
+            lastLoadTime: lastLoadTime,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PrefsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDataStore,
+    $PrefsTable,
+    Pref,
+    $$PrefsTableFilterComposer,
+    $$PrefsTableOrderingComposer,
+    $$PrefsTableAnnotationComposer,
+    $$PrefsTableCreateCompanionBuilder,
+    $$PrefsTableUpdateCompanionBuilder,
+    (Pref, BaseReferences<_$AppDataStore, $PrefsTable, Pref>),
+    Pref,
+    PrefetchHooks Function()>;
+
+class $AppDataStoreManager {
+  final _$AppDataStore _db;
+  $AppDataStoreManager(this._db);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
+  $$ReceptsTableTableManager get recepts =>
+      $$ReceptsTableTableManager(_db, _db.recepts);
+  $$IncomesTableTableManager get incomes =>
+      $$IncomesTableTableManager(_db, _db.incomes);
+  $$BuyersTableTableManager get buyers =>
+      $$BuyersTableTableManager(_db, _db.buyers);
+  $$CardPaymentsTableTableManager get cardPayments =>
+      $$CardPaymentsTableTableManager(_db, _db.cardPayments);
+  $$CashPaymentsTableTableManager get cashPayments =>
+      $$CashPaymentsTableTableManager(_db, _db.cashPayments);
+  $$DebtsTableTableManager get debts =>
+      $$DebtsTableTableManager(_db, _db.debts);
+  $$OrdersTableTableManager get orders =>
+      $$OrdersTableTableManager(_db, _db.orders);
+  $$OrderLinesTableTableManager get orderLines =>
+      $$OrderLinesTableTableManager(_db, _db.orderLines);
+  $$OrderLineCodesTableTableManager get orderLineCodes =>
+      $$OrderLineCodesTableTableManager(_db, _db.orderLineCodes);
+  $$OrderLineStorageCodesTableTableManager get orderLineStorageCodes =>
+      $$OrderLineStorageCodesTableTableManager(_db, _db.orderLineStorageCodes);
+  $$PrefsTableTableManager get prefs =>
+      $$PrefsTableTableManager(_db, _db.prefs);
 }
 
 class AppInfoResult {
@@ -3853,6 +6492,8 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $OrdersTable get orders => attachedDatabase.orders;
   $OrderLinesTable get orderLines => attachedDatabase.orderLines;
   $OrderLineCodesTable get orderLineCodes => attachedDatabase.orderLineCodes;
+  $OrderLineStorageCodesTable get orderLineStorageCodes =>
+      attachedDatabase.orderLineStorageCodes;
 }
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;

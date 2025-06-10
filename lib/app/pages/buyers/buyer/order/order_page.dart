@@ -190,12 +190,14 @@ class _OrderViewState extends State<_OrderView> {
 
   Widget _buildOrderLinesTile(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
-    bool needScan = vm.state.order.didDelivery || !vm.state.order.physical || vm.state.codeLines.isEmpty;
+    bool scanHidden = vm.state.order.didDelivery ||
+      !(vm.state.order.physical || vm.state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty)) ||
+      vm.state.codeLines.isEmpty;
 
     return ExpansionTile(
       title: const Text('Позиции', style: TextStyle(fontSize: 14)),
       initiallyExpanded: true,
-      trailing: needScan ? null : IconButton(
+      trailing: scanHidden ? null : IconButton(
         tooltip: "Отсканировать код маркировки или штрихкод",
         icon: const Icon(Icons.qr_code_scanner),
         onPressed: vm.tryShowScan
@@ -242,7 +244,12 @@ class _OrderViewState extends State<_OrderView> {
     OrderViewModel vm = context.read<OrderViewModel>();
     List<Widget> trailingWidgets = [];
 
-    if (vm.state.order.physical && !vm.state.order.didDelivery) return _buildPhysicalOrderLineTile(context, codeLine);
+    if (
+      !vm.state.order.didDelivery &&
+      (vm.state.order.physical || vm.state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty))
+    ) {
+      return _buildPhysicalOrderLineTile(context, codeLine);
+    }
 
     if (vm.state.order.didDelivery) {
       trailingWidgets.add(Text("${codeLine.orderLine.deliveredVol.toInt()} из ${codeLine.orderLine.vol.toInt()}"));

@@ -7,7 +7,8 @@ part of 'database.dart';
     Recepts,
     Orders,
     OrderLines,
-    OrderLineCodes
+    OrderLineCodes,
+    OrderLineStorageCodes
   ]
 )
 class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
@@ -41,6 +42,13 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     });
   }
 
+  Future<void> loadOrderLineStorageCodes(List<OrderLineStorageCode> list) async {
+    await batch((batch) {
+      batch.deleteWhere(orderLineStorageCodes, (row) => const Constant(true));
+      batch.insertAll(orderLineStorageCodes, list, mode: InsertMode.insertOrReplace);
+    });
+  }
+
   Future<void> loadIncomes(List<Income> list) async {
     await batch((batch) {
       batch.deleteWhere(incomes, (row) => const Constant(true));
@@ -61,16 +69,21 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
 
   Stream<List<OrderLineWithCode>> watchOrderLinesByOrderId(int orderId) {
     final orderLineStream = (select(orderLines)..where((tbl) => tbl.orderId.equals(orderId))).watch();
-    final orderLineCodeStream = select(orderLineCodes).watch();
+    final orderLineCodeStream = (select(orderLineCodes)..where((tbl) => tbl.orderId.equals(orderId))).watch();
+    final orderLineStorageCodeStream = (
+      select(orderLineStorageCodes)..where((tbl) => tbl.orderId.equals(orderId))
+    ).watch();
 
-    return Rx.combineLatest2(
+    return Rx.combineLatest3(
       orderLineStream,
       orderLineCodeStream,
-      (orderLineRows, orderLineCodeRows) {
+      orderLineStorageCodeStream,
+      (orderLineRows, orderLineCodeRows, orderLineStorageCodeRows) {
         return orderLineRows.map(((e) {
           return OrderLineWithCode(
             e,
-            orderLineCodeRows.where((element) => element.orderId == e.orderId && element.subid == e.subid).toList()
+            orderLineCodeRows.where((element) => element.subid == e.subid).toList(),
+            orderLineStorageCodeRows.where((element) => element.subid == e.subid).toList()
           );
         })).toList();
       }
@@ -129,6 +142,7 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
 class OrderLineWithCode {
   final OrderLine orderLine;
   final List<OrderLineCode> orderLineCodes;
+  final List<OrderLineStorageCode> orderLineStorageCodes;
 
-  OrderLineWithCode(this.orderLine, this.orderLineCodes);
+  OrderLineWithCode(this.orderLine, this.orderLineCodes, this.orderLineStorageCodes);
 }
