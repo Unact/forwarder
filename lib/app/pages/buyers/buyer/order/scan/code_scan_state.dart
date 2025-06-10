@@ -26,6 +26,10 @@ class CodeScanState {
   final OrderLine? lastScannedOrderLine;
 
   List<String> get allCodes => codeLines.map((e) => e.orderLineCodes.map((ei) => ei.code)).expand((e) => e).toList();
+  List<String> get allStorageCodes => codeLines
+    .map((e) => e.orderLineStorageCodes.map((ei) => ei.code)).expand((e) => e).toList();
+  List<OrderLineStorageCode> get allStorageCodeLines => codeLines
+    .map((e) => e.orderLineStorageCodes.map((ei) => ei)).expand((e) => e).toList();
 
   CodeScanState copyWith({
     CodeScanStateStatus? status,

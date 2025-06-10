@@ -56,12 +56,27 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     bool allVolScanned = state.codeLines.every(
       (e) => e.orderLine.vol == e.orderLineCodes.fold<int>(0, (v, el) => v + el.amount)
     );
+    bool allStorageVolScanned = state.codeLines.every(
+      (e) => e.orderLineStorageCodes.fold<int>(0, (v, el) => v + el.amount) ==
+        e.orderLineCodes.where((e) => e.isDataMatrix).fold<int>(0, (v, el) => v + el.amount)
+    );
 
     if (delivered && state.order.physical && !allVolScanned) {
       emit(state.copyWith(
         status: OrderStateStatus.needUserConfirmation,
         delivered: delivered,
         message: 'Не все товары отсканированы. Подтверждаете доставку?',
+        confirmationCallback: deliverOrder
+      ));
+
+      return;
+    }
+
+    if (delivered && state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty) && !allStorageVolScanned) {
+      emit(state.copyWith(
+        status: OrderStateStatus.needUserConfirmation,
+        delivered: delivered,
+        message: 'Не все товары, переданные складом, отсканированы. Подтверждаете доставку?',
         confirmationCallback: deliverOrder
       ));
 
