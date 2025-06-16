@@ -14,12 +14,8 @@ class LandingViewModel extends PageViewModel<LandingState, LandingStateStatus> {
     await super.initViewModel();
 
     isLoggedInSubscription = usersRepository.isLoggedIn.listen((event) {
-      emit(state.copyWith(status: LandingStateStatus.dataLoaded, isLoggedIn: event, currentUserView: UserView.none));
+      emit(state.copyWith(status: LandingStateStatus.dataLoaded, isLoggedIn: event));
     });
-  }
-
-  void changeCurrentUserView(UserView userView) {
-    emit(state.copyWith(status: LandingStateStatus.viewChanged, currentUserView: userView));
   }
 
   @override
