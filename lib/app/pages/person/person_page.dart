@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,8 +17,8 @@ part 'person_view_model.dart';
 
 class PersonPage extends StatelessWidget {
   PersonPage({
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +101,7 @@ class _PersonViewState extends State<_PersonView> {
             builder: (context, snapshot) => Text(snapshot.data ?? ''),
           )
         ),
-        FutureBuilder(
+        Platform.isIOS ? Container() : FutureBuilder(
           future: vm.state.user?.newVersionAvailable,
           builder: (context, snapshot) {
             if (!(snapshot.data ?? false)) return Container();
