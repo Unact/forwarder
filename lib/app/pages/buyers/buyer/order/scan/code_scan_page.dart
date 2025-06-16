@@ -42,6 +42,7 @@ class _CodeScanView extends StatefulWidget {
 
 class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
+  bool errorDialogOpen = false;
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -69,8 +70,11 @@ class _CodeScanViewState extends State<_CodeScanView> {
     );
   }
 
-  Future<void> showErrorDialog(BuildContext context, String message) {
-    return showDialog(
+  Future<void> showErrorDialog(BuildContext context, String message) async {
+    if (errorDialogOpen) return;
+
+    setState(() => errorDialogOpen = true);
+    await showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
@@ -82,6 +86,7 @@ class _CodeScanViewState extends State<_CodeScanView> {
         );
       }
     );
+    setState(() => errorDialogOpen = false);
   }
 
   Widget _lastLineInfoWidget(BuildContext context) {
