@@ -50,37 +50,54 @@ class _LoginViewState extends State<_LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginViewModel, LoginState>(
-      builder: (context, state) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Войти в приложение'),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+      ),
+      resizeToAvoidBottomInset: false,
+      body: BlocConsumer<LoginViewModel, LoginState>(
+        builder: (context, state) {
+          if (state.status == LoginStateStatus.initial || state.status == LoginStateStatus.urlFieldActivated) {
+            loginController.text = state.login;
+            passwordController.text = state.password;
+            urlController.text = state.url;
+          }
+
+          return Column(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: buildLoginFields(context)
-          )
-        );
-      },
-      listener: (context, state) async {
-        switch (state.status) {
-          case LoginStateStatus.urlFieldActivated:
-            loginController.text = '';
-            passwordController.text = '';
-            break;
-          case LoginStateStatus.passwordSent:
-          case LoginStateStatus.failure:
-            Misc.showMessage(context, state.message);
-            progressDialog.close();
-            break;
-          case LoginStateStatus.success:
-            progressDialog.close();
-            break;
-          case LoginStateStatus.inProgress:
-            await progressDialog.open();
-            break;
-          default:
-        }
-      },
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              _buildLoginForm(context),
+              Expanded(child: Container()),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                child: FutureBuilder(
+                  future: Misc.fullVersion,
+                  builder: (context, snapshot) => Text('Версия ${snapshot.data ?? ''}'),
+                )
+              )
+            ]
+          );
+        },
+        listener: (context, state) async {
+          switch (state.status) {
+            case LoginStateStatus.passwordSent:
+            case LoginStateStatus.failure:
+              Misc.showMessage(context, state.message);
+              progressDialog.close();
+              break;
+            case LoginStateStatus.success:
+              progressDialog.close();
+              break;
+            case LoginStateStatus.inProgress:
+              await progressDialog.open();
+              break;
+            default:
+          }
+        },
+      )
     );
   }
 
@@ -135,52 +152,58 @@ class _LoginViewState extends State<_LoginView> {
     return Container();
   }
 
-  List<Widget> buildLoginFields(BuildContext context) {
+  Widget _buildLoginForm(BuildContext context) {
     final vm = context.read<LoginViewModel>();
 
-    return [
-      loginField(context),
-      passwordField(context),
-      urlField(context),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return SizedBox(
+      height: 320,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-            child: SizedBox(
-              width: 120,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: () {
-                  Misc.unfocus(context);
-                  vm.apiLogin(urlController.text, loginController.text, passwordController.text);
-                },
-                child: const Text('Войти'),
+          loginField(context),
+          passwordField(context),
+          urlField(context),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                child: SizedBox(
+                  width: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      Misc.unfocus(context);
+                      vm.apiLogin(urlController.text, loginController.text, passwordController.text);
+                    },
+                    child: const Text('Войти'),
+                  ),
+                )
               ),
-            )
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
-            child: SizedBox(
-              width: 120,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: () {
-                  Misc.unfocus(context);
-                  vm.getNewPassword(urlController.text, loginController.text);
-                },
-                child: const Text('Получить пароль', textAlign: TextAlign.center),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                child: SizedBox(
+                  width: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      Misc.unfocus(context);
+                      vm.getNewPassword(urlController.text, loginController.text);
+                    },
+                    child: const Text('Получить пароль', textAlign: TextAlign.center),
+                  ),
+                )
               ),
-            )
+            ],
           ),
-        ],
-      ),
-    ];
+        ]
+      )
+    );
   }
 }

@@ -39,22 +39,17 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
       await usersRepository.logout();
       await appRepository.clearData();
 
-      emit(state.copyWith(status: PersonStateStatus.success));
+      emit(state.copyWith(status: PersonStateStatus.loggedOut));
     } on AppError catch(e) {
       emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
     }
   }
 
-   Future<void> apiUnregister() async {
-    emit(state.copyWith(status: PersonStateStatus.inProgress));
-
-    try {
-      await usersRepository.unregister();
-      await appRepository.clearData();
-
-      emit(state.copyWith(status: PersonStateStatus.success));
-    } on AppError catch(e) {
-      emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
-    }
+  Future<void> launchAppUpdate() async {
+    Misc.launchAppUpdate(
+      repoName: Strings.repoName,
+      version: state.user!.version,
+      onError: () => emit(state.copyWith(status: PersonStateStatus.failure, message: Strings.genericErrorMsg))
+    );
   }
 }

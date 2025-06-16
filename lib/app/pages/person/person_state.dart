@@ -4,7 +4,7 @@ enum PersonStateStatus {
   initial,
   dataLoaded,
   inProgress,
-  success,
+  loggedOut,
   failure
 }
 
