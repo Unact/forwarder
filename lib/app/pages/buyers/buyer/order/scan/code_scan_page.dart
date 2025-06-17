@@ -55,6 +55,7 @@ class _CodeScanViewState extends State<_CodeScanView> {
 
         return ScanView(
           onRead: vm.readCode,
+          barcodeMode: true,
           child: _lastLineInfoWidget(context)
         );
       },
