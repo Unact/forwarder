@@ -15,52 +15,31 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   OrdersDao(super.db);
 
    Future<void> loadBuyers(List<Buyer> list) async {
-    await batch((batch) {
-      batch.deleteWhere(buyers, (row) => const Constant(true));
-      batch.insertAll(buyers, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(buyers, list);
   }
 
-  Future<void> loadOrders(List<Order> list) async {
-    await batch((batch) {
-      batch.deleteWhere(orders, (row) => const Constant(true));
-      batch.insertAll(orders, list, mode: InsertMode.insertOrReplace);
-    });
+  Future<void> loadOrders(List<Order> list, [bool clearTable = true]) async {
+    await db._loadData(orders, list, clearTable);
   }
 
-  Future<void> loadOrderLines(List<OrderLine> list) async {
-    await batch((batch) {
-      batch.deleteWhere(orderLines, (row) => const Constant(true));
-      batch.insertAll(orderLines, list, mode: InsertMode.insertOrReplace);
-    });
+  Future<void> loadOrderLines(List<OrderLine> list, [bool clearTable = true]) async {
+    await db._loadData(orderLines, list, clearTable);
   }
 
-  Future<void> loadOrderLineCodes(List<OrderLineCode> list) async {
-    await batch((batch) {
-      batch.deleteWhere(orderLineCodes, (row) => const Constant(true));
-      batch.insertAll(orderLineCodes, list, mode: InsertMode.insertOrReplace);
-    });
+  Future<void> loadOrderLineCodes(List<OrderLineCode> list, [bool clearTable = true]) async {
+    await db._loadData(orderLineCodes, list, clearTable);
   }
 
   Future<void> loadOrderLineStorageCodes(List<OrderLineStorageCode> list) async {
-    await batch((batch) {
-      batch.deleteWhere(orderLineStorageCodes, (row) => const Constant(true));
-      batch.insertAll(orderLineStorageCodes, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(orderLineStorageCodes, list);
   }
 
   Future<void> loadIncomes(List<Income> list) async {
-    await batch((batch) {
-      batch.deleteWhere(incomes, (row) => const Constant(true));
-      batch.insertAll(incomes, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(incomes, list);
   }
 
   Future<void> loadRecepts(List<Recept> list) async {
-    await batch((batch) {
-      batch.deleteWhere(recepts, (row) => const Constant(true));
-      batch.insertAll(recepts, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(recepts, list);
   }
 
   Stream<List<Order>> watchOrders() {
