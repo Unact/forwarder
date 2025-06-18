@@ -113,7 +113,6 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
         state.codeLines.map((e) => e.orderLineCodes).expand((e) => e).toList(),
         location
       );
-      await appRepository.loadData();
 
       emit(state.copyWith(status: OrderStateStatus.success, message: 'Информация о доставке сохранена'));
     } on AppError catch(e) {
@@ -162,7 +161,6 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
 
     try {
       await ordersRepository.cancelOrderDelivery(state.order);
-      await appRepository.loadData();
 
       emit(state.copyWith(status: OrderStateStatus.success, message: 'Доставка успешно отменена'));
     } on AppError catch(e) {

@@ -7,6 +7,7 @@ part 'api_buyer.dart';
 part 'api_card_payment.dart';
 part 'api_cash_payment.dart';
 part 'api_debt.dart';
+part 'api_delivery_data.dart';
 part 'api_data.dart';
 part 'api_income.dart';
 part 'api_order_line_code.dart';

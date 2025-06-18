@@ -97,6 +97,13 @@ class AppDataStore extends _$AppDataStore {
     });
   }
 
+  Future<void> _loadData(TableInfo table, Iterable<Insertable> rows, [bool clearTable = true]) async {
+    await batch((batch) {
+      if (clearTable) batch.deleteWhere(table, (row) => const Constant(true));
+      batch.insertAll(table, rows, mode: InsertMode.insertOrReplace);
+    });
+  }
+
   @override
   int get schemaVersion => 13;
 

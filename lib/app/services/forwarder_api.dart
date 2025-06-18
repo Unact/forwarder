@@ -26,13 +26,13 @@ extension ForwarderApi on RenewApi {
     );
   }
 
-  Future<void> deliverOrder(
+  Future<ApiDeliveryData> deliverOrder(
     int orderId,
     List<Map<String, dynamic>> codes,
     bool delivered,
     Map<String, dynamic> location
   ) async {
-    await post(
+    final result = await post(
       'v1/forwarder/confirm_delivery',
       dataGenerator: () => {
         'sale_order_id': orderId,
@@ -42,15 +42,19 @@ extension ForwarderApi on RenewApi {
         'local_ts': DateTime.now().toIso8601String()
       }
     );
+
+    return ApiDeliveryData.fromJson(result);
   }
 
-  Future<void> cancelOrderDelivery(int orderId) async {
-    await post(
+  Future<ApiDeliveryData> cancelOrderDelivery(int orderId) async {
+    final result = await post(
       'v1/forwarder/cancel_delivery',
       dataGenerator: () => {
         'sale_order_id': orderId
       }
     );
+
+    return ApiDeliveryData.fromJson(result);
   }
 
   Future<void> acceptPayment(

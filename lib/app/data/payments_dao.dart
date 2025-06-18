@@ -11,24 +11,15 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
   PaymentsDao(super.db);
 
   Future<void> loadCashPayments(List<CashPayment> list) async {
-    await batch((batch) {
-      batch.deleteWhere(cashPayments, (row) => const Constant(true));
-      batch.insertAll(cashPayments, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(cashPayments, list);
   }
 
   Future<void> loadCardPayments(List<CardPayment> list) async {
-    await batch((batch) {
-      batch.deleteWhere(cardPayments, (row) => const Constant(true));
-      batch.insertAll(cardPayments, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(cardPayments, list);
   }
 
   Future<void> loadDebts(List<Debt> list) async {
-    await batch((batch) {
-      batch.deleteWhere(debts, (row) => const Constant(true));
-      batch.insertAll(debts, list, mode: InsertMode.insertOrReplace);
-    });
+    await db._loadData(debts, list);
   }
 
   Stream<List<CashPayment>> watchCashPayments() {
