@@ -90,12 +90,21 @@ class OrdersRepository extends BaseRepository {
     };
 
     try {
-      await api.deliverOrder(
+      final ApiDeliveryData data = await api.deliverOrder(
         updatedOrder.id.value,
         updatedOrderLineCodes,
         delivered,
         location
       );
+
+      await dataStore.transaction(() async {
+        List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+
+        await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
+        await dataStore.ordersDao.loadOrderLines(orderLines, false);
+        await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+      });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -110,7 +119,16 @@ class OrdersRepository extends BaseRepository {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: const Value.absent());
 
     try {
-      await api.cancelOrderDelivery(order.id);
+      final ApiDeliveryData data = await api.cancelOrderDelivery(order.id);
+
+      await dataStore.transaction(() async {
+        List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+
+        await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
+        await dataStore.ordersDao.loadOrderLines(orderLines, false);
+        await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+      });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
