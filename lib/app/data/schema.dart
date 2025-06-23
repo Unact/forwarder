@@ -80,6 +80,7 @@ class Orders extends Table {
   BoolColumn get delivered => boolean().nullable()();
   BoolColumn get paid => boolean()();
   BoolColumn get physical => boolean()();
+  BoolColumn get needScan => boolean()();
 }
 
 class OrderLines extends Table {

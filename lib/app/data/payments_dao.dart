@@ -18,8 +18,8 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
     await db._loadData(cardPayments, list);
   }
 
-  Future<void> loadDebts(List<Debt> list) async {
-    await db._loadData(debts, list);
+  Future<void> loadDebts(List<Debt> list, [bool clearTable = true]) async {
+    await db._loadData(debts, list, clearTable);
   }
 
   Stream<List<CashPayment>> watchCashPayments() {
