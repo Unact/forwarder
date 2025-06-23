@@ -3,7 +3,6 @@ part of 'code_scan_page.dart';
 enum CodeScanStateStatus {
   initial,
   dataLoaded,
-  scanReadFinished,
   failure,
   success
 }
