@@ -104,6 +104,7 @@ class OrdersRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
       });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
@@ -128,6 +129,7 @@ class OrdersRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
       });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);

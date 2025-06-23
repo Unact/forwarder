@@ -43,6 +43,7 @@ class _CodeScanView extends StatefulWidget {
 class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
   bool errorDialogOpen = false;
+  bool paused = false;
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -54,15 +55,23 @@ class _CodeScanViewState extends State<_CodeScanView> {
         _controller.text = '';
 
         return ScanView(
-          onRead: vm.readCode,
+          onRead: (barcode) {
+            setState(() => paused = true);
+            vm.readCode(barcode);
+          },
           barcodeMode: true,
+          paused: paused,
           child: _lastLineInfoWidget(context)
         );
       },
-      listener: (context, state) {
+      listener: (context, state) async {
         switch (state.status) {
+          case CodeScanStateStatus.success:
+            setState(() => paused = false);
+            break;
           case CodeScanStateStatus.failure:
-            showErrorDialog(context, state.message);
+            await showErrorDialog(context, state.message);
+            setState(() => paused = false);
             break;
           default:
             break;
