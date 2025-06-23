@@ -293,8 +293,8 @@ class _OrderViewState extends State<_OrderView> {
 
   List<Widget> _buildDeliveryButtons(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
-    bool hasScanned = !vm.state.order.physical ||
-      (vm.state.order.physical && vm.state.codeLines.any((e) => e.orderLineCodes.isNotEmpty));
+    bool hasScanned = !vm.state.order.needScan ||
+      (vm.state.order.needScan && vm.state.codeLines.any((e) => e.orderLineCodes.isNotEmpty));
 
     return [
       ElevatedButton(
