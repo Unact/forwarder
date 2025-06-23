@@ -190,9 +190,7 @@ class _OrderViewState extends State<_OrderView> {
 
   Widget _buildOrderLinesTile(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
-    bool scanHidden = vm.state.order.didDelivery ||
-      !(vm.state.order.physical || vm.state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty)) ||
-      vm.state.codeLines.isEmpty;
+    bool scanHidden = vm.state.order.didDelivery || !vm.state.order.needScan;
 
     return ExpansionTile(
       title: const Text('Позиции', style: TextStyle(fontSize: 14)),
@@ -244,10 +242,7 @@ class _OrderViewState extends State<_OrderView> {
     OrderViewModel vm = context.read<OrderViewModel>();
     List<Widget> trailingWidgets = [];
 
-    if (
-      !vm.state.order.didDelivery &&
-      (vm.state.order.physical || vm.state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty))
-    ) {
+    if (!vm.state.order.didDelivery && vm.state.order.needScan) {
       return _buildPhysicalOrderLineTile(context, codeLine);
     }
 
