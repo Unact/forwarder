@@ -42,9 +42,48 @@ class _CodeScanView extends StatefulWidget {
 
 class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
-  bool errorDialogOpen = false;
   bool scanPaused = false;
   final TextEditingController _controller = TextEditingController();
+
+  Future<String> showManualInput() async {
+    String code = '';
+
+    return await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                autofocus: true,
+                enableInteractiveSelection: false,
+                onChanged: (newCode) => setState(() => code = newCode),
+                decoration: const InputDecoration(labelText: 'Код'),
+              )
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: code.isEmpty ? null : () async {
+                Navigator.of(context).pop(code);
+              },
+              child: const Text('Подтвердить')
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop('');
+              },
+              child: const Text('Отменить')
+            )
+          ]
+        );
+          });
+      }
+    ) ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +100,23 @@ class _CodeScanViewState extends State<_CodeScanView> {
           },
           barcodeMode: true,
           paused: scanPaused,
+          actions: [
+            IconButton(
+              color: Colors.white,
+              icon: const Icon(Icons.text_fields),
+              tooltip: 'Ручной поиск',
+              onPressed: () async {
+                setState(() => scanPaused = true);
+                final result = await showManualInput();
+
+                if (result.isEmpty) {
+                  setState(() => scanPaused = false);
+                } else {
+                  await vm.readCode(result);
+                }
+              }
+            )
+          ],
           child: _lastLineInfoWidget(context)
         );
       },
@@ -81,9 +137,6 @@ class _CodeScanViewState extends State<_CodeScanView> {
   }
 
   Future<void> showErrorDialog(BuildContext context, String message) async {
-    if (errorDialogOpen) return;
-
-    setState(() => errorDialogOpen = true);
     await showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -96,7 +149,6 @@ class _CodeScanViewState extends State<_CodeScanView> {
         );
       }
     );
-    setState(() => errorDialogOpen = false);
   }
 
   Widget _lastLineInfoWidget(BuildContext context) {
