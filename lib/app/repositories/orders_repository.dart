@@ -39,6 +39,10 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.watchOrderLinesByOrderId(orderId);
   }
 
+  Stream<Buyer> watchBuyerById(int id) {
+    return dataStore.ordersDao.watchBuyerById(id);
+  }
+
   Stream<Order> watchOrderById(int id) {
     return dataStore.ordersDao.watchOrderById(id);
   }
@@ -140,6 +144,90 @@ class OrdersRepository extends BaseRepository {
 
     await dataStore.ordersDao.upsertOrder(updatedOrder);
     await dataStore.ordersDao.clearOrderLineCodesByOrderId(order.id);
+  }
+
+  Future<void> missed(Buyer buyer, Position position) async {
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
+
+    try {
+      final ApiBuyerOrderData data = await api.missed(buyer.id, location);
+
+      await dataStore.transaction(() async {
+        List<Order> orders = data.orders.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+        List<Debt> debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
+
+        await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
+        await dataStore.ordersDao.loadOrders(orders, false);
+        await dataStore.ordersDao.loadOrderLines(orderLines, false);
+        await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        await dataStore.paymentsDao.loadDebts(debts, false);
+      });
+    } on ApiException catch(e) {
+      throw AppError(e.errorMsg);
+    } catch(e, trace) {
+      await Misc.reportError(e, trace);
+      throw AppError(Strings.genericErrorMsg);
+    }
+  }
+
+  Future<void> arrive(Buyer buyer, Position position) async {
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
+
+    try {
+      final ApiBuyerData data = await api.arrive(buyer.id, location);
+
+      await dataStore.transaction(() async {
+        await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
+      });
+    } on ApiException catch(e) {
+      throw AppError(e.errorMsg);
+    } catch(e, trace) {
+      await Misc.reportError(e, trace);
+      throw AppError(Strings.genericErrorMsg);
+    }
+  }
+
+  Future<void> depart(Buyer buyer, Position position) async {
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
+
+    try {
+      final ApiBuyerData data = await api.depart(buyer.id, location);
+
+      await dataStore.transaction(() async {
+        await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
+      });
+    } on ApiException catch(e) {
+      throw AppError(e.errorMsg);
+    } catch(e, trace) {
+      await Misc.reportError(e, trace);
+      throw AppError(Strings.genericErrorMsg);
+    }
   }
 
   Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {

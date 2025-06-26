@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
+import '/app/entities/entities.dart';
 import '/app/pages/buyers/buyer/accept_payment/accept_payment_page.dart';
 import '/app/pages/buyers/buyer/debt/debt_page.dart';
 import '/app/pages/buyers/buyer/order/order_page.dart';
@@ -49,6 +51,13 @@ class _BuyerView extends StatefulWidget {
 
 class _BuyerViewState extends State<_BuyerView> {
   final Map<int, TextEditingController> _controllers = {};
+  late final ProgressDialog _progressDialog = ProgressDialog(context: context);
+
+  @override
+  void dispose() {
+    _progressDialog.close();
+    super.dispose();
+  }
 
   Future<void> showAcceptPaymentDialog() async {
     BuyerViewModel vm = context.read<BuyerViewModel>();
@@ -89,7 +98,7 @@ class _BuyerViewState extends State<_BuyerView> {
           appBar: AppBar(
             title: const Text('Точка'),
           ),
-          persistentFooterButtons: _buildPayButtons(context),
+          persistentFooterButtons: _buildFooterButtons(context),
           body: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 24, bottom: 24),
@@ -103,6 +112,14 @@ class _BuyerViewState extends State<_BuyerView> {
       },
       listener: (context, state) {
         switch (state.status) {
+        case BuyerStateStatus.inProgress:
+          _progressDialog.open();
+          break;
+        case BuyerStateStatus.failure:
+        case BuyerStateStatus.success:
+          _progressDialog.close();
+          Misc.showMessage(context, state.message);
+          break;
         case BuyerStateStatus.needUserConfirmation:
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             await showConfirmationDialog(state.message);
@@ -122,10 +139,43 @@ class _BuyerViewState extends State<_BuyerView> {
     );
   }
 
-  List<Widget> _buildPayButtons(BuildContext context) {
+  List<Widget> _buildFooterButtons(BuildContext context) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
 
+    if (vm.state.buyer.departureTs != null || vm.state.buyer.missedTs != null) {
+      return [];
+    }
+
+    if (vm.state.buyer.arrivalTs == null) {
+      return [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).colorScheme.primary
+          ),
+          onPressed: vm.arrive,
+          child: const Text('В точке', style: TextStyle(color: Colors.white)),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).colorScheme.primary
+          ),
+          onPressed: vm.missed,
+          child: const Text('Не доехал', style: TextStyle(color: Colors.white)),
+        )
+      ];
+    }
+
     return [
+       ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          backgroundColor: Theme.of(context).colorScheme.primary
+        ),
+        onPressed: vm.depart,
+        child: const Text('Уехал из точки', style: TextStyle(color: Colors.white)),
+      ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
@@ -199,6 +249,7 @@ class _BuyerViewState extends State<_BuyerView> {
   }
 
   Widget _buildOrderTile(BuildContext context, Order order) {
+    BuyerViewModel vm = context.read<BuyerViewModel>();
     String delivered = order.isDelivered ? Strings.yes : (order.isUndelivered ? Strings.no : Strings.inProcess);
 
     return ListTile(
@@ -222,7 +273,7 @@ class _BuyerViewState extends State<_BuyerView> {
           ]
         )
       ),
-      onTap: () {
+      onTap: !vm.state.buyer.inProgress ? null : () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -253,7 +304,7 @@ class _BuyerViewState extends State<_BuyerView> {
       trailing: SizedBox(
         width: 124,
         height: 48,
-        child: NumTextField(
+        child: !vm.state.buyer.inProgress ? null : NumTextField(
           textAlign: TextAlign.end,
           controller: controller,
           enabled: debtIsEditable,
@@ -300,7 +351,7 @@ class _BuyerViewState extends State<_BuyerView> {
           ]
         )
       ),
-      onTap: () async {
+      onTap: !vm.state.buyer.inProgress ? null : () async {
         await Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) => DebtPage(debt: debt))

@@ -26,6 +26,45 @@ extension ForwarderApi on RenewApi {
     );
   }
 
+  Future<ApiBuyerOrderData> missed(int buyerId, Map<String, dynamic> location) async {
+    final result = await post(
+      'v1/forwarder/missed',
+      dataGenerator: () => {
+        'buyer_id': buyerId,
+        'location': location,
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    );
+
+    return ApiBuyerOrderData.fromJson(result);
+  }
+
+  Future<ApiBuyerData> arrive(int buyerId, Map<String, dynamic> location) async {
+    final result = await post(
+      'v1/forwarder/arrive',
+      dataGenerator: () => {
+        'buyer_id': buyerId,
+        'location': location,
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    );
+
+    return ApiBuyerData.fromJson(result);
+  }
+
+  Future<ApiBuyerData> depart(int buyerId, Map<String, dynamic> location) async {
+    final result = await post(
+      'v1/forwarder/depart',
+      dataGenerator: () => {
+        'buyer_id': buyerId,
+        'location': location,
+        'local_ts': DateTime.now().toIso8601String()
+      }
+    );
+
+    return ApiBuyerData.fromJson(result);
+  }
+
   Future<ApiDeliveryData> deliverOrder(
     int orderId,
     List<Map<String, dynamic>> codes,
