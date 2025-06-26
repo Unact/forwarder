@@ -985,8 +985,48 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _missedTsMeta = const VerificationMeta(
+    'missedTs',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, address];
+  late final GeneratedColumn<DateTime> missedTs = GeneratedColumn<DateTime>(
+    'missed_ts',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _arrivalTsMeta = const VerificationMeta(
+    'arrivalTs',
+  );
+  @override
+  late final GeneratedColumn<DateTime> arrivalTs = GeneratedColumn<DateTime>(
+    'arrival_ts',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _departureTsMeta = const VerificationMeta(
+    'departureTs',
+  );
+  @override
+  late final GeneratedColumn<DateTime> departureTs = GeneratedColumn<DateTime>(
+    'departure_ts',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    address,
+    missedTs,
+    arrivalTs,
+    departureTs,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1018,6 +1058,27 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     } else if (isInserting) {
       context.missing(_addressMeta);
     }
+    if (data.containsKey('missed_ts')) {
+      context.handle(
+        _missedTsMeta,
+        missedTs.isAcceptableOrUnknown(data['missed_ts']!, _missedTsMeta),
+      );
+    }
+    if (data.containsKey('arrival_ts')) {
+      context.handle(
+        _arrivalTsMeta,
+        arrivalTs.isAcceptableOrUnknown(data['arrival_ts']!, _arrivalTsMeta),
+      );
+    }
+    if (data.containsKey('departure_ts')) {
+      context.handle(
+        _departureTsMeta,
+        departureTs.isAcceptableOrUnknown(
+          data['departure_ts']!,
+          _departureTsMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1042,6 +1103,18 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
             DriftSqlType.string,
             data['${effectivePrefix}address'],
           )!,
+      missedTs: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}missed_ts'],
+      ),
+      arrivalTs: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}arrival_ts'],
+      ),
+      departureTs: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}departure_ts'],
+      ),
     );
   }
 
@@ -1055,13 +1128,32 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   final int id;
   final String name;
   final String address;
-  const Buyer({required this.id, required this.name, required this.address});
+  final DateTime? missedTs;
+  final DateTime? arrivalTs;
+  final DateTime? departureTs;
+  const Buyer({
+    required this.id,
+    required this.name,
+    required this.address,
+    this.missedTs,
+    this.arrivalTs,
+    this.departureTs,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['address'] = Variable<String>(address);
+    if (!nullToAbsent || missedTs != null) {
+      map['missed_ts'] = Variable<DateTime>(missedTs);
+    }
+    if (!nullToAbsent || arrivalTs != null) {
+      map['arrival_ts'] = Variable<DateTime>(arrivalTs);
+    }
+    if (!nullToAbsent || departureTs != null) {
+      map['departure_ts'] = Variable<DateTime>(departureTs);
+    }
     return map;
   }
 
@@ -1070,6 +1162,18 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       id: Value(id),
       name: Value(name),
       address: Value(address),
+      missedTs:
+          missedTs == null && nullToAbsent
+              ? const Value.absent()
+              : Value(missedTs),
+      arrivalTs:
+          arrivalTs == null && nullToAbsent
+              ? const Value.absent()
+              : Value(arrivalTs),
+      departureTs:
+          departureTs == null && nullToAbsent
+              ? const Value.absent()
+              : Value(departureTs),
     );
   }
 
@@ -1082,6 +1186,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String>(json['address']),
+      missedTs: serializer.fromJson<DateTime?>(json['missedTs']),
+      arrivalTs: serializer.fromJson<DateTime?>(json['arrivalTs']),
+      departureTs: serializer.fromJson<DateTime?>(json['departureTs']),
     );
   }
   @override
@@ -1091,19 +1198,36 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String>(address),
+      'missedTs': serializer.toJson<DateTime?>(missedTs),
+      'arrivalTs': serializer.toJson<DateTime?>(arrivalTs),
+      'departureTs': serializer.toJson<DateTime?>(departureTs),
     };
   }
 
-  Buyer copyWith({int? id, String? name, String? address}) => Buyer(
+  Buyer copyWith({
+    int? id,
+    String? name,
+    String? address,
+    Value<DateTime?> missedTs = const Value.absent(),
+    Value<DateTime?> arrivalTs = const Value.absent(),
+    Value<DateTime?> departureTs = const Value.absent(),
+  }) => Buyer(
     id: id ?? this.id,
     name: name ?? this.name,
     address: address ?? this.address,
+    missedTs: missedTs.present ? missedTs.value : this.missedTs,
+    arrivalTs: arrivalTs.present ? arrivalTs.value : this.arrivalTs,
+    departureTs: departureTs.present ? departureTs.value : this.departureTs,
   );
   Buyer copyWithCompanion(BuyersCompanion data) {
     return Buyer(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
+      missedTs: data.missedTs.present ? data.missedTs.value : this.missedTs,
+      arrivalTs: data.arrivalTs.present ? data.arrivalTs.value : this.arrivalTs,
+      departureTs:
+          data.departureTs.present ? data.departureTs.value : this.departureTs,
     );
   }
 
@@ -1112,46 +1236,68 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     return (StringBuffer('Buyer(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('address: $address')
+          ..write('address: $address, ')
+          ..write('missedTs: $missedTs, ')
+          ..write('arrivalTs: $arrivalTs, ')
+          ..write('departureTs: $departureTs')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, address);
+  int get hashCode =>
+      Object.hash(id, name, address, missedTs, arrivalTs, departureTs);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Buyer &&
           other.id == this.id &&
           other.name == this.name &&
-          other.address == this.address);
+          other.address == this.address &&
+          other.missedTs == this.missedTs &&
+          other.arrivalTs == this.arrivalTs &&
+          other.departureTs == this.departureTs);
 }
 
 class BuyersCompanion extends UpdateCompanion<Buyer> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> address;
+  final Value<DateTime?> missedTs;
+  final Value<DateTime?> arrivalTs;
+  final Value<DateTime?> departureTs;
   const BuyersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
+    this.missedTs = const Value.absent(),
+    this.arrivalTs = const Value.absent(),
+    this.departureTs = const Value.absent(),
   });
   BuyersCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String address,
+    this.missedTs = const Value.absent(),
+    this.arrivalTs = const Value.absent(),
+    this.departureTs = const Value.absent(),
   }) : name = Value(name),
        address = Value(address);
   static Insertable<Buyer> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? address,
+    Expression<DateTime>? missedTs,
+    Expression<DateTime>? arrivalTs,
+    Expression<DateTime>? departureTs,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
+      if (missedTs != null) 'missed_ts': missedTs,
+      if (arrivalTs != null) 'arrival_ts': arrivalTs,
+      if (departureTs != null) 'departure_ts': departureTs,
     });
   }
 
@@ -1159,11 +1305,17 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Value<int>? id,
     Value<String>? name,
     Value<String>? address,
+    Value<DateTime?>? missedTs,
+    Value<DateTime?>? arrivalTs,
+    Value<DateTime?>? departureTs,
   }) {
     return BuyersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
+      missedTs: missedTs ?? this.missedTs,
+      arrivalTs: arrivalTs ?? this.arrivalTs,
+      departureTs: departureTs ?? this.departureTs,
     );
   }
 
@@ -1179,6 +1331,15 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     if (address.present) {
       map['address'] = Variable<String>(address.value);
     }
+    if (missedTs.present) {
+      map['missed_ts'] = Variable<DateTime>(missedTs.value);
+    }
+    if (arrivalTs.present) {
+      map['arrival_ts'] = Variable<DateTime>(arrivalTs.value);
+    }
+    if (departureTs.present) {
+      map['departure_ts'] = Variable<DateTime>(departureTs.value);
+    }
     return map;
   }
 
@@ -1187,7 +1348,10 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     return (StringBuffer('BuyersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('address: $address')
+          ..write('address: $address, ')
+          ..write('missedTs: $missedTs, ')
+          ..write('arrivalTs: $arrivalTs, ')
+          ..write('departureTs: $departureTs')
           ..write(')'))
         .toString();
   }
@@ -5672,12 +5836,18 @@ typedef $$BuyersTableCreateCompanionBuilder =
       Value<int> id,
       required String name,
       required String address,
+      Value<DateTime?> missedTs,
+      Value<DateTime?> arrivalTs,
+      Value<DateTime?> departureTs,
     });
 typedef $$BuyersTableUpdateCompanionBuilder =
     BuyersCompanion Function({
       Value<int> id,
       Value<String> name,
       Value<String> address,
+      Value<DateTime?> missedTs,
+      Value<DateTime?> arrivalTs,
+      Value<DateTime?> departureTs,
     });
 
 class $$BuyersTableFilterComposer
@@ -5701,6 +5871,21 @@ class $$BuyersTableFilterComposer
 
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get missedTs => $composableBuilder(
+    column: $table.missedTs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get arrivalTs => $composableBuilder(
+    column: $table.arrivalTs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get departureTs => $composableBuilder(
+    column: $table.departureTs,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5728,6 +5913,21 @@ class $$BuyersTableOrderingComposer
     column: $table.address,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get missedTs => $composableBuilder(
+    column: $table.missedTs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get arrivalTs => $composableBuilder(
+    column: $table.arrivalTs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get departureTs => $composableBuilder(
+    column: $table.departureTs,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BuyersTableAnnotationComposer
@@ -5747,6 +5947,17 @@ class $$BuyersTableAnnotationComposer
 
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get missedTs =>
+      $composableBuilder(column: $table.missedTs, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get arrivalTs =>
+      $composableBuilder(column: $table.arrivalTs, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get departureTs => $composableBuilder(
+    column: $table.departureTs,
+    builder: (column) => column,
+  );
 }
 
 class $$BuyersTableTableManager
@@ -5780,14 +5991,33 @@ class $$BuyersTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> address = const Value.absent(),
-              }) => BuyersCompanion(id: id, name: name, address: address),
+                Value<DateTime?> missedTs = const Value.absent(),
+                Value<DateTime?> arrivalTs = const Value.absent(),
+                Value<DateTime?> departureTs = const Value.absent(),
+              }) => BuyersCompanion(
+                id: id,
+                name: name,
+                address: address,
+                missedTs: missedTs,
+                arrivalTs: arrivalTs,
+                departureTs: departureTs,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
                 required String address,
-              }) =>
-                  BuyersCompanion.insert(id: id, name: name, address: address),
+                Value<DateTime?> missedTs = const Value.absent(),
+                Value<DateTime?> arrivalTs = const Value.absent(),
+                Value<DateTime?> departureTs = const Value.absent(),
+              }) => BuyersCompanion.insert(
+                id: id,
+                name: name,
+                address: address,
+                missedTs: missedTs,
+                arrivalTs: arrivalTs,
+                departureTs: departureTs,
+              ),
           withReferenceMapper:
               (p0) =>
                   p0

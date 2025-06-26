@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -73,15 +74,34 @@ class _BuyersViewState extends State<_BuyersView> {
     );
   }
 
+  Widget buildTileLeading(BuildContext context, Buyer buyer) {
+    if (buyer.missedTs != null) return Icon(Icons.clear, color: Colors.red);
+    if (buyer.arrivalTs == null) return Icon(Icons.hourglass_empty, color: Colors.blue);
+    if (buyer.inProgress) return Icon(Icons.hourglass_empty, color: Colors.yellow);
+
+    return const Icon(Icons.check, color: Colors.green);
+  }
+
   Widget _buyerTile(BuildContext context, Buyer buyer) {
     BuyersViewModel vm = context.read<BuyersViewModel>();
     bool isInc = vm.buyerIsInc(buyer);
 
     return ListTile(
+      minLeadingWidth: 1,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: buildTileLeading(context, buyer)
+      ),
       dense: true,
       contentPadding: const EdgeInsets.all(0),
       title: Text(buyer.name, style: const TextStyle(fontSize: 14.0)),
       onTap: () async {
+        if (vm.state.buyers.any((e) => e.inProgress && e != buyer)) {
+          Misc.showMessage(context, 'Не отмечен отъезд из предыдущей точки');
+          return;
+        }
+
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
         Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) => BuyerPage(buyer: buyer, isInc: isInc))

@@ -14,8 +14,8 @@ part of 'database.dart';
 class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   OrdersDao(super.db);
 
-   Future<void> loadBuyers(List<Buyer> list) async {
-    await db._loadData(buyers, list);
+  Future<void> loadBuyers(List<Buyer> list, [bool clearTable = true]) async {
+    await db._loadData(buyers, list, clearTable);
   }
 
   Future<void> loadOrders(List<Order> list, [bool clearTable = true]) async {
@@ -83,6 +83,10 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
 
   Stream<List<Buyer>> watchBuyers() {
     return (select(buyers)..orderBy([(u) => OrderingTerm(expression: u.name)])).watch();
+  }
+
+  Stream<Buyer> watchBuyerById(int id) {
+    return (select(buyers)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
 
   Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
