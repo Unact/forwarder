@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:u_app_utils/u_app_utils.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -97,11 +96,12 @@ class _BuyersViewState extends State<_BuyersView> {
       title: Text(buyer.name, style: const TextStyle(fontSize: 14.0)),
       onTap: () async {
         if (vm.state.buyers.any((e) => e.inProgress && e != buyer)) {
-          Misc.showMessage(context, 'Не отмечен отъезд из предыдущей точки');
+          context.read<GlobalKey<ScaffoldMessengerState>>().currentState!.showSnackBar(SnackBar(
+            content: Text('Не отмечен отъезд из предыдущей точки')
+          ));
           return;
         }
 
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
         Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) => BuyerPage(buyer: buyer, isInc: isInc))
