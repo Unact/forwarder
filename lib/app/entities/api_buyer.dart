@@ -12,7 +12,7 @@ class ApiBuyer extends Equatable {
     required this.id,
     required this.name,
     required this.address,
-    required this.missedTs,
+    this.missedTs,
     this.arrivalTs,
     this.departureTs
   });
