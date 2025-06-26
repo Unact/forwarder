@@ -105,7 +105,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -128,6 +128,10 @@ LazyDatabase _openConnection(bool logStatements) {
 
     return NativeDatabase(file, logStatements: logStatements);
   });
+}
+
+extension BuyerX on Buyer {
+  bool get inProgress => arrivalTs != null && departureTs == null;
 }
 
 extension DebtX on Debt {

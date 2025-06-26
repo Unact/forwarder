@@ -30,6 +30,9 @@ class Buyers extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get address => text()();
+  DateTimeColumn get missedTs => dateTime().nullable()();
+  DateTimeColumn get arrivalTs => dateTime().nullable()();
+  DateTimeColumn get departureTs => dateTime().nullable()();
 }
 
 class CardPayments extends Table {

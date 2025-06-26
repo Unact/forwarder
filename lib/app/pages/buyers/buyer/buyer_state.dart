@@ -6,7 +6,10 @@ enum BuyerStateStatus {
   needUserConfirmation,
   debtChanged,
   paymentStarted,
-  paymentFinished
+  paymentFinished,
+  inProgress,
+  failure,
+  success
 }
 
 class BuyerState {

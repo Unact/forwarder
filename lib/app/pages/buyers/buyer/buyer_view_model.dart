@@ -5,6 +5,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
+  StreamSubscription<Buyer>? buyerSubscription;
   StreamSubscription<List<Order>>? orderSubscription;
   StreamSubscription<List<Debt>>? debtsSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
@@ -28,6 +29,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> initViewModel() async {
     await super.initViewModel();
 
+    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.id).listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, buyer: event));
+    });
     orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.id).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
     });
@@ -46,6 +50,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> close() async {
     await super.close();
 
+    await buyerSubscription?.cancel();
     await orderSubscription?.cancel();
     await debtsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
@@ -80,5 +85,48 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       status: BuyerStateStatus.paymentFinished,
       message: result
     ));
+  }
+
+  Future<void> missed() async {
+    await _markPoint(
+      (location) => ordersRepository.missed(state.buyer, location),
+      'Отмечен недоезд до точки'
+    );
+  }
+
+  Future<void> arrive() async {
+    await _markPoint(
+      (location) => ordersRepository.arrive(state.buyer, location),
+      'Отмечен приезд в точку'
+    );
+  }
+
+  Future<void> depart() async {
+    await _markPoint(
+      (location) => ordersRepository.depart(state.buyer, location),
+      'Отмечен отъезд из точки'
+    );
+  }
+
+  Future<void> _markPoint(Future<void> Function(Position) action, String successMessage) async {
+    emit(state.copyWith(status: BuyerStateStatus.inProgress));
+
+    try {
+      if (!(await Permissions.hasLocationPermissions())) {
+        emit(state.copyWith(
+          message: 'Нет прав на получение местоположения',
+          status: BuyerStateStatus.failure
+        ));
+        return;
+      }
+
+      final location = await Geolocator.getCurrentPosition();
+
+      await action.call(location);
+
+      emit(state.copyWith(status: BuyerStateStatus.success, message: successMessage));
+    } on AppError catch(e) {
+      emit(state.copyWith(status: BuyerStateStatus.failure, message: e.message));
+    }
   }
 }

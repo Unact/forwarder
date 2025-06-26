@@ -30,6 +30,8 @@ void main() async {
   PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
   UsersRepository usersRepository = UsersRepository(dataStore, api);
 
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   FlutterError.onError = (errorDetails) {
     Misc.logError(errorDetails.exception, errorDetails.stack);
   };
@@ -50,12 +52,14 @@ void main() async {
     appRunner: () => runApp(
       MultiRepositoryProvider(
         providers: [
+          Provider.value(value: scaffoldMessengerKey),
           RepositoryProvider.value(value: appRepository),
           RepositoryProvider.value(value: ordersRepository),
           RepositoryProvider.value(value: paymentsRepository),
           RepositoryProvider.value(value: usersRepository)
         ],
         child: MaterialApp(
+          scaffoldMessengerKey: scaffoldMessengerKey,
           title: Strings.ruAppName,
           theme: FlexThemeData.light(
             useMaterial3: false,

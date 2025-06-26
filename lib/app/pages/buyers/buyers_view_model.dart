@@ -34,17 +34,7 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
   }
 
   List<Order> buyerOrders(Buyer buyer) => state.orders.where((e) => e.buyerId == buyer.id).toList();
-  List<Buyer> get notFinishedBuyers =>
-    state.buyers
-      .where((e) =>
-        buyerOrders(e).any((e) => !((e.didDelivery && !e.physical) || (e.didDelivery && e.physical && e.paid)))
-      )
-      .toList();
-  List<Buyer> get finishedBuyers =>
-    state.buyers
-      .where((e) =>
-        buyerOrders(e).every((e) => (e.didDelivery && !e.physical) || (e.didDelivery && e.physical && e.paid))
-      )
-      .toList();
+  List<Buyer> get notFinishedBuyers => state.buyers.where((e) => e.missedTs == null && e.departureTs == null).toList();
+  List<Buyer> get finishedBuyers => state.buyers.where((e) => e.missedTs != null || e.departureTs != null).toList();
   bool buyerIsInc(Buyer b) => state.orders.any((e) => e.buyerId == b.id && e.isInc) || buyerOrders(b).isEmpty;
 }
