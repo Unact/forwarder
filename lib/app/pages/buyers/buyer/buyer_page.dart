@@ -173,7 +173,7 @@ class _BuyerViewState extends State<_BuyerView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Theme.of(context).colorScheme.primary
         ),
-        onPressed: vm.depart,
+        onPressed: vm.tryDepart,
         child: const Text('Уехал из точки', style: TextStyle(color: Colors.white)),
       ),
       ElevatedButton(
