@@ -87,6 +87,19 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     ));
   }
 
+  void tryDepart() {
+    if (state.orders.any((e) => !e.didDelivery)) {
+      emit(state.copyWith(
+        status: BuyerStateStatus.needUserConfirmation,
+        confirmationCallback: depart,
+        message: 'Вы уверены, что хотите покинуть точку?'
+      ));
+      return;
+    }
+
+    depart(true);
+  }
+
   Future<void> missed() async {
     await _markPoint(
       (location) => ordersRepository.missed(state.buyer, location),
@@ -101,7 +114,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     );
   }
 
-  Future<void> depart() async {
+  Future<void> depart(bool confirmed) async {
+    if (!confirmed) return;
+
     await _markPoint(
       (location) => ordersRepository.depart(state.buyer, location),
       'Отмечен отъезд из точки'
