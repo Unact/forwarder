@@ -33,7 +33,7 @@ dependencies:
   u_app_utils:
     git:
       url: git@github.com:Unact/u_app_utils.git
-      ref: f1b0d55
+      ref: 0bd0ad1
 
 dev_dependencies:
   build_runner: ^2.4.14
