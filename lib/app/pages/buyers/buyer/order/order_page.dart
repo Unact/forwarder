@@ -14,6 +14,7 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
+import '/app/widgets/widgets.dart';
 
 part 'order_state.dart';
 part 'order_view_model.dart';
@@ -108,7 +109,7 @@ class _OrderViewState extends State<_OrderView> {
     return BlocConsumer<OrderViewModel, OrderState>(
       builder: (context, state) {
         return Scaffold(
-          persistentFooterButtons: _buildFooterButtons(context),
+          persistentFooterButtons: [FooterButtonsRow(children: _buildFooterButtons(context))],
           appBar: AppBar(
             title: const Text('Заказ'),
           ),

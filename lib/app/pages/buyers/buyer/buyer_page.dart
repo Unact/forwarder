@@ -15,6 +15,7 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
+import '/app/widgets/widgets.dart';
 
 part 'buyer_state.dart';
 part 'buyer_view_model.dart';
@@ -98,7 +99,7 @@ class _BuyerViewState extends State<_BuyerView> {
           appBar: AppBar(
             title: const Text('Точка'),
           ),
-          persistentFooterButtons: _buildFooterButtons(context),
+          persistentFooterButtons: [FooterButtonsRow(children: _buildFooterButtons(context))],
           body: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 24, bottom: 24),

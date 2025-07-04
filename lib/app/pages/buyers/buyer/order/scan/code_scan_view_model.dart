@@ -79,6 +79,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       List<OrderLineWithCode> codeLines = state.codeLines.where((e) => e.orderLine.gtin == gtin).toList();
       OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
 
+      if (codeLines.isEmpty) {
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
+        return;
+      }
+
       if (codeLine == null) {
         emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
         return;
@@ -112,6 +117,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     );
     int? rel = codeLine?.orderLine.barcodeRels.firstWhere((e) => e.barcode == barcode).rel;
     double? vol = codeLine?.orderLine.vol;
+
+    if (codeLines.isEmpty) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
+      return;
+    }
 
     if (codeLine == null) {
       emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
@@ -157,18 +167,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   Future<void> readCode(String barcode) async {
     String? gtin = _parseBarcode(barcode);
 
-    if (gtin != null) {
-      await _processDatacode(barcode);
-      return;
-    }
-
-    if (state.codeLines.any((e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(barcode))) {
-      await _processBarcode(barcode);
-      return;
-    }
-
-    emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
-    return;
+    await (gtin != null ? _processDatacode(barcode) : _processBarcode(barcode));
   }
 
   Future<void> decreaseAmount(OrderLineWithCode codeLine) async {
