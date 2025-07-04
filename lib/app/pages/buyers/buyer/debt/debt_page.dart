@@ -10,6 +10,7 @@ import '/app/pages/buyers/buyer/accept_payment/accept_payment_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/payments_repository.dart';
+import '/app/widgets/widgets.dart';
 
 part 'debt_state.dart';
 part 'debt_view_model.dart';
@@ -88,7 +89,7 @@ class _DebtViewState extends State<_DebtView> {
         );
 
         return Scaffold(
-          persistentFooterButtons: _buildPayButtons(context),
+          persistentFooterButtons: [FooterButtonsRow(children: _buildFooterButtons(context))],
           appBar: AppBar(
             title: const Text('Задолженность'),
           ),
@@ -169,7 +170,7 @@ class _DebtViewState extends State<_DebtView> {
     );
   }
 
-  List<Widget> _buildPayButtons(BuildContext context) {
+  List<Widget> _buildFooterButtons(BuildContext context) {
     DebtViewModel vm = context.read<DebtViewModel>();
 
     return [
