@@ -184,14 +184,6 @@ class _BuyerViewState extends State<_BuyerView> {
         ),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Theme.of(context).colorScheme.primary
-        ),
-        onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(true),
-        child: const Text('Карта', style: TextStyle(color: Colors.white)),
       )
     ];
   }
