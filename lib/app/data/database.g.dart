@@ -952,18 +952,38 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $BuyersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _buyerIdMeta = const VerificationMeta(
+    'buyerId',
+  );
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
+    'buyer_id',
     aliasedName,
     false,
-    hasAutoIncrement: true,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deliveryIdMeta = const VerificationMeta(
+    'deliveryId',
+  );
+  @override
+  late final GeneratedColumn<int> deliveryId = GeneratedColumn<int>(
+    'delivery_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deliveryNdocMeta = const VerificationMeta(
+    'deliveryNdoc',
+  );
+  @override
+  late final GeneratedColumn<String> deliveryNdoc = GeneratedColumn<String>(
+    'delivery_ndoc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -984,6 +1004,29 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ordMeta = const VerificationMeta('ord');
+  @override
+  late final GeneratedColumn<int> ord = GeneratedColumn<int>(
+    'ord',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _needIncMeta = const VerificationMeta(
+    'needInc',
+  );
+  @override
+  late final GeneratedColumn<bool> needInc = GeneratedColumn<bool>(
+    'need_inc',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("need_inc" IN (0, 1))',
+    ),
   );
   static const VerificationMeta _missedTsMeta = const VerificationMeta(
     'missedTs',
@@ -1020,9 +1063,13 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
+    buyerId,
+    deliveryId,
+    deliveryNdoc,
     name,
     address,
+    ord,
+    needInc,
     missedTs,
     arrivalTs,
     departureTs,
@@ -1039,8 +1086,32 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    if (data.containsKey('buyer_id')) {
+      context.handle(
+        _buyerIdMeta,
+        buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_buyerIdMeta);
+    }
+    if (data.containsKey('delivery_id')) {
+      context.handle(
+        _deliveryIdMeta,
+        deliveryId.isAcceptableOrUnknown(data['delivery_id']!, _deliveryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deliveryIdMeta);
+    }
+    if (data.containsKey('delivery_ndoc')) {
+      context.handle(
+        _deliveryNdocMeta,
+        deliveryNdoc.isAcceptableOrUnknown(
+          data['delivery_ndoc']!,
+          _deliveryNdocMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_deliveryNdocMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -1057,6 +1128,22 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
       );
     } else if (isInserting) {
       context.missing(_addressMeta);
+    }
+    if (data.containsKey('ord')) {
+      context.handle(
+        _ordMeta,
+        ord.isAcceptableOrUnknown(data['ord']!, _ordMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ordMeta);
+    }
+    if (data.containsKey('need_inc')) {
+      context.handle(
+        _needIncMeta,
+        needInc.isAcceptableOrUnknown(data['need_inc']!, _needIncMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_needIncMeta);
     }
     if (data.containsKey('missed_ts')) {
       context.handle(
@@ -1083,15 +1170,25 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {buyerId, deliveryId};
   @override
   Buyer map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Buyer(
-      id:
+      buyerId:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
-            data['${effectivePrefix}id'],
+            data['${effectivePrefix}buyer_id'],
+          )!,
+      deliveryId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}delivery_id'],
+          )!,
+      deliveryNdoc:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}delivery_ndoc'],
           )!,
       name:
           attachedDatabase.typeMapping.read(
@@ -1102,6 +1199,16 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
             data['${effectivePrefix}address'],
+          )!,
+      ord:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}ord'],
+          )!,
+      needInc:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}need_inc'],
           )!,
       missedTs: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1125,16 +1232,24 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
 }
 
 class Buyer extends DataClass implements Insertable<Buyer> {
-  final int id;
+  final int buyerId;
+  final int deliveryId;
+  final String deliveryNdoc;
   final String name;
   final String address;
+  final int ord;
+  final bool needInc;
   final DateTime? missedTs;
   final DateTime? arrivalTs;
   final DateTime? departureTs;
   const Buyer({
-    required this.id,
+    required this.buyerId,
+    required this.deliveryId,
+    required this.deliveryNdoc,
     required this.name,
     required this.address,
+    required this.ord,
+    required this.needInc,
     this.missedTs,
     this.arrivalTs,
     this.departureTs,
@@ -1142,9 +1257,13 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    map['buyer_id'] = Variable<int>(buyerId);
+    map['delivery_id'] = Variable<int>(deliveryId);
+    map['delivery_ndoc'] = Variable<String>(deliveryNdoc);
     map['name'] = Variable<String>(name);
     map['address'] = Variable<String>(address);
+    map['ord'] = Variable<int>(ord);
+    map['need_inc'] = Variable<bool>(needInc);
     if (!nullToAbsent || missedTs != null) {
       map['missed_ts'] = Variable<DateTime>(missedTs);
     }
@@ -1159,9 +1278,13 @@ class Buyer extends DataClass implements Insertable<Buyer> {
 
   BuyersCompanion toCompanion(bool nullToAbsent) {
     return BuyersCompanion(
-      id: Value(id),
+      buyerId: Value(buyerId),
+      deliveryId: Value(deliveryId),
+      deliveryNdoc: Value(deliveryNdoc),
       name: Value(name),
       address: Value(address),
+      ord: Value(ord),
+      needInc: Value(needInc),
       missedTs:
           missedTs == null && nullToAbsent
               ? const Value.absent()
@@ -1183,9 +1306,13 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Buyer(
-      id: serializer.fromJson<int>(json['id']),
+      buyerId: serializer.fromJson<int>(json['buyerId']),
+      deliveryId: serializer.fromJson<int>(json['deliveryId']),
+      deliveryNdoc: serializer.fromJson<String>(json['deliveryNdoc']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String>(json['address']),
+      ord: serializer.fromJson<int>(json['ord']),
+      needInc: serializer.fromJson<bool>(json['needInc']),
       missedTs: serializer.fromJson<DateTime?>(json['missedTs']),
       arrivalTs: serializer.fromJson<DateTime?>(json['arrivalTs']),
       departureTs: serializer.fromJson<DateTime?>(json['departureTs']),
@@ -1195,9 +1322,13 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'buyerId': serializer.toJson<int>(buyerId),
+      'deliveryId': serializer.toJson<int>(deliveryId),
+      'deliveryNdoc': serializer.toJson<String>(deliveryNdoc),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String>(address),
+      'ord': serializer.toJson<int>(ord),
+      'needInc': serializer.toJson<bool>(needInc),
       'missedTs': serializer.toJson<DateTime?>(missedTs),
       'arrivalTs': serializer.toJson<DateTime?>(arrivalTs),
       'departureTs': serializer.toJson<DateTime?>(departureTs),
@@ -1205,25 +1336,41 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   }
 
   Buyer copyWith({
-    int? id,
+    int? buyerId,
+    int? deliveryId,
+    String? deliveryNdoc,
     String? name,
     String? address,
+    int? ord,
+    bool? needInc,
     Value<DateTime?> missedTs = const Value.absent(),
     Value<DateTime?> arrivalTs = const Value.absent(),
     Value<DateTime?> departureTs = const Value.absent(),
   }) => Buyer(
-    id: id ?? this.id,
+    buyerId: buyerId ?? this.buyerId,
+    deliveryId: deliveryId ?? this.deliveryId,
+    deliveryNdoc: deliveryNdoc ?? this.deliveryNdoc,
     name: name ?? this.name,
     address: address ?? this.address,
+    ord: ord ?? this.ord,
+    needInc: needInc ?? this.needInc,
     missedTs: missedTs.present ? missedTs.value : this.missedTs,
     arrivalTs: arrivalTs.present ? arrivalTs.value : this.arrivalTs,
     departureTs: departureTs.present ? departureTs.value : this.departureTs,
   );
   Buyer copyWithCompanion(BuyersCompanion data) {
     return Buyer(
-      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      deliveryId:
+          data.deliveryId.present ? data.deliveryId.value : this.deliveryId,
+      deliveryNdoc:
+          data.deliveryNdoc.present
+              ? data.deliveryNdoc.value
+              : this.deliveryNdoc,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
+      ord: data.ord.present ? data.ord.value : this.ord,
+      needInc: data.needInc.present ? data.needInc.value : this.needInc,
       missedTs: data.missedTs.present ? data.missedTs.value : this.missedTs,
       arrivalTs: data.arrivalTs.present ? data.arrivalTs.value : this.arrivalTs,
       departureTs:
@@ -1234,9 +1381,13 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   @override
   String toString() {
     return (StringBuffer('Buyer(')
-          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('deliveryNdoc: $deliveryNdoc, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
+          ..write('ord: $ord, ')
+          ..write('needInc: $needInc, ')
           ..write('missedTs: $missedTs, ')
           ..write('arrivalTs: $arrivalTs, ')
           ..write('departureTs: $departureTs')
@@ -1245,91 +1396,157 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, address, missedTs, arrivalTs, departureTs);
+  int get hashCode => Object.hash(
+    buyerId,
+    deliveryId,
+    deliveryNdoc,
+    name,
+    address,
+    ord,
+    needInc,
+    missedTs,
+    arrivalTs,
+    departureTs,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Buyer &&
-          other.id == this.id &&
+          other.buyerId == this.buyerId &&
+          other.deliveryId == this.deliveryId &&
+          other.deliveryNdoc == this.deliveryNdoc &&
           other.name == this.name &&
           other.address == this.address &&
+          other.ord == this.ord &&
+          other.needInc == this.needInc &&
           other.missedTs == this.missedTs &&
           other.arrivalTs == this.arrivalTs &&
           other.departureTs == this.departureTs);
 }
 
 class BuyersCompanion extends UpdateCompanion<Buyer> {
-  final Value<int> id;
+  final Value<int> buyerId;
+  final Value<int> deliveryId;
+  final Value<String> deliveryNdoc;
   final Value<String> name;
   final Value<String> address;
+  final Value<int> ord;
+  final Value<bool> needInc;
   final Value<DateTime?> missedTs;
   final Value<DateTime?> arrivalTs;
   final Value<DateTime?> departureTs;
+  final Value<int> rowid;
   const BuyersCompanion({
-    this.id = const Value.absent(),
+    this.buyerId = const Value.absent(),
+    this.deliveryId = const Value.absent(),
+    this.deliveryNdoc = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
+    this.ord = const Value.absent(),
+    this.needInc = const Value.absent(),
     this.missedTs = const Value.absent(),
     this.arrivalTs = const Value.absent(),
     this.departureTs = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   BuyersCompanion.insert({
-    this.id = const Value.absent(),
+    required int buyerId,
+    required int deliveryId,
+    required String deliveryNdoc,
     required String name,
     required String address,
+    required int ord,
+    required bool needInc,
     this.missedTs = const Value.absent(),
     this.arrivalTs = const Value.absent(),
     this.departureTs = const Value.absent(),
-  }) : name = Value(name),
-       address = Value(address);
+    this.rowid = const Value.absent(),
+  }) : buyerId = Value(buyerId),
+       deliveryId = Value(deliveryId),
+       deliveryNdoc = Value(deliveryNdoc),
+       name = Value(name),
+       address = Value(address),
+       ord = Value(ord),
+       needInc = Value(needInc);
   static Insertable<Buyer> custom({
-    Expression<int>? id,
+    Expression<int>? buyerId,
+    Expression<int>? deliveryId,
+    Expression<String>? deliveryNdoc,
     Expression<String>? name,
     Expression<String>? address,
+    Expression<int>? ord,
+    Expression<bool>? needInc,
     Expression<DateTime>? missedTs,
     Expression<DateTime>? arrivalTs,
     Expression<DateTime>? departureTs,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (buyerId != null) 'buyer_id': buyerId,
+      if (deliveryId != null) 'delivery_id': deliveryId,
+      if (deliveryNdoc != null) 'delivery_ndoc': deliveryNdoc,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
+      if (ord != null) 'ord': ord,
+      if (needInc != null) 'need_inc': needInc,
       if (missedTs != null) 'missed_ts': missedTs,
       if (arrivalTs != null) 'arrival_ts': arrivalTs,
       if (departureTs != null) 'departure_ts': departureTs,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   BuyersCompanion copyWith({
-    Value<int>? id,
+    Value<int>? buyerId,
+    Value<int>? deliveryId,
+    Value<String>? deliveryNdoc,
     Value<String>? name,
     Value<String>? address,
+    Value<int>? ord,
+    Value<bool>? needInc,
     Value<DateTime?>? missedTs,
     Value<DateTime?>? arrivalTs,
     Value<DateTime?>? departureTs,
+    Value<int>? rowid,
   }) {
     return BuyersCompanion(
-      id: id ?? this.id,
+      buyerId: buyerId ?? this.buyerId,
+      deliveryId: deliveryId ?? this.deliveryId,
+      deliveryNdoc: deliveryNdoc ?? this.deliveryNdoc,
       name: name ?? this.name,
       address: address ?? this.address,
+      ord: ord ?? this.ord,
+      needInc: needInc ?? this.needInc,
       missedTs: missedTs ?? this.missedTs,
       arrivalTs: arrivalTs ?? this.arrivalTs,
       departureTs: departureTs ?? this.departureTs,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (buyerId.present) {
+      map['buyer_id'] = Variable<int>(buyerId.value);
+    }
+    if (deliveryId.present) {
+      map['delivery_id'] = Variable<int>(deliveryId.value);
+    }
+    if (deliveryNdoc.present) {
+      map['delivery_ndoc'] = Variable<String>(deliveryNdoc.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
+    }
+    if (ord.present) {
+      map['ord'] = Variable<int>(ord.value);
+    }
+    if (needInc.present) {
+      map['need_inc'] = Variable<bool>(needInc.value);
     }
     if (missedTs.present) {
       map['missed_ts'] = Variable<DateTime>(missedTs.value);
@@ -1340,18 +1557,26 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     if (departureTs.present) {
       map['departure_ts'] = Variable<DateTime>(departureTs.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('BuyersCompanion(')
-          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('deliveryNdoc: $deliveryNdoc, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
+          ..write('ord: $ord, ')
+          ..write('needInc: $needInc, ')
           ..write('missedTs: $missedTs, ')
           ..write('arrivalTs: $arrivalTs, ')
-          ..write('departureTs: $departureTs')
+          ..write('departureTs: $departureTs, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3070,6 +3295,17 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _deliveryIdMeta = const VerificationMeta(
+    'deliveryId',
+  );
+  @override
+  late final GeneratedColumn<int> deliveryId = GeneratedColumn<int>(
+    'delivery_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _ordMeta = const VerificationMeta('ord');
   @override
   late final GeneratedColumn<int> ord = GeneratedColumn<int>(
@@ -3187,6 +3423,7 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
   List<GeneratedColumn> get $columns => [
     id,
     buyerId,
+    deliveryId,
     ord,
     ndoc,
     info,
@@ -3220,6 +3457,14 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       );
     } else if (isInserting) {
       context.missing(_buyerIdMeta);
+    }
+    if (data.containsKey('delivery_id')) {
+      context.handle(
+        _deliveryIdMeta,
+        deliveryId.isAcceptableOrUnknown(data['delivery_id']!, _deliveryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deliveryIdMeta);
     }
     if (data.containsKey('ord')) {
       context.handle(
@@ -3315,6 +3560,11 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
             DriftSqlType.int,
             data['${effectivePrefix}buyer_id'],
           )!,
+      deliveryId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}delivery_id'],
+          )!,
       ord:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -3376,6 +3626,7 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
 class Order extends DataClass implements Insertable<Order> {
   final int id;
   final int buyerId;
+  final int deliveryId;
   final int ord;
   final String ndoc;
   final String info;
@@ -3389,6 +3640,7 @@ class Order extends DataClass implements Insertable<Order> {
   const Order({
     required this.id,
     required this.buyerId,
+    required this.deliveryId,
     required this.ord,
     required this.ndoc,
     required this.info,
@@ -3405,6 +3657,7 @@ class Order extends DataClass implements Insertable<Order> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['buyer_id'] = Variable<int>(buyerId);
+    map['delivery_id'] = Variable<int>(deliveryId);
     map['ord'] = Variable<int>(ord);
     map['ndoc'] = Variable<String>(ndoc);
     map['info'] = Variable<String>(info);
@@ -3424,6 +3677,7 @@ class Order extends DataClass implements Insertable<Order> {
     return OrdersCompanion(
       id: Value(id),
       buyerId: Value(buyerId),
+      deliveryId: Value(deliveryId),
       ord: Value(ord),
       ndoc: Value(ndoc),
       info: Value(info),
@@ -3448,6 +3702,7 @@ class Order extends DataClass implements Insertable<Order> {
     return Order(
       id: serializer.fromJson<int>(json['id']),
       buyerId: serializer.fromJson<int>(json['buyerId']),
+      deliveryId: serializer.fromJson<int>(json['deliveryId']),
       ord: serializer.fromJson<int>(json['ord']),
       ndoc: serializer.fromJson<String>(json['ndoc']),
       info: serializer.fromJson<String>(json['info']),
@@ -3466,6 +3721,7 @@ class Order extends DataClass implements Insertable<Order> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'buyerId': serializer.toJson<int>(buyerId),
+      'deliveryId': serializer.toJson<int>(deliveryId),
       'ord': serializer.toJson<int>(ord),
       'ndoc': serializer.toJson<String>(ndoc),
       'info': serializer.toJson<String>(info),
@@ -3482,6 +3738,7 @@ class Order extends DataClass implements Insertable<Order> {
   Order copyWith({
     int? id,
     int? buyerId,
+    int? deliveryId,
     int? ord,
     String? ndoc,
     String? info,
@@ -3495,6 +3752,7 @@ class Order extends DataClass implements Insertable<Order> {
   }) => Order(
     id: id ?? this.id,
     buyerId: buyerId ?? this.buyerId,
+    deliveryId: deliveryId ?? this.deliveryId,
     ord: ord ?? this.ord,
     ndoc: ndoc ?? this.ndoc,
     info: info ?? this.info,
@@ -3510,6 +3768,8 @@ class Order extends DataClass implements Insertable<Order> {
     return Order(
       id: data.id.present ? data.id.value : this.id,
       buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      deliveryId:
+          data.deliveryId.present ? data.deliveryId.value : this.deliveryId,
       ord: data.ord.present ? data.ord.value : this.ord,
       ndoc: data.ndoc.present ? data.ndoc.value : this.ndoc,
       info: data.info.present ? data.info.value : this.info,
@@ -3528,6 +3788,7 @@ class Order extends DataClass implements Insertable<Order> {
     return (StringBuffer('Order(')
           ..write('id: $id, ')
           ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
           ..write('ord: $ord, ')
           ..write('ndoc: $ndoc, ')
           ..write('info: $info, ')
@@ -3546,6 +3807,7 @@ class Order extends DataClass implements Insertable<Order> {
   int get hashCode => Object.hash(
     id,
     buyerId,
+    deliveryId,
     ord,
     ndoc,
     info,
@@ -3563,6 +3825,7 @@ class Order extends DataClass implements Insertable<Order> {
       (other is Order &&
           other.id == this.id &&
           other.buyerId == this.buyerId &&
+          other.deliveryId == this.deliveryId &&
           other.ord == this.ord &&
           other.ndoc == this.ndoc &&
           other.info == this.info &&
@@ -3578,6 +3841,7 @@ class Order extends DataClass implements Insertable<Order> {
 class OrdersCompanion extends UpdateCompanion<Order> {
   final Value<int> id;
   final Value<int> buyerId;
+  final Value<int> deliveryId;
   final Value<int> ord;
   final Value<String> ndoc;
   final Value<String> info;
@@ -3591,6 +3855,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   const OrdersCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
+    this.deliveryId = const Value.absent(),
     this.ord = const Value.absent(),
     this.ndoc = const Value.absent(),
     this.info = const Value.absent(),
@@ -3605,6 +3870,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   OrdersCompanion.insert({
     this.id = const Value.absent(),
     required int buyerId,
+    required int deliveryId,
     required int ord,
     required String ndoc,
     required String info,
@@ -3616,6 +3882,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     required bool physical,
     required bool needScan,
   }) : buyerId = Value(buyerId),
+       deliveryId = Value(deliveryId),
        ord = Value(ord),
        ndoc = Value(ndoc),
        info = Value(info),
@@ -3628,6 +3895,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   static Insertable<Order> custom({
     Expression<int>? id,
     Expression<int>? buyerId,
+    Expression<int>? deliveryId,
     Expression<int>? ord,
     Expression<String>? ndoc,
     Expression<String>? info,
@@ -3642,6 +3910,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (buyerId != null) 'buyer_id': buyerId,
+      if (deliveryId != null) 'delivery_id': deliveryId,
       if (ord != null) 'ord': ord,
       if (ndoc != null) 'ndoc': ndoc,
       if (info != null) 'info': info,
@@ -3658,6 +3927,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   OrdersCompanion copyWith({
     Value<int>? id,
     Value<int>? buyerId,
+    Value<int>? deliveryId,
     Value<int>? ord,
     Value<String>? ndoc,
     Value<String>? info,
@@ -3672,6 +3942,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     return OrdersCompanion(
       id: id ?? this.id,
       buyerId: buyerId ?? this.buyerId,
+      deliveryId: deliveryId ?? this.deliveryId,
       ord: ord ?? this.ord,
       ndoc: ndoc ?? this.ndoc,
       info: info ?? this.info,
@@ -3693,6 +3964,9 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     }
     if (buyerId.present) {
       map['buyer_id'] = Variable<int>(buyerId.value);
+    }
+    if (deliveryId.present) {
+      map['delivery_id'] = Variable<int>(deliveryId.value);
     }
     if (ord.present) {
       map['ord'] = Variable<int>(ord.value);
@@ -3732,6 +4006,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     return (StringBuffer('OrdersCompanion(')
           ..write('id: $id, ')
           ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
           ..write('ord: $ord, ')
           ..write('ndoc: $ndoc, ')
           ..write('info: $info, ')
@@ -5266,7 +5541,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
   Selectable<AppInfoResult> appInfo() {
     return customSelect(
-      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
+      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
       variables: [],
       readsFrom: {orders, buyers, prefs},
     ).map(
@@ -5833,21 +6108,31 @@ typedef $$IncomesTableProcessedTableManager =
     >;
 typedef $$BuyersTableCreateCompanionBuilder =
     BuyersCompanion Function({
-      Value<int> id,
+      required int buyerId,
+      required int deliveryId,
+      required String deliveryNdoc,
       required String name,
       required String address,
+      required int ord,
+      required bool needInc,
       Value<DateTime?> missedTs,
       Value<DateTime?> arrivalTs,
       Value<DateTime?> departureTs,
+      Value<int> rowid,
     });
 typedef $$BuyersTableUpdateCompanionBuilder =
     BuyersCompanion Function({
-      Value<int> id,
+      Value<int> buyerId,
+      Value<int> deliveryId,
+      Value<String> deliveryNdoc,
       Value<String> name,
       Value<String> address,
+      Value<int> ord,
+      Value<bool> needInc,
       Value<DateTime?> missedTs,
       Value<DateTime?> arrivalTs,
       Value<DateTime?> departureTs,
+      Value<int> rowid,
     });
 
 class $$BuyersTableFilterComposer
@@ -5859,8 +6144,18 @@ class $$BuyersTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
+  ColumnFilters<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deliveryNdoc => $composableBuilder(
+    column: $table.deliveryNdoc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5871,6 +6166,16 @@ class $$BuyersTableFilterComposer
 
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ord => $composableBuilder(
+    column: $table.ord,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get needInc => $composableBuilder(
+    column: $table.needInc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5899,8 +6204,18 @@ class $$BuyersTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deliveryNdoc => $composableBuilder(
+    column: $table.deliveryNdoc,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5911,6 +6226,16 @@ class $$BuyersTableOrderingComposer
 
   ColumnOrderings<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ord => $composableBuilder(
+    column: $table.ord,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get needInc => $composableBuilder(
+    column: $table.needInc,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5939,14 +6264,30 @@ class $$BuyersTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get deliveryNdoc => $composableBuilder(
+    column: $table.deliveryNdoc,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<int> get ord =>
+      $composableBuilder(column: $table.ord, builder: (column) => column);
+
+  GeneratedColumn<bool> get needInc =>
+      $composableBuilder(column: $table.needInc, builder: (column) => column);
 
   GeneratedColumn<DateTime> get missedTs =>
       $composableBuilder(column: $table.missedTs, builder: (column) => column);
@@ -5988,35 +6329,55 @@ class $$BuyersTableTableManager
               () => $$BuyersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                Value<int> buyerId = const Value.absent(),
+                Value<int> deliveryId = const Value.absent(),
+                Value<String> deliveryNdoc = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> address = const Value.absent(),
+                Value<int> ord = const Value.absent(),
+                Value<bool> needInc = const Value.absent(),
                 Value<DateTime?> missedTs = const Value.absent(),
                 Value<DateTime?> arrivalTs = const Value.absent(),
                 Value<DateTime?> departureTs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion(
-                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                deliveryNdoc: deliveryNdoc,
                 name: name,
                 address: address,
+                ord: ord,
+                needInc: needInc,
                 missedTs: missedTs,
                 arrivalTs: arrivalTs,
                 departureTs: departureTs,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                required int buyerId,
+                required int deliveryId,
+                required String deliveryNdoc,
                 required String name,
                 required String address,
+                required int ord,
+                required bool needInc,
                 Value<DateTime?> missedTs = const Value.absent(),
                 Value<DateTime?> arrivalTs = const Value.absent(),
                 Value<DateTime?> departureTs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion.insert(
-                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                deliveryNdoc: deliveryNdoc,
                 name: name,
                 address: address,
+                ord: ord,
+                needInc: needInc,
                 missedTs: missedTs,
                 arrivalTs: arrivalTs,
                 departureTs: departureTs,
+                rowid: rowid,
               ),
           withReferenceMapper:
               (p0) =>
@@ -6885,6 +7246,7 @@ typedef $$OrdersTableCreateCompanionBuilder =
     OrdersCompanion Function({
       Value<int> id,
       required int buyerId,
+      required int deliveryId,
       required int ord,
       required String ndoc,
       required String info,
@@ -6900,6 +7262,7 @@ typedef $$OrdersTableUpdateCompanionBuilder =
     OrdersCompanion Function({
       Value<int> id,
       Value<int> buyerId,
+      Value<int> deliveryId,
       Value<int> ord,
       Value<String> ndoc,
       Value<String> info,
@@ -6928,6 +7291,11 @@ class $$OrdersTableFilterComposer
 
   ColumnFilters<int> get buyerId => $composableBuilder(
     column: $table.buyerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7001,6 +7369,11 @@ class $$OrdersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get ord => $composableBuilder(
     column: $table.ord,
     builder: (column) => ColumnOrderings(column),
@@ -7067,6 +7440,11 @@ class $$OrdersTableAnnotationComposer
   GeneratedColumn<int> get buyerId =>
       $composableBuilder(column: $table.buyerId, builder: (column) => column);
 
+  GeneratedColumn<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get ord =>
       $composableBuilder(column: $table.ord, builder: (column) => column);
 
@@ -7128,6 +7506,7 @@ class $$OrdersTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> buyerId = const Value.absent(),
+                Value<int> deliveryId = const Value.absent(),
                 Value<int> ord = const Value.absent(),
                 Value<String> ndoc = const Value.absent(),
                 Value<String> info = const Value.absent(),
@@ -7141,6 +7520,7 @@ class $$OrdersTableTableManager
               }) => OrdersCompanion(
                 id: id,
                 buyerId: buyerId,
+                deliveryId: deliveryId,
                 ord: ord,
                 ndoc: ndoc,
                 info: info,
@@ -7156,6 +7536,7 @@ class $$OrdersTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int buyerId,
+                required int deliveryId,
                 required int ord,
                 required String ndoc,
                 required String info,
@@ -7169,6 +7550,7 @@ class $$OrdersTableTableManager
               }) => OrdersCompanion.insert(
                 id: id,
                 buyerId: buyerId,
+                deliveryId: deliveryId,
                 ord: ord,
                 ndoc: ndoc,
                 info: info,

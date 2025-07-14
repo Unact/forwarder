@@ -16,11 +16,10 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     this.ordersRepository,
     this.paymentsRepository,
     {
-      required Buyer buyer,
-      required bool isInc
+      required Buyer buyer
     }
   ) :
-    super(BuyerState(buyer: buyer, isInc: isInc, confirmationCallback: () {}));
+    super(BuyerState(buyer: buyer, confirmationCallback: () {}));
 
   @override
   BuyerStateStatus get status => state.status;
@@ -29,19 +28,20 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> initViewModel() async {
     await super.initViewModel();
 
-    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.id).listen((event) {
+    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.buyerId, state.buyer.deliveryId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, buyer: event));
     });
-    orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.id).listen((event) {
-      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
-    });
-    debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.id).listen((event) {
+    orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.buyerId, state.buyer.deliveryId)
+      .listen((event) {
+        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
+      });
+    debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.buyerId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event.where((e) => !e.physical).toList()));
     });
-    cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.id).listen((event) {
+    cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.buyerId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
     });
-    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.id).listen((event) {
+    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.buyerId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cardPayments: event));
     });
   }
@@ -88,42 +88,56 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   }
 
   void tryDepart() {
-    if (state.orders.any((e) => !e.didDelivery)) {
-      emit(state.copyWith(
-        status: BuyerStateStatus.needUserConfirmation,
-        confirmationCallback: depart,
-        message: 'Вы уверены, что хотите покинуть точку?'
-      ));
-      return;
-    }
-
-    depart(true);
+    emit(state.copyWith(
+      status: BuyerStateStatus.needUserConfirmation,
+      confirmationCallback: depart,
+      message: 'Вы уверены, что хотите покинуть точку?'
+    ));
   }
 
-  Future<void> missed() async {
+  void tryArrive() {
+    emit(state.copyWith(
+      status: BuyerStateStatus.needUserConfirmation,
+      confirmationCallback: arrive,
+      message: 'Вы уверены, что хотите отметится в точке?'
+    ));
+  }
+
+  void tryMissed() {
+    emit(state.copyWith(
+      status: BuyerStateStatus.needUserConfirmation,
+      confirmationCallback: missed,
+      message: 'Вы уверены, что хотите отметить непосещение точки?'
+    ));
+  }
+
+  Future<void> missed(bool confirmed) async {
     await _markPoint(
+      confirmed,
       (location) => ordersRepository.missed(state.buyer, location),
       'Отмечен недоезд до точки'
     );
   }
 
-  Future<void> arrive() async {
+  Future<void> arrive(bool confirmed) async {
     await _markPoint(
+      confirmed,
       (location) => ordersRepository.arrive(state.buyer, location),
       'Отмечен приезд в точку'
     );
   }
 
   Future<void> depart(bool confirmed) async {
-    if (!confirmed) return;
-
     await _markPoint(
+      confirmed,
       (location) => ordersRepository.depart(state.buyer, location),
       'Отмечен отъезд из точки'
     );
   }
 
-  Future<void> _markPoint(Future<void> Function(Position) action, String successMessage) async {
+  Future<void> _markPoint(bool confirmed, Future<void> Function(Position) action, String successMessage) async {
+    if (!confirmed) return;
+
     emit(state.copyWith(status: BuyerStateStatus.inProgress));
 
     try {

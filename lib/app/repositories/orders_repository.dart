@@ -31,16 +31,16 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.watchOrderLineCodes();
   }
 
-  Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
-    return dataStore.ordersDao.watchOrdersByBuyerId(buyerId);
+  Stream<List<Order>> watchOrdersByBuyerId(int buyerId, int deliveryId) {
+    return dataStore.ordersDao.watchOrdersByBuyerId(buyerId, deliveryId);
   }
 
   Stream<List<OrderLineWithCode>> watchOrderLinesByOrderId(int orderId) {
     return dataStore.ordersDao.watchOrderLinesByOrderId(orderId);
   }
 
-  Stream<Buyer> watchBuyerById(int id) {
-    return dataStore.ordersDao.watchBuyerById(id);
+  Stream<Buyer> watchBuyerById(int buyerId, int deliveryId) {
+    return dataStore.ordersDao.watchBuyerById(buyerId, deliveryId);
   }
 
   Stream<Order> watchOrderById(int id) {
@@ -158,7 +158,7 @@ class OrdersRepository extends BaseRepository {
     };
 
     try {
-      final ApiBuyerOrderData data = await api.missed(buyer.id, location);
+      final ApiBuyerOrderData data = await api.missed(buyer.buyerId, buyer.deliveryId, location);
 
       await dataStore.transaction(() async {
         List<Order> orders = data.orders.map((e) => e.toDatabaseEnt()).toList();
@@ -192,7 +192,7 @@ class OrdersRepository extends BaseRepository {
     };
 
     try {
-      final ApiBuyerData data = await api.arrive(buyer.id, location);
+      final ApiBuyerData data = await api.arrive(buyer.buyerId, buyer.deliveryId, location);
 
       await dataStore.transaction(() async {
         await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
@@ -217,7 +217,7 @@ class OrdersRepository extends BaseRepository {
     };
 
     try {
-      final ApiBuyerData data = await api.depart(buyer.id, location);
+      final ApiBuyerData data = await api.depart(buyer.buyerId, buyer.deliveryId, location);
 
       await dataStore.transaction(() async {
         await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);

@@ -3,6 +3,7 @@ part of 'entities.dart';
 class ApiOrder extends Equatable {
   final int id;
   final int buyerId;
+  final int deliveryId;
   final int ord;
   final String ndoc;
   final String info;
@@ -17,6 +18,7 @@ class ApiOrder extends Equatable {
   const ApiOrder({
     required this.id,
     required this.buyerId,
+    required this.deliveryId,
     required this.ord,
     required this.ndoc,
     required this.info,
@@ -33,6 +35,7 @@ class ApiOrder extends Equatable {
     return ApiOrder(
       id: json['id'],
       buyerId: json['buyer_id'],
+      deliveryId: json['delivery_id'],
       ord: json['ord'],
       ndoc: json['ndoc'],
       info: json['info'],
@@ -50,6 +53,7 @@ class ApiOrder extends Equatable {
     return Order(
       id: id,
       buyerId: buyerId,
+      deliveryId: deliveryId,
       ord: ord,
       ndoc: ndoc,
       info: info,
@@ -67,6 +71,7 @@ class ApiOrder extends Equatable {
   List<Object?> get props => [
     id,
     buyerId,
+    deliveryId,
     ord,
     ndoc,
     info,

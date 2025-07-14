@@ -22,11 +22,9 @@ part 'buyer_view_model.dart';
 
 class BuyerPage extends StatelessWidget {
   final Buyer buyer;
-  final bool isInc;
 
   BuyerPage({
     required this.buyer,
-    required this.isInc,
     super.key
   });
 
@@ -37,8 +35,7 @@ class BuyerPage extends StatelessWidget {
         RepositoryProvider.of<AppRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
-        buyer: buyer,
-        isInc: isInc
+        buyer: buyer
       ),
       child: _BuyerView(),
     );
@@ -154,7 +151,7 @@ class _BuyerViewState extends State<_BuyerView> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
             backgroundColor: Theme.of(context).colorScheme.primary
           ),
-          onPressed: vm.arrive,
+          onPressed: vm.tryArrive,
           child: const Text('В точке', style: TextStyle(color: Colors.white)),
         ),
         ElevatedButton(
@@ -162,7 +159,7 @@ class _BuyerViewState extends State<_BuyerView> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
             backgroundColor: Theme.of(context).colorScheme.primary
           ),
-          onPressed: vm.missed,
+          onPressed: vm.tryMissed,
           child: const Text('Не доехал', style: TextStyle(color: Colors.white)),
         )
       ];
@@ -184,14 +181,6 @@ class _BuyerViewState extends State<_BuyerView> {
         ),
         onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
         child: const Text('Наличные', style: TextStyle(color: Colors.white)),
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Theme.of(context).colorScheme.primary
-        ),
-        onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(true),
-        child: const Text('Карта', style: TextStyle(color: Colors.white)),
       )
     ];
   }
@@ -209,7 +198,7 @@ class _BuyerViewState extends State<_BuyerView> {
             children: [
               InfoRow(title: const Text('Наименование'), trailing: Text(state.buyer.name), trailingFlex: 2),
               InfoRow(title: const Text('Адрес'), trailing: ExpandingText(state.buyer.address), trailingFlex: 2),
-              InfoRow(title: const Text('Инкассация'), trailing: Text(state.isInc ? 'Да' : 'Нет')),
+              InfoRow(title: const Text('Инкассация'), trailing: Text(state.buyer.needInc ? 'Да' : 'Нет')),
               InfoRow(title: const Text('Долг'), trailing: Text(Format.numberStr(state.debtsSum))),
               InfoRow(title: const Text('Чек'), trailing: Text(Format.numberStr(state.kkmSum))),
               InfoRow(title: const Text('Наличными'), trailing: Text(Format.numberStr(state.cashPaymentsSum))),

@@ -27,12 +27,19 @@ class Incomes extends Table {
 }
 
 class Buyers extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get buyerId => integer()();
+  IntColumn get deliveryId => integer()();
+  TextColumn get deliveryNdoc => text()();
   TextColumn get name => text()();
   TextColumn get address => text()();
+  IntColumn get ord => integer()();
+  BoolColumn get needInc => boolean()();
   DateTimeColumn get missedTs => dateTime().nullable()();
   DateTimeColumn get arrivalTs => dateTime().nullable()();
   DateTimeColumn get departureTs => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {buyerId, deliveryId};
 }
 
 class CardPayments extends Table {
@@ -74,6 +81,7 @@ class Debts extends Table {
 class Orders extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get buyerId => integer()();
+  IntColumn get deliveryId => integer()();
   IntColumn get ord => integer()();
   TextColumn get ndoc => text()();
   TextColumn get info => text()();
@@ -100,7 +108,6 @@ class OrderLines extends Table {
   @override
   Set<Column> get primaryKey => {orderId, subid};
 }
-
 
 class OrderLineCodes extends Table {
   IntColumn get orderId => integer()();

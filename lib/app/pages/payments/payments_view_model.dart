@@ -53,6 +53,6 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
     return ordCompare == 0 ? cardPayment1.summ.compareTo(cardPayment2.summ) : ordCompare;
   });
 
-  Buyer buyerForCardPayment(CardPayment cardPayment) => state.buyers.firstWhere((e) => e.id == cardPayment.buyerId);
-  Buyer buyerForCashPayment(CashPayment cashPayment) => state.buyers.firstWhere((e) => e.id == cashPayment.buyerId);
+  Buyer buyerForCardPayment(CardPayment cp) => state.buyers.firstWhere((e) => e.buyerId == cp.buyerId);
+  Buyer buyerForCashPayment(CashPayment cp) => state.buyers.firstWhere((e) => e.buyerId == cp.buyerId);
 }
