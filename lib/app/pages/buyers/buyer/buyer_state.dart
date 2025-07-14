@@ -16,7 +16,6 @@ class BuyerState {
   BuyerState({
     this.status = BuyerStateStatus.initial,
     required this.buyer,
-    required this.isInc,
     this.cardPayments = const [],
     this.cashPayments = const [],
     this.orders = const [],
@@ -28,7 +27,6 @@ class BuyerState {
 
   final BuyerStateStatus status;
   final Buyer buyer;
-  final bool isInc;
   final List<CardPayment> cardPayments;
   final List<CashPayment> cashPayments;
   final List<Order> orders;
@@ -46,7 +44,6 @@ class BuyerState {
   BuyerState copyWith({
     BuyerStateStatus? status,
     Buyer? buyer,
-    bool? isInc,
     List<CardPayment>? cardPayments,
     List<CashPayment>? cashPayments,
     List<Order>? orders,
@@ -58,7 +55,6 @@ class BuyerState {
     return BuyerState(
       status: status ?? this.status,
       buyer: buyer ?? this.buyer,
-      isInc: isInc ?? this.isInc,
       cardPayments: cardPayments ?? this.cardPayments,
       cashPayments: cashPayments ?? this.cashPayments,
       orders: orders ?? this.orders,

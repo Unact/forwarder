@@ -47,7 +47,7 @@ part 'users_dao.dart';
           (
             SELECT COUNT(*)
             FROM orders
-            WHERE NOT EXISTS(SELECT 1 FROM buyers WHERE buyers.id = orders.buyer_id) = 1
+            WHERE NOT EXISTS(SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1
           ) inc_orders_total,
         (SELECT COUNT(*) FROM buyers) buyers_total
       FROM prefs
@@ -105,7 +105,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

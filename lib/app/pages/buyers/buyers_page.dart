@@ -47,26 +47,45 @@ class _BuyersViewState extends State<_BuyersView> {
       body: BlocBuilder<BuyersViewModel, BuyersState>(
         builder: (context, state) {
           BuyersViewModel vm = context.read<BuyersViewModel>();
+          Set<int> deliveryIds = vm.state.buyers.map((e) => e.deliveryId).toSet();
 
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
-            children: [
-              ExpansionTile(
-                initiallyExpanded: false,
-                tilePadding: const EdgeInsets.all(0),
-                childrenPadding: const EdgeInsets.only(left: 8),
-                title: const Text('Выполнено'),
-                children: vm.finishedBuyers.map((e) => _buyerTile(context, e)).toList()
-              ),
-              ExpansionTile(
-                initiallyExpanded: true,
-                tilePadding: const EdgeInsets.all(0),
-                childrenPadding: const EdgeInsets.only(left: 8),
-                title: const Text('Активно'),
-                children: vm.notFinishedBuyers.map((e) => _buyerTile(context, e)).toList()
-              ),
-            ]
+            children: deliveryIds.fold([], (children, deliveryId) {
+              String deliveryNdoc = vm.state.buyers.firstWhere((buyer) => buyer.deliveryId == deliveryId).deliveryNdoc;
+
+              children.add(
+                ListTile(
+                  title: Text('Маршрут $deliveryNdoc'),
+                  contentPadding: const EdgeInsets.all(0),
+                )
+              );
+
+              children.add(
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  tilePadding: const EdgeInsets.all(0),
+                  childrenPadding: const EdgeInsets.only(left: 8),
+                  title: Text('Выполнено'),
+                  children: vm.finishedBuyers(deliveryId).map((e) => _buyerTile(context, e)).toList()
+                )
+              );
+
+              children.add(
+                ExpansionTile(
+                  initiallyExpanded: true,
+                  tilePadding: const EdgeInsets.all(0),
+                  childrenPadding: const EdgeInsets.only(left: 8),
+                  title: const Text('Активно'),
+                  children: vm.notFinishedBuyers(deliveryId).map((e) => _buyerTile(context, e)).toList()
+                )
+              );
+
+              children.add(ListTile());
+
+              return children;
+            })
           );
         }
       )
@@ -83,7 +102,6 @@ class _BuyersViewState extends State<_BuyersView> {
 
   Widget _buyerTile(BuildContext context, Buyer buyer) {
     BuyersViewModel vm = context.read<BuyersViewModel>();
-    bool isInc = vm.buyerIsInc(buyer);
 
     return ListTile(
       minLeadingWidth: 1,
@@ -104,7 +122,7 @@ class _BuyersViewState extends State<_BuyersView> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (BuildContext context) => BuyerPage(buyer: buyer, isInc: isInc))
+          MaterialPageRoute(builder: (BuildContext context) => BuyerPage(buyer: buyer))
         );
       },
       subtitle: RichText(
@@ -119,7 +137,7 @@ class _BuyersViewState extends State<_BuyersView> {
               style: const TextStyle(color: Colors.blue, fontSize: 12.0)
               ),
             TextSpan(
-              text: isInc ? 'Требуется инкассация' : '',
+              text: buyer.needInc ? 'Требуется инкассация' : '',
               style: const TextStyle(color: Colors.blue, fontSize: 12.0)
             )
           ]

@@ -26,11 +26,12 @@ extension ForwarderApi on RenewApi {
     );
   }
 
-  Future<ApiBuyerOrderData> missed(int buyerId, Map<String, dynamic> location) async {
+  Future<ApiBuyerOrderData> missed(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/missed',
       dataGenerator: () => {
         'buyer_id': buyerId,
+        'delivery_id': deliveryId,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
@@ -39,11 +40,12 @@ extension ForwarderApi on RenewApi {
     return ApiBuyerOrderData.fromJson(result);
   }
 
-  Future<ApiBuyerData> arrive(int buyerId, Map<String, dynamic> location) async {
+  Future<ApiBuyerData> arrive(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/arrive',
       dataGenerator: () => {
         'buyer_id': buyerId,
+        'delivery_id': deliveryId,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
@@ -52,11 +54,12 @@ extension ForwarderApi on RenewApi {
     return ApiBuyerData.fromJson(result);
   }
 
-  Future<ApiBuyerData> depart(int buyerId, Map<String, dynamic> location) async {
+  Future<ApiBuyerData> depart(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/depart',
       dataGenerator: () => {
         'buyer_id': buyerId,
+        'delivery_id': deliveryId,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
