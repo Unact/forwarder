@@ -103,6 +103,14 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     ));
   }
 
+  void tryCancelArrive() {
+    emit(state.copyWith(
+      status: BuyerStateStatus.needUserConfirmation,
+      confirmationCallback: cancelArrive,
+      message: 'Вы уверены, что хотите отменить посещение в точке?'
+    ));
+  }
+
   void tryMissed() {
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
@@ -124,6 +132,14 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       confirmed,
       (location) => ordersRepository.arrive(state.buyer, location),
       'Отмечен приезд в точку'
+    );
+  }
+
+  Future<void> cancelArrive(bool confirmed) async {
+    await _markPoint(
+      confirmed,
+      (location) => ordersRepository.cancelArrive(state.buyer, location),
+      'Отменен приезд в точку'
     );
   }
 
