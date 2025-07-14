@@ -82,17 +82,28 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   }
 
   Stream<List<Buyer>> watchBuyers() {
-    return (select(buyers)..orderBy([(u) => OrderingTerm(expression: u.name)])).watch();
+    return (
+      select(buyers)
+      ..orderBy([
+        (u) => OrderingTerm(expression: u.deliveryNdoc),
+        (u) => OrderingTerm(expression: u.ord),
+        (u) => OrderingTerm(expression: u.name)
+      ])).watch();
   }
 
-  Stream<Buyer> watchBuyerById(int id) {
-    return (select(buyers)..where((tbl) => tbl.id.equals(id))).watchSingle();
+  Stream<Buyer> watchBuyerById(int buyerId, int deliveryId) {
+    return (
+      select(buyers)
+      ..where((tbl) => tbl.buyerId.equals(buyerId))
+      ..where((tbl) => tbl.deliveryId.equals(deliveryId))
+    ).watchSingle();
   }
 
-  Stream<List<Order>> watchOrdersByBuyerId(int buyerId) {
+  Stream<List<Order>> watchOrdersByBuyerId(int buyerId, int deliveryId) {
     return (
       select(orders)
         ..where((tbl) => tbl.buyerId.equals(buyerId))
+        ..where((tbl) => tbl.deliveryId.equals(deliveryId))
         ..orderBy([(u) => OrderingTerm(expression: u.ndoc)])
     ).watch();
   }
