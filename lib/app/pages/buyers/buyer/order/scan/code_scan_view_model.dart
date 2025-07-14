@@ -47,7 +47,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     String gtin = _parseBarcode(barcode)!;
 
     if (state.allCodeLines.any((e) => formatCode(e.code) == formatCode(barcode))) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован'));
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $barcode'));
       return;
     }
 
@@ -60,7 +60,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       );
 
       if (codeLine == null) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не в заказе'));
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не в заказе. $barcode'));
         return;
       }
 
@@ -80,17 +80,23 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
 
       if (codeLines.isEmpty) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе. $barcode'));
         return;
       }
 
       if (codeLine == null) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
+        emit(state.copyWith(
+          status: CodeScanStateStatus.failure,
+          message: 'Уже отсканированы все коды для товара. $barcode'
+        ));
         return;
       }
 
       if (!codeLine.orderLine.needMarking) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Нельзя сканировать ЧЗ для обычного товара'));
+        emit(state.copyWith(
+          status: CodeScanStateStatus.failure,
+          message: 'Нельзя сканировать ЧЗ для обычного товара. $barcode'
+        ));
         return;
       }
 
@@ -119,17 +125,26 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     double? vol = codeLine?.orderLine.vol;
 
     if (codeLines.isEmpty) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе'));
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Данный товар не в этом заказе. $barcode'
+      ));
       return;
     }
 
     if (codeLine == null) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Уже отсканированы все коды для товара'));
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Уже отсканированы все коды для товара. $barcode'
+      ));
       return;
     }
 
     if (codeLine.orderLine.needMarking) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Нельзя сканировать штрихкод товара ЧЗ'));
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Нельзя сканировать штрихкод товара ЧЗ. $barcode'
+      ));
       return;
     }
 
@@ -138,8 +153,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     if (newAmount > vol!) {
       emit(state.copyWith(
         status: CodeScanStateStatus.failure,
-        message: 'Отсканировано $newAmount шт., в заказе ${vol.toInt()} шт. - количество больше, чем в заказе')
-      );
+        message: 'Отсканировано $newAmount шт., в заказе ${vol.toInt()} шт. - количество больше, чем в заказе. '
+          '$barcode'
+      ));
       return;
     }
 
