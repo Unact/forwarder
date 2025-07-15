@@ -166,7 +166,15 @@ class _BuyerViewState extends State<_BuyerView> {
     }
 
     return [
-       ElevatedButton(
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          backgroundColor: Theme.of(context).colorScheme.primary
+        ),
+        onPressed: vm.tryCancelArrive,
+        child: const Text('Отменить приезд', style: TextStyle(color: Colors.white)),
+      ),
+      ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
           backgroundColor: Theme.of(context).colorScheme.primary

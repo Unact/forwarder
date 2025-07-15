@@ -230,6 +230,31 @@ class OrdersRepository extends BaseRepository {
     }
   }
 
+  Future<void> cancelArrive(Buyer buyer, Position position) async {
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
+
+    try {
+      final ApiBuyerData data = await api.cancelArrive(buyer.buyerId, buyer.deliveryId, location);
+
+      await dataStore.transaction(() async {
+        await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
+      });
+    } on ApiException catch(e) {
+      throw AppError(e.errorMsg);
+    } catch(e, trace) {
+      await Misc.reportError(e, trace);
+      throw AppError(Strings.genericErrorMsg);
+    }
+  }
+
   Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {
     await dataStore.ordersDao.clearOrderLineCodesByOrderLineSubid(orderLine.orderId, orderLine.subid);
   }
