@@ -36,7 +36,7 @@ class CodeScanState {
     Order? order,
     List<OrderLineWithCode>? codeLines,
     List<OrderLineCode>? allCodeLines,
-    OrderLine? lastScannedOrderLine
+    ({ OrderLine? value })? lastScannedOrderLine
   }) {
     return CodeScanState(
       status: status ?? this.status,
@@ -44,7 +44,7 @@ class CodeScanState {
       order: order ?? this.order,
       codeLines: codeLines ?? this.codeLines,
       allCodeLines: allCodeLines ?? this.allCodeLines,
-      lastScannedOrderLine: lastScannedOrderLine ?? this.lastScannedOrderLine
+      lastScannedOrderLine: lastScannedOrderLine != null ? lastScannedOrderLine.value : this.lastScannedOrderLine
     );
   }
 }

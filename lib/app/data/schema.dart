@@ -125,6 +125,7 @@ class OrderLineStorageCodes extends Table {
   IntColumn get orderId => integer()();
   IntColumn get subid => integer()();
   TextColumn get code => text()();
+  TextColumn get groupCode => text().nullable()();
   IntColumn get amount => integer()();
 
   @override
