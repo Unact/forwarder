@@ -5063,6 +5063,17 @@ class $OrderLineStorageCodesTable extends OrderLineStorageCodes
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _groupCodeMeta = const VerificationMeta(
+    'groupCode',
+  );
+  @override
+  late final GeneratedColumn<String> groupCode = GeneratedColumn<String>(
+    'group_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<int> amount = GeneratedColumn<int>(
@@ -5073,7 +5084,13 @@ class $OrderLineStorageCodesTable extends OrderLineStorageCodes
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [orderId, subid, code, amount];
+  List<GeneratedColumn> get $columns => [
+    orderId,
+    subid,
+    code,
+    groupCode,
+    amount,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5110,6 +5127,12 @@ class $OrderLineStorageCodesTable extends OrderLineStorageCodes
     } else if (isInserting) {
       context.missing(_codeMeta);
     }
+    if (data.containsKey('group_code')) {
+      context.handle(
+        _groupCodeMeta,
+        groupCode.isAcceptableOrUnknown(data['group_code']!, _groupCodeMeta),
+      );
+    }
     if (data.containsKey('amount')) {
       context.handle(
         _amountMeta,
@@ -5142,6 +5165,10 @@ class $OrderLineStorageCodesTable extends OrderLineStorageCodes
             DriftSqlType.string,
             data['${effectivePrefix}code'],
           )!,
+      groupCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_code'],
+      ),
       amount:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -5161,11 +5188,13 @@ class OrderLineStorageCode extends DataClass
   final int orderId;
   final int subid;
   final String code;
+  final String? groupCode;
   final int amount;
   const OrderLineStorageCode({
     required this.orderId,
     required this.subid,
     required this.code,
+    this.groupCode,
     required this.amount,
   });
   @override
@@ -5174,6 +5203,9 @@ class OrderLineStorageCode extends DataClass
     map['order_id'] = Variable<int>(orderId);
     map['subid'] = Variable<int>(subid);
     map['code'] = Variable<String>(code);
+    if (!nullToAbsent || groupCode != null) {
+      map['group_code'] = Variable<String>(groupCode);
+    }
     map['amount'] = Variable<int>(amount);
     return map;
   }
@@ -5183,6 +5215,10 @@ class OrderLineStorageCode extends DataClass
       orderId: Value(orderId),
       subid: Value(subid),
       code: Value(code),
+      groupCode:
+          groupCode == null && nullToAbsent
+              ? const Value.absent()
+              : Value(groupCode),
       amount: Value(amount),
     );
   }
@@ -5196,6 +5232,7 @@ class OrderLineStorageCode extends DataClass
       orderId: serializer.fromJson<int>(json['orderId']),
       subid: serializer.fromJson<int>(json['subid']),
       code: serializer.fromJson<String>(json['code']),
+      groupCode: serializer.fromJson<String?>(json['groupCode']),
       amount: serializer.fromJson<int>(json['amount']),
     );
   }
@@ -5206,6 +5243,7 @@ class OrderLineStorageCode extends DataClass
       'orderId': serializer.toJson<int>(orderId),
       'subid': serializer.toJson<int>(subid),
       'code': serializer.toJson<String>(code),
+      'groupCode': serializer.toJson<String?>(groupCode),
       'amount': serializer.toJson<int>(amount),
     };
   }
@@ -5214,11 +5252,13 @@ class OrderLineStorageCode extends DataClass
     int? orderId,
     int? subid,
     String? code,
+    Value<String?> groupCode = const Value.absent(),
     int? amount,
   }) => OrderLineStorageCode(
     orderId: orderId ?? this.orderId,
     subid: subid ?? this.subid,
     code: code ?? this.code,
+    groupCode: groupCode.present ? groupCode.value : this.groupCode,
     amount: amount ?? this.amount,
   );
   OrderLineStorageCode copyWithCompanion(OrderLineStorageCodesCompanion data) {
@@ -5226,6 +5266,7 @@ class OrderLineStorageCode extends DataClass
       orderId: data.orderId.present ? data.orderId.value : this.orderId,
       subid: data.subid.present ? data.subid.value : this.subid,
       code: data.code.present ? data.code.value : this.code,
+      groupCode: data.groupCode.present ? data.groupCode.value : this.groupCode,
       amount: data.amount.present ? data.amount.value : this.amount,
     );
   }
@@ -5236,13 +5277,14 @@ class OrderLineStorageCode extends DataClass
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
           ..write('code: $code, ')
+          ..write('groupCode: $groupCode, ')
           ..write('amount: $amount')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(orderId, subid, code, amount);
+  int get hashCode => Object.hash(orderId, subid, code, groupCode, amount);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5250,6 +5292,7 @@ class OrderLineStorageCode extends DataClass
           other.orderId == this.orderId &&
           other.subid == this.subid &&
           other.code == this.code &&
+          other.groupCode == this.groupCode &&
           other.amount == this.amount);
 }
 
@@ -5258,12 +5301,14 @@ class OrderLineStorageCodesCompanion
   final Value<int> orderId;
   final Value<int> subid;
   final Value<String> code;
+  final Value<String?> groupCode;
   final Value<int> amount;
   final Value<int> rowid;
   const OrderLineStorageCodesCompanion({
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
     this.code = const Value.absent(),
+    this.groupCode = const Value.absent(),
     this.amount = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5271,6 +5316,7 @@ class OrderLineStorageCodesCompanion
     required int orderId,
     required int subid,
     required String code,
+    this.groupCode = const Value.absent(),
     required int amount,
     this.rowid = const Value.absent(),
   }) : orderId = Value(orderId),
@@ -5281,6 +5327,7 @@ class OrderLineStorageCodesCompanion
     Expression<int>? orderId,
     Expression<int>? subid,
     Expression<String>? code,
+    Expression<String>? groupCode,
     Expression<int>? amount,
     Expression<int>? rowid,
   }) {
@@ -5288,6 +5335,7 @@ class OrderLineStorageCodesCompanion
       if (orderId != null) 'order_id': orderId,
       if (subid != null) 'subid': subid,
       if (code != null) 'code': code,
+      if (groupCode != null) 'group_code': groupCode,
       if (amount != null) 'amount': amount,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5297,6 +5345,7 @@ class OrderLineStorageCodesCompanion
     Value<int>? orderId,
     Value<int>? subid,
     Value<String>? code,
+    Value<String?>? groupCode,
     Value<int>? amount,
     Value<int>? rowid,
   }) {
@@ -5304,6 +5353,7 @@ class OrderLineStorageCodesCompanion
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
       code: code ?? this.code,
+      groupCode: groupCode ?? this.groupCode,
       amount: amount ?? this.amount,
       rowid: rowid ?? this.rowid,
     );
@@ -5321,6 +5371,9 @@ class OrderLineStorageCodesCompanion
     if (code.present) {
       map['code'] = Variable<String>(code.value);
     }
+    if (groupCode.present) {
+      map['group_code'] = Variable<String>(groupCode.value);
+    }
     if (amount.present) {
       map['amount'] = Variable<int>(amount.value);
     }
@@ -5336,6 +5389,7 @@ class OrderLineStorageCodesCompanion
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
           ..write('code: $code, ')
+          ..write('groupCode: $groupCode, ')
           ..write('amount: $amount, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8123,6 +8177,7 @@ typedef $$OrderLineStorageCodesTableCreateCompanionBuilder =
       required int orderId,
       required int subid,
       required String code,
+      Value<String?> groupCode,
       required int amount,
       Value<int> rowid,
     });
@@ -8131,6 +8186,7 @@ typedef $$OrderLineStorageCodesTableUpdateCompanionBuilder =
       Value<int> orderId,
       Value<int> subid,
       Value<String> code,
+      Value<String?> groupCode,
       Value<int> amount,
       Value<int> rowid,
     });
@@ -8156,6 +8212,11 @@ class $$OrderLineStorageCodesTableFilterComposer
 
   ColumnFilters<String> get code => $composableBuilder(
     column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupCode => $composableBuilder(
+    column: $table.groupCode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8189,6 +8250,11 @@ class $$OrderLineStorageCodesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get groupCode => $composableBuilder(
+    column: $table.groupCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnOrderings(column),
@@ -8212,6 +8278,9 @@ class $$OrderLineStorageCodesTableAnnotationComposer
 
   GeneratedColumn<String> get code =>
       $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get groupCode =>
+      $composableBuilder(column: $table.groupCode, builder: (column) => column);
 
   GeneratedColumn<int> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
@@ -8266,12 +8335,14 @@ class $$OrderLineStorageCodesTableTableManager
                 Value<int> orderId = const Value.absent(),
                 Value<int> subid = const Value.absent(),
                 Value<String> code = const Value.absent(),
+                Value<String?> groupCode = const Value.absent(),
                 Value<int> amount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => OrderLineStorageCodesCompanion(
                 orderId: orderId,
                 subid: subid,
                 code: code,
+                groupCode: groupCode,
                 amount: amount,
                 rowid: rowid,
               ),
@@ -8280,12 +8351,14 @@ class $$OrderLineStorageCodesTableTableManager
                 required int orderId,
                 required int subid,
                 required String code,
+                Value<String?> groupCode = const Value.absent(),
                 required int amount,
                 Value<int> rowid = const Value.absent(),
               }) => OrderLineStorageCodesCompanion.insert(
                 orderId: orderId,
                 subid: subid,
                 code: code,
+                groupCode: groupCode,
                 amount: amount,
                 rowid: rowid,
               ),

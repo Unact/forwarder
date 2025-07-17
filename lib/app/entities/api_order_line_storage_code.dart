@@ -4,12 +4,14 @@ class ApiOrderLineStorageCode extends Equatable {
   final int orderId;
   final int subid;
   final String code;
+  final String? groupCode;
   final int amount;
 
   const ApiOrderLineStorageCode({
     required this.orderId,
     required this.subid,
     required this.code,
+    required this.groupCode,
     required this.amount
   });
 
@@ -18,6 +20,7 @@ class ApiOrderLineStorageCode extends Equatable {
       orderId: json['order_id'],
       subid: json['subid'],
       code: json['code'],
+      groupCode: json['group_code'],
       amount: json['amount']
     );
   }
@@ -27,6 +30,7 @@ class ApiOrderLineStorageCode extends Equatable {
       orderId: orderId,
       subid: subid,
       code: code,
+      groupCode: groupCode,
       amount: amount,
     );
   }
@@ -36,6 +40,7 @@ class ApiOrderLineStorageCode extends Equatable {
     orderId,
     subid,
     code,
+    groupCode,
     amount
   ];
 }

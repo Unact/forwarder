@@ -123,10 +123,11 @@ class _CodeScanViewState extends State<_CodeScanView> {
       listener: (context, state) async {
         switch (state.status) {
           case CodeScanStateStatus.success:
+            if (state.lastScannedOrderLine == null) await showInfoDialog(context, 'Успех', state.message);
             setState(() => scanPaused = false);
             break;
           case CodeScanStateStatus.failure:
-            await showErrorDialog(context, state.message);
+            await showInfoDialog(context, 'Ошибка', state.message);
             setState(() => scanPaused = false);
             break;
           default:
@@ -136,12 +137,12 @@ class _CodeScanViewState extends State<_CodeScanView> {
     );
   }
 
-  Future<void> showErrorDialog(BuildContext context, String message) async {
+  Future<void> showInfoDialog(BuildContext context, String title, String message) async {
     await showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Ошибка'),
+          title: Text(title),
           content: SingleChildScrollView(child: ListBody(children: [Text(message)])),
           actions: [
             TextButton(child: const Text('Закрыть'), onPressed: () => Navigator.of(ctx).pop())

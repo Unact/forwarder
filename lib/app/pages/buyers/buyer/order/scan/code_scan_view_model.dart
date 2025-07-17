@@ -35,99 +35,86 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await orderLineCodesSubscription?.cancel();
   }
 
-  String? _parseBarcode(String barcode) {
-    try {
-      return parser.parse(barcode).getAIData('01');
-    } on Exception catch(_) {
-      return null;
-    }
-  }
+  Future<void> readCode(String rawCode) async {
+    String code = _clearCode(rawCode);
 
-  Future<void> _processDatacode(String barcode) async {
-    String gtin = _parseBarcode(barcode)!;
-
-    if (state.allCodeLines.any((e) => formatCode(e.code) == formatCode(barcode))) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $barcode'));
+    if (state.allCodeLines.any((e) => e.code == code)) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $code'));
       return;
     }
 
-    if (state.codeLines.any((e) => e.orderLineStorageCodes.isNotEmpty)) {
-      OrderLineStorageCode? storageCode = state.allStorageCodeLines.firstWhereOrNull(
-        (e) => e.code == formatCode(barcode).split(kCryptoSeparator)[0]
-      );
-      OrderLineWithCode? codeLine = state.codeLines.firstWhereOrNull(
-        (e) => e.orderLineStorageCodes.contains(storageCode)
-      );
-
-      if (codeLine == null) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не в заказе. $barcode'));
-        return;
-      }
-
-      await ordersRepository.addOrderLineCode(
-        orderLine: codeLine.orderLine,
-        code: barcode,
-        amount: storageCode!.amount,
-        isDataMatrix: true
-      );
-      emit(state.copyWith(
-        status: CodeScanStateStatus.success,
-        lastScannedOrderLine: codeLine.orderLine,
-        message: 'Код успешно отсканирован'
-      ));
-    } else {
-      List<OrderLineWithCode> codeLines = state.codeLines.where((e) => e.orderLine.gtin == gtin).toList();
-      OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
-
-      if (codeLines.isEmpty) {
-        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе. $barcode'));
-        return;
-      }
-
-      if (codeLine == null) {
-        emit(state.copyWith(
-          status: CodeScanStateStatus.failure,
-          message: 'Уже отсканированы все коды для товара. $barcode'
-        ));
-        return;
-      }
-
-      if (!codeLine.orderLine.needMarking) {
-        emit(state.copyWith(
-          status: CodeScanStateStatus.failure,
-          message: 'Нельзя сканировать ЧЗ для обычного товара. $barcode'
-        ));
-        return;
-      }
-
-      await ordersRepository.addOrderLineCode(
-        orderLine: codeLine.orderLine,
-        code: barcode,
-        amount: 1,
-        isDataMatrix: true
-      );
-      emit(state.copyWith(
-        status: CodeScanStateStatus.success,
-        lastScannedOrderLine: codeLine.orderLine,
-        message: 'Код успешно отсканирован'
-      ));
+    if (state.codeLines.any((e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(code))) {
+      await _processBarcode(code);
+      return;
     }
+
+    if (state.allStorageCodeLines.isNotEmpty) {
+      await _processStorageCode(code);
+      return;
+    }
+
+    if (_parseDataMatrix(code)?.getAIData('01') != null) {
+      await _processDataMatrixCode(code);
+      return;
+    }
+
+    emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не опознан. $code'));
   }
 
-  Future<void> _processBarcode(String barcode) async {
+  Future<void> _processDataMatrixCode(String code) async {
+    String gtin = _parseDataMatrix(code)!.getAIData('01');
+
+    List<OrderLineWithCode> codeLines = state.codeLines.where((e) => e.orderLine.gtin == gtin).toList();
+    OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
+
+    if (codeLines.isEmpty) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе. $code'));
+      return;
+    }
+
+    if (codeLine == null) {
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Уже отсканированы все коды для товара. $code'
+      ));
+      return;
+    }
+
+    if (!codeLine.orderLine.needMarking) {
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Нельзя сканировать ЧЗ для обычного товара. $code'
+      ));
+      return;
+    }
+
+    await ordersRepository.addOrderLineCode(
+      orderLine: codeLine.orderLine,
+      code: code,
+      amount: 1,
+      isDataMatrix: true
+    );
+    emit(state.copyWith(
+      status: CodeScanStateStatus.success,
+      lastScannedOrderLine: (value: codeLine.orderLine),
+      message: 'Код успешно отсканирован'
+    ));
+  }
+
+  Future<void> _processBarcode(String code) async {
     List<OrderLineWithCode> codeLines = state.codeLines.where(
-      (e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(barcode)
+      (e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(code)
     ).toList();
     OrderLineWithCode? codeLine = codeLines.firstWhereOrNull(
       (e) => e.orderLineCodes.isEmpty || e.orderLineCodes.firstWhereOrNull((el) => e.orderLine.vol > el.amount) != null
     );
-    int? rel = codeLine?.orderLine.barcodeRels.firstWhere((e) => e.barcode == barcode).rel;
+    int? rel = codeLine?.orderLine.barcodeRels.firstWhere((e) => e.barcode == code).rel;
     double? vol = codeLine?.orderLine.vol;
 
     if (codeLines.isEmpty) {
       emit(state.copyWith(
         status: CodeScanStateStatus.failure,
-        message: 'Данный товар не в этом заказе. $barcode'
+        message: 'Данный товар не в этом заказе. $code'
       ));
       return;
     }
@@ -135,7 +122,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     if (codeLine == null) {
       emit(state.copyWith(
         status: CodeScanStateStatus.failure,
-        message: 'Уже отсканированы все коды для товара. $barcode'
+        message: 'Уже отсканированы все коды для товара. $code'
       ));
       return;
     }
@@ -143,7 +130,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     if (codeLine.orderLine.needMarking) {
       emit(state.copyWith(
         status: CodeScanStateStatus.failure,
-        message: 'Нельзя сканировать штрихкод товара ЧЗ. $barcode'
+        message: 'Нельзя сканировать штрихкод товара ЧЗ. $code'
       ));
       return;
     }
@@ -153,8 +140,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     if (newAmount > vol!) {
       emit(state.copyWith(
         status: CodeScanStateStatus.failure,
-        message: 'Отсканировано $newAmount шт., в заказе ${vol.toInt()} шт. - количество больше, чем в заказе. '
-          '$barcode'
+        message: 'Отсканировано $newAmount шт., в заказе ${vol.toInt()} шт. - количество больше, чем в заказе. $code'
       ));
       return;
     }
@@ -162,7 +148,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     if (codeLine.orderLineCodes.isEmpty) {
       await ordersRepository.addOrderLineCode(
         orderLine: codeLine.orderLine,
-        code: barcode,
+        code: code,
         amount: newAmount,
         isDataMatrix: false
       );
@@ -175,15 +161,55 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
     emit(state.copyWith(
       status: CodeScanStateStatus.success,
-      lastScannedOrderLine: codeLine.orderLine,
+      lastScannedOrderLine: (value: codeLine.orderLine),
       message: 'Код успешно отсканирован'
     ));
   }
 
-  Future<void> readCode(String barcode) async {
-    String? gtin = _parseBarcode(barcode);
+  Future<void> _processStorageCode(String code) async {
+    if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
+      state.allStorageCodeLines.where((e) => e.groupCode == code).forEach((e) async {
+        if (state.allCodeLines.any((cl) => cl.code == e.code)) return;
 
-    await (gtin != null ? _processDatacode(barcode) : _processBarcode(barcode));
+        final orderLine = state.codeLines.firstWhere((cl) => cl.orderLineStorageCodes.contains(e)).orderLine;
+
+        await ordersRepository.addOrderLineCode(
+          orderLine: orderLine,
+          code: e.code,
+          amount: e.amount,
+          isDataMatrix: true
+        );
+      });
+
+      emit(state.copyWith(
+        status: CodeScanStateStatus.success,
+        lastScannedOrderLine: (value: null),
+        message: 'Код успешно отсканирован'
+      ));
+    } else {
+      final storageCode = state.allStorageCodeLines.firstWhereOrNull(
+        (e) => e.code.split(kCryptoSeparator)[0] == code.split(kCryptoSeparator)[0]
+      );
+
+      if (storageCode == null) {
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не в заказе. $code'));
+        return;
+      }
+
+      final orderLine = state.codeLines.firstWhere((cl) => cl.orderLineStorageCodes.contains(storageCode)).orderLine;
+
+      await ordersRepository.addOrderLineCode(
+        orderLine: orderLine,
+        code: code,
+        amount: storageCode.amount,
+        isDataMatrix: true
+      );
+      emit(state.copyWith(
+        status: CodeScanStateStatus.success,
+        lastScannedOrderLine: (value: orderLine),
+        message: 'Код успешно отсканирован'
+      ));
+    }
   }
 
   Future<void> decreaseAmount(OrderLineWithCode codeLine) async {
@@ -204,7 +230,17 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await ordersRepository.updateOrderLineCode(orderLineCode: codeLine.orderLineCodes.first, amount: newAmount);
   }
 
-  String formatCode(String code) {
+  String _clearCode(String code) {
     return code.replaceFirst(kCryptoSeparator, '');
+  }
+
+  GS1Barcode? _parseDataMatrix(String code) {
+    try {
+      return parser.parse(code, codeType: CodeType.DATAMATRIX);
+    } on Exception catch(_) {
+      return null;
+    } on ArgumentError catch(_) {
+      return null;
+    }
   }
 }
