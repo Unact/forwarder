@@ -38,11 +38,6 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   Future<void> readCode(String rawCode) async {
     String code = _clearCode(rawCode);
 
-    if (state.allCodeLines.any((e) => e.code == code)) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $code'));
-      return;
-    }
-
     if (state.codeLines.any((e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(code))) {
       await _processBarcode(code);
       return;
@@ -66,6 +61,11 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
     List<OrderLineWithCode> codeLines = state.codeLines.where((e) => e.orderLine.gtin == gtin).toList();
     OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
+
+    if (state.allCodeLines.any((e) => e.code == code)) {
+      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $code'));
+      return;
+    }
 
     if (codeLines.isEmpty) {
       emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Данный товар не в этом заказе. $code'));
