@@ -168,7 +168,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
   Future<void> _processStorageCode(String code) async {
     if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
-      state.allStorageCodeLines.where((e) => e.groupCode == code).forEach((e) async {
+      int scannedCnt = 0;
+
+      await Future.wait(state.allStorageCodeLines.where((e) => e.groupCode == code).map((e) async {
         if (state.allCodeLines.any((cl) => cl.code == e.code)) return;
 
         final orderLine = state.codeLines.firstWhere((cl) => cl.orderLineStorageCodes.contains(e)).orderLine;
@@ -179,12 +181,14 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
           amount: e.amount,
           isDataMatrix: true
         );
-      });
+
+        scannedCnt += e.amount;
+      }));
 
       emit(state.copyWith(
         status: CodeScanStateStatus.success,
         lastScannedOrderLine: (value: null),
-        message: 'Код успешно отсканирован'
+        message: 'Успешно отсканировано кодов: $scannedCnt'
       ));
     } else {
       final storageCode = state.allStorageCodeLines.firstWhereOrNull(
