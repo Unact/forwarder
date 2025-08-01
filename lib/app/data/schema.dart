@@ -115,6 +115,7 @@ class OrderLineCodes extends Table {
   TextColumn get code => text()();
   IntColumn get amount => integer()();
   BoolColumn get isDataMatrix => boolean()();
+  TextColumn get groupCode => text().nullable()();
   DateTimeColumn get localTs => dateTime()();
 
   @override

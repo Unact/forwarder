@@ -50,6 +50,7 @@ class OrdersRepository extends BaseRepository {
   Future<void> addOrderLineCode({
     required OrderLine orderLine,
     required String code,
+    required String? groupCode,
     required int amount,
     required bool isDataMatrix
   }) async {
@@ -57,6 +58,7 @@ class OrdersRepository extends BaseRepository {
       orderId: Value(orderLine.orderId),
       subid: Value(orderLine.subid),
       code: Value(code),
+      groupCode: Value(groupCode),
       amount: Value(amount),
       isDataMatrix: Value(isDataMatrix),
       localTs: Value(DateTime.now())
@@ -79,6 +81,7 @@ class OrdersRepository extends BaseRepository {
     List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
       'subid': e.subid,
       'code': e.code,
+      'group_code': e.groupCode,
       'markirovka': e.isDataMatrix,
       'amount': e.amount,
       'local_ts': e.localTs.toIso8601String()
