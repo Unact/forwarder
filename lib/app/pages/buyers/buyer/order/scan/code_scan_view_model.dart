@@ -91,6 +91,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await ordersRepository.addOrderLineCode(
       orderLine: codeLine.orderLine,
       code: code,
+      groupCode: null,
       amount: 1,
       isDataMatrix: true
     );
@@ -149,6 +150,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       await ordersRepository.addOrderLineCode(
         orderLine: codeLine.orderLine,
         code: code,
+        groupCode: null,
         amount: newAmount,
         isDataMatrix: false
       );
@@ -168,7 +170,10 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
   Future<void> _processStorageCode(String code) async {
     if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
-      int scannedCnt = 0;
+      if (state.codeLines.any((e) => e.orderLineCodes.any((ei) => ei.groupCode == code))) {
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код агрегации уже отсканирован. $code'));
+        return;
+      }
 
       await Future.wait(state.allStorageCodeLines.where((e) => e.groupCode == code).map((e) async {
         if (state.allCodeLines.any((cl) => cl.code == e.code)) return;
@@ -178,17 +183,16 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
         await ordersRepository.addOrderLineCode(
           orderLine: orderLine,
           code: e.code,
+          groupCode: code,
           amount: e.amount,
           isDataMatrix: true
         );
-
-        scannedCnt += e.amount;
       }));
 
       emit(state.copyWith(
         status: CodeScanStateStatus.success,
         lastScannedOrderLine: (value: null),
-        message: 'Успешно отсканировано кодов: $scannedCnt'
+        message: 'Успешно отсканировано кодов: ${state.allStorageCodeLines.where((e) => e.groupCode == code).length}'
       ));
     } else {
       final storageCode = state.allStorageCodeLines.firstWhereOrNull(
@@ -205,6 +209,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       await ordersRepository.addOrderLineCode(
         orderLine: orderLine,
         code: code,
+        groupCode: null,
         amount: storageCode.amount,
         isDataMatrix: true
       );
