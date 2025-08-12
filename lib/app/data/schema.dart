@@ -92,6 +92,7 @@ class Orders extends Table {
   BoolColumn get paid => boolean()();
   BoolColumn get physical => boolean()();
   BoolColumn get needScan => boolean()();
+  BoolColumn get dovUnload => boolean()();
 }
 
 class OrderLines extends Table {

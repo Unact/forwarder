@@ -52,12 +52,17 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     emit(state.copyWith(status: OrderStateStatus.showScan));
   }
 
-  void tryDeliverOrder(bool delivered) {
-    bool allVolScanned = state.codeLines.every(
-      (e) => e.orderLine.vol == e.orderLineCodes.fold<int>(0, (v, el) => v + el.amount)
+  Future<void> tryDeliverOrder(bool delivered) async {
+    double volScanned = state.codeLines.fold(
+      0,
+      (acc, e) => acc + e.orderLineCodes.fold(0, (v, el) => v + el.amount)
+    );
+    double totalVolScanned = state.codeLines.fold(
+      0,
+      (acc, e) => acc + e.orderLine.vol
     );
 
-    if (delivered && state.order.needScan && !allVolScanned) {
+    if (delivered && state.order.needScan && volScanned != totalVolScanned) {
       emit(state.copyWith(
         status: OrderStateStatus.needUserConfirmation,
         delivered: delivered,
@@ -66,6 +71,20 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
       ));
 
       return;
+    }
+
+    if (state.order.dovUnload && volScanned == 0) {
+      await Future.wait(state.codeLines.map((e) {
+        return e.orderLineStorageCodes.map((ie) {
+          return ordersRepository.addOrderLineCode(
+            orderLine: e.orderLine,
+            code: ie.code,
+            groupCode: ie.code,
+            amount: ie.amount,
+            isDataMatrix: true
+          );
+        });
+      }).expand((e) => e));
     }
 
     emit(state.copyWith(
