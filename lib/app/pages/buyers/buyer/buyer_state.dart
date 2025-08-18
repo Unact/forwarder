@@ -26,7 +26,7 @@ class BuyerState {
   });
 
   final BuyerStateStatus status;
-  final Buyer buyer;
+  final BuyerEx buyer;
   final List<CardPayment> cardPayments;
   final List<CashPayment> cashPayments;
   final List<Order> orders;
@@ -43,7 +43,7 @@ class BuyerState {
 
   BuyerState copyWith({
     BuyerStateStatus? status,
-    Buyer? buyer,
+    BuyerEx? buyer,
     List<CardPayment>? cardPayments,
     List<CashPayment>? cashPayments,
     List<Order>? orders,

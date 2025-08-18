@@ -14,6 +14,7 @@ class CodeScanState {
     required this.order,
     this.codeLines = const [],
     this.allCodeLines = const [],
+    this.allOrders = const [],
     this.lastScannedOrderLine
   });
 
@@ -22,6 +23,7 @@ class CodeScanState {
   final Order order;
   final List<OrderLineWithCode> codeLines;
   final List<OrderLineCode> allCodeLines;
+  final List<Order> allOrders;
   final OrderLine? lastScannedOrderLine;
 
   List<String> get allCodes => codeLines.map((e) => e.orderLineCodes.map((ei) => ei.code)).expand((e) => e).toList();
@@ -36,6 +38,7 @@ class CodeScanState {
     Order? order,
     List<OrderLineWithCode>? codeLines,
     List<OrderLineCode>? allCodeLines,
+    List<Order>? allOrders,
     ({ OrderLine? value })? lastScannedOrderLine
   }) {
     return CodeScanState(
@@ -44,6 +47,7 @@ class CodeScanState {
       order: order ?? this.order,
       codeLines: codeLines ?? this.codeLines,
       allCodeLines: allCodeLines ?? this.allCodeLines,
+      allOrders: allOrders ?? this.allOrders,
       lastScannedOrderLine: lastScannedOrderLine != null ? lastScannedOrderLine.value : this.lastScannedOrderLine
     );
   }

@@ -2,6 +2,7 @@ part of 'entities.dart';
 
 class ApiData extends Equatable {
   final List<ApiBuyer> buyers;
+  final List<ApiBuyerDeliveryMark> buyerDeliveryMarks;
   final List<ApiCardPayment> cardPayments;
   final List<ApiCashPayment> cashPayments;
   final List<ApiDebt> debts;
@@ -14,6 +15,7 @@ class ApiData extends Equatable {
 
   const ApiData({
     required this.buyers,
+    required this.buyerDeliveryMarks,
     required this.cardPayments,
     required this.cashPayments,
     required this.debts,
@@ -29,6 +31,8 @@ class ApiData extends Equatable {
     List<ApiIncome> incomes = json['incomes'].map<ApiIncome>((e) => ApiIncome.fromJson(e)).toList();
     List<ApiRecept> recepts = json['recepts'].map<ApiRecept>((e) => ApiRecept.fromJson(e)).toList();
     List<ApiBuyer> buyers = json['buyers'].map<ApiBuyer>((e) => ApiBuyer.fromJson(e)).toList();
+    List<ApiBuyerDeliveryMark> buyerDeliveryMarks = json['buyer_delivery_marks']
+      .map<ApiBuyerDeliveryMark>((e) => ApiBuyerDeliveryMark.fromJson(e)).toList();
     List<ApiCardPayment> cardPayments =
       json['card_repayments'].map<ApiCardPayment>((e) => ApiCardPayment.fromJson(e)).toList();
     List<ApiCashPayment> cashPayments =
@@ -43,6 +47,7 @@ class ApiData extends Equatable {
 
     return ApiData(
       buyers: buyers,
+      buyerDeliveryMarks: buyerDeliveryMarks,
       cardPayments: cardPayments,
       cashPayments: cashPayments,
       debts: debts,
@@ -58,6 +63,7 @@ class ApiData extends Equatable {
   @override
   List<Object> get props => [
     buyers,
+    buyerDeliveryMarks,
     cardPayments,
     cashPayments,
     debts,

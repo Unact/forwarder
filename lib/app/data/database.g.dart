@@ -1028,39 +1028,6 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
       'CHECK ("need_inc" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _missedTsMeta = const VerificationMeta(
-    'missedTs',
-  );
-  @override
-  late final GeneratedColumn<DateTime> missedTs = GeneratedColumn<DateTime>(
-    'missed_ts',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _arrivalTsMeta = const VerificationMeta(
-    'arrivalTs',
-  );
-  @override
-  late final GeneratedColumn<DateTime> arrivalTs = GeneratedColumn<DateTime>(
-    'arrival_ts',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _departureTsMeta = const VerificationMeta(
-    'departureTs',
-  );
-  @override
-  late final GeneratedColumn<DateTime> departureTs = GeneratedColumn<DateTime>(
-    'departure_ts',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
   @override
   List<GeneratedColumn> get $columns => [
     buyerId,
@@ -1070,9 +1037,6 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     address,
     ord,
     needInc,
-    missedTs,
-    arrivalTs,
-    departureTs,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1145,27 +1109,6 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     } else if (isInserting) {
       context.missing(_needIncMeta);
     }
-    if (data.containsKey('missed_ts')) {
-      context.handle(
-        _missedTsMeta,
-        missedTs.isAcceptableOrUnknown(data['missed_ts']!, _missedTsMeta),
-      );
-    }
-    if (data.containsKey('arrival_ts')) {
-      context.handle(
-        _arrivalTsMeta,
-        arrivalTs.isAcceptableOrUnknown(data['arrival_ts']!, _arrivalTsMeta),
-      );
-    }
-    if (data.containsKey('departure_ts')) {
-      context.handle(
-        _departureTsMeta,
-        departureTs.isAcceptableOrUnknown(
-          data['departure_ts']!,
-          _departureTsMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -1210,18 +1153,6 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
             DriftSqlType.bool,
             data['${effectivePrefix}need_inc'],
           )!,
-      missedTs: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}missed_ts'],
-      ),
-      arrivalTs: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}arrival_ts'],
-      ),
-      departureTs: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}departure_ts'],
-      ),
     );
   }
 
@@ -1239,9 +1170,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   final String address;
   final int ord;
   final bool needInc;
-  final DateTime? missedTs;
-  final DateTime? arrivalTs;
-  final DateTime? departureTs;
   const Buyer({
     required this.buyerId,
     required this.deliveryId,
@@ -1250,9 +1178,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     required this.address,
     required this.ord,
     required this.needInc,
-    this.missedTs,
-    this.arrivalTs,
-    this.departureTs,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1264,15 +1189,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     map['address'] = Variable<String>(address);
     map['ord'] = Variable<int>(ord);
     map['need_inc'] = Variable<bool>(needInc);
-    if (!nullToAbsent || missedTs != null) {
-      map['missed_ts'] = Variable<DateTime>(missedTs);
-    }
-    if (!nullToAbsent || arrivalTs != null) {
-      map['arrival_ts'] = Variable<DateTime>(arrivalTs);
-    }
-    if (!nullToAbsent || departureTs != null) {
-      map['departure_ts'] = Variable<DateTime>(departureTs);
-    }
     return map;
   }
 
@@ -1285,18 +1201,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: Value(address),
       ord: Value(ord),
       needInc: Value(needInc),
-      missedTs:
-          missedTs == null && nullToAbsent
-              ? const Value.absent()
-              : Value(missedTs),
-      arrivalTs:
-          arrivalTs == null && nullToAbsent
-              ? const Value.absent()
-              : Value(arrivalTs),
-      departureTs:
-          departureTs == null && nullToAbsent
-              ? const Value.absent()
-              : Value(departureTs),
     );
   }
 
@@ -1313,9 +1217,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: serializer.fromJson<String>(json['address']),
       ord: serializer.fromJson<int>(json['ord']),
       needInc: serializer.fromJson<bool>(json['needInc']),
-      missedTs: serializer.fromJson<DateTime?>(json['missedTs']),
-      arrivalTs: serializer.fromJson<DateTime?>(json['arrivalTs']),
-      departureTs: serializer.fromJson<DateTime?>(json['departureTs']),
     );
   }
   @override
@@ -1329,9 +1230,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       'address': serializer.toJson<String>(address),
       'ord': serializer.toJson<int>(ord),
       'needInc': serializer.toJson<bool>(needInc),
-      'missedTs': serializer.toJson<DateTime?>(missedTs),
-      'arrivalTs': serializer.toJson<DateTime?>(arrivalTs),
-      'departureTs': serializer.toJson<DateTime?>(departureTs),
     };
   }
 
@@ -1343,9 +1241,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     String? address,
     int? ord,
     bool? needInc,
-    Value<DateTime?> missedTs = const Value.absent(),
-    Value<DateTime?> arrivalTs = const Value.absent(),
-    Value<DateTime?> departureTs = const Value.absent(),
   }) => Buyer(
     buyerId: buyerId ?? this.buyerId,
     deliveryId: deliveryId ?? this.deliveryId,
@@ -1354,9 +1249,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     address: address ?? this.address,
     ord: ord ?? this.ord,
     needInc: needInc ?? this.needInc,
-    missedTs: missedTs.present ? missedTs.value : this.missedTs,
-    arrivalTs: arrivalTs.present ? arrivalTs.value : this.arrivalTs,
-    departureTs: departureTs.present ? departureTs.value : this.departureTs,
   );
   Buyer copyWithCompanion(BuyersCompanion data) {
     return Buyer(
@@ -1371,10 +1263,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: data.address.present ? data.address.value : this.address,
       ord: data.ord.present ? data.ord.value : this.ord,
       needInc: data.needInc.present ? data.needInc.value : this.needInc,
-      missedTs: data.missedTs.present ? data.missedTs.value : this.missedTs,
-      arrivalTs: data.arrivalTs.present ? data.arrivalTs.value : this.arrivalTs,
-      departureTs:
-          data.departureTs.present ? data.departureTs.value : this.departureTs,
     );
   }
 
@@ -1387,10 +1275,7 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           ..write('name: $name, ')
           ..write('address: $address, ')
           ..write('ord: $ord, ')
-          ..write('needInc: $needInc, ')
-          ..write('missedTs: $missedTs, ')
-          ..write('arrivalTs: $arrivalTs, ')
-          ..write('departureTs: $departureTs')
+          ..write('needInc: $needInc')
           ..write(')'))
         .toString();
   }
@@ -1404,9 +1289,6 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     address,
     ord,
     needInc,
-    missedTs,
-    arrivalTs,
-    departureTs,
   );
   @override
   bool operator ==(Object other) =>
@@ -1418,10 +1300,7 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           other.name == this.name &&
           other.address == this.address &&
           other.ord == this.ord &&
-          other.needInc == this.needInc &&
-          other.missedTs == this.missedTs &&
-          other.arrivalTs == this.arrivalTs &&
-          other.departureTs == this.departureTs);
+          other.needInc == this.needInc);
 }
 
 class BuyersCompanion extends UpdateCompanion<Buyer> {
@@ -1432,9 +1311,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
   final Value<String> address;
   final Value<int> ord;
   final Value<bool> needInc;
-  final Value<DateTime?> missedTs;
-  final Value<DateTime?> arrivalTs;
-  final Value<DateTime?> departureTs;
   final Value<int> rowid;
   const BuyersCompanion({
     this.buyerId = const Value.absent(),
@@ -1444,9 +1320,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     this.address = const Value.absent(),
     this.ord = const Value.absent(),
     this.needInc = const Value.absent(),
-    this.missedTs = const Value.absent(),
-    this.arrivalTs = const Value.absent(),
-    this.departureTs = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BuyersCompanion.insert({
@@ -1457,9 +1330,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     required String address,
     required int ord,
     required bool needInc,
-    this.missedTs = const Value.absent(),
-    this.arrivalTs = const Value.absent(),
-    this.departureTs = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : buyerId = Value(buyerId),
        deliveryId = Value(deliveryId),
@@ -1476,9 +1346,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Expression<String>? address,
     Expression<int>? ord,
     Expression<bool>? needInc,
-    Expression<DateTime>? missedTs,
-    Expression<DateTime>? arrivalTs,
-    Expression<DateTime>? departureTs,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1489,9 +1356,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       if (address != null) 'address': address,
       if (ord != null) 'ord': ord,
       if (needInc != null) 'need_inc': needInc,
-      if (missedTs != null) 'missed_ts': missedTs,
-      if (arrivalTs != null) 'arrival_ts': arrivalTs,
-      if (departureTs != null) 'departure_ts': departureTs,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1504,9 +1368,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Value<String>? address,
     Value<int>? ord,
     Value<bool>? needInc,
-    Value<DateTime?>? missedTs,
-    Value<DateTime?>? arrivalTs,
-    Value<DateTime?>? departureTs,
     Value<int>? rowid,
   }) {
     return BuyersCompanion(
@@ -1517,9 +1378,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       address: address ?? this.address,
       ord: ord ?? this.ord,
       needInc: needInc ?? this.needInc,
-      missedTs: missedTs ?? this.missedTs,
-      arrivalTs: arrivalTs ?? this.arrivalTs,
-      departureTs: departureTs ?? this.departureTs,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1548,15 +1406,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     if (needInc.present) {
       map['need_inc'] = Variable<bool>(needInc.value);
     }
-    if (missedTs.present) {
-      map['missed_ts'] = Variable<DateTime>(missedTs.value);
-    }
-    if (arrivalTs.present) {
-      map['arrival_ts'] = Variable<DateTime>(arrivalTs.value);
-    }
-    if (departureTs.present) {
-      map['departure_ts'] = Variable<DateTime>(departureTs.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1573,9 +1422,6 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
           ..write('address: $address, ')
           ..write('ord: $ord, ')
           ..write('needInc: $needInc, ')
-          ..write('missedTs: $missedTs, ')
-          ..write('arrivalTs: $arrivalTs, ')
-          ..write('departureTs: $departureTs, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4662,6 +4508,15 @@ class $OrderLineCodesTable extends OrderLineCodes
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $OrderLineCodesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _orderIdMeta = const VerificationMeta(
     'orderId',
   );
@@ -4738,6 +4593,7 @@ class $OrderLineCodesTable extends OrderLineCodes
   );
   @override
   List<GeneratedColumn> get $columns => [
+    id,
     orderId,
     subid,
     code,
@@ -4758,6 +4614,9 @@ class $OrderLineCodesTable extends OrderLineCodes
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
     if (data.containsKey('order_id')) {
       context.handle(
         _orderIdMeta,
@@ -4824,6 +4683,10 @@ class $OrderLineCodesTable extends OrderLineCodes
   OrderLineCode map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return OrderLineCode(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
       orderId:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
@@ -4868,6 +4731,7 @@ class $OrderLineCodesTable extends OrderLineCodes
 }
 
 class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
+  final int? id;
   final int orderId;
   final int subid;
   final String code;
@@ -4876,6 +4740,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   final String? groupCode;
   final DateTime localTs;
   const OrderLineCode({
+    this.id,
     required this.orderId,
     required this.subid,
     required this.code,
@@ -4887,6 +4752,9 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
     map['order_id'] = Variable<int>(orderId);
     map['subid'] = Variable<int>(subid);
     map['code'] = Variable<String>(code);
@@ -4901,6 +4769,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
 
   OrderLineCodesCompanion toCompanion(bool nullToAbsent) {
     return OrderLineCodesCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       orderId: Value(orderId),
       subid: Value(subid),
       code: Value(code),
@@ -4920,6 +4789,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return OrderLineCode(
+      id: serializer.fromJson<int?>(json['id']),
       orderId: serializer.fromJson<int>(json['orderId']),
       subid: serializer.fromJson<int>(json['subid']),
       code: serializer.fromJson<String>(json['code']),
@@ -4933,6 +4803,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int?>(id),
       'orderId': serializer.toJson<int>(orderId),
       'subid': serializer.toJson<int>(subid),
       'code': serializer.toJson<String>(code),
@@ -4944,6 +4815,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   }
 
   OrderLineCode copyWith({
+    Value<int?> id = const Value.absent(),
     int? orderId,
     int? subid,
     String? code,
@@ -4952,6 +4824,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
     Value<String?> groupCode = const Value.absent(),
     DateTime? localTs,
   }) => OrderLineCode(
+    id: id.present ? id.value : this.id,
     orderId: orderId ?? this.orderId,
     subid: subid ?? this.subid,
     code: code ?? this.code,
@@ -4962,6 +4835,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   );
   OrderLineCode copyWithCompanion(OrderLineCodesCompanion data) {
     return OrderLineCode(
+      id: data.id.present ? data.id.value : this.id,
       orderId: data.orderId.present ? data.orderId.value : this.orderId,
       subid: data.subid.present ? data.subid.value : this.subid,
       code: data.code.present ? data.code.value : this.code,
@@ -4978,6 +4852,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   @override
   String toString() {
     return (StringBuffer('OrderLineCode(')
+          ..write('id: $id, ')
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
           ..write('code: $code, ')
@@ -4991,6 +4866,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
 
   @override
   int get hashCode => Object.hash(
+    id,
     orderId,
     subid,
     code,
@@ -5003,6 +4879,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is OrderLineCode &&
+          other.id == this.id &&
           other.orderId == this.orderId &&
           other.subid == this.subid &&
           other.code == this.code &&
@@ -5013,6 +4890,7 @@ class OrderLineCode extends DataClass implements Insertable<OrderLineCode> {
 }
 
 class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
+  final Value<int?> id;
   final Value<int> orderId;
   final Value<int> subid;
   final Value<String> code;
@@ -5022,6 +4900,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   final Value<DateTime> localTs;
   final Value<int> rowid;
   const OrderLineCodesCompanion({
+    this.id = const Value.absent(),
     this.orderId = const Value.absent(),
     this.subid = const Value.absent(),
     this.code = const Value.absent(),
@@ -5032,6 +4911,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     this.rowid = const Value.absent(),
   });
   OrderLineCodesCompanion.insert({
+    this.id = const Value.absent(),
     required int orderId,
     required int subid,
     required String code,
@@ -5047,6 +4927,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
        isDataMatrix = Value(isDataMatrix),
        localTs = Value(localTs);
   static Insertable<OrderLineCode> custom({
+    Expression<int>? id,
     Expression<int>? orderId,
     Expression<int>? subid,
     Expression<String>? code,
@@ -5057,6 +4938,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (orderId != null) 'order_id': orderId,
       if (subid != null) 'subid': subid,
       if (code != null) 'code': code,
@@ -5069,6 +4951,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   }
 
   OrderLineCodesCompanion copyWith({
+    Value<int?>? id,
     Value<int>? orderId,
     Value<int>? subid,
     Value<String>? code,
@@ -5079,6 +4962,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
     Value<int>? rowid,
   }) {
     return OrderLineCodesCompanion(
+      id: id ?? this.id,
       orderId: orderId ?? this.orderId,
       subid: subid ?? this.subid,
       code: code ?? this.code,
@@ -5093,6 +4977,9 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (orderId.present) {
       map['order_id'] = Variable<int>(orderId.value);
     }
@@ -5123,6 +5010,7 @@ class OrderLineCodesCompanion extends UpdateCompanion<OrderLineCode> {
   @override
   String toString() {
     return (StringBuffer('OrderLineCodesCompanion(')
+          ..write('id: $id, ')
           ..write('orderId: $orderId, ')
           ..write('subid: $subid, ')
           ..write('code: $code, ')
@@ -5505,6 +5393,679 @@ class OrderLineStorageCodesCompanion
   }
 }
 
+class $BuyerDeliveryMarksTable extends BuyerDeliveryMarks
+    with TableInfo<$BuyerDeliveryMarksTable, BuyerDeliveryMark> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BuyerDeliveryMarksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _buyerIdMeta = const VerificationMeta(
+    'buyerId',
+  );
+  @override
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
+    'buyer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deliveryIdMeta = const VerificationMeta(
+    'deliveryId',
+  );
+  @override
+  late final GeneratedColumn<int> deliveryId = GeneratedColumn<int>(
+    'delivery_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<BuyerDeliveryMarkType, String>
+  type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<BuyerDeliveryMarkType>(
+    $BuyerDeliveryMarksTable.$convertertype,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _accuracyMeta = const VerificationMeta(
+    'accuracy',
+  );
+  @override
+  late final GeneratedColumn<double> accuracy = GeneratedColumn<double>(
+    'accuracy',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _altitudeMeta = const VerificationMeta(
+    'altitude',
+  );
+  @override
+  late final GeneratedColumn<double> altitude = GeneratedColumn<double>(
+    'altitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _headingMeta = const VerificationMeta(
+    'heading',
+  );
+  @override
+  late final GeneratedColumn<double> heading = GeneratedColumn<double>(
+    'heading',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _speedMeta = const VerificationMeta('speed');
+  @override
+  late final GeneratedColumn<double> speed = GeneratedColumn<double>(
+    'speed',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointTsMeta = const VerificationMeta(
+    'pointTs',
+  );
+  @override
+  late final GeneratedColumn<DateTime> pointTs = GeneratedColumn<DateTime>(
+    'point_ts',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    buyerId,
+    deliveryId,
+    type,
+    latitude,
+    longitude,
+    accuracy,
+    altitude,
+    heading,
+    speed,
+    pointTs,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'buyer_delivery_marks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BuyerDeliveryMark> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('buyer_id')) {
+      context.handle(
+        _buyerIdMeta,
+        buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_buyerIdMeta);
+    }
+    if (data.containsKey('delivery_id')) {
+      context.handle(
+        _deliveryIdMeta,
+        deliveryId.isAcceptableOrUnknown(data['delivery_id']!, _deliveryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deliveryIdMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latitudeMeta);
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_longitudeMeta);
+    }
+    if (data.containsKey('accuracy')) {
+      context.handle(
+        _accuracyMeta,
+        accuracy.isAcceptableOrUnknown(data['accuracy']!, _accuracyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_accuracyMeta);
+    }
+    if (data.containsKey('altitude')) {
+      context.handle(
+        _altitudeMeta,
+        altitude.isAcceptableOrUnknown(data['altitude']!, _altitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_altitudeMeta);
+    }
+    if (data.containsKey('heading')) {
+      context.handle(
+        _headingMeta,
+        heading.isAcceptableOrUnknown(data['heading']!, _headingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_headingMeta);
+    }
+    if (data.containsKey('speed')) {
+      context.handle(
+        _speedMeta,
+        speed.isAcceptableOrUnknown(data['speed']!, _speedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_speedMeta);
+    }
+    if (data.containsKey('point_ts')) {
+      context.handle(
+        _pointTsMeta,
+        pointTs.isAcceptableOrUnknown(data['point_ts']!, _pointTsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pointTsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {buyerId, deliveryId, type};
+  @override
+  BuyerDeliveryMark map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BuyerDeliveryMark(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
+      buyerId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}buyer_id'],
+          )!,
+      deliveryId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}delivery_id'],
+          )!,
+      type: $BuyerDeliveryMarksTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
+      latitude:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}latitude'],
+          )!,
+      longitude:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}longitude'],
+          )!,
+      accuracy:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}accuracy'],
+          )!,
+      altitude:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}altitude'],
+          )!,
+      heading:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}heading'],
+          )!,
+      speed:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}speed'],
+          )!,
+      pointTs:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}point_ts'],
+          )!,
+    );
+  }
+
+  @override
+  $BuyerDeliveryMarksTable createAlias(String alias) {
+    return $BuyerDeliveryMarksTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<BuyerDeliveryMarkType, String, String>
+  $convertertype = const EnumNameConverter<BuyerDeliveryMarkType>(
+    BuyerDeliveryMarkType.values,
+  );
+}
+
+class BuyerDeliveryMark extends DataClass
+    implements Insertable<BuyerDeliveryMark> {
+  final int? id;
+  final int buyerId;
+  final int deliveryId;
+  final BuyerDeliveryMarkType type;
+  final double latitude;
+  final double longitude;
+  final double accuracy;
+  final double altitude;
+  final double heading;
+  final double speed;
+  final DateTime pointTs;
+  const BuyerDeliveryMark({
+    this.id,
+    required this.buyerId,
+    required this.deliveryId,
+    required this.type,
+    required this.latitude,
+    required this.longitude,
+    required this.accuracy,
+    required this.altitude,
+    required this.heading,
+    required this.speed,
+    required this.pointTs,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    map['buyer_id'] = Variable<int>(buyerId);
+    map['delivery_id'] = Variable<int>(deliveryId);
+    {
+      map['type'] = Variable<String>(
+        $BuyerDeliveryMarksTable.$convertertype.toSql(type),
+      );
+    }
+    map['latitude'] = Variable<double>(latitude);
+    map['longitude'] = Variable<double>(longitude);
+    map['accuracy'] = Variable<double>(accuracy);
+    map['altitude'] = Variable<double>(altitude);
+    map['heading'] = Variable<double>(heading);
+    map['speed'] = Variable<double>(speed);
+    map['point_ts'] = Variable<DateTime>(pointTs);
+    return map;
+  }
+
+  BuyerDeliveryMarksCompanion toCompanion(bool nullToAbsent) {
+    return BuyerDeliveryMarksCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      buyerId: Value(buyerId),
+      deliveryId: Value(deliveryId),
+      type: Value(type),
+      latitude: Value(latitude),
+      longitude: Value(longitude),
+      accuracy: Value(accuracy),
+      altitude: Value(altitude),
+      heading: Value(heading),
+      speed: Value(speed),
+      pointTs: Value(pointTs),
+    );
+  }
+
+  factory BuyerDeliveryMark.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BuyerDeliveryMark(
+      id: serializer.fromJson<int?>(json['id']),
+      buyerId: serializer.fromJson<int>(json['buyerId']),
+      deliveryId: serializer.fromJson<int>(json['deliveryId']),
+      type: $BuyerDeliveryMarksTable.$convertertype.fromJson(
+        serializer.fromJson<String>(json['type']),
+      ),
+      latitude: serializer.fromJson<double>(json['latitude']),
+      longitude: serializer.fromJson<double>(json['longitude']),
+      accuracy: serializer.fromJson<double>(json['accuracy']),
+      altitude: serializer.fromJson<double>(json['altitude']),
+      heading: serializer.fromJson<double>(json['heading']),
+      speed: serializer.fromJson<double>(json['speed']),
+      pointTs: serializer.fromJson<DateTime>(json['pointTs']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int?>(id),
+      'buyerId': serializer.toJson<int>(buyerId),
+      'deliveryId': serializer.toJson<int>(deliveryId),
+      'type': serializer.toJson<String>(
+        $BuyerDeliveryMarksTable.$convertertype.toJson(type),
+      ),
+      'latitude': serializer.toJson<double>(latitude),
+      'longitude': serializer.toJson<double>(longitude),
+      'accuracy': serializer.toJson<double>(accuracy),
+      'altitude': serializer.toJson<double>(altitude),
+      'heading': serializer.toJson<double>(heading),
+      'speed': serializer.toJson<double>(speed),
+      'pointTs': serializer.toJson<DateTime>(pointTs),
+    };
+  }
+
+  BuyerDeliveryMark copyWith({
+    Value<int?> id = const Value.absent(),
+    int? buyerId,
+    int? deliveryId,
+    BuyerDeliveryMarkType? type,
+    double? latitude,
+    double? longitude,
+    double? accuracy,
+    double? altitude,
+    double? heading,
+    double? speed,
+    DateTime? pointTs,
+  }) => BuyerDeliveryMark(
+    id: id.present ? id.value : this.id,
+    buyerId: buyerId ?? this.buyerId,
+    deliveryId: deliveryId ?? this.deliveryId,
+    type: type ?? this.type,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    accuracy: accuracy ?? this.accuracy,
+    altitude: altitude ?? this.altitude,
+    heading: heading ?? this.heading,
+    speed: speed ?? this.speed,
+    pointTs: pointTs ?? this.pointTs,
+  );
+  BuyerDeliveryMark copyWithCompanion(BuyerDeliveryMarksCompanion data) {
+    return BuyerDeliveryMark(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      deliveryId:
+          data.deliveryId.present ? data.deliveryId.value : this.deliveryId,
+      type: data.type.present ? data.type.value : this.type,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      accuracy: data.accuracy.present ? data.accuracy.value : this.accuracy,
+      altitude: data.altitude.present ? data.altitude.value : this.altitude,
+      heading: data.heading.present ? data.heading.value : this.heading,
+      speed: data.speed.present ? data.speed.value : this.speed,
+      pointTs: data.pointTs.present ? data.pointTs.value : this.pointTs,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryMark(')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('type: $type, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('accuracy: $accuracy, ')
+          ..write('altitude: $altitude, ')
+          ..write('heading: $heading, ')
+          ..write('speed: $speed, ')
+          ..write('pointTs: $pointTs')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    buyerId,
+    deliveryId,
+    type,
+    latitude,
+    longitude,
+    accuracy,
+    altitude,
+    heading,
+    speed,
+    pointTs,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BuyerDeliveryMark &&
+          other.id == this.id &&
+          other.buyerId == this.buyerId &&
+          other.deliveryId == this.deliveryId &&
+          other.type == this.type &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.accuracy == this.accuracy &&
+          other.altitude == this.altitude &&
+          other.heading == this.heading &&
+          other.speed == this.speed &&
+          other.pointTs == this.pointTs);
+}
+
+class BuyerDeliveryMarksCompanion extends UpdateCompanion<BuyerDeliveryMark> {
+  final Value<int?> id;
+  final Value<int> buyerId;
+  final Value<int> deliveryId;
+  final Value<BuyerDeliveryMarkType> type;
+  final Value<double> latitude;
+  final Value<double> longitude;
+  final Value<double> accuracy;
+  final Value<double> altitude;
+  final Value<double> heading;
+  final Value<double> speed;
+  final Value<DateTime> pointTs;
+  final Value<int> rowid;
+  const BuyerDeliveryMarksCompanion({
+    this.id = const Value.absent(),
+    this.buyerId = const Value.absent(),
+    this.deliveryId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.accuracy = const Value.absent(),
+    this.altitude = const Value.absent(),
+    this.heading = const Value.absent(),
+    this.speed = const Value.absent(),
+    this.pointTs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BuyerDeliveryMarksCompanion.insert({
+    this.id = const Value.absent(),
+    required int buyerId,
+    required int deliveryId,
+    required BuyerDeliveryMarkType type,
+    required double latitude,
+    required double longitude,
+    required double accuracy,
+    required double altitude,
+    required double heading,
+    required double speed,
+    required DateTime pointTs,
+    this.rowid = const Value.absent(),
+  }) : buyerId = Value(buyerId),
+       deliveryId = Value(deliveryId),
+       type = Value(type),
+       latitude = Value(latitude),
+       longitude = Value(longitude),
+       accuracy = Value(accuracy),
+       altitude = Value(altitude),
+       heading = Value(heading),
+       speed = Value(speed),
+       pointTs = Value(pointTs);
+  static Insertable<BuyerDeliveryMark> custom({
+    Expression<int>? id,
+    Expression<int>? buyerId,
+    Expression<int>? deliveryId,
+    Expression<String>? type,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<double>? accuracy,
+    Expression<double>? altitude,
+    Expression<double>? heading,
+    Expression<double>? speed,
+    Expression<DateTime>? pointTs,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (buyerId != null) 'buyer_id': buyerId,
+      if (deliveryId != null) 'delivery_id': deliveryId,
+      if (type != null) 'type': type,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (accuracy != null) 'accuracy': accuracy,
+      if (altitude != null) 'altitude': altitude,
+      if (heading != null) 'heading': heading,
+      if (speed != null) 'speed': speed,
+      if (pointTs != null) 'point_ts': pointTs,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BuyerDeliveryMarksCompanion copyWith({
+    Value<int?>? id,
+    Value<int>? buyerId,
+    Value<int>? deliveryId,
+    Value<BuyerDeliveryMarkType>? type,
+    Value<double>? latitude,
+    Value<double>? longitude,
+    Value<double>? accuracy,
+    Value<double>? altitude,
+    Value<double>? heading,
+    Value<double>? speed,
+    Value<DateTime>? pointTs,
+    Value<int>? rowid,
+  }) {
+    return BuyerDeliveryMarksCompanion(
+      id: id ?? this.id,
+      buyerId: buyerId ?? this.buyerId,
+      deliveryId: deliveryId ?? this.deliveryId,
+      type: type ?? this.type,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      accuracy: accuracy ?? this.accuracy,
+      altitude: altitude ?? this.altitude,
+      heading: heading ?? this.heading,
+      speed: speed ?? this.speed,
+      pointTs: pointTs ?? this.pointTs,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (buyerId.present) {
+      map['buyer_id'] = Variable<int>(buyerId.value);
+    }
+    if (deliveryId.present) {
+      map['delivery_id'] = Variable<int>(deliveryId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(
+        $BuyerDeliveryMarksTable.$convertertype.toSql(type.value),
+      );
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (accuracy.present) {
+      map['accuracy'] = Variable<double>(accuracy.value);
+    }
+    if (altitude.present) {
+      map['altitude'] = Variable<double>(altitude.value);
+    }
+    if (heading.present) {
+      map['heading'] = Variable<double>(heading.value);
+    }
+    if (speed.present) {
+      map['speed'] = Variable<double>(speed.value);
+    }
+    if (pointTs.present) {
+      map['point_ts'] = Variable<DateTime>(pointTs.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryMarksCompanion(')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('type: $type, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('accuracy: $accuracy, ')
+          ..write('altitude: $altitude, ')
+          ..write('heading: $heading, ')
+          ..write('speed: $speed, ')
+          ..write('pointTs: $pointTs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5697,19 +6258,22 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $OrderLineCodesTable orderLineCodes = $OrderLineCodesTable(this);
   late final $OrderLineStorageCodesTable orderLineStorageCodes =
       $OrderLineStorageCodesTable(this);
+  late final $BuyerDeliveryMarksTable buyerDeliveryMarks =
+      $BuyerDeliveryMarksTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
   Selectable<AppInfoResult> appInfo() {
     return customSelect(
-      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
+      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, EXISTS (SELECT 1 AS _c0 FROM buyer_delivery_marks WHERE id IS NULL) OR EXISTS (SELECT 1 AS _c1 FROM order_line_codes WHERE id IS NULL) AS has_unsaved, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
       variables: [],
-      readsFrom: {orders, buyers, prefs},
+      readsFrom: {orders, buyerDeliveryMarks, orderLineCodes, buyers, prefs},
     ).map(
       (QueryRow row) => AppInfoResult(
         lastLoadTime: row.readNullable<DateTime>('last_load_time'),
         ordersTotal: row.read<int>('orders_total'),
+        hasUnsaved: row.read<bool>('has_unsaved'),
         incOrdersTotal: row.read<int>('inc_orders_total'),
         buyersTotal: row.read<int>('buyers_total'),
       ),
@@ -5732,6 +6296,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     orderLines,
     orderLineCodes,
     orderLineStorageCodes,
+    buyerDeliveryMarks,
     prefs,
   ];
 }
@@ -6277,9 +6842,6 @@ typedef $$BuyersTableCreateCompanionBuilder =
       required String address,
       required int ord,
       required bool needInc,
-      Value<DateTime?> missedTs,
-      Value<DateTime?> arrivalTs,
-      Value<DateTime?> departureTs,
       Value<int> rowid,
     });
 typedef $$BuyersTableUpdateCompanionBuilder =
@@ -6291,9 +6853,6 @@ typedef $$BuyersTableUpdateCompanionBuilder =
       Value<String> address,
       Value<int> ord,
       Value<bool> needInc,
-      Value<DateTime?> missedTs,
-      Value<DateTime?> arrivalTs,
-      Value<DateTime?> departureTs,
       Value<int> rowid,
     });
 
@@ -6338,21 +6897,6 @@ class $$BuyersTableFilterComposer
 
   ColumnFilters<bool> get needInc => $composableBuilder(
     column: $table.needInc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get missedTs => $composableBuilder(
-    column: $table.missedTs,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get arrivalTs => $composableBuilder(
-    column: $table.arrivalTs,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get departureTs => $composableBuilder(
-    column: $table.departureTs,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -6400,21 +6944,6 @@ class $$BuyersTableOrderingComposer
     column: $table.needInc,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<DateTime> get missedTs => $composableBuilder(
-    column: $table.missedTs,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get arrivalTs => $composableBuilder(
-    column: $table.arrivalTs,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get departureTs => $composableBuilder(
-    column: $table.departureTs,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$BuyersTableAnnotationComposer
@@ -6450,17 +6979,6 @@ class $$BuyersTableAnnotationComposer
 
   GeneratedColumn<bool> get needInc =>
       $composableBuilder(column: $table.needInc, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get missedTs =>
-      $composableBuilder(column: $table.missedTs, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get arrivalTs =>
-      $composableBuilder(column: $table.arrivalTs, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get departureTs => $composableBuilder(
-    column: $table.departureTs,
-    builder: (column) => column,
-  );
 }
 
 class $$BuyersTableTableManager
@@ -6498,9 +7016,6 @@ class $$BuyersTableTableManager
                 Value<String> address = const Value.absent(),
                 Value<int> ord = const Value.absent(),
                 Value<bool> needInc = const Value.absent(),
-                Value<DateTime?> missedTs = const Value.absent(),
-                Value<DateTime?> arrivalTs = const Value.absent(),
-                Value<DateTime?> departureTs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion(
                 buyerId: buyerId,
@@ -6510,9 +7025,6 @@ class $$BuyersTableTableManager
                 address: address,
                 ord: ord,
                 needInc: needInc,
-                missedTs: missedTs,
-                arrivalTs: arrivalTs,
-                departureTs: departureTs,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6524,9 +7036,6 @@ class $$BuyersTableTableManager
                 required String address,
                 required int ord,
                 required bool needInc,
-                Value<DateTime?> missedTs = const Value.absent(),
-                Value<DateTime?> arrivalTs = const Value.absent(),
-                Value<DateTime?> departureTs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion.insert(
                 buyerId: buyerId,
@@ -6536,9 +7045,6 @@ class $$BuyersTableTableManager
                 address: address,
                 ord: ord,
                 needInc: needInc,
-                missedTs: missedTs,
-                arrivalTs: arrivalTs,
-                departureTs: departureTs,
                 rowid: rowid,
               ),
           withReferenceMapper:
@@ -8067,6 +8573,7 @@ typedef $$OrderLinesTableProcessedTableManager =
     >;
 typedef $$OrderLineCodesTableCreateCompanionBuilder =
     OrderLineCodesCompanion Function({
+      Value<int?> id,
       required int orderId,
       required int subid,
       required String code,
@@ -8078,6 +8585,7 @@ typedef $$OrderLineCodesTableCreateCompanionBuilder =
     });
 typedef $$OrderLineCodesTableUpdateCompanionBuilder =
     OrderLineCodesCompanion Function({
+      Value<int?> id,
       Value<int> orderId,
       Value<int> subid,
       Value<String> code,
@@ -8097,6 +8605,11 @@ class $$OrderLineCodesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get orderId => $composableBuilder(
     column: $table.orderId,
     builder: (column) => ColumnFilters(column),
@@ -8142,6 +8655,11 @@ class $$OrderLineCodesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get orderId => $composableBuilder(
     column: $table.orderId,
     builder: (column) => ColumnOrderings(column),
@@ -8187,6 +8705,9 @@ class $$OrderLineCodesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
   GeneratedColumn<int> get orderId =>
       $composableBuilder(column: $table.orderId, builder: (column) => column);
 
@@ -8248,6 +8769,7 @@ class $$OrderLineCodesTableTableManager
               ),
           updateCompanionCallback:
               ({
+                Value<int?> id = const Value.absent(),
                 Value<int> orderId = const Value.absent(),
                 Value<int> subid = const Value.absent(),
                 Value<String> code = const Value.absent(),
@@ -8257,6 +8779,7 @@ class $$OrderLineCodesTableTableManager
                 Value<DateTime> localTs = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => OrderLineCodesCompanion(
+                id: id,
                 orderId: orderId,
                 subid: subid,
                 code: code,
@@ -8268,6 +8791,7 @@ class $$OrderLineCodesTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<int?> id = const Value.absent(),
                 required int orderId,
                 required int subid,
                 required String code,
@@ -8277,6 +8801,7 @@ class $$OrderLineCodesTableTableManager
                 required DateTime localTs,
                 Value<int> rowid = const Value.absent(),
               }) => OrderLineCodesCompanion.insert(
+                id: id,
                 orderId: orderId,
                 subid: subid,
                 code: code,
@@ -8544,6 +9069,353 @@ typedef $$OrderLineStorageCodesTableProcessedTableManager =
       OrderLineStorageCode,
       PrefetchHooks Function()
     >;
+typedef $$BuyerDeliveryMarksTableCreateCompanionBuilder =
+    BuyerDeliveryMarksCompanion Function({
+      Value<int?> id,
+      required int buyerId,
+      required int deliveryId,
+      required BuyerDeliveryMarkType type,
+      required double latitude,
+      required double longitude,
+      required double accuracy,
+      required double altitude,
+      required double heading,
+      required double speed,
+      required DateTime pointTs,
+      Value<int> rowid,
+    });
+typedef $$BuyerDeliveryMarksTableUpdateCompanionBuilder =
+    BuyerDeliveryMarksCompanion Function({
+      Value<int?> id,
+      Value<int> buyerId,
+      Value<int> deliveryId,
+      Value<BuyerDeliveryMarkType> type,
+      Value<double> latitude,
+      Value<double> longitude,
+      Value<double> accuracy,
+      Value<double> altitude,
+      Value<double> heading,
+      Value<double> speed,
+      Value<DateTime> pointTs,
+      Value<int> rowid,
+    });
+
+class $$BuyerDeliveryMarksTableFilterComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryMarksTable> {
+  $$BuyerDeliveryMarksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<
+    BuyerDeliveryMarkType,
+    BuyerDeliveryMarkType,
+    String
+  >
+  get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get accuracy => $composableBuilder(
+    column: $table.accuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get altitude => $composableBuilder(
+    column: $table.altitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get heading => $composableBuilder(
+    column: $table.heading,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get speed => $composableBuilder(
+    column: $table.speed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get pointTs => $composableBuilder(
+    column: $table.pointTs,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BuyerDeliveryMarksTableOrderingComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryMarksTable> {
+  $$BuyerDeliveryMarksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get accuracy => $composableBuilder(
+    column: $table.accuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get altitude => $composableBuilder(
+    column: $table.altitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get heading => $composableBuilder(
+    column: $table.heading,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get speed => $composableBuilder(
+    column: $table.speed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get pointTs => $composableBuilder(
+    column: $table.pointTs,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BuyerDeliveryMarksTableAnnotationComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryMarksTable> {
+  $$BuyerDeliveryMarksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<BuyerDeliveryMarkType, String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<double> get accuracy =>
+      $composableBuilder(column: $table.accuracy, builder: (column) => column);
+
+  GeneratedColumn<double> get altitude =>
+      $composableBuilder(column: $table.altitude, builder: (column) => column);
+
+  GeneratedColumn<double> get heading =>
+      $composableBuilder(column: $table.heading, builder: (column) => column);
+
+  GeneratedColumn<double> get speed =>
+      $composableBuilder(column: $table.speed, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get pointTs =>
+      $composableBuilder(column: $table.pointTs, builder: (column) => column);
+}
+
+class $$BuyerDeliveryMarksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $BuyerDeliveryMarksTable,
+          BuyerDeliveryMark,
+          $$BuyerDeliveryMarksTableFilterComposer,
+          $$BuyerDeliveryMarksTableOrderingComposer,
+          $$BuyerDeliveryMarksTableAnnotationComposer,
+          $$BuyerDeliveryMarksTableCreateCompanionBuilder,
+          $$BuyerDeliveryMarksTableUpdateCompanionBuilder,
+          (
+            BuyerDeliveryMark,
+            BaseReferences<
+              _$AppDataStore,
+              $BuyerDeliveryMarksTable,
+              BuyerDeliveryMark
+            >,
+          ),
+          BuyerDeliveryMark,
+          PrefetchHooks Function()
+        > {
+  $$BuyerDeliveryMarksTableTableManager(
+    _$AppDataStore db,
+    $BuyerDeliveryMarksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$BuyerDeliveryMarksTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$BuyerDeliveryMarksTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$BuyerDeliveryMarksTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<int> buyerId = const Value.absent(),
+                Value<int> deliveryId = const Value.absent(),
+                Value<BuyerDeliveryMarkType> type = const Value.absent(),
+                Value<double> latitude = const Value.absent(),
+                Value<double> longitude = const Value.absent(),
+                Value<double> accuracy = const Value.absent(),
+                Value<double> altitude = const Value.absent(),
+                Value<double> heading = const Value.absent(),
+                Value<double> speed = const Value.absent(),
+                Value<DateTime> pointTs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BuyerDeliveryMarksCompanion(
+                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                type: type,
+                latitude: latitude,
+                longitude: longitude,
+                accuracy: accuracy,
+                altitude: altitude,
+                heading: heading,
+                speed: speed,
+                pointTs: pointTs,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                required int buyerId,
+                required int deliveryId,
+                required BuyerDeliveryMarkType type,
+                required double latitude,
+                required double longitude,
+                required double accuracy,
+                required double altitude,
+                required double heading,
+                required double speed,
+                required DateTime pointTs,
+                Value<int> rowid = const Value.absent(),
+              }) => BuyerDeliveryMarksCompanion.insert(
+                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                type: type,
+                latitude: latitude,
+                longitude: longitude,
+                accuracy: accuracy,
+                altitude: altitude,
+                heading: heading,
+                speed: speed,
+                pointTs: pointTs,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BuyerDeliveryMarksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $BuyerDeliveryMarksTable,
+      BuyerDeliveryMark,
+      $$BuyerDeliveryMarksTableFilterComposer,
+      $$BuyerDeliveryMarksTableOrderingComposer,
+      $$BuyerDeliveryMarksTableAnnotationComposer,
+      $$BuyerDeliveryMarksTableCreateCompanionBuilder,
+      $$BuyerDeliveryMarksTableUpdateCompanionBuilder,
+      (
+        BuyerDeliveryMark,
+        BaseReferences<
+          _$AppDataStore,
+          $BuyerDeliveryMarksTable,
+          BuyerDeliveryMark
+        >,
+      ),
+      BuyerDeliveryMark,
+      PrefetchHooks Function()
+    >;
 typedef $$PrefsTableCreateCompanionBuilder =
     PrefsCompanion Function({Value<DateTime?> lastLoadTime, Value<int> rowid});
 typedef $$PrefsTableUpdateCompanionBuilder =
@@ -8687,6 +9559,8 @@ class $AppDataStoreManager {
       $$OrderLineCodesTableTableManager(_db, _db.orderLineCodes);
   $$OrderLineStorageCodesTableTableManager get orderLineStorageCodes =>
       $$OrderLineStorageCodesTableTableManager(_db, _db.orderLineStorageCodes);
+  $$BuyerDeliveryMarksTableTableManager get buyerDeliveryMarks =>
+      $$BuyerDeliveryMarksTableTableManager(_db, _db.buyerDeliveryMarks);
   $$PrefsTableTableManager get prefs =>
       $$PrefsTableTableManager(_db, _db.prefs);
 }
@@ -8694,11 +9568,13 @@ class $AppDataStoreManager {
 class AppInfoResult {
   final DateTime? lastLoadTime;
   final int ordersTotal;
+  final bool hasUnsaved;
   final int incOrdersTotal;
   final int buyersTotal;
   AppInfoResult({
     this.lastLoadTime,
     required this.ordersTotal,
+    required this.hasUnsaved,
     required this.incOrdersTotal,
     required this.buyersTotal,
   });
@@ -8713,6 +9589,8 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $OrderLineCodesTable get orderLineCodes => attachedDatabase.orderLineCodes;
   $OrderLineStorageCodesTable get orderLineStorageCodes =>
       attachedDatabase.orderLineStorageCodes;
+  $BuyerDeliveryMarksTable get buyerDeliveryMarks =>
+      attachedDatabase.buyerDeliveryMarks;
 }
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;

@@ -14,12 +14,12 @@ class BuyersState {
 
   final BuyersStateStatus status;
   final List<Order> orders;
-  final List<Buyer> buyers;
+  final List<BuyerEx> buyers;
 
   BuyersState copyWith({
     BuyersStateStatus? status,
     List<Order>? orders,
-    List<Buyer>? buyers
+    List<BuyerEx>? buyers
   }) {
     return BuyersState(
       status: status ?? this.status,

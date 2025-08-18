@@ -8,6 +8,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
   StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
   StreamSubscription<List<OrderLineCode>>? orderLineCodesSubscription;
+  StreamSubscription<List<Order>>? ordersSubscription;
 
   CodeScanViewModel(this.appRepository, this.ordersRepository, {required Order order}) :
     super(CodeScanState(order: order));
@@ -25,6 +26,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     orderLineCodesSubscription = ordersRepository.watchOrderLineCodes().listen((event) {
       emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, allCodeLines: event));
     });
+    ordersSubscription = ordersRepository.watchOrders().listen((event) {
+      emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, allOrders: event));
+    });
   }
 
   @override
@@ -33,6 +37,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
     await orderLineWithCodeListSubscription?.cancel();
     await orderLineCodesSubscription?.cancel();
+    await ordersSubscription?.cancel();
   }
 
   Future<void> readCode(String rawCode) async {
@@ -61,9 +66,15 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
 
     List<OrderLineWithCode> codeLines = state.codeLines.where((e) => e.orderLine.gtin == gtin).toList();
     OrderLineWithCode? codeLine = codeLines.firstWhereOrNull((e) => e.orderLine.vol > e.orderLineCodes.length);
+    OrderLineCode? scannedLine = state.allCodeLines.firstWhereOrNull((e) => e.code == code);
 
-    if (state.allCodeLines.any((e) => e.code == code)) {
-      emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код уже отсканирован. $code'));
+    if (scannedLine != null) {
+      Order order = state.allOrders.firstWhere((e) => e.id == scannedLine.orderId);
+
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Код уже отсканирован в заказе ${order.ndoc}. $code'
+      ));
       return;
     }
 

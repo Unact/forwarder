@@ -7,7 +7,7 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
   StreamSubscription<AppInfoResult>? appInfoSubscription;
   StreamSubscription<User>? userSubscription;
 
-  PersonViewModel(this.appRepository, this.usersRepository) : super(PersonState());
+  PersonViewModel(this.appRepository, this.usersRepository) : super(PersonState(confirmationCallback: () {}));
 
   @override
   PersonStateStatus get status => state.status;
@@ -40,6 +40,35 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
       await appRepository.clearData();
 
       emit(state.copyWith(status: PersonStateStatus.loggedOut));
+    } on AppError catch(e) {
+      emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
+    }
+  }
+
+  Future<void> tryGetData() async {
+    if (state.appInfo?.hasUnsaved ?? false) {
+      emit(state.copyWith(
+        status: PersonStateStatus.needUserConfirmation,
+        message: 'Присутствуют не сохраненные изменения. Продолжить?',
+        confirmationCallback: getData
+      ));
+
+      return;
+    }
+
+    await getData(true);
+  }
+
+  Future<void> getData(bool confirmed) async {
+    if (!confirmed) return;
+
+    emit(state.copyWith(status: PersonStateStatus.inProgress));
+
+    try {
+      await usersRepository.loadUserData();
+      await appRepository.loadData();
+
+      emit(state.copyWith(status: PersonStateStatus.success));
     } on AppError catch(e) {
       emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
     }

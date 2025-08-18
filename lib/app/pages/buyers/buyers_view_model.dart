@@ -5,7 +5,7 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
-  StreamSubscription<List<Buyer>>? buyersSubscription;
+  StreamSubscription<List<BuyerEx>>? buyersSubscription;
   StreamSubscription<List<Order>>? ordersSubscription;
 
   BuyersViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) : super(BuyersState());
@@ -33,12 +33,12 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
     await ordersSubscription?.cancel();
   }
 
-  List<Order> buyerOrders(Buyer buyer) => state.orders
-    .where((e) => e.buyerId == buyer.buyerId && e.deliveryId == buyer.deliveryId).toList();
-  List<Buyer> notFinishedBuyers(int deliveryId) => state.buyers
-    .where((e) => e.deliveryId == deliveryId)
-    .where((e) => e.missedTs == null && e.departureTs == null).toList();
-  List<Buyer> finishedBuyers(int deliveryId) => state.buyers
-    .where((e) => e.deliveryId == deliveryId)
-    .where((e) => e.missedTs != null || e.departureTs != null).toList();
+  List<Order> buyerOrders(BuyerEx buyer) => state.orders
+    .where((e) => e.buyerId == buyer.buyer.buyerId && e.deliveryId == buyer.buyer.deliveryId).toList();
+  List<BuyerEx> notFinishedBuyers(int deliveryId) => state.buyers
+    .where((e) => e.buyer.deliveryId == deliveryId)
+    .where((e) => !e.missed && !e.departed).toList();
+  List<BuyerEx> finishedBuyers(int deliveryId) => state.buyers
+    .where((e) => e.buyer.deliveryId == deliveryId)
+    .where((e) => e.missed || e.departed).toList();
 }

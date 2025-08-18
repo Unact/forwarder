@@ -21,7 +21,7 @@ part 'buyer_state.dart';
 part 'buyer_view_model.dart';
 
 class BuyerPage extends StatelessWidget {
-  final Buyer buyer;
+  final BuyerEx buyer;
 
   BuyerPage({
     required this.buyer,
@@ -140,11 +140,11 @@ class _BuyerViewState extends State<_BuyerView> {
   List<Widget> _buildFooterButtons(BuildContext context) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
 
-    if (vm.state.buyer.departureTs != null || vm.state.buyer.missedTs != null) {
+    if (vm.state.buyer.missed) {
       return [];
     }
 
-    if (vm.state.buyer.arrivalTs == null) {
+    if (!vm.state.buyer.arrived) {
       return [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -165,23 +165,28 @@ class _BuyerViewState extends State<_BuyerView> {
       ];
     }
 
+    if (!vm.state.buyer.departed) {
+      return [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).colorScheme.primary
+          ),
+          onPressed: vm.tryDepart,
+          child: const Text('Уехал из точки', style: TextStyle(color: Colors.white)),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).colorScheme.primary
+          ),
+          onPressed: !vm.state.isPayable ? null : () => vm.tryStartPayment(false),
+          child: const Text('Наличные', style: TextStyle(color: Colors.white)),
+        )
+      ];
+    }
+
     return [
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Theme.of(context).colorScheme.primary
-        ),
-        onPressed: vm.tryCancelArrive,
-        child: const Text('Отменить приезд', style: TextStyle(color: Colors.white)),
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          backgroundColor: Theme.of(context).colorScheme.primary
-        ),
-        onPressed: vm.tryDepart,
-        child: const Text('Уехал из точки', style: TextStyle(color: Colors.white)),
-      ),
       ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
@@ -204,9 +209,9 @@ class _BuyerViewState extends State<_BuyerView> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              InfoRow(title: const Text('Наименование'), trailing: Text(state.buyer.name), trailingFlex: 2),
-              InfoRow(title: const Text('Адрес'), trailing: ExpandingText(state.buyer.address), trailingFlex: 2),
-              InfoRow(title: const Text('Инкассация'), trailing: Text(state.buyer.needInc ? 'Да' : 'Нет')),
+              InfoRow(title: const Text('Наименование'), trailing: Text(state.buyer.buyer.name), trailingFlex: 2),
+              InfoRow(title: const Text('Адрес'), trailing: ExpandingText(state.buyer.buyer.address), trailingFlex: 2),
+              InfoRow(title: const Text('Инкассация'), trailing: Text(state.buyer.buyer.needInc ? 'Да' : 'Нет')),
               InfoRow(title: const Text('Долг'), trailing: Text(Format.numberStr(state.debtsSum))),
               InfoRow(title: const Text('Чек'), trailing: Text(Format.numberStr(state.kkmSum))),
               InfoRow(title: const Text('Наличными'), trailing: Text(Format.numberStr(state.cashPaymentsSum))),
@@ -271,7 +276,7 @@ class _BuyerViewState extends State<_BuyerView> {
           ]
         )
       ),
-      onTap: !vm.state.buyer.inProgress ? null : () {
+      onTap: !vm.state.buyer.visited ? null : () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -302,7 +307,7 @@ class _BuyerViewState extends State<_BuyerView> {
       trailing: SizedBox(
         width: 124,
         height: 48,
-        child: !vm.state.buyer.inProgress ? null : NumTextField(
+        child: !vm.state.buyer.visited ? null : NumTextField(
           textAlign: TextAlign.end,
           controller: controller,
           enabled: debtIsEditable,
@@ -349,7 +354,7 @@ class _BuyerViewState extends State<_BuyerView> {
           ]
         )
       ),
-      onTap: !vm.state.buyer.inProgress ? null : () async {
+      onTap: !vm.state.buyer.visited ? null : () async {
         await Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) => DebtPage(debt: debt))
