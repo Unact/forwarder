@@ -46,6 +46,25 @@ class _PersonViewState extends State<_PersonView> {
     super.dispose();
   }
 
+  Future<void> showConfirmationDialog(String message) async {
+    PersonViewModel vm = context.read<PersonViewModel>();
+
+    bool result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Подтверждение'),
+        content: SingleChildScrollView(child: ListBody(children: <Widget>[Text(message)])),
+        actions: <Widget>[
+          TextButton(child: const Text(Strings.cancel), onPressed: () => Navigator.of(context).pop(false)),
+          TextButton(child: const Text('Подтверждаю'), onPressed: () => Navigator.of(context).pop(true))
+        ],
+      )
+    ) ?? false;
+
+    vm.state.confirmationCallback(result);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<PersonViewModel, PersonState>(
@@ -62,8 +81,17 @@ class _PersonViewState extends State<_PersonView> {
           case PersonStateStatus.inProgress:
             await _progressDialog.open();
             break;
+          case PersonStateStatus.needUserConfirmation:
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              await showConfirmationDialog(state.message);
+            });
+            break;
           case PersonStateStatus.failure:
+            _progressDialog.close();
             Misc.showMessage(context, state.message);
+            break;
+          case PersonStateStatus.success:
+            _progressDialog.close();
             break;
           case PersonStateStatus.loggedOut:
             _progressDialog.close();
@@ -88,10 +116,17 @@ class _PersonViewState extends State<_PersonView> {
         InfoRow(title: const Text('Экспедитор'), trailing: Text(state.salesmanName)),
         InfoRow(
           title: const Text('Данные загружены'),
-          trailing: Text(
-            state.appInfo?.lastLoadTime != null ?
-              Format.dateTimeStr(state.appInfo?.lastLoadTime!) :
-              'Загрузка не проводилась',
+          trailing: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Flexible(child:Text(
+                state.appInfo?.lastLoadTime != null ?
+                  Format.dateTimeStr(state.appInfo?.lastLoadTime!) :
+                  'Загрузка не проводилась',
+              )),
+              IconButton(onPressed: vm.tryGetData, icon: Icon(Icons.refresh), tooltip: 'Обновить данные'),
+            ]
           )
         ),
         InfoRow(

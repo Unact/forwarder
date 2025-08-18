@@ -34,12 +34,26 @@ class Buyers extends Table {
   TextColumn get address => text()();
   IntColumn get ord => integer()();
   BoolColumn get needInc => boolean()();
-  DateTimeColumn get missedTs => dateTime().nullable()();
-  DateTimeColumn get arrivalTs => dateTime().nullable()();
-  DateTimeColumn get departureTs => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {buyerId, deliveryId};
+}
+
+class BuyerDeliveryMarks extends Table {
+  IntColumn get id => integer().nullable()();
+  IntColumn get buyerId => integer()();
+  IntColumn get deliveryId => integer()();
+  TextColumn get type => textEnum<BuyerDeliveryMarkType>()();
+  RealColumn get latitude => real()();
+  RealColumn get longitude => real()();
+  RealColumn get accuracy => real()();
+  RealColumn get altitude => real()();
+  RealColumn get heading => real()();
+  RealColumn get speed => real()();
+  DateTimeColumn get pointTs => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {buyerId, deliveryId, type};
 }
 
 class CardPayments extends Table {
@@ -111,6 +125,7 @@ class OrderLines extends Table {
 }
 
 class OrderLineCodes extends Table {
+  IntColumn get id => integer().nullable()();
   IntColumn get orderId => integer()();
   IntColumn get subid => integer()();
   TextColumn get code => text()();

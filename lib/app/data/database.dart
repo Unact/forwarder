@@ -31,6 +31,7 @@ part 'users_dao.dart';
     OrderLines,
     OrderLineCodes,
     OrderLineStorageCodes,
+    BuyerDeliveryMarks,
     Prefs
   ],
   daos: [
@@ -43,6 +44,8 @@ part 'users_dao.dart';
       SELECT
         prefs.*,
         (SELECT COUNT(*) FROM orders) orders_total,
+        EXISTS(SELECT 1 FROM buyer_delivery_marks WHERE id IS NULL) OR
+          EXISTS(SELECT 1 FROM order_line_codes WHERE id IS NULL) has_unsaved,
         (SELECT COUNT(*) FROM orders WHERE is_inc = 1) +
           (
             SELECT COUNT(*)
@@ -105,7 +108,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 19;
+  int get schemaVersion => 20;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,10 +133,6 @@ LazyDatabase _openConnection(bool logStatements) {
   });
 }
 
-extension BuyerX on Buyer {
-  bool get inProgress => arrivalTs != null && departureTs == null;
-}
-
 extension DebtX on Debt {
   String get orderName => '$orderNdoc от ${Format.dateStr(orderDdate)}';
   String get fullname => '$ndoc от ${Format.dateStr(ddate)} ($orderNdoc)';
@@ -151,6 +150,12 @@ extension UserX on User {
 
     return Version.parse(version) > Version.parse(currentVersion);
   }
+}
+
+enum BuyerDeliveryMarkType {
+  missed,
+  arrival,
+  departure
 }
 
 class OrderLineBarcode {

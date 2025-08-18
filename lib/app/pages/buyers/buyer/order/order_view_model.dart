@@ -111,6 +111,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
 
       final location = await Geolocator.getCurrentPosition();
 
+      await appRepository.syncData();
       await ordersRepository.deliveryOrder(
         state.order,
         state.delivered,
@@ -152,7 +153,6 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   void tryCancelOrderDelivery() {
     emit(state.copyWith(
       status: OrderStateStatus.needUserConfirmation,
-
       message: 'Вы уверены, что хотите отменить доставку заказа?',
       confirmationCallback: cancelOrderDelivery
     ));

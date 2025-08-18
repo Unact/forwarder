@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:u_app_utils/u_app_utils.dart';
@@ -12,7 +11,6 @@ import '/app/pages/home/home_page.dart';
 import '/app/pages/person/person_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
-import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/repositories/users_repository.dart';
 
@@ -29,7 +27,6 @@ class InfoPage extends StatelessWidget {
     return BlocProvider<InfoViewModel>(
       create: (context) => InfoViewModel(
         RepositoryProvider.of<AppRepository>(context),
-        RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
         RepositoryProvider.of<UsersRepository>(context),
       ),
@@ -44,8 +41,6 @@ class _InfoView extends StatefulWidget {
 }
 
 class _InfoViewState extends State<_InfoView> {
-  final ScrollController scrollController = ScrollController();
-  final EasyRefreshController refreshController = EasyRefreshController();
   late final ProgressDialog _progressDialog = ProgressDialog(context: context);
 
   @override
@@ -64,11 +59,6 @@ class _InfoViewState extends State<_InfoView> {
   Widget build(BuildContext context) {
     return BlocConsumer<InfoViewModel, InfoState>(
       builder: (context, state) {
-        InfoViewModel vm = context.read<InfoViewModel>();
-        final lastLoadTime = state.appInfo?.lastLoadTime != null ?
-          Format.dateTimeStr(state.appInfo?.lastLoadTime) :
-          'Загрузка не проводилась';
-
         return Scaffold(
           appBar: AppBar(
             title: const Text(Strings.ruAppName),
@@ -89,34 +79,20 @@ class _InfoViewState extends State<_InfoView> {
               )
             ]
           ),
-          body: Refreshable(
-            scrollController: scrollController,
-            refreshController: refreshController,
-            confirmRefresh: false,
-            messageText: 'Последнее обновление: $lastLoadTime',
-            onRefresh: vm.getData,
-            onError: (error, stackTrace) {
-              if (error is! AppError) Misc.reportError(error, stackTrace);
-            },
-            childBuilder: (context, physics) => ListView(
-              physics: physics,
-              padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
-              children: <Widget>[
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _buildInfoCards(context)
-                )
-              ],
-            )
+          body: ListView(
+            padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
+            children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildInfoCards(context)
+              )
+            ],
           )
         );
       },
       listener: (context, state) {
         switch (state.status) {
-          case InfoStateStatus.startLoad:
-            refreshController.callRefresh(scrollController: scrollController);
-            break;
           case InfoStateStatus.reverseInProgress:
             _progressDialog.open();
             break;

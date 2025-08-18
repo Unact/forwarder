@@ -5,7 +5,9 @@ enum PersonStateStatus {
   dataLoaded,
   inProgress,
   loggedOut,
-  failure
+  failure,
+  success,
+  needUserConfirmation
 }
 
 class PersonState {
@@ -13,11 +15,13 @@ class PersonState {
     this.status = PersonStateStatus.initial,
     this.user,
     this.appInfo,
+    required this.confirmationCallback,
     this.message = '',
   });
 
   final String message;
   final User? user;
+  final Function confirmationCallback;
   final AppInfoResult? appInfo;
   final PersonStateStatus status;
 
@@ -28,13 +32,15 @@ class PersonState {
     PersonStateStatus? status,
     User? user,
     AppInfoResult? appInfo,
-    String? message
+    String? message,
+    Function? confirmationCallback
   }) {
     return PersonState(
       status: status ?? this.status,
       user: user ?? this.user,
       appInfo: appInfo ?? this.appInfo,
       message: message ?? this.message,
+      confirmationCallback: confirmationCallback ?? this.confirmationCallback
     );
   }
 }

@@ -5,7 +5,7 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
-  StreamSubscription<List<Buyer>>? buyersSubscription;
+  StreamSubscription<List<BuyerEx>>? buyersSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
   StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
 
@@ -53,6 +53,6 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
     return ordCompare == 0 ? cardPayment1.summ.compareTo(cardPayment2.summ) : ordCompare;
   });
 
-  Buyer buyerForCardPayment(CardPayment cp) => state.buyers.firstWhere((e) => e.buyerId == cp.buyerId);
-  Buyer buyerForCashPayment(CashPayment cp) => state.buyers.firstWhere((e) => e.buyerId == cp.buyerId);
+  Buyer buyerForCardPayment(CardPayment cp) => state.buyers.firstWhere((e) => e.buyer.buyerId == cp.buyerId).buyer;
+  Buyer buyerForCashPayment(CashPayment cp) => state.buyers.firstWhere((e) => e.buyer.buyerId == cp.buyerId).buyer;
 }

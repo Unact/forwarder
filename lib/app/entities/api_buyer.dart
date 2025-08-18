@@ -8,9 +8,6 @@ class ApiBuyer extends Equatable {
   final String address;
   final int ord;
   final bool needInc;
-  final DateTime? missedTs;
-  final DateTime? arrivalTs;
-  final DateTime? departureTs;
 
   const ApiBuyer({
     required this.buyerId,
@@ -19,10 +16,7 @@ class ApiBuyer extends Equatable {
     required this.name,
     required this.address,
     required this.ord,
-    required this.needInc,
-    this.missedTs,
-    this.arrivalTs,
-    this.departureTs
+    required this.needInc
   });
 
   factory ApiBuyer.fromJson(dynamic json) {
@@ -33,10 +27,7 @@ class ApiBuyer extends Equatable {
       name: json['name'],
       address: json['address'],
       ord: json['ord'],
-      needInc: json['need_inc'],
-      missedTs: Parsing.parseDate(json['missed_ts']),
-      arrivalTs: Parsing.parseDate(json['arrival_ts']),
-      departureTs: Parsing.parseDate(json['departure_ts'])
+      needInc: json['need_inc']
     );
   }
 
@@ -48,10 +39,7 @@ class ApiBuyer extends Equatable {
       name: name,
       address: address,
       ord: ord,
-      needInc: needInc,
-      missedTs: missedTs,
-      arrivalTs: arrivalTs,
-      departureTs: departureTs
+      needInc: needInc
     );
   }
 
@@ -63,9 +51,6 @@ class ApiBuyer extends Equatable {
     name,
     address,
     ord,
-    needInc,
-    missedTs,
-    arrivalTs,
-    departureTs,
+    needInc
   ];
 }

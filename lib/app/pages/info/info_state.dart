@@ -2,7 +2,6 @@ part of 'info_page.dart';
 
 enum InfoStateStatus {
   initial,
-  startLoad,
   dataLoaded,
   reverseInProgress,
   reverseSuccess,

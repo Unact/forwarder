@@ -5,7 +5,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
-  StreamSubscription<Buyer>? buyerSubscription;
+  StreamSubscription<BuyerEx>? buyerSubscription;
   StreamSubscription<List<Order>>? orderSubscription;
   StreamSubscription<List<Debt>>? debtsSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
@@ -16,7 +16,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     this.ordersRepository,
     this.paymentsRepository,
     {
-      required Buyer buyer
+      required BuyerEx buyer
     }
   ) :
     super(BuyerState(buyer: buyer, confirmationCallback: () {}));
@@ -28,22 +28,25 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> initViewModel() async {
     await super.initViewModel();
 
-    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.buyerId, state.buyer.deliveryId).listen((event) {
-      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, buyer: event));
-    });
-    orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.buyerId, state.buyer.deliveryId)
+    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.buyer.buyerId, state.buyer.buyer.deliveryId)
+      .listen((event) {
+        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, buyer: event));
+      });
+    orderSubscription = ordersRepository.watchOrdersByBuyerId(state.buyer.buyer.buyerId, state.buyer.buyer.deliveryId)
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, orders: event));
       });
-    debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.buyerId).listen((event) {
+    debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.buyer.buyerId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event.where((e) => !e.physical).toList()));
     });
-    cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.buyerId).listen((event) {
-      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
-    });
-    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.buyerId).listen((event) {
-      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cardPayments: event));
-    });
+    cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.buyer.buyerId)
+      .listen((event) {
+        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
+      });
+    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.buyer.buyerId)
+      .listen((event) {
+        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cardPayments: event));
+      });
   }
 
   @override
@@ -103,14 +106,6 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     ));
   }
 
-  void tryCancelArrive() {
-    emit(state.copyWith(
-      status: BuyerStateStatus.needUserConfirmation,
-      confirmationCallback: cancelArrive,
-      message: 'Вы уверены, что хотите отменить посещение в точке?'
-    ));
-  }
-
   void tryMissed() {
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
@@ -122,7 +117,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> missed(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.missed(state.buyer, location),
+      (location) => ordersRepository.missed(state.buyer.buyer, location),
       'Отмечен недоезд до точки'
     );
   }
@@ -130,23 +125,15 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> arrive(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.arrive(state.buyer, location),
+      (location) => ordersRepository.arrive(state.buyer.buyer, location),
       'Отмечен приезд в точку'
-    );
-  }
-
-  Future<void> cancelArrive(bool confirmed) async {
-    await _markPoint(
-      confirmed,
-      (location) => ordersRepository.cancelArrive(state.buyer, location),
-      'Отменен приезд в точку'
     );
   }
 
   Future<void> depart(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.depart(state.buyer, location),
+      (location) => ordersRepository.depart(state.buyer.buyer, location),
       'Отмечен отъезд из точки'
     );
   }

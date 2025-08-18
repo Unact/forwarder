@@ -21,13 +21,13 @@ class PaymentsState {
 
   final List<CashPayment> cashPayments;
   final List<CardPayment> cardPayments;
-  final List<Buyer> buyers;
+  final List<BuyerEx> buyers;
 
   PaymentsState copyWith({
     PaymentsStateStatus? status,
     List<CashPayment>? cashPayments,
     List<CardPayment>? cardPayments,
-    List<Buyer>? buyers,
+    List<BuyerEx>? buyers,
     String? message
   }) {
     return PaymentsState(
