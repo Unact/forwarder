@@ -1,6 +1,7 @@
 part of 'entities.dart';
 
 class ApiOrderLineCode extends Equatable {
+  final int id;
   final int orderId;
   final int subid;
   final String code;
@@ -10,6 +11,7 @@ class ApiOrderLineCode extends Equatable {
   final DateTime localTs;
 
   const ApiOrderLineCode({
+    required this.id,
     required this.orderId,
     required this.subid,
     required this.code,
@@ -21,6 +23,7 @@ class ApiOrderLineCode extends Equatable {
 
   factory ApiOrderLineCode.fromJson(dynamic json) {
     return ApiOrderLineCode(
+      id: json['id'],
       orderId: json['order_id'],
       subid: json['subid'],
       code: json['code'],
@@ -33,6 +36,7 @@ class ApiOrderLineCode extends Equatable {
 
   OrderLineCode toDatabaseEnt() {
     return OrderLineCode(
+      id: id,
       orderId: orderId,
       subid: subid,
       code: code,
@@ -45,6 +49,7 @@ class ApiOrderLineCode extends Equatable {
 
   @override
   List<Object?> get props => [
+    id,
     orderId,
     subid,
     code,

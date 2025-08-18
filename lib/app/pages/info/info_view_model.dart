@@ -2,7 +2,6 @@ part of 'info_page.dart';
 
 class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   final AppRepository appRepository;
-  final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
   final UsersRepository usersRepository;
 
@@ -13,7 +12,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
 
   InfoViewModel(
     this.appRepository,
-    this.ordersRepository,
     this.paymentsRepository,
     this.usersRepository
   ) : super(InfoState());
@@ -37,8 +35,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
     cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {
       emit(state.copyWith(status: InfoStateStatus.dataLoaded, cashPayments: event));
     });
-
-    await _checkNeedRefresh();
   }
 
   @override
@@ -51,15 +47,11 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
     await cashPaymentsSubscription?.cancel();
   }
 
-  Future<void> getData() async {
-    await usersRepository.loadUserData();
-    await appRepository.loadData();
-  }
-
   Future<void> reverseDay() async {
     emit(state.copyWith(status: InfoStateStatus.reverseInProgress));
 
     try {
+      await appRepository.syncData();
       await usersRepository.reverseDay();
       emit(state.copyWith(
         status: InfoStateStatus.reverseSuccess,
@@ -67,22 +59,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
       ));
     } on AppError catch(e) {
       emit(state.copyWith(status: InfoStateStatus.reverseFailure, message: e.message));
-    }
-  }
-
-  Future<void> _checkNeedRefresh() async {
-    final pref = await appRepository.watchAppInfo().first;
-
-    if (pref.lastLoadTime == null) {
-      emit(state.copyWith(status: InfoStateStatus.startLoad));
-      return;
-    }
-
-    DateTime lastAttempt = pref.lastLoadTime!;
-    DateTime time = DateTime.now();
-
-    if (lastAttempt.year != time.year || lastAttempt.month != time.month || lastAttempt.day != time.day) {
-      emit(state.copyWith(status: InfoStateStatus.startLoad));
     }
   }
 }

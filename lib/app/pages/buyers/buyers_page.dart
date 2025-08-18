@@ -47,13 +47,14 @@ class _BuyersViewState extends State<_BuyersView> {
       body: BlocBuilder<BuyersViewModel, BuyersState>(
         builder: (context, state) {
           BuyersViewModel vm = context.read<BuyersViewModel>();
-          Set<int> deliveryIds = vm.state.buyers.map((e) => e.deliveryId).toSet();
+          Set<int> deliveryIds = vm.state.buyers.map((e) => e.buyer.deliveryId).toSet();
 
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
             children: deliveryIds.fold([], (children, deliveryId) {
-              String deliveryNdoc = vm.state.buyers.firstWhere((buyer) => buyer.deliveryId == deliveryId).deliveryNdoc;
+              String deliveryNdoc = vm.state.buyers
+                .firstWhere((buyer) => buyer.buyer.deliveryId == deliveryId).buyer.deliveryNdoc;
 
               children.add(
                 ListTile(
@@ -92,15 +93,15 @@ class _BuyersViewState extends State<_BuyersView> {
     );
   }
 
-  Widget buildTileLeading(BuildContext context, Buyer buyer) {
-    if (buyer.missedTs != null) return Icon(Icons.clear, color: Colors.red);
-    if (buyer.arrivalTs == null) return Icon(Icons.hourglass_empty, color: Colors.blue);
+  Widget buildTileLeading(BuildContext context, BuyerEx buyer) {
+    if (buyer.missed) return Icon(Icons.clear, color: Colors.red);
+    if (!buyer.arrived) return Icon(Icons.hourglass_empty, color: Colors.blue);
     if (buyer.inProgress) return Icon(Icons.hourglass_empty, color: Colors.yellow);
 
     return const Icon(Icons.check, color: Colors.green);
   }
 
-  Widget _buyerTile(BuildContext context, Buyer buyer) {
+  Widget _buyerTile(BuildContext context, BuyerEx buyer) {
     BuyersViewModel vm = context.read<BuyersViewModel>();
 
     return ListTile(
@@ -111,7 +112,7 @@ class _BuyersViewState extends State<_BuyersView> {
       ),
       dense: true,
       contentPadding: const EdgeInsets.all(0),
-      title: Text(buyer.name, style: const TextStyle(fontSize: 14.0)),
+      title: Text(buyer.buyer.name, style: const TextStyle(fontSize: 14.0)),
       onTap: () async {
         if (vm.state.buyers.any((e) => e.inProgress && e != buyer)) {
           context.read<GlobalKey<ScaffoldMessengerState>>().currentState!.showSnackBar(SnackBar(
@@ -129,7 +130,7 @@ class _BuyersViewState extends State<_BuyersView> {
         text: TextSpan(
           children: <TextSpan>[
             TextSpan(
-              text: '${buyer.address}\n',
+              text: '${buyer.buyer.address}\n',
               style: const TextStyle(color: Colors.grey, fontSize: 12.0)
             ),
             TextSpan(
@@ -137,7 +138,7 @@ class _BuyersViewState extends State<_BuyersView> {
               style: const TextStyle(color: Colors.blue, fontSize: 12.0)
               ),
             TextSpan(
-              text: buyer.needInc ? 'Требуется инкассация' : '',
+              text: buyer.buyer.needInc ? 'Требуется инкассация' : '',
               style: const TextStyle(color: Colors.blue, fontSize: 12.0)
             )
           ]

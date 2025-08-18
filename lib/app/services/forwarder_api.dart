@@ -68,20 +68,6 @@ extension ForwarderApi on RenewApi {
     return ApiBuyerData.fromJson(result);
   }
 
-  Future<ApiBuyerData> cancelArrive(int buyerId, int deliveryId, Map<String, dynamic> location) async {
-    final result = await post(
-      'v1/forwarder/cancel_arrive',
-      dataGenerator: () => {
-        'buyer_id': buyerId,
-        'delivery_id': deliveryId,
-        'location': location,
-        'local_ts': DateTime.now().toIso8601String()
-      }
-    );
-
-    return ApiBuyerData.fromJson(result);
-  }
-
   Future<ApiDeliveryData> deliverOrder(
     int orderId,
     List<Map<String, dynamic>> codes,
