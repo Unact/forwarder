@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gs1_barcode_parser/gs1_barcode_parser.dart';
 import 'package:u_app_utils/u_app_utils.dart';
 
+import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
@@ -98,7 +99,9 @@ class _CodeScanViewState extends State<_CodeScanView> {
             setState(() => scanPaused = true);
             vm.readCode(barcode);
           },
-          barcodeMode: true,
+          onError: (errorMessage) {
+            showInfoDialog(context, 'Ошибка', errorMessage ?? Strings.genericErrorMsg);
+          },
           paused: scanPaused,
           actions: [
             IconButton(

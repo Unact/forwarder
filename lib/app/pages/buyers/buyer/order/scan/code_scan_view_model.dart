@@ -40,9 +40,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await ordersSubscription?.cancel();
   }
 
-  Future<void> readCode(String rawCode) async {
-    String code = _clearCode(rawCode);
-
+  Future<void> readCode(String code) async {
     if (state.codeLines.any((e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(code))) {
       await _processBarcode(code);
       return;
@@ -180,6 +178,18 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   }
 
   Future<void> _processStorageCode(String code) async {
+    OrderLineCode? scannedLine = state.allCodeLines.firstWhereOrNull((e) => e.code == code);
+
+    if (scannedLine != null) {
+      Order order = state.allOrders.firstWhere((e) => e.id == scannedLine.orderId);
+
+      emit(state.copyWith(
+        status: CodeScanStateStatus.failure,
+        message: 'Код уже отсканирован в заказе ${order.ndoc}. $code'
+      ));
+      return;
+    }
+
     if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
       if (state.codeLines.any((e) => e.orderLineCodes.any((ei) => ei.groupCode == code))) {
         emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код агрегации уже отсканирован. $code'));
@@ -248,10 +258,6 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     }
 
     await ordersRepository.updateOrderLineCode(orderLineCode: codeLine.orderLineCodes.first, amount: newAmount);
-  }
-
-  String _clearCode(String code) {
-    return code.replaceFirst(kCryptoSeparator, '');
   }
 
   GS1Barcode? _parseDataMatrix(String code) {

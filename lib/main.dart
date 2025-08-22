@@ -41,6 +41,7 @@ void main() async {
     return true;
   };
 
+  await Initialization.initializeDataWedge(appName: Strings.appName);
   await Initialization.initializeSentry(
     dsn: const String.fromEnvironment('FORWARDER_SENTRY_DSN'),
     isDebug: false,
