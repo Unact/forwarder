@@ -40,9 +40,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await ordersSubscription?.cancel();
   }
 
-  Future<void> readCode(String rawCode) async {
-    String code = _clearCode(rawCode);
-
+  Future<void> readCode(String code) async {
     if (state.codeLines.any((e) => e.orderLine.barcodeRels.map((e) => e.barcode).contains(code))) {
       await _processBarcode(code);
       return;
@@ -248,10 +246,6 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     }
 
     await ordersRepository.updateOrderLineCode(orderLineCode: codeLine.orderLineCodes.first, amount: newAmount);
-  }
-
-  String _clearCode(String code) {
-    return code.replaceFirst(kCryptoSeparator, '');
   }
 
   GS1Barcode? _parseDataMatrix(String code) {

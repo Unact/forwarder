@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.0.0"
+  bluez:
+    dependency: transitive
+    description:
+      name: bluez
+      sha256: "61a7204381925896a374301498f2f5399e59827c6498ae1e924aaa598751b545"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -289,6 +297,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  dbus:
+    dependency: transitive
+    description:
+      name: dbus
+      sha256: "79e0c23480ff85dc68de79e2cd6334add97e48f7f4865d17686dd6ea81a47e8c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.11"
   device_info_plus:
     dependency: transitive
     description:
@@ -423,6 +439,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.1"
+  flutter_blue_plus:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus
+      sha256: bfae0d24619940516261045d8b3c74b4c80ca82222426e05ffbf7f3ea9dbfb1a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.35.5"
+  flutter_blue_plus_android:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus_android
+      sha256: "9723dd4ba7dcc3f27f8202e1159a302eb4cdb88ae482bb8e0dd733b82230a258"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.5"
+  flutter_blue_plus_darwin:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus_darwin
+      sha256: f34123795352a9761e321589aa06356d3b53f007f13f7e23e3c940e733259b2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  flutter_blue_plus_linux:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus_linux
+      sha256: "635443d1d333e3695733fd70e81ee0d87fa41e78aa81844103d2a8a854b0d593"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
+  flutter_blue_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus_platform_interface
+      sha256: a4bb70fa6fd09e0be163b004d773bf19e31104e257a4eb846b67f884ddd87de2
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
+  flutter_blue_plus_web:
+    dependency: transitive
+    description:
+      name: flutter_blue_plus_web
+      sha256: "03023c259dbbba1bc5ce0fcd4e88b364f43eec01d45425f393023b9b2722cf4d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -431,6 +495,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_datawedge:
+    dependency: transitive
+    description:
+      name: flutter_datawedge
+      sha256: "3b4da0a84ef0c189052d6c3219539a2e0be6a8919bf96080a31838cc95d3ee69"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
   flutter_image_compress:
     dependency: transitive
     description:
@@ -566,6 +638,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  freezed_result:
+    dependency: transitive
+    description:
+      name: freezed_result
+      sha256: "09da2a99c309deead2b7370a4b5a27572d414b17380ef30f58e033a2d1f0e9b1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3+1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1308,6 +1396,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  strict_json:
+    dependency: transitive
+    description:
+      name: strict_json
+      sha256: "92ef28fedfa1d3c70bdf4246600e50952121536cf1f5210955024543a4b18598"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   string_scanner:
     dependency: transitive
     description:
@@ -1360,8 +1456,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: d13e277
-      resolved-ref: d13e27756915706fad26daf65867ee03004277bd
+      ref: "47ce089"
+      resolved-ref: "47ce089a90336a4f411dcad7febdab15f6a5e5b9"
       url: "git@github.com:Unact/u_app_utils.git"
     source: git
     version: "0.0.1"

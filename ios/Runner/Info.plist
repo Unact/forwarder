@@ -60,5 +60,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Для сканирования кодов маркировки</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Для подключения сканера</string>
 </dict>
 </plist>
