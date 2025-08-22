@@ -178,18 +178,6 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   }
 
   Future<void> _processStorageCode(String code) async {
-    OrderLineCode? scannedLine = state.allCodeLines.firstWhereOrNull((e) => e.code == code);
-
-    if (scannedLine != null) {
-      Order order = state.allOrders.firstWhere((e) => e.id == scannedLine.orderId);
-
-      emit(state.copyWith(
-        status: CodeScanStateStatus.failure,
-        message: 'Код уже отсканирован в заказе ${order.ndoc}. $code'
-      ));
-      return;
-    }
-
     if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
       if (state.codeLines.any((e) => e.orderLineCodes.any((ei) => ei.groupCode == code))) {
         emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код агрегации уже отсканирован. $code'));
