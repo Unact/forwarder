@@ -61,6 +61,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Для подключения сканера</string>
+	<string>Для подключения сканера кодов маркировки</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Для подключения сканера кодов маркировки</string>
 </dict>
 </plist>
