@@ -1,13 +1,13 @@
 part of 'code_scan_page.dart';
 
 class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus> {
-  static final String kCryptoSeparator = '\u001D';
   final AppRepository appRepository;
   final OrdersRepository ordersRepository;
   final GS1BarcodeParser parser = GS1BarcodeParser.defaultParser();
 
   StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
   StreamSubscription<List<OrderLineCode>>? orderLineCodesSubscription;
+  StreamSubscription<List<OrderLineStorageCode>>? orderLineStorageCodesSubscription;
   StreamSubscription<List<Order>>? ordersSubscription;
 
   CodeScanViewModel(this.appRepository, this.ordersRepository, {required Order order}) :
@@ -23,6 +23,9 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     orderLineWithCodeListSubscription = ordersRepository.watchOrderLinesByOrderId(state.order.id).listen((event) {
       emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, codeLines: event));
     });
+    orderLineStorageCodesSubscription = ordersRepository.watchOrderLineStorageCodes().listen((event) {
+      emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, allStorageCodeLines: event));
+    });
     orderLineCodesSubscription = ordersRepository.watchOrderLineCodes().listen((event) {
       emit(state.copyWith(status: CodeScanStateStatus.dataLoaded, allCodeLines: event));
     });
@@ -36,6 +39,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
     await super.close();
 
     await orderLineWithCodeListSubscription?.cancel();
+    await orderLineStorageCodesSubscription?.cancel();
     await orderLineCodesSubscription?.cancel();
     await ordersSubscription?.cancel();
   }
@@ -46,7 +50,7 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       return;
     }
 
-    if (state.allStorageCodeLines.isNotEmpty) {
+    if (state.storageCodeLines.isNotEmpty) {
       await _processStorageCode(code);
       return;
     }
@@ -178,13 +182,13 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
   }
 
   Future<void> _processStorageCode(String code) async {
-    if (state.allStorageCodeLines.any((e) => e.groupCode == code)) {
+    if (state.storageCodeLines.any((e) => e.groupCode == code)) {
       if (state.codeLines.any((e) => e.orderLineCodes.any((ei) => ei.groupCode == code))) {
         emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код агрегации уже отсканирован. $code'));
         return;
       }
 
-      await Future.wait(state.allStorageCodeLines.where((e) => e.groupCode == code).map((e) async {
+      await Future.wait(state.storageCodeLines.where((e) => e.groupCode == code).map((e) async {
         if (state.allCodeLines.any((cl) => cl.code == e.code)) return;
 
         final orderLine = state.codeLines.firstWhere((cl) => cl.orderLineStorageCodes.contains(e)).orderLine;
@@ -201,15 +205,20 @@ class CodeScanViewModel extends PageViewModel<CodeScanState, CodeScanStateStatus
       emit(state.copyWith(
         status: CodeScanStateStatus.success,
         lastScannedOrderLine: (value: null),
-        message: 'Успешно отсканировано кодов: ${state.allStorageCodeLines.where((e) => e.groupCode == code).length}'
+        message: 'Успешно отсканировано кодов: ${state.storageCodeLines.where((e) => e.groupCode == code).length}'
       ));
     } else {
-      final storageCode = state.allStorageCodeLines.firstWhereOrNull(
-        (e) => e.code.split(kCryptoSeparator)[0] == code.split(kCryptoSeparator)[0]
-      );
+      OrderLineStorageCode? storageCode = state.allStorageCodeLines.firstWhereOrNull((e) => e.code == code);
 
       if (storageCode == null) {
         emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код не в заказе. $code'));
+        return;
+      }
+
+      if (state.codeLines.none((cl) => cl.orderLineStorageCodes.contains(storageCode))) {
+        Order order = state.allOrders.firstWhere((e) => e.id == storageCode.orderId);
+
+        emit(state.copyWith(status: CodeScanStateStatus.failure, message: 'Код в заказе ${order.ndoc}. $code'));
         return;
       }
 

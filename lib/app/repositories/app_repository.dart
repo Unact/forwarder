@@ -22,7 +22,6 @@ class AppRepository extends BaseRepository {
         List<Recept> recepts = data.recepts.map((e) => e.toDatabaseEnt()).toList();
         List<Income> incomes = data.incomes.map((e) => e.toDatabaseEnt()).toList();
         List<CashPayment> cashPayments = data.cashPayments.map((e) => e.toDatabaseEnt()).toList();
-        List<CardPayment> cardPayments = data.cardPayments.map((e) => e.toDatabaseEnt()).toList();
         List<Buyer> buyers = data.buyers.map((e) => e.toDatabaseEnt()).toList();
         List<BuyerDeliveryMark> buyerDeliveryMarks = data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
         List<Order> orders = data.orders.map((e) => e.toDatabaseEnt()).toList();
@@ -42,7 +41,6 @@ class AppRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrderLineStorageCodes(orderLineStorageCodes);
         await dataStore.paymentsDao.loadDebts(debts);
         await dataStore.paymentsDao.loadCashPayments(cashPayments);
-        await dataStore.paymentsDao.loadCardPayments(cardPayments);
         await dataStore.updatePref(PrefsCompanion(lastLoadTime: Value(DateTime.now())));
       });
     } on ApiException catch(e) {

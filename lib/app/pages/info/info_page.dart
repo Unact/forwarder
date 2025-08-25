@@ -197,14 +197,6 @@ class _InfoViewState extends State<_InfoView> {
           TextSpan(
             text: '\nККМ: ${Format.numberStr(vm.state.kkmSum)}',
             style: const TextStyle(fontSize: 12.0)
-          ),
-          TextSpan(
-            text: '\nКартой: ${Format.numberStr(vm.state.cardPaymentsSum)}',
-            style: const TextStyle(fontSize: 12.0)
-          ),
-          TextSpan(
-            text: '\nОтменено: ${Format.numberStr(vm.state.cardPaymentsCancelSum)}',
-            style: const TextStyle(fontSize: 12.0)
           )
         ]
       )

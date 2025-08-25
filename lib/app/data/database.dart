@@ -24,7 +24,6 @@ part 'users_dao.dart';
     Recepts,
     Incomes,
     Buyers,
-    CardPayments,
     CashPayments,
     Debts,
     Orders,
@@ -44,6 +43,7 @@ part 'users_dao.dart';
       SELECT
         prefs.*,
         (SELECT COUNT(*) FROM orders) orders_total,
+        EXISTS(SELECT 1 FROM buyer_delivery_marks WHERE id IS NULL) has_unsynced,
         EXISTS(SELECT 1 FROM buyer_delivery_marks WHERE id IS NULL) OR
           EXISTS(SELECT 1 FROM order_line_codes WHERE id IS NULL) has_unsaved,
         (SELECT COUNT(*) FROM orders WHERE is_inc = 1) +
@@ -108,7 +108,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 21;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

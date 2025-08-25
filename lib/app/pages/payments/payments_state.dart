@@ -11,7 +11,6 @@ class PaymentsState {
   PaymentsState({
     this.status = PaymentsStateStatus.initial,
     this.cashPayments = const [],
-    this.cardPayments = const [],
     this.buyers = const [],
     this.message = ''
   });
@@ -20,13 +19,11 @@ class PaymentsState {
   final String message;
 
   final List<CashPayment> cashPayments;
-  final List<CardPayment> cardPayments;
   final List<BuyerEx> buyers;
 
   PaymentsState copyWith({
     PaymentsStateStatus? status,
     List<CashPayment>? cashPayments,
-    List<CardPayment>? cardPayments,
     List<BuyerEx>? buyers,
     String? message
   }) {
@@ -34,7 +31,6 @@ class PaymentsState {
       status: status ?? this.status,
       message: message ?? this.message,
       cashPayments: cashPayments ?? this.cashPayments,
-      cardPayments: cardPayments ?? this.cardPayments,
       buyers: buyers ?? this.buyers
     );
   }

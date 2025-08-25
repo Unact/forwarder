@@ -8,7 +8,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   StreamSubscription<User>? userSubscription;
   StreamSubscription<AppInfoResult>? appInfoSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
-  StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
 
   InfoViewModel(
     this.appRepository,
@@ -29,9 +28,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
     appInfoSubscription = appRepository.watchAppInfo().listen((event) {
       emit(state.copyWith(status: InfoStateStatus.dataLoaded, appInfo: event));
     });
-    cardPaymentsSubscription = paymentsRepository.watchCardPayments().listen((event) {
-      emit(state.copyWith(status: InfoStateStatus.dataLoaded, cardPayments: event));
-    });
     cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {
       emit(state.copyWith(status: InfoStateStatus.dataLoaded, cashPayments: event));
     });
@@ -43,7 +39,6 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
 
     await userSubscription?.cancel();
     await appInfoSubscription?.cancel();
-    await cardPaymentsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
   }
 

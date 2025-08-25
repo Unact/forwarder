@@ -99,29 +99,19 @@ extension ForwarderApi on RenewApi {
     return ApiDeliveryData.fromJson(result);
   }
 
-  Future<void> acceptPayment(
+  Future<ApiAcceptPaymentData> acceptPayment(
     List<Map<String, dynamic>> payments,
     Map<String, dynamic> location
   ) async {
-    await post(
+    final result = await post(
       'v1/forwarder/save',
       dataGenerator: () => {
         'payments': payments,
-        'payment_transaction': null,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
       }
     );
-  }
 
-  Future<void> cancelCardPayment(int paymentId, Map<String, dynamic> transaction) async {
-    await post(
-      'v1/forwarder/cancel',
-      dataGenerator: () => {
-        'id': paymentId,
-        'payment_transaction': transaction,
-        'local_ts': DateTime.now().toIso8601String()
-      }
-    );
+    return ApiAcceptPaymentData.fromJson(result);
   }
 }
