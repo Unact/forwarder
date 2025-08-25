@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
@@ -110,6 +111,9 @@ class _BuyerViewState extends State<_BuyerView> {
       },
       listener: (context, state) {
         switch (state.status) {
+        case BuyerStateStatus.coordsCopied:
+          Misc.showMessage(context, state.message);
+          break;
         case BuyerStateStatus.inProgress:
           _progressDialog.open();
           break;
@@ -210,12 +214,26 @@ class _BuyerViewState extends State<_BuyerView> {
           child: Column(
             children: [
               InfoRow(title: const Text('Наименование'), trailing: Text(state.buyer.buyer.name), trailingFlex: 2),
-              InfoRow(title: const Text('Адрес'), trailing: ExpandingText(state.buyer.buyer.address), trailingFlex: 2),
+              InfoRow(
+                title: const Text('Адрес'),
+                trailing: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(child: ExpandingText(state.buyer.buyer.address)),
+                    IconButton(
+                      icon: const Icon(Icons.gps_fixed),
+                      onPressed: vm.copyCoords,
+                      tooltip: 'Копировать координаты точки'
+                    )
+                  ]
+                ),
+                trailingFlex: 2
+              ),
               InfoRow(title: const Text('Инкассация'), trailing: Text(state.buyer.buyer.needInc ? 'Да' : 'Нет')),
               InfoRow(title: const Text('Долг'), trailing: Text(Format.numberStr(state.debtsSum))),
               InfoRow(title: const Text('Чек'), trailing: Text(Format.numberStr(state.kkmSum))),
               InfoRow(title: const Text('Наличными'), trailing: Text(Format.numberStr(state.cashPaymentsSum))),
-              InfoRow(title: const Text('Картой'), trailing: Text(Format.numberStr(state.cardPaymentsSum))),
             ],
           )
         )

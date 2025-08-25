@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.7.0 <4.0.0'
 
 dependencies:
+  audioplayers: ^6.5.0
   barcode_widget: ^2.0.4
   collection: ^1.17.1
   drift: ^2.24.0
@@ -33,7 +34,7 @@ dependencies:
   u_app_utils:
     git:
       url: git@github.com:Unact/u_app_utils.git
-      ref: 47ce089
+      ref: 101c05e
 
 dev_dependencies:
   build_runner: ^2.4.14
@@ -50,4 +51,7 @@ flutter_launcher_icons:
   min_sdk_android: 21
 
 flutter:
+  assets:
+    - assets/beep_error.mp3
+    - assets/beep_success.mp3
   uses-material-design: true

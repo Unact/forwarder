@@ -34,6 +34,8 @@ class Buyers extends Table {
   TextColumn get address => text()();
   IntColumn get ord => integer()();
   BoolColumn get needInc => boolean()();
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
 
   @override
   Set<Column> get primaryKey => {buyerId, deliveryId};
@@ -54,17 +56,6 @@ class BuyerDeliveryMarks extends Table {
 
   @override
   Set<Column> get primaryKey => {buyerId, deliveryId, type};
-}
-
-class CardPayments extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get buyerId => integer()();
-  IntColumn get orderId => integer()();
-  RealColumn get summ => real()();
-  DateTimeColumn get ddate => dateTime()();
-  TextColumn get transactionId => text().nullable()();
-  BoolColumn get canceled => boolean()();
-  BoolColumn get isLink => boolean()();
 }
 
 class CashPayments extends Table {

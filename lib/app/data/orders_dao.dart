@@ -78,6 +78,10 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     return select(orderLineCodes).watch();
   }
 
+  Stream<List<OrderLineStorageCode>> watchOrderLineStorageCodes() {
+    return select(orderLineStorageCodes).watch();
+  }
+
   Stream<List<Income>> watchIncomes() {
     return select(incomes).watch();
   }
