@@ -171,4 +171,10 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
       emit(state.copyWith(status: OrderStateStatus.failure, message: e.message));
     }
   }
+
+  Future<void> copyOrderInfo() async {
+    await Clipboard.setData(ClipboardData(text: state.order.info));
+
+    emit(state.copyWith(status: OrderStateStatus.orderDataCopied, message: 'Данные о заказе скопированы'));
+  }
 }

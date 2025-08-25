@@ -10,7 +10,8 @@ enum OrderStateStatus {
   showScan,
   paymentStarted,
   paymentFailure,
-  paymentFinished
+  paymentFinished,
+  orderDataCopied
 }
 
 class OrderState {

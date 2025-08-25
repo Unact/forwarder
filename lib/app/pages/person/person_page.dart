@@ -120,12 +120,16 @@ class _PersonViewState extends State<_PersonView> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Flexible(child:Text(
-                state.appInfo?.lastLoadTime != null ?
-                  Format.dateTimeStr(state.appInfo?.lastLoadTime!) :
-                  'Загрузка не проводилась',
+              Flexible(
+                child: Text(
+                state.appInfo?.lastLoadTime != null ? Format.dateTimeStr(state.appInfo?.lastLoadTime!) : '',
               )),
               IconButton(onPressed: vm.tryGetData, icon: Icon(Icons.refresh), tooltip: 'Обновить данные'),
+              IconButton(
+                onPressed: (state.appInfo?.hasUnsynced ?? false) ? vm.syncData : null,
+                icon: Icon(Icons.save),
+                tooltip: 'Сохранить данные'
+              ),
             ]
           )
         ),

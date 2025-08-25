@@ -9,7 +9,6 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   StreamSubscription<List<Order>>? orderSubscription;
   StreamSubscription<List<Debt>>? debtsSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
-  StreamSubscription<List<CardPayment>>? cardPaymentsSubscription;
 
   BuyerViewModel(
     this.appRepository,
@@ -43,10 +42,6 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
       });
-    cardPaymentsSubscription = paymentsRepository.watchCardPaymentsByBuyerId(state.buyer.buyer.buyerId)
-      .listen((event) {
-        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cardPayments: event));
-      });
   }
 
   @override
@@ -57,7 +52,6 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     await orderSubscription?.cancel();
     await debtsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
-    await cardPaymentsSubscription?.cancel();
   }
 
   Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {
@@ -88,6 +82,12 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       status: BuyerStateStatus.paymentFinished,
       message: result
     ));
+  }
+
+  Future<void> copyCoords() async {
+    await Clipboard.setData(ClipboardData(text: '${state.buyer.buyer.latitude},${state.buyer.buyer.longitude}'));
+
+    emit(state.copyWith(status: BuyerStateStatus.coordsCopied, message: 'Координаты точки скопированы'));
   }
 
   void tryDepart() {

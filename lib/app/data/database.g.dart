@@ -1028,6 +1028,28 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
       'CHECK ("need_inc" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     buyerId,
@@ -1037,6 +1059,8 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     address,
     ord,
     needInc,
+    latitude,
+    longitude,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1109,6 +1133,18 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     } else if (isInserting) {
       context.missing(_needIncMeta);
     }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
     return context;
   }
 
@@ -1153,6 +1189,14 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
             DriftSqlType.bool,
             data['${effectivePrefix}need_inc'],
           )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
     );
   }
 
@@ -1170,6 +1214,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   final String address;
   final int ord;
   final bool needInc;
+  final double? latitude;
+  final double? longitude;
   const Buyer({
     required this.buyerId,
     required this.deliveryId,
@@ -1178,6 +1224,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     required this.address,
     required this.ord,
     required this.needInc,
+    this.latitude,
+    this.longitude,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1189,6 +1237,12 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     map['address'] = Variable<String>(address);
     map['ord'] = Variable<int>(ord);
     map['need_inc'] = Variable<bool>(needInc);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
     return map;
   }
 
@@ -1201,6 +1255,14 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: Value(address),
       ord: Value(ord),
       needInc: Value(needInc),
+      latitude:
+          latitude == null && nullToAbsent
+              ? const Value.absent()
+              : Value(latitude),
+      longitude:
+          longitude == null && nullToAbsent
+              ? const Value.absent()
+              : Value(longitude),
     );
   }
 
@@ -1217,6 +1279,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: serializer.fromJson<String>(json['address']),
       ord: serializer.fromJson<int>(json['ord']),
       needInc: serializer.fromJson<bool>(json['needInc']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
     );
   }
   @override
@@ -1230,6 +1294,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       'address': serializer.toJson<String>(address),
       'ord': serializer.toJson<int>(ord),
       'needInc': serializer.toJson<bool>(needInc),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
     };
   }
 
@@ -1241,6 +1307,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     String? address,
     int? ord,
     bool? needInc,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
   }) => Buyer(
     buyerId: buyerId ?? this.buyerId,
     deliveryId: deliveryId ?? this.deliveryId,
@@ -1249,6 +1317,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     address: address ?? this.address,
     ord: ord ?? this.ord,
     needInc: needInc ?? this.needInc,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
   );
   Buyer copyWithCompanion(BuyersCompanion data) {
     return Buyer(
@@ -1263,6 +1333,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       address: data.address.present ? data.address.value : this.address,
       ord: data.ord.present ? data.ord.value : this.ord,
       needInc: data.needInc.present ? data.needInc.value : this.needInc,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
     );
   }
 
@@ -1275,7 +1347,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           ..write('name: $name, ')
           ..write('address: $address, ')
           ..write('ord: $ord, ')
-          ..write('needInc: $needInc')
+          ..write('needInc: $needInc, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
           ..write(')'))
         .toString();
   }
@@ -1289,6 +1363,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     address,
     ord,
     needInc,
+    latitude,
+    longitude,
   );
   @override
   bool operator ==(Object other) =>
@@ -1300,7 +1376,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           other.name == this.name &&
           other.address == this.address &&
           other.ord == this.ord &&
-          other.needInc == this.needInc);
+          other.needInc == this.needInc &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude);
 }
 
 class BuyersCompanion extends UpdateCompanion<Buyer> {
@@ -1311,6 +1389,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
   final Value<String> address;
   final Value<int> ord;
   final Value<bool> needInc;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
   final Value<int> rowid;
   const BuyersCompanion({
     this.buyerId = const Value.absent(),
@@ -1320,6 +1400,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     this.address = const Value.absent(),
     this.ord = const Value.absent(),
     this.needInc = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BuyersCompanion.insert({
@@ -1330,6 +1412,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     required String address,
     required int ord,
     required bool needInc,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : buyerId = Value(buyerId),
        deliveryId = Value(deliveryId),
@@ -1346,6 +1430,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Expression<String>? address,
     Expression<int>? ord,
     Expression<bool>? needInc,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1356,6 +1442,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       if (address != null) 'address': address,
       if (ord != null) 'ord': ord,
       if (needInc != null) 'need_inc': needInc,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1368,6 +1456,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Value<String>? address,
     Value<int>? ord,
     Value<bool>? needInc,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
     Value<int>? rowid,
   }) {
     return BuyersCompanion(
@@ -1378,6 +1468,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       address: address ?? this.address,
       ord: ord ?? this.ord,
       needInc: needInc ?? this.needInc,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1406,6 +1498,12 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     if (needInc.present) {
       map['need_inc'] = Variable<bool>(needInc.value);
     }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1422,525 +1520,9 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
           ..write('address: $address, ')
           ..write('ord: $ord, ')
           ..write('needInc: $needInc, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
           ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $CardPaymentsTable extends CardPayments
-    with TableInfo<$CardPaymentsTable, CardPayment> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CardPaymentsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _buyerIdMeta = const VerificationMeta(
-    'buyerId',
-  );
-  @override
-  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
-    'buyer_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _orderIdMeta = const VerificationMeta(
-    'orderId',
-  );
-  @override
-  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
-    'order_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _summMeta = const VerificationMeta('summ');
-  @override
-  late final GeneratedColumn<double> summ = GeneratedColumn<double>(
-    'summ',
-    aliasedName,
-    false,
-    type: DriftSqlType.double,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _ddateMeta = const VerificationMeta('ddate');
-  @override
-  late final GeneratedColumn<DateTime> ddate = GeneratedColumn<DateTime>(
-    'ddate',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _transactionIdMeta = const VerificationMeta(
-    'transactionId',
-  );
-  @override
-  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
-    'transaction_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _canceledMeta = const VerificationMeta(
-    'canceled',
-  );
-  @override
-  late final GeneratedColumn<bool> canceled = GeneratedColumn<bool>(
-    'canceled',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("canceled" IN (0, 1))',
-    ),
-  );
-  static const VerificationMeta _isLinkMeta = const VerificationMeta('isLink');
-  @override
-  late final GeneratedColumn<bool> isLink = GeneratedColumn<bool>(
-    'is_link',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_link" IN (0, 1))',
-    ),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    buyerId,
-    orderId,
-    summ,
-    ddate,
-    transactionId,
-    canceled,
-    isLink,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'card_payments';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<CardPayment> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('buyer_id')) {
-      context.handle(
-        _buyerIdMeta,
-        buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_buyerIdMeta);
-    }
-    if (data.containsKey('order_id')) {
-      context.handle(
-        _orderIdMeta,
-        orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_orderIdMeta);
-    }
-    if (data.containsKey('summ')) {
-      context.handle(
-        _summMeta,
-        summ.isAcceptableOrUnknown(data['summ']!, _summMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_summMeta);
-    }
-    if (data.containsKey('ddate')) {
-      context.handle(
-        _ddateMeta,
-        ddate.isAcceptableOrUnknown(data['ddate']!, _ddateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_ddateMeta);
-    }
-    if (data.containsKey('transaction_id')) {
-      context.handle(
-        _transactionIdMeta,
-        transactionId.isAcceptableOrUnknown(
-          data['transaction_id']!,
-          _transactionIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('canceled')) {
-      context.handle(
-        _canceledMeta,
-        canceled.isAcceptableOrUnknown(data['canceled']!, _canceledMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_canceledMeta);
-    }
-    if (data.containsKey('is_link')) {
-      context.handle(
-        _isLinkMeta,
-        isLink.isAcceptableOrUnknown(data['is_link']!, _isLinkMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_isLinkMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  CardPayment map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CardPayment(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
-      buyerId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}buyer_id'],
-          )!,
-      orderId:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}order_id'],
-          )!,
-      summ:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.double,
-            data['${effectivePrefix}summ'],
-          )!,
-      ddate:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.dateTime,
-            data['${effectivePrefix}ddate'],
-          )!,
-      transactionId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}transaction_id'],
-      ),
-      canceled:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}canceled'],
-          )!,
-      isLink:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_link'],
-          )!,
-    );
-  }
-
-  @override
-  $CardPaymentsTable createAlias(String alias) {
-    return $CardPaymentsTable(attachedDatabase, alias);
-  }
-}
-
-class CardPayment extends DataClass implements Insertable<CardPayment> {
-  final int id;
-  final int buyerId;
-  final int orderId;
-  final double summ;
-  final DateTime ddate;
-  final String? transactionId;
-  final bool canceled;
-  final bool isLink;
-  const CardPayment({
-    required this.id,
-    required this.buyerId,
-    required this.orderId,
-    required this.summ,
-    required this.ddate,
-    this.transactionId,
-    required this.canceled,
-    required this.isLink,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['buyer_id'] = Variable<int>(buyerId);
-    map['order_id'] = Variable<int>(orderId);
-    map['summ'] = Variable<double>(summ);
-    map['ddate'] = Variable<DateTime>(ddate);
-    if (!nullToAbsent || transactionId != null) {
-      map['transaction_id'] = Variable<String>(transactionId);
-    }
-    map['canceled'] = Variable<bool>(canceled);
-    map['is_link'] = Variable<bool>(isLink);
-    return map;
-  }
-
-  CardPaymentsCompanion toCompanion(bool nullToAbsent) {
-    return CardPaymentsCompanion(
-      id: Value(id),
-      buyerId: Value(buyerId),
-      orderId: Value(orderId),
-      summ: Value(summ),
-      ddate: Value(ddate),
-      transactionId:
-          transactionId == null && nullToAbsent
-              ? const Value.absent()
-              : Value(transactionId),
-      canceled: Value(canceled),
-      isLink: Value(isLink),
-    );
-  }
-
-  factory CardPayment.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CardPayment(
-      id: serializer.fromJson<int>(json['id']),
-      buyerId: serializer.fromJson<int>(json['buyerId']),
-      orderId: serializer.fromJson<int>(json['orderId']),
-      summ: serializer.fromJson<double>(json['summ']),
-      ddate: serializer.fromJson<DateTime>(json['ddate']),
-      transactionId: serializer.fromJson<String?>(json['transactionId']),
-      canceled: serializer.fromJson<bool>(json['canceled']),
-      isLink: serializer.fromJson<bool>(json['isLink']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'buyerId': serializer.toJson<int>(buyerId),
-      'orderId': serializer.toJson<int>(orderId),
-      'summ': serializer.toJson<double>(summ),
-      'ddate': serializer.toJson<DateTime>(ddate),
-      'transactionId': serializer.toJson<String?>(transactionId),
-      'canceled': serializer.toJson<bool>(canceled),
-      'isLink': serializer.toJson<bool>(isLink),
-    };
-  }
-
-  CardPayment copyWith({
-    int? id,
-    int? buyerId,
-    int? orderId,
-    double? summ,
-    DateTime? ddate,
-    Value<String?> transactionId = const Value.absent(),
-    bool? canceled,
-    bool? isLink,
-  }) => CardPayment(
-    id: id ?? this.id,
-    buyerId: buyerId ?? this.buyerId,
-    orderId: orderId ?? this.orderId,
-    summ: summ ?? this.summ,
-    ddate: ddate ?? this.ddate,
-    transactionId:
-        transactionId.present ? transactionId.value : this.transactionId,
-    canceled: canceled ?? this.canceled,
-    isLink: isLink ?? this.isLink,
-  );
-  CardPayment copyWithCompanion(CardPaymentsCompanion data) {
-    return CardPayment(
-      id: data.id.present ? data.id.value : this.id,
-      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
-      orderId: data.orderId.present ? data.orderId.value : this.orderId,
-      summ: data.summ.present ? data.summ.value : this.summ,
-      ddate: data.ddate.present ? data.ddate.value : this.ddate,
-      transactionId:
-          data.transactionId.present
-              ? data.transactionId.value
-              : this.transactionId,
-      canceled: data.canceled.present ? data.canceled.value : this.canceled,
-      isLink: data.isLink.present ? data.isLink.value : this.isLink,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CardPayment(')
-          ..write('id: $id, ')
-          ..write('buyerId: $buyerId, ')
-          ..write('orderId: $orderId, ')
-          ..write('summ: $summ, ')
-          ..write('ddate: $ddate, ')
-          ..write('transactionId: $transactionId, ')
-          ..write('canceled: $canceled, ')
-          ..write('isLink: $isLink')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    buyerId,
-    orderId,
-    summ,
-    ddate,
-    transactionId,
-    canceled,
-    isLink,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CardPayment &&
-          other.id == this.id &&
-          other.buyerId == this.buyerId &&
-          other.orderId == this.orderId &&
-          other.summ == this.summ &&
-          other.ddate == this.ddate &&
-          other.transactionId == this.transactionId &&
-          other.canceled == this.canceled &&
-          other.isLink == this.isLink);
-}
-
-class CardPaymentsCompanion extends UpdateCompanion<CardPayment> {
-  final Value<int> id;
-  final Value<int> buyerId;
-  final Value<int> orderId;
-  final Value<double> summ;
-  final Value<DateTime> ddate;
-  final Value<String?> transactionId;
-  final Value<bool> canceled;
-  final Value<bool> isLink;
-  const CardPaymentsCompanion({
-    this.id = const Value.absent(),
-    this.buyerId = const Value.absent(),
-    this.orderId = const Value.absent(),
-    this.summ = const Value.absent(),
-    this.ddate = const Value.absent(),
-    this.transactionId = const Value.absent(),
-    this.canceled = const Value.absent(),
-    this.isLink = const Value.absent(),
-  });
-  CardPaymentsCompanion.insert({
-    this.id = const Value.absent(),
-    required int buyerId,
-    required int orderId,
-    required double summ,
-    required DateTime ddate,
-    this.transactionId = const Value.absent(),
-    required bool canceled,
-    required bool isLink,
-  }) : buyerId = Value(buyerId),
-       orderId = Value(orderId),
-       summ = Value(summ),
-       ddate = Value(ddate),
-       canceled = Value(canceled),
-       isLink = Value(isLink);
-  static Insertable<CardPayment> custom({
-    Expression<int>? id,
-    Expression<int>? buyerId,
-    Expression<int>? orderId,
-    Expression<double>? summ,
-    Expression<DateTime>? ddate,
-    Expression<String>? transactionId,
-    Expression<bool>? canceled,
-    Expression<bool>? isLink,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (buyerId != null) 'buyer_id': buyerId,
-      if (orderId != null) 'order_id': orderId,
-      if (summ != null) 'summ': summ,
-      if (ddate != null) 'ddate': ddate,
-      if (transactionId != null) 'transaction_id': transactionId,
-      if (canceled != null) 'canceled': canceled,
-      if (isLink != null) 'is_link': isLink,
-    });
-  }
-
-  CardPaymentsCompanion copyWith({
-    Value<int>? id,
-    Value<int>? buyerId,
-    Value<int>? orderId,
-    Value<double>? summ,
-    Value<DateTime>? ddate,
-    Value<String?>? transactionId,
-    Value<bool>? canceled,
-    Value<bool>? isLink,
-  }) {
-    return CardPaymentsCompanion(
-      id: id ?? this.id,
-      buyerId: buyerId ?? this.buyerId,
-      orderId: orderId ?? this.orderId,
-      summ: summ ?? this.summ,
-      ddate: ddate ?? this.ddate,
-      transactionId: transactionId ?? this.transactionId,
-      canceled: canceled ?? this.canceled,
-      isLink: isLink ?? this.isLink,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (buyerId.present) {
-      map['buyer_id'] = Variable<int>(buyerId.value);
-    }
-    if (orderId.present) {
-      map['order_id'] = Variable<int>(orderId.value);
-    }
-    if (summ.present) {
-      map['summ'] = Variable<double>(summ.value);
-    }
-    if (ddate.present) {
-      map['ddate'] = Variable<DateTime>(ddate.value);
-    }
-    if (transactionId.present) {
-      map['transaction_id'] = Variable<String>(transactionId.value);
-    }
-    if (canceled.present) {
-      map['canceled'] = Variable<bool>(canceled.value);
-    }
-    if (isLink.present) {
-      map['is_link'] = Variable<bool>(isLink.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CardPaymentsCompanion(')
-          ..write('id: $id, ')
-          ..write('buyerId: $buyerId, ')
-          ..write('orderId: $orderId, ')
-          ..write('summ: $summ, ')
-          ..write('ddate: $ddate, ')
-          ..write('transactionId: $transactionId, ')
-          ..write('canceled: $canceled, ')
-          ..write('isLink: $isLink')
           ..write(')'))
         .toString();
   }
@@ -6250,7 +5832,6 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $ReceptsTable recepts = $ReceptsTable(this);
   late final $IncomesTable incomes = $IncomesTable(this);
   late final $BuyersTable buyers = $BuyersTable(this);
-  late final $CardPaymentsTable cardPayments = $CardPaymentsTable(this);
   late final $CashPaymentsTable cashPayments = $CashPaymentsTable(this);
   late final $DebtsTable debts = $DebtsTable(this);
   late final $OrdersTable orders = $OrdersTable(this);
@@ -6266,13 +5847,14 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
   Selectable<AppInfoResult> appInfo() {
     return customSelect(
-      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, EXISTS (SELECT 1 AS _c0 FROM buyer_delivery_marks WHERE id IS NULL) OR EXISTS (SELECT 1 AS _c1 FROM order_line_codes WHERE id IS NULL) AS has_unsaved, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
+      'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, EXISTS (SELECT 1 AS _c0 FROM buyer_delivery_marks WHERE id IS NULL) AS has_unsynced, EXISTS (SELECT 1 AS _c1 FROM buyer_delivery_marks WHERE id IS NULL) OR EXISTS (SELECT 1 AS _c2 FROM order_line_codes WHERE id IS NULL) AS has_unsaved, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
       variables: [],
       readsFrom: {orders, buyerDeliveryMarks, orderLineCodes, buyers, prefs},
     ).map(
       (QueryRow row) => AppInfoResult(
         lastLoadTime: row.readNullable<DateTime>('last_load_time'),
         ordersTotal: row.read<int>('orders_total'),
+        hasUnsynced: row.read<bool>('has_unsynced'),
         hasUnsaved: row.read<bool>('has_unsaved'),
         incOrdersTotal: row.read<int>('inc_orders_total'),
         buyersTotal: row.read<int>('buyers_total'),
@@ -6289,7 +5871,6 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     recepts,
     incomes,
     buyers,
-    cardPayments,
     cashPayments,
     debts,
     orders,
@@ -6842,6 +6423,8 @@ typedef $$BuyersTableCreateCompanionBuilder =
       required String address,
       required int ord,
       required bool needInc,
+      Value<double?> latitude,
+      Value<double?> longitude,
       Value<int> rowid,
     });
 typedef $$BuyersTableUpdateCompanionBuilder =
@@ -6853,6 +6436,8 @@ typedef $$BuyersTableUpdateCompanionBuilder =
       Value<String> address,
       Value<int> ord,
       Value<bool> needInc,
+      Value<double?> latitude,
+      Value<double?> longitude,
       Value<int> rowid,
     });
 
@@ -6897,6 +6482,16 @@ class $$BuyersTableFilterComposer
 
   ColumnFilters<bool> get needInc => $composableBuilder(
     column: $table.needInc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -6944,6 +6539,16 @@ class $$BuyersTableOrderingComposer
     column: $table.needInc,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BuyersTableAnnotationComposer
@@ -6979,6 +6584,12 @@ class $$BuyersTableAnnotationComposer
 
   GeneratedColumn<bool> get needInc =>
       $composableBuilder(column: $table.needInc, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
 }
 
 class $$BuyersTableTableManager
@@ -7016,6 +6627,8 @@ class $$BuyersTableTableManager
                 Value<String> address = const Value.absent(),
                 Value<int> ord = const Value.absent(),
                 Value<bool> needInc = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion(
                 buyerId: buyerId,
@@ -7025,6 +6638,8 @@ class $$BuyersTableTableManager
                 address: address,
                 ord: ord,
                 needInc: needInc,
+                latitude: latitude,
+                longitude: longitude,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7036,6 +6651,8 @@ class $$BuyersTableTableManager
                 required String address,
                 required int ord,
                 required bool needInc,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion.insert(
                 buyerId: buyerId,
@@ -7045,6 +6662,8 @@ class $$BuyersTableTableManager
                 address: address,
                 ord: ord,
                 needInc: needInc,
+                latitude: latitude,
+                longitude: longitude,
                 rowid: rowid,
               ),
           withReferenceMapper:
@@ -7074,267 +6693,6 @@ typedef $$BuyersTableProcessedTableManager =
       $$BuyersTableUpdateCompanionBuilder,
       (Buyer, BaseReferences<_$AppDataStore, $BuyersTable, Buyer>),
       Buyer,
-      PrefetchHooks Function()
-    >;
-typedef $$CardPaymentsTableCreateCompanionBuilder =
-    CardPaymentsCompanion Function({
-      Value<int> id,
-      required int buyerId,
-      required int orderId,
-      required double summ,
-      required DateTime ddate,
-      Value<String?> transactionId,
-      required bool canceled,
-      required bool isLink,
-    });
-typedef $$CardPaymentsTableUpdateCompanionBuilder =
-    CardPaymentsCompanion Function({
-      Value<int> id,
-      Value<int> buyerId,
-      Value<int> orderId,
-      Value<double> summ,
-      Value<DateTime> ddate,
-      Value<String?> transactionId,
-      Value<bool> canceled,
-      Value<bool> isLink,
-    });
-
-class $$CardPaymentsTableFilterComposer
-    extends Composer<_$AppDataStore, $CardPaymentsTable> {
-  $$CardPaymentsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get buyerId => $composableBuilder(
-    column: $table.buyerId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get orderId => $composableBuilder(
-    column: $table.orderId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get summ => $composableBuilder(
-    column: $table.summ,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get ddate => $composableBuilder(
-    column: $table.ddate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get transactionId => $composableBuilder(
-    column: $table.transactionId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get canceled => $composableBuilder(
-    column: $table.canceled,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isLink => $composableBuilder(
-    column: $table.isLink,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$CardPaymentsTableOrderingComposer
-    extends Composer<_$AppDataStore, $CardPaymentsTable> {
-  $$CardPaymentsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get buyerId => $composableBuilder(
-    column: $table.buyerId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get orderId => $composableBuilder(
-    column: $table.orderId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get summ => $composableBuilder(
-    column: $table.summ,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get ddate => $composableBuilder(
-    column: $table.ddate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get transactionId => $composableBuilder(
-    column: $table.transactionId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get canceled => $composableBuilder(
-    column: $table.canceled,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isLink => $composableBuilder(
-    column: $table.isLink,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$CardPaymentsTableAnnotationComposer
-    extends Composer<_$AppDataStore, $CardPaymentsTable> {
-  $$CardPaymentsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<int> get buyerId =>
-      $composableBuilder(column: $table.buyerId, builder: (column) => column);
-
-  GeneratedColumn<int> get orderId =>
-      $composableBuilder(column: $table.orderId, builder: (column) => column);
-
-  GeneratedColumn<double> get summ =>
-      $composableBuilder(column: $table.summ, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get ddate =>
-      $composableBuilder(column: $table.ddate, builder: (column) => column);
-
-  GeneratedColumn<String> get transactionId => $composableBuilder(
-    column: $table.transactionId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get canceled =>
-      $composableBuilder(column: $table.canceled, builder: (column) => column);
-
-  GeneratedColumn<bool> get isLink =>
-      $composableBuilder(column: $table.isLink, builder: (column) => column);
-}
-
-class $$CardPaymentsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDataStore,
-          $CardPaymentsTable,
-          CardPayment,
-          $$CardPaymentsTableFilterComposer,
-          $$CardPaymentsTableOrderingComposer,
-          $$CardPaymentsTableAnnotationComposer,
-          $$CardPaymentsTableCreateCompanionBuilder,
-          $$CardPaymentsTableUpdateCompanionBuilder,
-          (
-            CardPayment,
-            BaseReferences<_$AppDataStore, $CardPaymentsTable, CardPayment>,
-          ),
-          CardPayment,
-          PrefetchHooks Function()
-        > {
-  $$CardPaymentsTableTableManager(_$AppDataStore db, $CardPaymentsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer:
-              () => $$CardPaymentsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer:
-              () => $$CardPaymentsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer:
-              () =>
-                  $$CardPaymentsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<int> buyerId = const Value.absent(),
-                Value<int> orderId = const Value.absent(),
-                Value<double> summ = const Value.absent(),
-                Value<DateTime> ddate = const Value.absent(),
-                Value<String?> transactionId = const Value.absent(),
-                Value<bool> canceled = const Value.absent(),
-                Value<bool> isLink = const Value.absent(),
-              }) => CardPaymentsCompanion(
-                id: id,
-                buyerId: buyerId,
-                orderId: orderId,
-                summ: summ,
-                ddate: ddate,
-                transactionId: transactionId,
-                canceled: canceled,
-                isLink: isLink,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required int buyerId,
-                required int orderId,
-                required double summ,
-                required DateTime ddate,
-                Value<String?> transactionId = const Value.absent(),
-                required bool canceled,
-                required bool isLink,
-              }) => CardPaymentsCompanion.insert(
-                id: id,
-                buyerId: buyerId,
-                orderId: orderId,
-                summ: summ,
-                ddate: ddate,
-                transactionId: transactionId,
-                canceled: canceled,
-                isLink: isLink,
-              ),
-          withReferenceMapper:
-              (p0) =>
-                  p0
-                      .map(
-                        (e) => (
-                          e.readTable(table),
-                          BaseReferences(db, table, e),
-                        ),
-                      )
-                      .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$CardPaymentsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDataStore,
-      $CardPaymentsTable,
-      CardPayment,
-      $$CardPaymentsTableFilterComposer,
-      $$CardPaymentsTableOrderingComposer,
-      $$CardPaymentsTableAnnotationComposer,
-      $$CardPaymentsTableCreateCompanionBuilder,
-      $$CardPaymentsTableUpdateCompanionBuilder,
-      (
-        CardPayment,
-        BaseReferences<_$AppDataStore, $CardPaymentsTable, CardPayment>,
-      ),
-      CardPayment,
       PrefetchHooks Function()
     >;
 typedef $$CashPaymentsTableCreateCompanionBuilder =
@@ -9545,8 +8903,6 @@ class $AppDataStoreManager {
       $$IncomesTableTableManager(_db, _db.incomes);
   $$BuyersTableTableManager get buyers =>
       $$BuyersTableTableManager(_db, _db.buyers);
-  $$CardPaymentsTableTableManager get cardPayments =>
-      $$CardPaymentsTableTableManager(_db, _db.cardPayments);
   $$CashPaymentsTableTableManager get cashPayments =>
       $$CashPaymentsTableTableManager(_db, _db.cashPayments);
   $$DebtsTableTableManager get debts =>
@@ -9568,12 +8924,14 @@ class $AppDataStoreManager {
 class AppInfoResult {
   final DateTime? lastLoadTime;
   final int ordersTotal;
+  final bool hasUnsynced;
   final bool hasUnsaved;
   final int incOrdersTotal;
   final int buyersTotal;
   AppInfoResult({
     this.lastLoadTime,
     required this.ordersTotal,
+    required this.hasUnsynced,
     required this.hasUnsaved,
     required this.incOrdersTotal,
     required this.buyersTotal,
@@ -9595,7 +8953,6 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;
   $CashPaymentsTable get cashPayments => attachedDatabase.cashPayments;
-  $CardPaymentsTable get cardPayments => attachedDatabase.cardPayments;
 }
 mixin _$UsersDaoMixin on DatabaseAccessor<AppDataStore> {
   $UsersTable get users => attachedDatabase.users;

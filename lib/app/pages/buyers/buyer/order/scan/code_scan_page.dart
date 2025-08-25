@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +46,7 @@ class _CodeScanViewState extends State<_CodeScanView> {
   final TextStyle textStyle = const TextStyle(color: Colors.white, fontSize: 20);
   bool scanPaused = false;
   final TextEditingController _controller = TextEditingController();
+  final player = AudioPlayer();
 
   Future<String> showManualInput() async {
     String code = '';
@@ -95,6 +97,7 @@ class _CodeScanViewState extends State<_CodeScanView> {
         _controller.text = '';
 
         return ScanView(
+          beep: false,
           onRead: (barcode) {
             setState(() => scanPaused = true);
             vm.readCode(barcode);
@@ -126,11 +129,15 @@ class _CodeScanViewState extends State<_CodeScanView> {
       listener: (context, state) async {
         switch (state.status) {
           case CodeScanStateStatus.success:
+            player.play(AssetSource('beep_success.mp3'));
             if (state.lastScannedOrderLine == null) await showInfoDialog(context, 'Успех', state.message);
+
             setState(() => scanPaused = false);
             break;
           case CodeScanStateStatus.failure:
-            await showInfoDialog(context, 'Ошибка', state.message);
+            player.play(AssetSource('beep_error.mp3'));
+            showInfoDialog(context, 'Ошибка', state.message);
+
             setState(() => scanPaused = false);
             break;
           default:

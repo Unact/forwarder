@@ -3,8 +3,7 @@ part of 'database.dart';
 @DriftAccessor(
   tables: [
     Debts,
-    CashPayments,
-    CardPayments
+    CashPayments
   ]
 )
 class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin {
@@ -14,20 +13,12 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
     await db._loadData(cashPayments, list);
   }
 
-  Future<void> loadCardPayments(List<CardPayment> list) async {
-    await db._loadData(cardPayments, list);
-  }
-
   Future<void> loadDebts(List<Debt> list, [bool clearTable = true]) async {
     await db._loadData(debts, list, clearTable);
   }
 
   Stream<List<CashPayment>> watchCashPayments() {
     return select(cashPayments).watch();
-  }
-
-  Stream<List<CardPayment>> watchCardPayments() {
-    return select(cardPayments).watch();
   }
 
   Stream<List<Debt>> watchDebts() {
@@ -52,14 +43,6 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
 
   Stream<List<CashPayment>> watchCashPaymentsByBuyerId(int buyerId) {
     return (select(cashPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).watch();
-  }
-
-  Stream<List<CardPayment>> watchCardPaymentsByBuyerId(int buyerId) {
-    return (select(cardPayments)..where((tbl) => tbl.buyerId.equals(buyerId))).watch();
-  }
-
-  Future<int> upsertCardPayment(CardPaymentsCompanion cardPayment) {
-    return into(cardPayments).insertOnConflictUpdate(cardPayment);
   }
 
   Future<int> upsertDebt(DebtsCompanion debt) {

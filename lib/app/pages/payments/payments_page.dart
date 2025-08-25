@@ -49,22 +49,7 @@ class _PaymentsViewState extends State<_PaymentsView> {
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
-            children: [
-              ExpansionTile(
-                initiallyExpanded: true,
-                title: const Text('Наличными'),
-                tilePadding: const EdgeInsets.all(0),
-                childrenPadding: const EdgeInsets.all(0),
-                children: state.cashPayments.map((payment) => _cashPaymentTile(context, payment)).toList(),
-              ),
-              ExpansionTile(
-                initiallyExpanded: true,
-                title: const Text('Картой'),
-                tilePadding: const EdgeInsets.all(0),
-                childrenPadding: const EdgeInsets.all(0),
-                children: state.cardPayments.map((payment) => _cardPaymentTile(context, payment)).toList(),
-              )
-            ]
+            children: state.cashPayments.map((payment) => _cashPaymentTile(context, payment)).toList(),
           );
         }
       )
@@ -91,35 +76,6 @@ class _PaymentsViewState extends State<_PaymentsView> {
         ]
       ),
       trailing: Text(Format.numberStr(cashPayment.summ), style: TextStyle(color: summColor)),
-    );
-  }
-
-  Widget _cardPaymentTile(BuildContext context, CardPayment cardPayment) {
-    PaymentsViewModel vm = context.read<PaymentsViewModel>();
-    Buyer buyer = vm.buyerForCardPayment(cardPayment);
-    Color summColor = Colors.black;
-
-    return InfoRow(
-      titleFlex: 1,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(buyer.name),
-          ExpandingText(
-            buyer.address,
-            style: const TextStyle(color: Colors.grey, fontSize: 10),
-            textAlign: TextAlign.left,
-          )
-        ]
-      ),
-      trailing: SizedBox(
-        width: 60,
-        child: Text(
-          Format.numberStr(cardPayment.summ),
-          style: TextStyle(color: summColor),
-          textAlign: TextAlign.end,
-        )
-      )
     );
   }
 }

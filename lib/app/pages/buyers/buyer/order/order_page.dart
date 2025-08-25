@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
@@ -118,6 +119,9 @@ class _OrderViewState extends State<_OrderView> {
       },
       listener: (context, state) async {
         switch (state.status) {
+          case OrderStateStatus.orderDataCopied:
+            Misc.showMessage(context, state.message);
+            break;
           case OrderStateStatus.inProgress:
             _progressDialog.open();
             break;
@@ -152,9 +156,20 @@ class _OrderViewState extends State<_OrderView> {
   Widget _buildBody(BuildContext context) {
     OrderViewModel vm = context.read<OrderViewModel>();
     OrderState state = vm.state;
+
     List<Widget> children = [
       InfoRow(title: const Text('Номер'), trailing: Text(state.order.ndoc)),
-      InfoRow(title: const Text('Комментарий'), trailing: ExpandingText(state.order.info)),
+      InfoRow(
+        title: const Text('Комментарий'),
+        trailing: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(child: ExpandingText(state.order.info)),
+            IconButton(icon: const Icon(Icons.copy), onPressed: vm.copyOrderInfo, tooltip: 'Копировать'),
+          ]
+        )
+      ),
       InfoRow(title: const Text('Коробов'), trailing: Text(Format.numberStr(state.order.mc))),
       InfoRow(title: const Text('Товаров'), trailing: Text(state.order.goodsCnt.toString())),
       InfoRow(

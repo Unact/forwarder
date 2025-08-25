@@ -14,12 +14,10 @@ class InfoState {
     this.message = '',
     this.user,
     this.appInfo,
-    this.cardPayments = const [],
     this.cashPayments = const []
   });
 
   final InfoStateStatus status;
-  final List<CardPayment> cardPayments;
   final List<CashPayment> cashPayments;
   final String message;
   final User? user;
@@ -32,12 +30,9 @@ class InfoState {
   bool get closed => user?.closed ?? false;
   double get total => user?.total ?? 0;
 
-  double get cardPaymentsSum => cardPayments.fold(0, (sum, payment) => sum + payment.summ);
   double get cashPaymentsSum => cashPayments.fold(0, (sum, payment) => sum + payment.summ);
-  double get paymentsSum => cardPaymentsSum + cashPaymentsSum - cardPaymentsCancelSum;
+  double get paymentsSum => cashPaymentsSum;
   double get kkmSum => cashPayments.where((payment) => payment.kkmprinted)
-    .fold(0, (sum, payment) => sum + payment.summ);
-  double get cardPaymentsCancelSum => cardPayments.where((payment) => payment.canceled)
     .fold(0, (sum, payment) => sum + payment.summ);
 
   InfoState copyWith({
@@ -45,7 +40,6 @@ class InfoState {
     String? message,
     User? user,
     AppInfoResult? appInfo,
-    List<CardPayment>? cardPayments,
     List<CashPayment>? cashPayments
   }) {
     return InfoState(
@@ -53,7 +47,6 @@ class InfoState {
       message: message ?? this.message,
       user: user ?? this.user,
       appInfo: appInfo ?? this.appInfo,
-      cardPayments: cardPayments ?? this.cardPayments,
       cashPayments: cashPayments ?? this.cashPayments,
     );
   }

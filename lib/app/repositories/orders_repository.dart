@@ -31,6 +31,10 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.watchOrderLineCodes();
   }
 
+  Stream<List<OrderLineStorageCode>> watchOrderLineStorageCodes() {
+    return dataStore.ordersDao.watchOrderLineStorageCodes();
+  }
+
   Stream<List<Order>> watchOrdersByBuyerId(int buyerId, int deliveryId) {
     return dataStore.ordersDao.watchOrdersByBuyerId(buyerId, deliveryId);
   }

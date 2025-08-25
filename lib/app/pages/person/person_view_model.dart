@@ -59,6 +59,18 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
     await getData(true);
   }
 
+  Future<void> syncData() async {
+    emit(state.copyWith(status: PersonStateStatus.inProgress));
+
+    try {
+      await appRepository.syncData();
+
+      emit(state.copyWith(status: PersonStateStatus.success));
+    } on AppError catch(e) {
+      emit(state.copyWith(status: PersonStateStatus.failure, message: e.message));
+    }
+  }
+
   Future<void> getData(bool confirmed) async {
     if (!confirmed) return;
 

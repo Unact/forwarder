@@ -15,10 +15,6 @@ class PaymentsRepository extends BaseRepository {
     return dataStore.paymentsDao.watchCashPayments();
   }
 
-  Stream<List<CardPayment>> watchCardPayments() {
-    return dataStore.paymentsDao.watchCardPayments();
-  }
-
   Stream<List<Debt>> watchDebts() {
     return dataStore.paymentsDao.watchDebts();
   }
@@ -33,10 +29,6 @@ class PaymentsRepository extends BaseRepository {
 
   Stream<Debt?> watchDebtByOrderId(int orderId) {
     return dataStore.paymentsDao.watchDebtByOrderId(orderId);
-  }
-
-  Stream<List<CardPayment>> watchCardPaymentsByBuyerId(int buyerId) {
-    return dataStore.paymentsDao.watchCardPaymentsByBuyerId(buyerId);
   }
 
   Stream<List<CashPayment>> watchCashPaymentsByBuyerId(int buyerId) {
@@ -79,7 +71,17 @@ class PaymentsRepository extends BaseRepository {
     };
 
     try {
-      await api.acceptPayment(payments, location);
+      final data = await api.acceptPayment(payments, location);
+
+      await dataStore.transaction(() async {
+        List<Recept> recepts = data.recepts.map((e) => e.toDatabaseEnt()).toList();
+        List<Income> incomes = data.incomes.map((e) => e.toDatabaseEnt()).toList();
+        List<CashPayment> cashPayments = data.cashPayments.map((e) => e.toDatabaseEnt()).toList();
+
+        await dataStore.ordersDao.loadIncomes(incomes);
+        await dataStore.ordersDao.loadRecepts(recepts);
+        await dataStore.paymentsDao.loadCashPayments(cashPayments);
+      });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
     } catch(e, trace) {
@@ -96,26 +98,5 @@ class PaymentsRepository extends BaseRepository {
         await dataStore.ordersDao.upsertOrder(updatedOrder);
       }
     });
-  }
-
-  Future<void> cancelCardPayment(CardPayment cardPayment, Map<String, dynamic> transaction) async {
-    Debt paymentDebt = (await dataStore.paymentsDao.watchDebtByOrderId(cardPayment.orderId).first)!;
-    CardPaymentsCompanion updatedCardPayment = cardPayment.toCompanion(true).copyWith(canceled: const Value(true));
-    DebtsCompanion updatedDebt = paymentDebt.toCompanion(true).copyWith(
-      paidSum: const Value(null),
-      paymentSum: const Value(null)
-    );
-
-    try {
-      await api.cancelCardPayment(cardPayment.id, transaction);
-    } on ApiException catch(e) {
-      throw AppError(e.errorMsg);
-    } catch(e, trace) {
-      Misc.reportError(e, trace);
-      throw AppError(Strings.genericErrorMsg);
-    }
-
-    await dataStore.paymentsDao.upsertCardPayment(updatedCardPayment);
-    await dataStore.paymentsDao.upsertDebt(updatedDebt);
   }
 }
