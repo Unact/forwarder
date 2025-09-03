@@ -114,7 +114,7 @@ class _BuyersViewState extends State<_BuyersView> {
       contentPadding: const EdgeInsets.all(0),
       title: Text(buyer.buyer.name, style: const TextStyle(fontSize: 14.0)),
       onTap: () async {
-        if (vm.state.buyers.any((e) => e.inProgress && e != buyer)) {
+        if (!(buyer.departed || buyer.missed) && vm.state.buyers.any((e) => e.inProgress && e != buyer)) {
           context.read<GlobalKey<ScaffoldMessengerState>>().currentState!.showSnackBar(SnackBar(
             content: Text('Не отмечен отъезд из предыдущей точки')
           ));
