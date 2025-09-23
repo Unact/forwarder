@@ -40,7 +40,7 @@ extension ForwarderApi on RenewApi {
     return ApiBuyerOrderData.fromJson(result);
   }
 
-  Future<ApiBuyerData> arrive(int buyerId, int deliveryId, Map<String, dynamic> location) async {
+  Future<ApiBuyerDeliveryMarksData> arrive(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/arrive',
       dataGenerator: () => {
@@ -51,10 +51,10 @@ extension ForwarderApi on RenewApi {
       }
     );
 
-    return ApiBuyerData.fromJson(result);
+    return ApiBuyerDeliveryMarksData.fromJson(result);
   }
 
-  Future<ApiBuyerData> depart(int buyerId, int deliveryId, Map<String, dynamic> location) async {
+  Future<ApiBuyerDeliveryMarksData> depart(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/depart',
       dataGenerator: () => {
@@ -65,7 +65,7 @@ extension ForwarderApi on RenewApi {
       }
     );
 
-    return ApiBuyerData.fromJson(result);
+    return ApiBuyerDeliveryMarksData.fromJson(result);
   }
 
   Future<ApiDeliveryData> deliverOrder(

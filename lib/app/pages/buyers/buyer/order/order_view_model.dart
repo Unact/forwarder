@@ -109,6 +109,14 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
         return;
       }
 
+      if (!(await Geolocator.isLocationServiceEnabled())) {
+        emit(state.copyWith(
+          message: 'Выключено определение местоположения',
+          status: OrderStateStatus.failure
+        ));
+        return;
+      }
+
       final location = await Geolocator.getCurrentPosition();
 
       await appRepository.syncData();
