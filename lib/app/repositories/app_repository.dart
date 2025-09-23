@@ -66,25 +66,31 @@ class AppRepository extends BaseRepository {
 
         switch (buyerDeliveryMark.type) {
           case BuyerDeliveryMarkType.arrival:
-            ApiBuyerData data = await api.arrive(buyerDeliveryMark.buyerId, buyerDeliveryMark.deliveryId, location);
+            ApiBuyerDeliveryMarksData data = await api.arrive(
+              buyerDeliveryMark.buyerId,
+              buyerDeliveryMark.deliveryId,
+              location
+            );
 
             await dataStore.transaction(() async {
               List<BuyerDeliveryMark> buyerDeliveryMarks =
                 data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
 
-              await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
               await dataStore.ordersDao.loadBuyerDeliveryMarks(buyerDeliveryMarks, false);
             });
 
             break;
           case BuyerDeliveryMarkType.departure:
-            ApiBuyerData data = await api.depart(buyerDeliveryMark.buyerId, buyerDeliveryMark.deliveryId, location);
+            ApiBuyerDeliveryMarksData data = await api.depart(
+              buyerDeliveryMark.buyerId,
+              buyerDeliveryMark.deliveryId,
+              location
+            );
 
             await dataStore.transaction(() async {
               List<BuyerDeliveryMark> buyerDeliveryMarks =
                 data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
 
-              await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
               await dataStore.ordersDao.loadBuyerDeliveryMarks(buyerDeliveryMarks, false);
             });
 
