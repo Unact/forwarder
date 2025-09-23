@@ -49,6 +49,14 @@ class AcceptPaymentViewModel extends PageViewModel<AcceptPaymentState, AcceptPay
       return;
     }
 
+    if (!(await Geolocator.isLocationServiceEnabled())) {
+      emit(state.copyWith(
+        message: 'Выключено определение местоположения',
+        status: AcceptPaymentStateStatus.failure
+      ));
+      return;
+    }
+
     emit(state.copyWith(position: await Geolocator.getCurrentPosition()));
     _savePayment();
   }

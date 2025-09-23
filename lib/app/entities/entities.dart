@@ -4,7 +4,7 @@ import 'package:u_app_utils/u_app_utils.dart';
 import '/app/data/database.dart';
 
 part 'api_accept_payment_data.dart';
-part 'api_buyer_data.dart';
+part 'api_buyer_delivery_marks_data.dart';
 part 'api_buyer_delivery_mark.dart';
 part 'api_buyer_order_data.dart';
 part 'api_buyer.dart';

@@ -1,25 +1,21 @@
 part of 'entities.dart';
 
-class ApiBuyerData extends Equatable {
-  final ApiBuyer buyer;
+class ApiBuyerDeliveryMarksData extends Equatable {
   final List<ApiBuyerDeliveryMark> buyerDeliveryMarks;
 
-  const ApiBuyerData({
-    required this.buyer,
+  const ApiBuyerDeliveryMarksData({
     required this.buyerDeliveryMarks
   });
 
-  factory ApiBuyerData.fromJson(Map<String, dynamic> json) {
-    ApiBuyer buyer = ApiBuyer.fromJson(json['buyer']);
+  factory ApiBuyerDeliveryMarksData.fromJson(Map<String, dynamic> json) {
     List<ApiBuyerDeliveryMark> buyerDeliveryMarks = json['buyer_delivery_marks']
       .map<ApiBuyerDeliveryMark>((e) => ApiBuyerDeliveryMark.fromJson(e)).toList();
 
-    return ApiBuyerData(buyer: buyer, buyerDeliveryMarks: buyerDeliveryMarks);
+    return ApiBuyerDeliveryMarksData(buyerDeliveryMarks: buyerDeliveryMarks);
   }
 
   @override
   List<Object?> get props => [
-    buyer,
     buyerDeliveryMarks
   ];
 }

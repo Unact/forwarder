@@ -152,6 +152,14 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
         return;
       }
 
+      if (!(await Geolocator.isLocationServiceEnabled())) {
+        emit(state.copyWith(
+          message: 'Выключено определение местоположения',
+          status: BuyerStateStatus.failure
+        ));
+        return;
+      }
+
       final location = await Geolocator.getCurrentPosition();
 
       await action.call(location);
