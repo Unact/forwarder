@@ -16,6 +16,7 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
+import '/app/utils/geo.dart';
 import '/app/widgets/widgets.dart';
 
 part 'buyer_state.dart';

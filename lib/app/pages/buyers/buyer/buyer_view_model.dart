@@ -144,23 +144,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     emit(state.copyWith(status: BuyerStateStatus.inProgress));
 
     try {
-      if (!(await Permissions.hasLocationPermissions())) {
-        emit(state.copyWith(
-          message: 'Нет прав на получение местоположения',
-          status: BuyerStateStatus.failure
-        ));
-        return;
-      }
-
-      if (!(await Geolocator.isLocationServiceEnabled())) {
-        emit(state.copyWith(
-          message: 'Выключено определение местоположения',
-          status: BuyerStateStatus.failure
-        ));
-        return;
-      }
-
-      final location = await Geolocator.getCurrentPosition();
+      final location = await Geo.getCurrentPosition();
 
       await action.call(location);
 
