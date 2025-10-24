@@ -101,23 +101,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     emit(state.copyWith(status: OrderStateStatus.inProgress));
 
     try {
-      if (!(await Permissions.hasLocationPermissions())) {
-        emit(state.copyWith(
-          message: 'Нет прав на получение местоположения',
-          status: OrderStateStatus.failure
-        ));
-        return;
-      }
-
-      if (!(await Geolocator.isLocationServiceEnabled())) {
-        emit(state.copyWith(
-          message: 'Выключено определение местоположения',
-          status: OrderStateStatus.failure
-        ));
-        return;
-      }
-
-      final location = await Geolocator.getCurrentPosition();
+      final location = await Geo.getCurrentPosition();
 
       await appRepository.syncData();
       await ordersRepository.deliveryOrder(
