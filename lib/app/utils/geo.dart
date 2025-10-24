@@ -10,7 +10,7 @@ class Geo {
     if (!(await Geolocator.isLocationServiceEnabled())) throw AppError('Выключено определение местоположения');
 
     try {
-      return await Geolocator.getCurrentPosition(locationSettings: LocationSettings(timeLimit: Duration(seconds: 10)));
+      return Geolocator.getCurrentPosition(locationSettings: LocationSettings(timeLimit: Duration(seconds: 10)));
     } on TimeoutException {
       return Position(
         longitude: 0,
