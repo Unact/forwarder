@@ -174,7 +174,6 @@ class OrdersRepository extends BaseRepository {
         List<BuyerDeliveryMark> buyerDeliveryMarks = data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
         List<Debt> debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
-        await dataStore.ordersDao.loadBuyers([data.buyer.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadBuyerDeliveryMarks(buyerDeliveryMarks, false);
         await dataStore.ordersDao.loadOrders(orders, false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
