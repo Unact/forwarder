@@ -1,7 +1,6 @@
 part of 'entities.dart';
 
 class ApiBuyerOrderData extends Equatable {
-  final ApiBuyer buyer;
   final List<ApiOrder> orders;
   final List<ApiDebt> debts;
   final List<ApiOrderLine> orderLines;
@@ -9,7 +8,6 @@ class ApiBuyerOrderData extends Equatable {
   final List<ApiBuyerDeliveryMark> buyerDeliveryMarks;
 
   const ApiBuyerOrderData({
-    required this.buyer,
     required this.debts,
     required this.orders,
     required this.orderLines,
@@ -18,7 +16,6 @@ class ApiBuyerOrderData extends Equatable {
   });
 
   factory ApiBuyerOrderData.fromJson(Map<String, dynamic> json) {
-    ApiBuyer buyer = ApiBuyer.fromJson(json['buyer']);
     List<ApiBuyerDeliveryMark> buyerDeliveryMarks = json['buyer_delivery_marks']
       .map<ApiBuyerDeliveryMark>((e) => ApiBuyerDeliveryMark.fromJson(e)).toList();
     List<ApiDebt> debts = json['debts'].map<ApiDebt>((e) => ApiDebt.fromJson(e)).toList();
@@ -28,7 +25,6 @@ class ApiBuyerOrderData extends Equatable {
       .map<ApiOrderLineCode>((e) => ApiOrderLineCode.fromJson(e)).toList();
 
     return ApiBuyerOrderData(
-      buyer: buyer,
       debts: debts,
       orders: orders,
       orderLines: orderLines,
@@ -39,7 +35,6 @@ class ApiBuyerOrderData extends Equatable {
 
   @override
   List<Object?> get props => [
-    buyer,
     debts,
     orders,
     orderLines,
