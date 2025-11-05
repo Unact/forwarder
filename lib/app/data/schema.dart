@@ -109,6 +109,7 @@ class OrderLines extends Table {
   RealColumn get deliveredVol => real()();
   RealColumn get price => real()();
   BoolColumn get needMarking => boolean()();
+  IntColumn get minMeasureId => integer()();
   TextColumn get barcodeRels => text().map(const OrderLineBarcodeListConverter())();
 
   @override
@@ -127,6 +128,19 @@ class OrderLineCodes extends Table {
 
   @override
   Set<Column> get primaryKey => {orderId, subid, code};
+}
+
+class OrderLinePackErrors extends Table {
+  IntColumn get id => integer().nullable()();
+  IntColumn get orderId => integer()();
+  IntColumn get subid => integer()();
+  IntColumn get measureId => integer()();
+  RealColumn get volume => real()();
+  TextColumn get groupCode => text().nullable()();
+  DateTimeColumn get localTs => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {orderId, subid};
 }
 
 class OrderLineStorageCodes extends Table {

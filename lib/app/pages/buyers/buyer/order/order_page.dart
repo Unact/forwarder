@@ -60,6 +60,90 @@ class _OrderViewState extends State<_OrderView> {
     super.dispose();
   }
 
+  Future<void> showAddPackErrorDialog() async {
+    OrderViewModel vm = context.read<OrderViewModel>();
+
+    final result = await showDialog<(OrderLine, double)?>(
+      context: context,
+      builder: (context) {
+        OrderLine? orderLine;
+        double? volume;
+        final filteredOrderLines = vm.state.codeLines.where((e) => e.orderLinePackErrors.isEmpty);
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Недовложение'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownMenu<OrderLine>(
+                    initialSelection: orderLine,
+                    menuHeight: 240,
+                    enableFilter: true,
+                    showTrailingIcon: false,
+                    requestFocusOnTap: true,
+                    label: const Text('Товар'),
+                    expandedInsets: EdgeInsets.zero,
+                    onSelected: (OrderLine? newOrderLine) {
+                      setState(() => orderLine = newOrderLine);
+                    },
+                    menuStyle: MenuStyle(
+                      maximumSize: const WidgetStatePropertyAll(Size.infinite),
+                      backgroundColor: WidgetStateColor.fromMap({
+                        WidgetState.any: Colors.white,
+                      })
+                    ),
+                    dropdownMenuEntries: filteredOrderLines.map((e) => DropdownMenuEntry(
+                      value: e.orderLine,
+                      label: e.orderLine.name,
+                      labelWidget: SizedBox(
+                        width: 0,
+                        child: Text(
+                          e.orderLine.name,
+                          overflow: TextOverflow.clip,
+                          style: TextStyle(fontWeight: FontWeight.normal)
+                        )
+                      ),
+                      style: ButtonStyle(
+                        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 4, horizontal: 4))
+                      )
+                    )).toList()
+                  ),
+                  SizedBox(height: 8),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                    enableInteractiveSelection: false,
+                    onChanged: (newVolume) => setState(() => volume = double.tryParse(newVolume)),
+                    decoration: const InputDecoration(labelText: 'Количество'),
+                  )
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Отменить')
+                ),
+                TextButton(
+                  onPressed: volume == null && orderLine == null ? null : () async {
+                    Navigator.of(context).pop((orderLine, volume));
+                  },
+                  child: const Text('Подтвердить')
+                )
+              ]
+            );
+        });
+      }
+    );
+
+    if (result == null) return;
+
+    await vm.addPackError(result.$1, result.$2);
+  }
+
   Future<void> showConfirmationDialog(String message) async {
     OrderViewModel vm = context.read<OrderViewModel>();
 
@@ -199,7 +283,8 @@ class _OrderViewState extends State<_OrderView> {
           padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
           child: Column(children: children)
         ),
-        _buildOrderLinesTile(context)
+        _buildOrderLinesTile(context),
+        _buildOrderLinePackErrorsTile(context)
       ],
     );
   }
@@ -218,6 +303,44 @@ class _OrderViewState extends State<_OrderView> {
       ),
       children: vm.state.codeLines.map((e) => _buildOrderLineTile(context, e)).toList()
     );
+  }
+
+  Widget _buildOrderLinePackErrorsTile(BuildContext context) {
+    OrderViewModel vm = context.read<OrderViewModel>();
+    final hideAddButton = vm.state.order.didDelivery ||
+      vm.state.codeLines.where((e) => e.orderLinePackErrors.isEmpty).isEmpty;
+
+    return ExpansionTile(
+      title: const Text('Недовложения', style: TextStyle(fontSize: 14)),
+      initiallyExpanded: true,
+      trailing: hideAddButton ? null : IconButton(
+        tooltip: 'Указать недовложение',
+        icon: const Icon(Icons.add),
+        onPressed: showAddPackErrorDialog
+      ),
+      children: vm.state.codeLines.map((e) => _buildOrderLinePackErrorTile(context, e)).expand((e) => e).toList()
+    );
+  }
+
+  List<Widget> _buildOrderLinePackErrorTile(BuildContext context, OrderLineWithCode codeLine) {
+    OrderViewModel vm = context.read<OrderViewModel>();
+
+    return codeLine.orderLinePackErrors.map((e) {
+      final packErrorTile = ListTile(
+        dense: true,
+        title: Text(codeLine.orderLine.name),
+        trailing: Text('${e.volume.toInt()}')
+      );
+
+      if (vm.state.order.didDelivery) return packErrorTile;
+
+      return Dismissible(
+        key: Key(codeLine.hashCode.toString()),
+        background: Container(color: Colors.red[500]),
+        onDismissed: (direction) => vm.deleteOrderLinePackError(e),
+        child: packErrorTile
+      );
+    }).toList();
   }
 
   Widget _buildPhysicalOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {

@@ -3589,6 +3589,17 @@ class $OrderLinesTable extends OrderLines
       'CHECK ("need_marking" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _minMeasureIdMeta = const VerificationMeta(
+    'minMeasureId',
+  );
+  @override
+  late final GeneratedColumn<int> minMeasureId = GeneratedColumn<int>(
+    'min_measure_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumnWithTypeConverter<List<OrderLineBarcode>, String>
   barcodeRels = GeneratedColumn<String>(
@@ -3610,6 +3621,7 @@ class $OrderLinesTable extends OrderLines
     deliveredVol,
     price,
     needMarking,
+    minMeasureId,
     barcodeRels,
   ];
   @override
@@ -3694,6 +3706,17 @@ class $OrderLinesTable extends OrderLines
     } else if (isInserting) {
       context.missing(_needMarkingMeta);
     }
+    if (data.containsKey('min_measure_id')) {
+      context.handle(
+        _minMeasureIdMeta,
+        minMeasureId.isAcceptableOrUnknown(
+          data['min_measure_id']!,
+          _minMeasureIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_minMeasureIdMeta);
+    }
     return context;
   }
 
@@ -3743,6 +3766,11 @@ class $OrderLinesTable extends OrderLines
             DriftSqlType.bool,
             data['${effectivePrefix}need_marking'],
           )!,
+      minMeasureId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}min_measure_id'],
+          )!,
       barcodeRels: $OrderLinesTable.$converterbarcodeRels.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -3770,6 +3798,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
   final double deliveredVol;
   final double price;
   final bool needMarking;
+  final int minMeasureId;
   final List<OrderLineBarcode> barcodeRels;
   const OrderLine({
     required this.orderId,
@@ -3780,6 +3809,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     required this.deliveredVol,
     required this.price,
     required this.needMarking,
+    required this.minMeasureId,
     required this.barcodeRels,
   });
   @override
@@ -3793,6 +3823,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     map['delivered_vol'] = Variable<double>(deliveredVol);
     map['price'] = Variable<double>(price);
     map['need_marking'] = Variable<bool>(needMarking);
+    map['min_measure_id'] = Variable<int>(minMeasureId);
     {
       map['barcode_rels'] = Variable<String>(
         $OrderLinesTable.$converterbarcodeRels.toSql(barcodeRels),
@@ -3811,6 +3842,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       deliveredVol: Value(deliveredVol),
       price: Value(price),
       needMarking: Value(needMarking),
+      minMeasureId: Value(minMeasureId),
       barcodeRels: Value(barcodeRels),
     );
   }
@@ -3829,6 +3861,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       deliveredVol: serializer.fromJson<double>(json['deliveredVol']),
       price: serializer.fromJson<double>(json['price']),
       needMarking: serializer.fromJson<bool>(json['needMarking']),
+      minMeasureId: serializer.fromJson<int>(json['minMeasureId']),
       barcodeRels: serializer.fromJson<List<OrderLineBarcode>>(
         json['barcodeRels'],
       ),
@@ -3846,6 +3879,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       'deliveredVol': serializer.toJson<double>(deliveredVol),
       'price': serializer.toJson<double>(price),
       'needMarking': serializer.toJson<bool>(needMarking),
+      'minMeasureId': serializer.toJson<int>(minMeasureId),
       'barcodeRels': serializer.toJson<List<OrderLineBarcode>>(barcodeRels),
     };
   }
@@ -3859,6 +3893,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     double? deliveredVol,
     double? price,
     bool? needMarking,
+    int? minMeasureId,
     List<OrderLineBarcode>? barcodeRels,
   }) => OrderLine(
     orderId: orderId ?? this.orderId,
@@ -3869,6 +3904,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     deliveredVol: deliveredVol ?? this.deliveredVol,
     price: price ?? this.price,
     needMarking: needMarking ?? this.needMarking,
+    minMeasureId: minMeasureId ?? this.minMeasureId,
     barcodeRels: barcodeRels ?? this.barcodeRels,
   );
   OrderLine copyWithCompanion(OrderLinesCompanion data) {
@@ -3885,6 +3921,10 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
       price: data.price.present ? data.price.value : this.price,
       needMarking:
           data.needMarking.present ? data.needMarking.value : this.needMarking,
+      minMeasureId:
+          data.minMeasureId.present
+              ? data.minMeasureId.value
+              : this.minMeasureId,
       barcodeRels:
           data.barcodeRels.present ? data.barcodeRels.value : this.barcodeRels,
     );
@@ -3901,6 +3941,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           ..write('deliveredVol: $deliveredVol, ')
           ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
+          ..write('minMeasureId: $minMeasureId, ')
           ..write('barcodeRels: $barcodeRels')
           ..write(')'))
         .toString();
@@ -3916,6 +3957,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
     deliveredVol,
     price,
     needMarking,
+    minMeasureId,
     barcodeRels,
   );
   @override
@@ -3930,6 +3972,7 @@ class OrderLine extends DataClass implements Insertable<OrderLine> {
           other.deliveredVol == this.deliveredVol &&
           other.price == this.price &&
           other.needMarking == this.needMarking &&
+          other.minMeasureId == this.minMeasureId &&
           other.barcodeRels == this.barcodeRels);
 }
 
@@ -3942,6 +3985,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
   final Value<double> deliveredVol;
   final Value<double> price;
   final Value<bool> needMarking;
+  final Value<int> minMeasureId;
   final Value<List<OrderLineBarcode>> barcodeRels;
   final Value<int> rowid;
   const OrderLinesCompanion({
@@ -3953,6 +3997,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     this.deliveredVol = const Value.absent(),
     this.price = const Value.absent(),
     this.needMarking = const Value.absent(),
+    this.minMeasureId = const Value.absent(),
     this.barcodeRels = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -3965,6 +4010,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     required double deliveredVol,
     required double price,
     required bool needMarking,
+    required int minMeasureId,
     required List<OrderLineBarcode> barcodeRels,
     this.rowid = const Value.absent(),
   }) : orderId = Value(orderId),
@@ -3975,6 +4021,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
        deliveredVol = Value(deliveredVol),
        price = Value(price),
        needMarking = Value(needMarking),
+       minMeasureId = Value(minMeasureId),
        barcodeRels = Value(barcodeRels);
   static Insertable<OrderLine> custom({
     Expression<int>? orderId,
@@ -3985,6 +4032,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Expression<double>? deliveredVol,
     Expression<double>? price,
     Expression<bool>? needMarking,
+    Expression<int>? minMeasureId,
     Expression<String>? barcodeRels,
     Expression<int>? rowid,
   }) {
@@ -3997,6 +4045,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       if (deliveredVol != null) 'delivered_vol': deliveredVol,
       if (price != null) 'price': price,
       if (needMarking != null) 'need_marking': needMarking,
+      if (minMeasureId != null) 'min_measure_id': minMeasureId,
       if (barcodeRels != null) 'barcode_rels': barcodeRels,
       if (rowid != null) 'rowid': rowid,
     });
@@ -4011,6 +4060,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     Value<double>? deliveredVol,
     Value<double>? price,
     Value<bool>? needMarking,
+    Value<int>? minMeasureId,
     Value<List<OrderLineBarcode>>? barcodeRels,
     Value<int>? rowid,
   }) {
@@ -4023,6 +4073,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
       deliveredVol: deliveredVol ?? this.deliveredVol,
       price: price ?? this.price,
       needMarking: needMarking ?? this.needMarking,
+      minMeasureId: minMeasureId ?? this.minMeasureId,
       barcodeRels: barcodeRels ?? this.barcodeRels,
       rowid: rowid ?? this.rowid,
     );
@@ -4055,6 +4106,9 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
     if (needMarking.present) {
       map['need_marking'] = Variable<bool>(needMarking.value);
     }
+    if (minMeasureId.present) {
+      map['min_measure_id'] = Variable<int>(minMeasureId.value);
+    }
     if (barcodeRels.present) {
       map['barcode_rels'] = Variable<String>(
         $OrderLinesTable.$converterbarcodeRels.toSql(barcodeRels.value),
@@ -4077,6 +4131,7 @@ class OrderLinesCompanion extends UpdateCompanion<OrderLine> {
           ..write('deliveredVol: $deliveredVol, ')
           ..write('price: $price, ')
           ..write('needMarking: $needMarking, ')
+          ..write('minMeasureId: $minMeasureId, ')
           ..write('barcodeRels: $barcodeRels, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4975,6 +5030,466 @@ class OrderLineStorageCodesCompanion
   }
 }
 
+class $OrderLinePackErrorsTable extends OrderLinePackErrors
+    with TableInfo<$OrderLinePackErrorsTable, OrderLinePackError> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OrderLinePackErrorsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _orderIdMeta = const VerificationMeta(
+    'orderId',
+  );
+  @override
+  late final GeneratedColumn<int> orderId = GeneratedColumn<int>(
+    'order_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _subidMeta = const VerificationMeta('subid');
+  @override
+  late final GeneratedColumn<int> subid = GeneratedColumn<int>(
+    'subid',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _measureIdMeta = const VerificationMeta(
+    'measureId',
+  );
+  @override
+  late final GeneratedColumn<int> measureId = GeneratedColumn<int>(
+    'measure_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _volumeMeta = const VerificationMeta('volume');
+  @override
+  late final GeneratedColumn<double> volume = GeneratedColumn<double>(
+    'volume',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupCodeMeta = const VerificationMeta(
+    'groupCode',
+  );
+  @override
+  late final GeneratedColumn<String> groupCode = GeneratedColumn<String>(
+    'group_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _localTsMeta = const VerificationMeta(
+    'localTs',
+  );
+  @override
+  late final GeneratedColumn<DateTime> localTs = GeneratedColumn<DateTime>(
+    'local_ts',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    orderId,
+    subid,
+    measureId,
+    volume,
+    groupCode,
+    localTs,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'order_line_pack_errors';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OrderLinePackError> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('order_id')) {
+      context.handle(
+        _orderIdMeta,
+        orderId.isAcceptableOrUnknown(data['order_id']!, _orderIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_orderIdMeta);
+    }
+    if (data.containsKey('subid')) {
+      context.handle(
+        _subidMeta,
+        subid.isAcceptableOrUnknown(data['subid']!, _subidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_subidMeta);
+    }
+    if (data.containsKey('measure_id')) {
+      context.handle(
+        _measureIdMeta,
+        measureId.isAcceptableOrUnknown(data['measure_id']!, _measureIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_measureIdMeta);
+    }
+    if (data.containsKey('volume')) {
+      context.handle(
+        _volumeMeta,
+        volume.isAcceptableOrUnknown(data['volume']!, _volumeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_volumeMeta);
+    }
+    if (data.containsKey('group_code')) {
+      context.handle(
+        _groupCodeMeta,
+        groupCode.isAcceptableOrUnknown(data['group_code']!, _groupCodeMeta),
+      );
+    }
+    if (data.containsKey('local_ts')) {
+      context.handle(
+        _localTsMeta,
+        localTs.isAcceptableOrUnknown(data['local_ts']!, _localTsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localTsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {orderId, subid};
+  @override
+  OrderLinePackError map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OrderLinePackError(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
+      orderId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}order_id'],
+          )!,
+      subid:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}subid'],
+          )!,
+      measureId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}measure_id'],
+          )!,
+      volume:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.double,
+            data['${effectivePrefix}volume'],
+          )!,
+      groupCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_code'],
+      ),
+      localTs:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}local_ts'],
+          )!,
+    );
+  }
+
+  @override
+  $OrderLinePackErrorsTable createAlias(String alias) {
+    return $OrderLinePackErrorsTable(attachedDatabase, alias);
+  }
+}
+
+class OrderLinePackError extends DataClass
+    implements Insertable<OrderLinePackError> {
+  final int? id;
+  final int orderId;
+  final int subid;
+  final int measureId;
+  final double volume;
+  final String? groupCode;
+  final DateTime localTs;
+  const OrderLinePackError({
+    this.id,
+    required this.orderId,
+    required this.subid,
+    required this.measureId,
+    required this.volume,
+    this.groupCode,
+    required this.localTs,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    map['order_id'] = Variable<int>(orderId);
+    map['subid'] = Variable<int>(subid);
+    map['measure_id'] = Variable<int>(measureId);
+    map['volume'] = Variable<double>(volume);
+    if (!nullToAbsent || groupCode != null) {
+      map['group_code'] = Variable<String>(groupCode);
+    }
+    map['local_ts'] = Variable<DateTime>(localTs);
+    return map;
+  }
+
+  OrderLinePackErrorsCompanion toCompanion(bool nullToAbsent) {
+    return OrderLinePackErrorsCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      orderId: Value(orderId),
+      subid: Value(subid),
+      measureId: Value(measureId),
+      volume: Value(volume),
+      groupCode:
+          groupCode == null && nullToAbsent
+              ? const Value.absent()
+              : Value(groupCode),
+      localTs: Value(localTs),
+    );
+  }
+
+  factory OrderLinePackError.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OrderLinePackError(
+      id: serializer.fromJson<int?>(json['id']),
+      orderId: serializer.fromJson<int>(json['orderId']),
+      subid: serializer.fromJson<int>(json['subid']),
+      measureId: serializer.fromJson<int>(json['measureId']),
+      volume: serializer.fromJson<double>(json['volume']),
+      groupCode: serializer.fromJson<String?>(json['groupCode']),
+      localTs: serializer.fromJson<DateTime>(json['localTs']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int?>(id),
+      'orderId': serializer.toJson<int>(orderId),
+      'subid': serializer.toJson<int>(subid),
+      'measureId': serializer.toJson<int>(measureId),
+      'volume': serializer.toJson<double>(volume),
+      'groupCode': serializer.toJson<String?>(groupCode),
+      'localTs': serializer.toJson<DateTime>(localTs),
+    };
+  }
+
+  OrderLinePackError copyWith({
+    Value<int?> id = const Value.absent(),
+    int? orderId,
+    int? subid,
+    int? measureId,
+    double? volume,
+    Value<String?> groupCode = const Value.absent(),
+    DateTime? localTs,
+  }) => OrderLinePackError(
+    id: id.present ? id.value : this.id,
+    orderId: orderId ?? this.orderId,
+    subid: subid ?? this.subid,
+    measureId: measureId ?? this.measureId,
+    volume: volume ?? this.volume,
+    groupCode: groupCode.present ? groupCode.value : this.groupCode,
+    localTs: localTs ?? this.localTs,
+  );
+  OrderLinePackError copyWithCompanion(OrderLinePackErrorsCompanion data) {
+    return OrderLinePackError(
+      id: data.id.present ? data.id.value : this.id,
+      orderId: data.orderId.present ? data.orderId.value : this.orderId,
+      subid: data.subid.present ? data.subid.value : this.subid,
+      measureId: data.measureId.present ? data.measureId.value : this.measureId,
+      volume: data.volume.present ? data.volume.value : this.volume,
+      groupCode: data.groupCode.present ? data.groupCode.value : this.groupCode,
+      localTs: data.localTs.present ? data.localTs.value : this.localTs,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLinePackError(')
+          ..write('id: $id, ')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('measureId: $measureId, ')
+          ..write('volume: $volume, ')
+          ..write('groupCode: $groupCode, ')
+          ..write('localTs: $localTs')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, orderId, subid, measureId, volume, groupCode, localTs);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OrderLinePackError &&
+          other.id == this.id &&
+          other.orderId == this.orderId &&
+          other.subid == this.subid &&
+          other.measureId == this.measureId &&
+          other.volume == this.volume &&
+          other.groupCode == this.groupCode &&
+          other.localTs == this.localTs);
+}
+
+class OrderLinePackErrorsCompanion extends UpdateCompanion<OrderLinePackError> {
+  final Value<int?> id;
+  final Value<int> orderId;
+  final Value<int> subid;
+  final Value<int> measureId;
+  final Value<double> volume;
+  final Value<String?> groupCode;
+  final Value<DateTime> localTs;
+  final Value<int> rowid;
+  const OrderLinePackErrorsCompanion({
+    this.id = const Value.absent(),
+    this.orderId = const Value.absent(),
+    this.subid = const Value.absent(),
+    this.measureId = const Value.absent(),
+    this.volume = const Value.absent(),
+    this.groupCode = const Value.absent(),
+    this.localTs = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OrderLinePackErrorsCompanion.insert({
+    this.id = const Value.absent(),
+    required int orderId,
+    required int subid,
+    required int measureId,
+    required double volume,
+    this.groupCode = const Value.absent(),
+    required DateTime localTs,
+    this.rowid = const Value.absent(),
+  }) : orderId = Value(orderId),
+       subid = Value(subid),
+       measureId = Value(measureId),
+       volume = Value(volume),
+       localTs = Value(localTs);
+  static Insertable<OrderLinePackError> custom({
+    Expression<int>? id,
+    Expression<int>? orderId,
+    Expression<int>? subid,
+    Expression<int>? measureId,
+    Expression<double>? volume,
+    Expression<String>? groupCode,
+    Expression<DateTime>? localTs,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (orderId != null) 'order_id': orderId,
+      if (subid != null) 'subid': subid,
+      if (measureId != null) 'measure_id': measureId,
+      if (volume != null) 'volume': volume,
+      if (groupCode != null) 'group_code': groupCode,
+      if (localTs != null) 'local_ts': localTs,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OrderLinePackErrorsCompanion copyWith({
+    Value<int?>? id,
+    Value<int>? orderId,
+    Value<int>? subid,
+    Value<int>? measureId,
+    Value<double>? volume,
+    Value<String?>? groupCode,
+    Value<DateTime>? localTs,
+    Value<int>? rowid,
+  }) {
+    return OrderLinePackErrorsCompanion(
+      id: id ?? this.id,
+      orderId: orderId ?? this.orderId,
+      subid: subid ?? this.subid,
+      measureId: measureId ?? this.measureId,
+      volume: volume ?? this.volume,
+      groupCode: groupCode ?? this.groupCode,
+      localTs: localTs ?? this.localTs,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (orderId.present) {
+      map['order_id'] = Variable<int>(orderId.value);
+    }
+    if (subid.present) {
+      map['subid'] = Variable<int>(subid.value);
+    }
+    if (measureId.present) {
+      map['measure_id'] = Variable<int>(measureId.value);
+    }
+    if (volume.present) {
+      map['volume'] = Variable<double>(volume.value);
+    }
+    if (groupCode.present) {
+      map['group_code'] = Variable<String>(groupCode.value);
+    }
+    if (localTs.present) {
+      map['local_ts'] = Variable<DateTime>(localTs.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OrderLinePackErrorsCompanion(')
+          ..write('id: $id, ')
+          ..write('orderId: $orderId, ')
+          ..write('subid: $subid, ')
+          ..write('measureId: $measureId, ')
+          ..write('volume: $volume, ')
+          ..write('groupCode: $groupCode, ')
+          ..write('localTs: $localTs, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $BuyerDeliveryMarksTable extends BuyerDeliveryMarks
     with TableInfo<$BuyerDeliveryMarksTable, BuyerDeliveryMark> {
   @override
@@ -5839,6 +6354,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $OrderLineCodesTable orderLineCodes = $OrderLineCodesTable(this);
   late final $OrderLineStorageCodesTable orderLineStorageCodes =
       $OrderLineStorageCodesTable(this);
+  late final $OrderLinePackErrorsTable orderLinePackErrors =
+      $OrderLinePackErrorsTable(this);
   late final $BuyerDeliveryMarksTable buyerDeliveryMarks =
       $BuyerDeliveryMarksTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
@@ -5877,6 +6394,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     orderLines,
     orderLineCodes,
     orderLineStorageCodes,
+    orderLinePackErrors,
     buyerDeliveryMarks,
     prefs,
   ];
@@ -7646,6 +8164,7 @@ typedef $$OrderLinesTableCreateCompanionBuilder =
       required double deliveredVol,
       required double price,
       required bool needMarking,
+      required int minMeasureId,
       required List<OrderLineBarcode> barcodeRels,
       Value<int> rowid,
     });
@@ -7659,6 +8178,7 @@ typedef $$OrderLinesTableUpdateCompanionBuilder =
       Value<double> deliveredVol,
       Value<double> price,
       Value<bool> needMarking,
+      Value<int> minMeasureId,
       Value<List<OrderLineBarcode>> barcodeRels,
       Value<int> rowid,
     });
@@ -7709,6 +8229,11 @@ class $$OrderLinesTableFilterComposer
 
   ColumnFilters<bool> get needMarking => $composableBuilder(
     column: $table.needMarking,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minMeasureId => $composableBuilder(
+    column: $table.minMeasureId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7772,6 +8297,11 @@ class $$OrderLinesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get minMeasureId => $composableBuilder(
+    column: $table.minMeasureId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get barcodeRels => $composableBuilder(
     column: $table.barcodeRels,
     builder: (column) => ColumnOrderings(column),
@@ -7812,6 +8342,11 @@ class $$OrderLinesTableAnnotationComposer
 
   GeneratedColumn<bool> get needMarking => $composableBuilder(
     column: $table.needMarking,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get minMeasureId => $composableBuilder(
+    column: $table.minMeasureId,
     builder: (column) => column,
   );
 
@@ -7861,6 +8396,7 @@ class $$OrderLinesTableTableManager
                 Value<double> deliveredVol = const Value.absent(),
                 Value<double> price = const Value.absent(),
                 Value<bool> needMarking = const Value.absent(),
+                Value<int> minMeasureId = const Value.absent(),
                 Value<List<OrderLineBarcode>> barcodeRels =
                     const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7873,6 +8409,7 @@ class $$OrderLinesTableTableManager
                 deliveredVol: deliveredVol,
                 price: price,
                 needMarking: needMarking,
+                minMeasureId: minMeasureId,
                 barcodeRels: barcodeRels,
                 rowid: rowid,
               ),
@@ -7886,6 +8423,7 @@ class $$OrderLinesTableTableManager
                 required double deliveredVol,
                 required double price,
                 required bool needMarking,
+                required int minMeasureId,
                 required List<OrderLineBarcode> barcodeRels,
                 Value<int> rowid = const Value.absent(),
               }) => OrderLinesCompanion.insert(
@@ -7897,6 +8435,7 @@ class $$OrderLinesTableTableManager
                 deliveredVol: deliveredVol,
                 price: price,
                 needMarking: needMarking,
+                minMeasureId: minMeasureId,
                 barcodeRels: barcodeRels,
                 rowid: rowid,
               ),
@@ -8427,6 +8966,270 @@ typedef $$OrderLineStorageCodesTableProcessedTableManager =
       OrderLineStorageCode,
       PrefetchHooks Function()
     >;
+typedef $$OrderLinePackErrorsTableCreateCompanionBuilder =
+    OrderLinePackErrorsCompanion Function({
+      Value<int?> id,
+      required int orderId,
+      required int subid,
+      required int measureId,
+      required double volume,
+      Value<String?> groupCode,
+      required DateTime localTs,
+      Value<int> rowid,
+    });
+typedef $$OrderLinePackErrorsTableUpdateCompanionBuilder =
+    OrderLinePackErrorsCompanion Function({
+      Value<int?> id,
+      Value<int> orderId,
+      Value<int> subid,
+      Value<int> measureId,
+      Value<double> volume,
+      Value<String?> groupCode,
+      Value<DateTime> localTs,
+      Value<int> rowid,
+    });
+
+class $$OrderLinePackErrorsTableFilterComposer
+    extends Composer<_$AppDataStore, $OrderLinePackErrorsTable> {
+  $$OrderLinePackErrorsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get orderId => $composableBuilder(
+    column: $table.orderId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get subid => $composableBuilder(
+    column: $table.subid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get measureId => $composableBuilder(
+    column: $table.measureId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get volume => $composableBuilder(
+    column: $table.volume,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupCode => $composableBuilder(
+    column: $table.groupCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get localTs => $composableBuilder(
+    column: $table.localTs,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$OrderLinePackErrorsTableOrderingComposer
+    extends Composer<_$AppDataStore, $OrderLinePackErrorsTable> {
+  $$OrderLinePackErrorsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get orderId => $composableBuilder(
+    column: $table.orderId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get subid => $composableBuilder(
+    column: $table.subid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get measureId => $composableBuilder(
+    column: $table.measureId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get volume => $composableBuilder(
+    column: $table.volume,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupCode => $composableBuilder(
+    column: $table.groupCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get localTs => $composableBuilder(
+    column: $table.localTs,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$OrderLinePackErrorsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $OrderLinePackErrorsTable> {
+  $$OrderLinePackErrorsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get orderId =>
+      $composableBuilder(column: $table.orderId, builder: (column) => column);
+
+  GeneratedColumn<int> get subid =>
+      $composableBuilder(column: $table.subid, builder: (column) => column);
+
+  GeneratedColumn<int> get measureId =>
+      $composableBuilder(column: $table.measureId, builder: (column) => column);
+
+  GeneratedColumn<double> get volume =>
+      $composableBuilder(column: $table.volume, builder: (column) => column);
+
+  GeneratedColumn<String> get groupCode =>
+      $composableBuilder(column: $table.groupCode, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get localTs =>
+      $composableBuilder(column: $table.localTs, builder: (column) => column);
+}
+
+class $$OrderLinePackErrorsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $OrderLinePackErrorsTable,
+          OrderLinePackError,
+          $$OrderLinePackErrorsTableFilterComposer,
+          $$OrderLinePackErrorsTableOrderingComposer,
+          $$OrderLinePackErrorsTableAnnotationComposer,
+          $$OrderLinePackErrorsTableCreateCompanionBuilder,
+          $$OrderLinePackErrorsTableUpdateCompanionBuilder,
+          (
+            OrderLinePackError,
+            BaseReferences<
+              _$AppDataStore,
+              $OrderLinePackErrorsTable,
+              OrderLinePackError
+            >,
+          ),
+          OrderLinePackError,
+          PrefetchHooks Function()
+        > {
+  $$OrderLinePackErrorsTableTableManager(
+    _$AppDataStore db,
+    $OrderLinePackErrorsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$OrderLinePackErrorsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$OrderLinePackErrorsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$OrderLinePackErrorsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<int> orderId = const Value.absent(),
+                Value<int> subid = const Value.absent(),
+                Value<int> measureId = const Value.absent(),
+                Value<double> volume = const Value.absent(),
+                Value<String?> groupCode = const Value.absent(),
+                Value<DateTime> localTs = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => OrderLinePackErrorsCompanion(
+                id: id,
+                orderId: orderId,
+                subid: subid,
+                measureId: measureId,
+                volume: volume,
+                groupCode: groupCode,
+                localTs: localTs,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                required int orderId,
+                required int subid,
+                required int measureId,
+                required double volume,
+                Value<String?> groupCode = const Value.absent(),
+                required DateTime localTs,
+                Value<int> rowid = const Value.absent(),
+              }) => OrderLinePackErrorsCompanion.insert(
+                id: id,
+                orderId: orderId,
+                subid: subid,
+                measureId: measureId,
+                volume: volume,
+                groupCode: groupCode,
+                localTs: localTs,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$OrderLinePackErrorsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $OrderLinePackErrorsTable,
+      OrderLinePackError,
+      $$OrderLinePackErrorsTableFilterComposer,
+      $$OrderLinePackErrorsTableOrderingComposer,
+      $$OrderLinePackErrorsTableAnnotationComposer,
+      $$OrderLinePackErrorsTableCreateCompanionBuilder,
+      $$OrderLinePackErrorsTableUpdateCompanionBuilder,
+      (
+        OrderLinePackError,
+        BaseReferences<
+          _$AppDataStore,
+          $OrderLinePackErrorsTable,
+          OrderLinePackError
+        >,
+      ),
+      OrderLinePackError,
+      PrefetchHooks Function()
+    >;
 typedef $$BuyerDeliveryMarksTableCreateCompanionBuilder =
     BuyerDeliveryMarksCompanion Function({
       Value<int?> id,
@@ -8915,6 +9718,8 @@ class $AppDataStoreManager {
       $$OrderLineCodesTableTableManager(_db, _db.orderLineCodes);
   $$OrderLineStorageCodesTableTableManager get orderLineStorageCodes =>
       $$OrderLineStorageCodesTableTableManager(_db, _db.orderLineStorageCodes);
+  $$OrderLinePackErrorsTableTableManager get orderLinePackErrors =>
+      $$OrderLinePackErrorsTableTableManager(_db, _db.orderLinePackErrors);
   $$BuyerDeliveryMarksTableTableManager get buyerDeliveryMarks =>
       $$BuyerDeliveryMarksTableTableManager(_db, _db.buyerDeliveryMarks);
   $$PrefsTableTableManager get prefs =>
@@ -8947,6 +9752,8 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $OrderLineCodesTable get orderLineCodes => attachedDatabase.orderLineCodes;
   $OrderLineStorageCodesTable get orderLineStorageCodes =>
       attachedDatabase.orderLineStorageCodes;
+  $OrderLinePackErrorsTable get orderLinePackErrors =>
+      attachedDatabase.orderLinePackErrors;
   $BuyerDeliveryMarksTable get buyerDeliveryMarks =>
       attachedDatabase.buyerDeliveryMarks;
 }

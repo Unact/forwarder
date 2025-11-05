@@ -71,6 +71,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiDeliveryData> deliverOrder(
     int orderId,
     List<Map<String, dynamic>> codes,
+    List<Map<String, dynamic>> packErrors,
     bool delivered,
     Map<String, dynamic> location
   ) async {
@@ -79,6 +80,7 @@ extension ForwarderApi on RenewApi {
       dataGenerator: () => {
         'sale_order_id': orderId,
         'codes': codes,
+        'pack_errors': packErrors,
         'delivered': delivered,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
