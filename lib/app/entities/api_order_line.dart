@@ -10,6 +10,7 @@ class ApiOrderLine extends Equatable {
   final double price;
   final bool needMarking;
   final List<String> barcodeRels;
+  final int minMeasureId;
 
   const ApiOrderLine({
     required this.orderId,
@@ -20,7 +21,8 @@ class ApiOrderLine extends Equatable {
     required this.deliveredVol,
     required this.price,
     required this.needMarking,
-    required this.barcodeRels
+    required this.barcodeRels,
+    required this.minMeasureId
   });
 
   factory ApiOrderLine.fromJson(dynamic json) {
@@ -33,7 +35,8 @@ class ApiOrderLine extends Equatable {
       deliveredVol: Parsing.parseDouble(json['delivered_vol'])!,
       price: Parsing.parseDouble(json['price'])!,
       needMarking: json['need_marking'],
-      barcodeRels: (json['barcode_rels'] as String).split(',').where((e) => e.isNotEmpty).toList()
+      barcodeRels: (json['barcode_rels'] as String).split(',').where((e) => e.isNotEmpty).toList(),
+      minMeasureId: json['min_measure_id']
     );
   }
 
@@ -47,7 +50,8 @@ class ApiOrderLine extends Equatable {
       deliveredVol: deliveredVol,
       price: price,
       needMarking: needMarking,
-      barcodeRels: barcodeRels.map((e) => OrderLineBarcode.fromDart(e)).toList()
+      barcodeRels: barcodeRels.map((e) => OrderLineBarcode.fromDart(e)).toList(),
+      minMeasureId: minMeasureId
     );
   }
 
@@ -61,6 +65,7 @@ class ApiOrderLine extends Equatable {
     deliveredVol,
     price,
     needMarking,
-    barcodeRels
+    barcodeRels,
+    minMeasureId
   ];
 }

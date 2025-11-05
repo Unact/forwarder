@@ -51,6 +51,21 @@ class OrdersRepository extends BaseRepository {
     return dataStore.ordersDao.watchOrderById(id);
   }
 
+  Future<void> addOrderLinePackError({
+    required OrderLine orderLine,
+    required double volume
+  }) async {
+    OrderLinePackErrorsCompanion newOrderLinePackError = OrderLinePackErrorsCompanion(
+      orderId: Value(orderLine.orderId),
+      subid: Value(orderLine.subid),
+      measureId: Value(orderLine.minMeasureId),
+      volume: Value(volume),
+      localTs: Value(DateTime.now())
+    );
+
+    await dataStore.ordersDao.upsertOrderLinePackError(newOrderLinePackError);
+  }
+
   Future<void> addOrderLineCode({
     required OrderLine orderLine,
     required String code,
@@ -80,7 +95,13 @@ class OrdersRepository extends BaseRepository {
     await dataStore.ordersDao.upsertOrderLineCode(updatedOrderLineCode);
   }
 
-  Future<void> deliveryOrder(Order order, bool delivered, List<OrderLineCode> orderLineCodes, Position position) async {
+  Future<void> deliveryOrder(
+    Order order,
+    bool delivered,
+    List<OrderLineCode> orderLineCodes,
+    List<OrderLinePackError> orderLinePackErrors,
+    Position position
+  ) async {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: Value(delivered));
     List<Map<String, dynamic>> updatedOrderLineCodes = orderLineCodes.map((e) => {
       'subid': e.subid,
@@ -88,6 +109,12 @@ class OrdersRepository extends BaseRepository {
       'group_code': e.groupCode,
       'markirovka': e.isDataMatrix,
       'amount': e.amount,
+      'local_ts': e.localTs.toIso8601String()
+    }).toList();
+    List<Map<String, dynamic>> updatedOrderLinePackErrors = orderLinePackErrors.map((e) => {
+      'subid': e.subid,
+      'volume': e.volume,
+      'measure_id': e.measureId,
       'local_ts': e.localTs.toIso8601String()
     }).toList();
     Map<String, dynamic> location = {
@@ -104,6 +131,7 @@ class OrdersRepository extends BaseRepository {
       final ApiDeliveryData data = await api.deliverOrder(
         updatedOrder.id.value,
         updatedOrderLineCodes,
+        updatedOrderLinePackErrors,
         delivered,
         location
       );
@@ -111,10 +139,12 @@ class OrdersRepository extends BaseRepository {
       await dataStore.transaction(() async {
         List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
         List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLinePackError> orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
         if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
       });
     } on ApiException catch(e) {
@@ -136,10 +166,12 @@ class OrdersRepository extends BaseRepository {
       await dataStore.transaction(() async {
         List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
         List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLinePackError> orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
         if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
       });
     } on ApiException catch(e) {
@@ -171,6 +203,7 @@ class OrdersRepository extends BaseRepository {
         List<Order> orders = data.orders.map((e) => e.toDatabaseEnt()).toList();
         List<OrderLine> orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
         List<OrderLineCode> orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
+        List<OrderLinePackError> orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
         List<BuyerDeliveryMark> buyerDeliveryMarks = data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
         List<Debt> debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
@@ -178,6 +211,7 @@ class OrdersRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrders(orders, false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
+        await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
         await dataStore.paymentsDao.loadDebts(debts, false);
       });
     } on ApiException catch(e) {
@@ -224,5 +258,9 @@ class OrdersRepository extends BaseRepository {
 
   Future<void> clearOrderLineCodesByOrderLineSubid(OrderLine orderLine) async {
     await dataStore.ordersDao.clearOrderLineCodesByOrderLineSubid(orderLine.orderId, orderLine.subid);
+  }
+
+  Future<void> deleteOrderLinePackErrorByOrderLineSubid(OrderLinePackError packError) async {
+    await dataStore.ordersDao.deleteOrderLinePackErrorByOrderLineSubid(packError.orderId, packError.subid);
   }
 }

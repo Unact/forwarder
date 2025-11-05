@@ -43,6 +43,22 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     await ordersRepository.clearOrderLineCodesByOrderLineSubid(codeLine.orderLine);
   }
 
+  Future<void> deleteOrderLinePackError(OrderLinePackError packError) async {
+    await ordersRepository.deleteOrderLinePackErrorByOrderLineSubid(packError);
+  }
+
+  Future<void> addPackError(OrderLine orderLine, double volume) async {
+    if (orderLine.vol < volume) {
+      emit(state.copyWith(
+        message: 'Количество недовложения не может быть больше чем количество позиции',
+        status: OrderStateStatus.failure)
+      );
+      return;
+    }
+
+    await ordersRepository.addOrderLinePackError(orderLine: orderLine, volume: volume);
+  }
+
   void tryShowScan() async {
     if (!await Permissions.hasCameraPermissions()) {
       emit(state.copyWith(message: 'Не разрешено использование камеры', status: OrderStateStatus.failure));
@@ -108,6 +124,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
         state.order,
         state.delivered,
         state.codeLines.map((e) => e.orderLineCodes).expand((e) => e).toList(),
+        state.codeLines.map((e) => e.orderLinePackErrors).expand((e) => e).toList(),
         location
       );
 

@@ -30,6 +30,7 @@ part 'users_dao.dart';
     OrderLines,
     OrderLineCodes,
     OrderLineStorageCodes,
+    OrderLinePackErrors,
     BuyerDeliveryMarks,
     Prefs
   ],
@@ -108,7 +109,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

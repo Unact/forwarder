@@ -9,6 +9,7 @@ part of 'database.dart';
     OrderLines,
     OrderLineCodes,
     OrderLineStorageCodes,
+    OrderLinePackErrors,
     BuyerDeliveryMarks
   ]
 )
@@ -35,6 +36,10 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     await db._loadData(orderLineCodes, list, clearTable);
   }
 
+  Future<void> loadOrderLinePackErrors(List<OrderLinePackError> list, [bool clearTable = true]) async {
+    await db._loadData(orderLinePackErrors, list, clearTable);
+  }
+
   Future<void> loadOrderLineStorageCodes(List<OrderLineStorageCode> list) async {
     await db._loadData(orderLineStorageCodes, list);
   }
@@ -54,19 +59,22 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   Stream<List<OrderLineWithCode>> watchOrderLinesByOrderId(int orderId) {
     final orderLineStream = (select(orderLines)..where((tbl) => tbl.orderId.equals(orderId))).watch();
     final orderLineCodeStream = (select(orderLineCodes)..where((tbl) => tbl.orderId.equals(orderId))).watch();
+    final orderLinePackErrorStream = (select(orderLinePackErrors)..where((tbl) => tbl.orderId.equals(orderId))).watch();
     final orderLineStorageCodeStream = (
       select(orderLineStorageCodes)..where((tbl) => tbl.orderId.equals(orderId))
     ).watch();
 
-    return Rx.combineLatest3(
+    return Rx.combineLatest4(
       orderLineStream,
       orderLineCodeStream,
+      orderLinePackErrorStream,
       orderLineStorageCodeStream,
-      (orderLineRows, orderLineCodeRows, orderLineStorageCodeRows) {
+      (orderLineRows, orderLineCodeRows, orderLinePackErrorRows, orderLineStorageCodeRows) {
         return orderLineRows.map(((e) {
           return OrderLineWithCode(
             e,
             orderLineCodeRows.where((element) => element.subid == e.subid).toList(),
+            orderLinePackErrorRows.where((element) => element.subid == e.subid).toList(),
             orderLineStorageCodeRows.where((element) => element.subid == e.subid).toList()
           );
         })).toList();
@@ -164,6 +172,18 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     return into(orderLineCodes).insertOnConflictUpdate(orderLineCode);
   }
 
+  Future<int> upsertOrderLinePackError(OrderLinePackErrorsCompanion orderLinePackError) {
+    return into(orderLinePackErrors).insertOnConflictUpdate(orderLinePackError);
+  }
+
+  Future<void> deleteOrderLinePackErrorByOrderLineSubid(int orderId, int subid) async {
+    await (
+      delete(orderLinePackErrors)
+        ..where((tbl) => tbl.orderId.equals(orderId))
+        ..where((tbl) => tbl.subid.equals(subid))
+    ).go();
+  }
+
   Future<void> clearOrderLineCodesByOrderId(int orderId) async {
     await (delete(orderLineCodes)..where((tbl) => tbl.orderId.equals(orderId))).go();
   }
@@ -181,8 +201,14 @@ class OrderLineWithCode {
   final OrderLine orderLine;
   final List<OrderLineCode> orderLineCodes;
   final List<OrderLineStorageCode> orderLineStorageCodes;
+  final List<OrderLinePackError> orderLinePackErrors;
 
-  OrderLineWithCode(this.orderLine, this.orderLineCodes, this.orderLineStorageCodes);
+  OrderLineWithCode(
+    this.orderLine,
+    this.orderLineCodes,
+    this.orderLinePackErrors,
+    this.orderLineStorageCodes
+  );
 }
 
 class BuyerEx {

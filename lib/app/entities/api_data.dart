@@ -8,6 +8,7 @@ class ApiData extends Equatable {
   final List<ApiOrder> orders;
   final List<ApiOrderLine> orderLines;
   final List<ApiOrderLineCode> orderLineCodes;
+  final List<ApiOrderLinePackError> orderLinePackErrors;
   final List<ApiOrderLineStorageCode> orderLineStorageCodes;
   final List<ApiIncome> incomes;
   final List<ApiRecept> recepts;
@@ -22,6 +23,7 @@ class ApiData extends Equatable {
     required this.recepts,
     required this.orderLines,
     required this.orderLineCodes,
+    required this.orderLinePackErrors,
     required this.orderLineStorageCodes
   });
 
@@ -38,6 +40,8 @@ class ApiData extends Equatable {
     List<ApiOrderLine> orderLines = json['order_lines'].map<ApiOrderLine>((e) => ApiOrderLine.fromJson(e)).toList();
     List<ApiOrderLineCode> orderLineCodes = json['order_line_codes']
       .map<ApiOrderLineCode>((e) => ApiOrderLineCode.fromJson(e)).toList();
+    List<ApiOrderLinePackError> orderLinePackErrors = json['order_line_pack_errors']
+      .map<ApiOrderLinePackError>((e) => ApiOrderLinePackError.fromJson(e)).toList();
     List<ApiOrderLineStorageCode> orderLineStorageCodes = json['order_line_storage_codes']
       .map<ApiOrderLineStorageCode>((e) => ApiOrderLineStorageCode.fromJson(e)).toList();
 
@@ -51,6 +55,7 @@ class ApiData extends Equatable {
       recepts: recepts,
       orderLines: orderLines,
       orderLineCodes: orderLineCodes,
+      orderLinePackErrors: orderLinePackErrors,
       orderLineStorageCodes: orderLineStorageCodes
     );
   }
@@ -66,6 +71,7 @@ class ApiData extends Equatable {
     recepts,
     orderLines,
     orderLineCodes,
+    orderLinePackErrors,
     orderLineStorageCodes
   ];
 }

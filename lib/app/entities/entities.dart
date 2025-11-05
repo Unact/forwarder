@@ -14,6 +14,7 @@ part 'api_delivery_data.dart';
 part 'api_data.dart';
 part 'api_income.dart';
 part 'api_order_line_code.dart';
+part 'api_order_line_pack_error.dart';
 part 'api_order_line_storage_code.dart';
 part 'api_order_line.dart';
 part 'api_order.dart';
