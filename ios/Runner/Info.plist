@@ -62,6 +62,8 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Для сканирования кодов маркировки</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Для выбора фотографий точки</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -2,12 +2,18 @@ part of 'payments_page.dart';
 
 class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus> {
   final AppRepository appRepository;
+  final BuyersRepository buyersRepository;
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
   StreamSubscription<List<BuyerEx>>? buyersSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
-  PaymentsViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) : super(PaymentsState());
+  PaymentsViewModel(
+    this.appRepository,
+    this.buyersRepository,
+    this.ordersRepository,
+    this.paymentsRepository
+  ) : super(PaymentsState());
 
   @override
   PaymentsStateStatus get status => state.status;
@@ -16,7 +22,7 @@ class PaymentsViewModel extends PageViewModel<PaymentsState, PaymentsStateStatus
   Future<void> initViewModel() async {
     await super.initViewModel();
 
-    buyersSubscription = ordersRepository.watchBuyers().listen((event) {
+    buyersSubscription = buyersRepository.watchBuyers().listen((event) {
       emit(state.copyWith(status: PaymentsStateStatus.dataLoaded, buyers: event));
     });
     cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {

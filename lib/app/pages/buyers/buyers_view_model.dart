@@ -3,12 +3,18 @@ part of 'buyers_page.dart';
 class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
   final AppRepository appRepository;
   final OrdersRepository ordersRepository;
+  final BuyersRepository buyersRepository;
   final PaymentsRepository paymentsRepository;
 
   StreamSubscription<List<BuyerEx>>? buyersSubscription;
   StreamSubscription<List<Order>>? ordersSubscription;
 
-  BuyersViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository) : super(BuyersState());
+  BuyersViewModel(
+    this.appRepository,
+    this.buyersRepository,
+    this.ordersRepository,
+    this.paymentsRepository
+  ) : super(BuyersState());
 
   @override
   BuyersStateStatus get status => state.status;
@@ -17,7 +23,7 @@ class BuyersViewModel extends PageViewModel<BuyersState, BuyersStateStatus> {
   Future<void> initViewModel() async {
     await super.initViewModel();
 
-    buyersSubscription = ordersRepository.watchBuyers().listen((event) {
+    buyersSubscription = buyersRepository.watchBuyers().listen((event) {
       emit(state.copyWith(status: BuyersStateStatus.dataLoaded, buyers: event));
     });
     ordersSubscription = ordersRepository.watchOrders().listen((event) {

@@ -160,7 +160,7 @@ class _DebtViewState extends State<_DebtView> {
                       errorMaxLines: 2,
                       isDense: true
                     ),
-                    onTap: () => vm.updatePaymentSum(Parsing.parseDouble(_controller!.text))
+                    onChanged: (_) => vm.updatePaymentSum(Parsing.parseDouble(_controller!.text))
                   )
               )
             ],

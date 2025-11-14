@@ -2,6 +2,7 @@ part of 'buyer_page.dart';
 
 class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   final AppRepository appRepository;
+  final BuyersRepository buyersRepository;
   final OrdersRepository ordersRepository;
   final PaymentsRepository paymentsRepository;
 
@@ -12,6 +13,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
   BuyerViewModel(
     this.appRepository,
+    this.buyersRepository,
     this.ordersRepository,
     this.paymentsRepository,
     {
@@ -27,7 +29,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> initViewModel() async {
     await super.initViewModel();
 
-    buyerSubscription = ordersRepository.watchBuyerById(state.buyer.buyer.buyerId, state.buyer.buyer.deliveryId)
+    buyerSubscription = buyersRepository.watchBuyerById(state.buyer.buyer.buyerId, state.buyer.buyer.deliveryId)
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, buyer: event));
       });
@@ -84,6 +86,19 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     ));
   }
 
+  Future<void> tryOpenDeliveryPointPage() async {
+    final pointEx = await buyersRepository.getBuyerDeliveryPointByBuyerId(state.buyer.buyer.buyerId);
+
+    if (pointEx != null) {
+      emit(state.copyWith(status: BuyerStateStatus.deliveryPointOpened, pointEx: pointEx));
+      return;
+    }
+
+    final newPointEx = await buyersRepository.addBuyerDeliveryPoint(state.buyer.buyer.buyerId);
+
+    emit(state.copyWith(status: BuyerStateStatus.deliveryPointOpened, pointEx: newPointEx));
+  }
+
   Future<void> copyCoords() async {
     await Clipboard.setData(ClipboardData(text: '${state.buyer.buyer.latitude},${state.buyer.buyer.longitude}'));
 
@@ -117,7 +132,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> missed(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.missed(state.buyer.buyer, location),
+      (location) => buyersRepository.missed(state.buyer.buyer, location),
       'Отмечен недоезд до точки'
     );
   }
@@ -125,7 +140,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> arrive(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.arrive(state.buyer.buyer, location),
+      (location) => buyersRepository.arrive(state.buyer.buyer, location),
       'Отмечен приезд в точку'
     );
   }
@@ -133,7 +148,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   Future<void> depart(bool confirmed) async {
     await _markPoint(
       confirmed,
-      (location) => ordersRepository.depart(state.buyer.buyer, location),
+      (location) => buyersRepository.depart(state.buyer.buyer, location),
       'Отмечен отъезд из точки'
     );
   }

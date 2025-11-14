@@ -8,6 +8,7 @@ import '/app/data/database.dart';
 import '/app/pages/buyers/buyer/buyer_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
+import '/app/repositories/buyers_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 
@@ -24,6 +25,7 @@ class BuyersPage extends StatelessWidget {
     return BlocProvider<BuyersViewModel>(
       create: (context) => BuyersViewModel(
         RepositoryProvider.of<AppRepository>(context),
+        RepositoryProvider.of<BuyersRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
       ),

@@ -2,12 +2,17 @@ part of 'person_page.dart';
 
 class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
   final AppRepository appRepository;
+  final BuyersRepository buyersRepository;
   final UsersRepository usersRepository;
 
   StreamSubscription<AppInfoResult>? appInfoSubscription;
   StreamSubscription<User>? userSubscription;
 
-  PersonViewModel(this.appRepository, this.usersRepository) : super(PersonState(confirmationCallback: () {}));
+  PersonViewModel(
+    this.appRepository,
+    this.buyersRepository,
+    this.usersRepository
+  ) : super(PersonState(confirmationCallback: () {}));
 
   @override
   PersonStateStatus get status => state.status;
@@ -38,6 +43,7 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
     try {
       await usersRepository.logout();
       await appRepository.clearData();
+      await buyersRepository.clearFiles();
 
       emit(state.copyWith(status: PersonStateStatus.loggedOut));
     } on AppError catch(e) {

@@ -8,6 +8,7 @@ import '/app/constants/strings.dart';
 import '/app/data/database.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
+import '/app/repositories/buyers_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 
@@ -24,6 +25,7 @@ class PaymentsPage extends StatelessWidget {
     return BlocProvider<PaymentsViewModel>(
       create: (context) => PaymentsViewModel(
         RepositoryProvider.of<AppRepository>(context),
+        RepositoryProvider.of<BuyersRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
       ),
