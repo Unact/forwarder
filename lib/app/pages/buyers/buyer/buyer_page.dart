@@ -11,9 +11,11 @@ import '/app/data/database.dart';
 import '/app/entities/entities.dart';
 import '/app/pages/buyers/buyer/accept_payment/accept_payment_page.dart';
 import '/app/pages/buyers/buyer/debt/debt_page.dart';
+import '/app/pages/buyers/buyer/delivery_point/delivery_point_page.dart';
 import '/app/pages/buyers/buyer/order/order_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
+import '/app/repositories/buyers_repository.dart';
 import '/app/repositories/orders_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/utils/geo.dart';
@@ -35,6 +37,7 @@ class BuyerPage extends StatelessWidget {
     return BlocProvider<BuyerViewModel>(
       create: (context) => BuyerViewModel(
         RepositoryProvider.of<AppRepository>(context),
+        RepositoryProvider.of<BuyersRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
         buyer: buyer
@@ -94,9 +97,18 @@ class _BuyerViewState extends State<_BuyerView> {
   Widget build(BuildContext context) {
     return BlocConsumer<BuyerViewModel, BuyerState>(
       builder: (context, state) {
+        BuyerViewModel vm = context.read<BuyerViewModel>();
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('Точка'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_document),
+                onPressed: vm.tryOpenDeliveryPointPage,
+                tooltip: 'Карточка покупателя'
+              )
+            ],
           ),
           persistentFooterButtons: [FooterButtonsRow(children: _buildFooterButtons(context))],
           body: ListView(
@@ -136,9 +148,21 @@ class _BuyerViewState extends State<_BuyerView> {
         case BuyerStateStatus.paymentFinished:
           Misc.showMessage(context, state.message);
           break;
+        case BuyerStateStatus.deliveryPointOpened:
+          openDeliveryPointPage(state.pointEx!);
+          break;
         default:
       }
       }
+    );
+  }
+
+  Future<void> openDeliveryPointPage(BuyerDeliveryPointEx pointEx) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => DeliveryPointPage(pointEx: pointEx),
+      )
     );
   }
 
@@ -348,7 +372,7 @@ class _BuyerViewState extends State<_BuyerView> {
             errorMaxLines: 2,
             isDense: true
           ),
-          onTap: () => vm.updateDebtPaymentSum(debt, Parsing.parseDouble(controller!.text))
+          onChanged: (_) => vm.updateDebtPaymentSum(debt, Parsing.parseDouble(controller!.text))
         )
       ),
       subtitle: RichText(

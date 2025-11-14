@@ -6163,6 +6163,1054 @@ class BuyerDeliveryMarksCompanion extends UpdateCompanion<BuyerDeliveryMark> {
   }
 }
 
+class $BuyerDeliveryPointsTable extends BuyerDeliveryPoints
+    with TableInfo<$BuyerDeliveryPointsTable, BuyerDeliveryPoint> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BuyerDeliveryPointsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastSyncTimeMeta = const VerificationMeta(
+    'lastSyncTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncTime = GeneratedColumn<DateTime>(
+    'last_sync_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _needSyncMeta = const VerificationMeta(
+    'needSync',
+  );
+  @override
+  late final GeneratedColumn<bool> needSync = GeneratedColumn<bool>(
+    'need_sync',
+    aliasedName,
+    false,
+    generatedAs: GeneratedAs(
+      (isNew & BooleanExpressionOperators(isDeleted).not()) |
+          (BooleanExpressionOperators(isNew).not() &
+              ComparableExpr(lastSyncTime).isSmallerThan(timestamp)),
+      true,
+    ),
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("need_sync" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _isNewMeta = const VerificationMeta('isNew');
+  @override
+  late final GeneratedColumn<bool> isNew = GeneratedColumn<bool>(
+    'is_new',
+    aliasedName,
+    false,
+    generatedAs: GeneratedAs(lastSyncTime.isNull(), false),
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_new" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _buyerIdMeta = const VerificationMeta(
+    'buyerId',
+  );
+  @override
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
+    'buyer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _infoMeta = const VerificationMeta('info');
+  @override
+  late final GeneratedColumn<String> info = GeneratedColumn<String>(
+    'info',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    isDeleted,
+    timestamp,
+    lastSyncTime,
+    needSync,
+    isNew,
+    id,
+    buyerId,
+    phone,
+    info,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'buyer_delivery_points';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BuyerDeliveryPoint> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    }
+    if (data.containsKey('last_sync_time')) {
+      context.handle(
+        _lastSyncTimeMeta,
+        lastSyncTime.isAcceptableOrUnknown(
+          data['last_sync_time']!,
+          _lastSyncTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('need_sync')) {
+      context.handle(
+        _needSyncMeta,
+        needSync.isAcceptableOrUnknown(data['need_sync']!, _needSyncMeta),
+      );
+    }
+    if (data.containsKey('is_new')) {
+      context.handle(
+        _isNewMeta,
+        isNew.isAcceptableOrUnknown(data['is_new']!, _isNewMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('buyer_id')) {
+      context.handle(
+        _buyerIdMeta,
+        buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_buyerIdMeta);
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    }
+    if (data.containsKey('info')) {
+      context.handle(
+        _infoMeta,
+        info.isAcceptableOrUnknown(data['info']!, _infoMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BuyerDeliveryPoint map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BuyerDeliveryPoint(
+      isDeleted:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_deleted'],
+          )!,
+      timestamp:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}timestamp'],
+          )!,
+      lastSyncTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_sync_time'],
+      ),
+      needSync:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}need_sync'],
+          )!,
+      isNew:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_new'],
+          )!,
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      buyerId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}buyer_id'],
+          )!,
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      ),
+      info: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}info'],
+      ),
+    );
+  }
+
+  @override
+  $BuyerDeliveryPointsTable createAlias(String alias) {
+    return $BuyerDeliveryPointsTable(attachedDatabase, alias);
+  }
+}
+
+class BuyerDeliveryPoint extends DataClass
+    implements Insertable<BuyerDeliveryPoint> {
+  final bool isDeleted;
+  final DateTime timestamp;
+  final DateTime? lastSyncTime;
+  final bool needSync;
+  final bool isNew;
+  final int id;
+  final int buyerId;
+  final String? phone;
+  final String? info;
+  const BuyerDeliveryPoint({
+    required this.isDeleted,
+    required this.timestamp,
+    this.lastSyncTime,
+    required this.needSync,
+    required this.isNew,
+    required this.id,
+    required this.buyerId,
+    this.phone,
+    this.info,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || lastSyncTime != null) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
+    }
+    map['id'] = Variable<int>(id);
+    map['buyer_id'] = Variable<int>(buyerId);
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
+    if (!nullToAbsent || info != null) {
+      map['info'] = Variable<String>(info);
+    }
+    return map;
+  }
+
+  BuyerDeliveryPointsCompanion toCompanion(bool nullToAbsent) {
+    return BuyerDeliveryPointsCompanion(
+      isDeleted: Value(isDeleted),
+      timestamp: Value(timestamp),
+      lastSyncTime:
+          lastSyncTime == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastSyncTime),
+      id: Value(id),
+      buyerId: Value(buyerId),
+      phone:
+          phone == null && nullToAbsent ? const Value.absent() : Value(phone),
+      info: info == null && nullToAbsent ? const Value.absent() : Value(info),
+    );
+  }
+
+  factory BuyerDeliveryPoint.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BuyerDeliveryPoint(
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      lastSyncTime: serializer.fromJson<DateTime?>(json['lastSyncTime']),
+      needSync: serializer.fromJson<bool>(json['needSync']),
+      isNew: serializer.fromJson<bool>(json['isNew']),
+      id: serializer.fromJson<int>(json['id']),
+      buyerId: serializer.fromJson<int>(json['buyerId']),
+      phone: serializer.fromJson<String?>(json['phone']),
+      info: serializer.fromJson<String?>(json['info']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'lastSyncTime': serializer.toJson<DateTime?>(lastSyncTime),
+      'needSync': serializer.toJson<bool>(needSync),
+      'isNew': serializer.toJson<bool>(isNew),
+      'id': serializer.toJson<int>(id),
+      'buyerId': serializer.toJson<int>(buyerId),
+      'phone': serializer.toJson<String?>(phone),
+      'info': serializer.toJson<String?>(info),
+    };
+  }
+
+  BuyerDeliveryPoint copyWith({
+    bool? isDeleted,
+    DateTime? timestamp,
+    Value<DateTime?> lastSyncTime = const Value.absent(),
+    bool? needSync,
+    bool? isNew,
+    int? id,
+    int? buyerId,
+    Value<String?> phone = const Value.absent(),
+    Value<String?> info = const Value.absent(),
+  }) => BuyerDeliveryPoint(
+    isDeleted: isDeleted ?? this.isDeleted,
+    timestamp: timestamp ?? this.timestamp,
+    lastSyncTime: lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
+    needSync: needSync ?? this.needSync,
+    isNew: isNew ?? this.isNew,
+    id: id ?? this.id,
+    buyerId: buyerId ?? this.buyerId,
+    phone: phone.present ? phone.value : this.phone,
+    info: info.present ? info.value : this.info,
+  );
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryPoint(')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('needSync: $needSync, ')
+          ..write('isNew: $isNew, ')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('phone: $phone, ')
+          ..write('info: $info')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    isDeleted,
+    timestamp,
+    lastSyncTime,
+    needSync,
+    isNew,
+    id,
+    buyerId,
+    phone,
+    info,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BuyerDeliveryPoint &&
+          other.isDeleted == this.isDeleted &&
+          other.timestamp == this.timestamp &&
+          other.lastSyncTime == this.lastSyncTime &&
+          other.needSync == this.needSync &&
+          other.isNew == this.isNew &&
+          other.id == this.id &&
+          other.buyerId == this.buyerId &&
+          other.phone == this.phone &&
+          other.info == this.info);
+}
+
+class BuyerDeliveryPointsCompanion extends UpdateCompanion<BuyerDeliveryPoint> {
+  final Value<bool> isDeleted;
+  final Value<DateTime> timestamp;
+  final Value<DateTime?> lastSyncTime;
+  final Value<int> id;
+  final Value<int> buyerId;
+  final Value<String?> phone;
+  final Value<String?> info;
+  const BuyerDeliveryPointsCompanion({
+    this.isDeleted = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+    this.id = const Value.absent(),
+    this.buyerId = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.info = const Value.absent(),
+  });
+  BuyerDeliveryPointsCompanion.insert({
+    this.isDeleted = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+    this.id = const Value.absent(),
+    required int buyerId,
+    this.phone = const Value.absent(),
+    this.info = const Value.absent(),
+  }) : buyerId = Value(buyerId);
+  static Insertable<BuyerDeliveryPoint> custom({
+    Expression<bool>? isDeleted,
+    Expression<DateTime>? timestamp,
+    Expression<DateTime>? lastSyncTime,
+    Expression<int>? id,
+    Expression<int>? buyerId,
+    Expression<String>? phone,
+    Expression<String>? info,
+  }) {
+    return RawValuesInsertable({
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+      if (id != null) 'id': id,
+      if (buyerId != null) 'buyer_id': buyerId,
+      if (phone != null) 'phone': phone,
+      if (info != null) 'info': info,
+    });
+  }
+
+  BuyerDeliveryPointsCompanion copyWith({
+    Value<bool>? isDeleted,
+    Value<DateTime>? timestamp,
+    Value<DateTime?>? lastSyncTime,
+    Value<int>? id,
+    Value<int>? buyerId,
+    Value<String?>? phone,
+    Value<String?>? info,
+  }) {
+    return BuyerDeliveryPointsCompanion(
+      isDeleted: isDeleted ?? this.isDeleted,
+      timestamp: timestamp ?? this.timestamp,
+      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      id: id ?? this.id,
+      buyerId: buyerId ?? this.buyerId,
+      phone: phone ?? this.phone,
+      info: info ?? this.info,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (lastSyncTime.present) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (buyerId.present) {
+      map['buyer_id'] = Variable<int>(buyerId.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (info.present) {
+      map['info'] = Variable<String>(info.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryPointsCompanion(')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('phone: $phone, ')
+          ..write('info: $info')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BuyerDeliveryPointPhotosTable extends BuyerDeliveryPointPhotos
+    with TableInfo<$BuyerDeliveryPointPhotosTable, BuyerDeliveryPointPhoto> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BuyerDeliveryPointPhotosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _isDeletedMeta = const VerificationMeta(
+    'isDeleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isDeleted = GeneratedColumn<bool>(
+    'is_deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastSyncTimeMeta = const VerificationMeta(
+    'lastSyncTime',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncTime = GeneratedColumn<DateTime>(
+    'last_sync_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _needSyncMeta = const VerificationMeta(
+    'needSync',
+  );
+  @override
+  late final GeneratedColumn<bool> needSync = GeneratedColumn<bool>(
+    'need_sync',
+    aliasedName,
+    false,
+    generatedAs: GeneratedAs(
+      (isNew & BooleanExpressionOperators(isDeleted).not()) |
+          (BooleanExpressionOperators(isNew).not() &
+              ComparableExpr(lastSyncTime).isSmallerThan(timestamp)),
+      true,
+    ),
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("need_sync" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _isNewMeta = const VerificationMeta('isNew');
+  @override
+  late final GeneratedColumn<bool> isNew = GeneratedColumn<bool>(
+    'is_new',
+    aliasedName,
+    false,
+    generatedAs: GeneratedAs(lastSyncTime.isNull(), false),
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_new" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _buyerDeliveryPointIdMeta =
+      const VerificationMeta('buyerDeliveryPointId');
+  @override
+  late final GeneratedColumn<int> buyerDeliveryPointId = GeneratedColumn<int>(
+    'buyer_delivery_point_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    isDeleted,
+    timestamp,
+    lastSyncTime,
+    needSync,
+    isNew,
+    id,
+    buyerDeliveryPointId,
+    url,
+    key,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'buyer_delivery_point_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BuyerDeliveryPointPhoto> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('is_deleted')) {
+      context.handle(
+        _isDeletedMeta,
+        isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta),
+      );
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    }
+    if (data.containsKey('last_sync_time')) {
+      context.handle(
+        _lastSyncTimeMeta,
+        lastSyncTime.isAcceptableOrUnknown(
+          data['last_sync_time']!,
+          _lastSyncTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('need_sync')) {
+      context.handle(
+        _needSyncMeta,
+        needSync.isAcceptableOrUnknown(data['need_sync']!, _needSyncMeta),
+      );
+    }
+    if (data.containsKey('is_new')) {
+      context.handle(
+        _isNewMeta,
+        isNew.isAcceptableOrUnknown(data['is_new']!, _isNewMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('buyer_delivery_point_id')) {
+      context.handle(
+        _buyerDeliveryPointIdMeta,
+        buyerDeliveryPointId.isAcceptableOrUnknown(
+          data['buyer_delivery_point_id']!,
+          _buyerDeliveryPointIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_buyerDeliveryPointIdMeta);
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_urlMeta);
+    }
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BuyerDeliveryPointPhoto map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BuyerDeliveryPointPhoto(
+      isDeleted:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_deleted'],
+          )!,
+      timestamp:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.dateTime,
+            data['${effectivePrefix}timestamp'],
+          )!,
+      lastSyncTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_sync_time'],
+      ),
+      needSync:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}need_sync'],
+          )!,
+      isNew:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_new'],
+          )!,
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      buyerDeliveryPointId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}buyer_delivery_point_id'],
+          )!,
+      url:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}url'],
+          )!,
+      key:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}key'],
+          )!,
+    );
+  }
+
+  @override
+  $BuyerDeliveryPointPhotosTable createAlias(String alias) {
+    return $BuyerDeliveryPointPhotosTable(attachedDatabase, alias);
+  }
+}
+
+class BuyerDeliveryPointPhoto extends DataClass
+    implements Insertable<BuyerDeliveryPointPhoto> {
+  final bool isDeleted;
+  final DateTime timestamp;
+  final DateTime? lastSyncTime;
+  final bool needSync;
+  final bool isNew;
+  final int id;
+  final int buyerDeliveryPointId;
+  final String url;
+  final String key;
+  const BuyerDeliveryPointPhoto({
+    required this.isDeleted,
+    required this.timestamp,
+    this.lastSyncTime,
+    required this.needSync,
+    required this.isNew,
+    required this.id,
+    required this.buyerDeliveryPointId,
+    required this.url,
+    required this.key,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['is_deleted'] = Variable<bool>(isDeleted);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || lastSyncTime != null) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime);
+    }
+    map['id'] = Variable<int>(id);
+    map['buyer_delivery_point_id'] = Variable<int>(buyerDeliveryPointId);
+    map['url'] = Variable<String>(url);
+    map['key'] = Variable<String>(key);
+    return map;
+  }
+
+  BuyerDeliveryPointPhotosCompanion toCompanion(bool nullToAbsent) {
+    return BuyerDeliveryPointPhotosCompanion(
+      isDeleted: Value(isDeleted),
+      timestamp: Value(timestamp),
+      lastSyncTime:
+          lastSyncTime == null && nullToAbsent
+              ? const Value.absent()
+              : Value(lastSyncTime),
+      id: Value(id),
+      buyerDeliveryPointId: Value(buyerDeliveryPointId),
+      url: Value(url),
+      key: Value(key),
+    );
+  }
+
+  factory BuyerDeliveryPointPhoto.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BuyerDeliveryPointPhoto(
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      lastSyncTime: serializer.fromJson<DateTime?>(json['lastSyncTime']),
+      needSync: serializer.fromJson<bool>(json['needSync']),
+      isNew: serializer.fromJson<bool>(json['isNew']),
+      id: serializer.fromJson<int>(json['id']),
+      buyerDeliveryPointId: serializer.fromJson<int>(
+        json['buyerDeliveryPointId'],
+      ),
+      url: serializer.fromJson<String>(json['url']),
+      key: serializer.fromJson<String>(json['key']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'isDeleted': serializer.toJson<bool>(isDeleted),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'lastSyncTime': serializer.toJson<DateTime?>(lastSyncTime),
+      'needSync': serializer.toJson<bool>(needSync),
+      'isNew': serializer.toJson<bool>(isNew),
+      'id': serializer.toJson<int>(id),
+      'buyerDeliveryPointId': serializer.toJson<int>(buyerDeliveryPointId),
+      'url': serializer.toJson<String>(url),
+      'key': serializer.toJson<String>(key),
+    };
+  }
+
+  BuyerDeliveryPointPhoto copyWith({
+    bool? isDeleted,
+    DateTime? timestamp,
+    Value<DateTime?> lastSyncTime = const Value.absent(),
+    bool? needSync,
+    bool? isNew,
+    int? id,
+    int? buyerDeliveryPointId,
+    String? url,
+    String? key,
+  }) => BuyerDeliveryPointPhoto(
+    isDeleted: isDeleted ?? this.isDeleted,
+    timestamp: timestamp ?? this.timestamp,
+    lastSyncTime: lastSyncTime.present ? lastSyncTime.value : this.lastSyncTime,
+    needSync: needSync ?? this.needSync,
+    isNew: isNew ?? this.isNew,
+    id: id ?? this.id,
+    buyerDeliveryPointId: buyerDeliveryPointId ?? this.buyerDeliveryPointId,
+    url: url ?? this.url,
+    key: key ?? this.key,
+  );
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryPointPhoto(')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('needSync: $needSync, ')
+          ..write('isNew: $isNew, ')
+          ..write('id: $id, ')
+          ..write('buyerDeliveryPointId: $buyerDeliveryPointId, ')
+          ..write('url: $url, ')
+          ..write('key: $key')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    isDeleted,
+    timestamp,
+    lastSyncTime,
+    needSync,
+    isNew,
+    id,
+    buyerDeliveryPointId,
+    url,
+    key,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BuyerDeliveryPointPhoto &&
+          other.isDeleted == this.isDeleted &&
+          other.timestamp == this.timestamp &&
+          other.lastSyncTime == this.lastSyncTime &&
+          other.needSync == this.needSync &&
+          other.isNew == this.isNew &&
+          other.id == this.id &&
+          other.buyerDeliveryPointId == this.buyerDeliveryPointId &&
+          other.url == this.url &&
+          other.key == this.key);
+}
+
+class BuyerDeliveryPointPhotosCompanion
+    extends UpdateCompanion<BuyerDeliveryPointPhoto> {
+  final Value<bool> isDeleted;
+  final Value<DateTime> timestamp;
+  final Value<DateTime?> lastSyncTime;
+  final Value<int> id;
+  final Value<int> buyerDeliveryPointId;
+  final Value<String> url;
+  final Value<String> key;
+  const BuyerDeliveryPointPhotosCompanion({
+    this.isDeleted = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+    this.id = const Value.absent(),
+    this.buyerDeliveryPointId = const Value.absent(),
+    this.url = const Value.absent(),
+    this.key = const Value.absent(),
+  });
+  BuyerDeliveryPointPhotosCompanion.insert({
+    this.isDeleted = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.lastSyncTime = const Value.absent(),
+    this.id = const Value.absent(),
+    required int buyerDeliveryPointId,
+    required String url,
+    required String key,
+  }) : buyerDeliveryPointId = Value(buyerDeliveryPointId),
+       url = Value(url),
+       key = Value(key);
+  static Insertable<BuyerDeliveryPointPhoto> custom({
+    Expression<bool>? isDeleted,
+    Expression<DateTime>? timestamp,
+    Expression<DateTime>? lastSyncTime,
+    Expression<int>? id,
+    Expression<int>? buyerDeliveryPointId,
+    Expression<String>? url,
+    Expression<String>? key,
+  }) {
+    return RawValuesInsertable({
+      if (isDeleted != null) 'is_deleted': isDeleted,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (lastSyncTime != null) 'last_sync_time': lastSyncTime,
+      if (id != null) 'id': id,
+      if (buyerDeliveryPointId != null)
+        'buyer_delivery_point_id': buyerDeliveryPointId,
+      if (url != null) 'url': url,
+      if (key != null) 'key': key,
+    });
+  }
+
+  BuyerDeliveryPointPhotosCompanion copyWith({
+    Value<bool>? isDeleted,
+    Value<DateTime>? timestamp,
+    Value<DateTime?>? lastSyncTime,
+    Value<int>? id,
+    Value<int>? buyerDeliveryPointId,
+    Value<String>? url,
+    Value<String>? key,
+  }) {
+    return BuyerDeliveryPointPhotosCompanion(
+      isDeleted: isDeleted ?? this.isDeleted,
+      timestamp: timestamp ?? this.timestamp,
+      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      id: id ?? this.id,
+      buyerDeliveryPointId: buyerDeliveryPointId ?? this.buyerDeliveryPointId,
+      url: url ?? this.url,
+      key: key ?? this.key,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (lastSyncTime.present) {
+      map['last_sync_time'] = Variable<DateTime>(lastSyncTime.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (buyerDeliveryPointId.present) {
+      map['buyer_delivery_point_id'] = Variable<int>(
+        buyerDeliveryPointId.value,
+      );
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BuyerDeliveryPointPhotosCompanion(')
+          ..write('isDeleted: $isDeleted, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('lastSyncTime: $lastSyncTime, ')
+          ..write('id: $id, ')
+          ..write('buyerDeliveryPointId: $buyerDeliveryPointId, ')
+          ..write('url: $url, ')
+          ..write('key: $key')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PrefsTable extends Prefs with TableInfo<$PrefsTable, Pref> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -6358,7 +7406,12 @@ abstract class _$AppDataStore extends GeneratedDatabase {
       $OrderLinePackErrorsTable(this);
   late final $BuyerDeliveryMarksTable buyerDeliveryMarks =
       $BuyerDeliveryMarksTable(this);
+  late final $BuyerDeliveryPointsTable buyerDeliveryPoints =
+      $BuyerDeliveryPointsTable(this);
+  late final $BuyerDeliveryPointPhotosTable buyerDeliveryPointPhotos =
+      $BuyerDeliveryPointPhotosTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
+  late final BuyersDao buyersDao = BuyersDao(this as AppDataStore);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
@@ -6396,6 +7449,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     orderLineStorageCodes,
     orderLinePackErrors,
     buyerDeliveryMarks,
+    buyerDeliveryPoints,
+    buyerDeliveryPointPhotos,
     prefs,
   ];
 }
@@ -9577,6 +10632,580 @@ typedef $$BuyerDeliveryMarksTableProcessedTableManager =
       BuyerDeliveryMark,
       PrefetchHooks Function()
     >;
+typedef $$BuyerDeliveryPointsTableCreateCompanionBuilder =
+    BuyerDeliveryPointsCompanion Function({
+      Value<bool> isDeleted,
+      Value<DateTime> timestamp,
+      Value<DateTime?> lastSyncTime,
+      Value<int> id,
+      required int buyerId,
+      Value<String?> phone,
+      Value<String?> info,
+    });
+typedef $$BuyerDeliveryPointsTableUpdateCompanionBuilder =
+    BuyerDeliveryPointsCompanion Function({
+      Value<bool> isDeleted,
+      Value<DateTime> timestamp,
+      Value<DateTime?> lastSyncTime,
+      Value<int> id,
+      Value<int> buyerId,
+      Value<String?> phone,
+      Value<String?> info,
+    });
+
+class $$BuyerDeliveryPointsTableFilterComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointsTable> {
+  $$BuyerDeliveryPointsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get needSync => $composableBuilder(
+    column: $table.needSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isNew => $composableBuilder(
+    column: $table.isNew,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get info => $composableBuilder(
+    column: $table.info,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BuyerDeliveryPointsTableOrderingComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointsTable> {
+  $$BuyerDeliveryPointsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get needSync => $composableBuilder(
+    column: $table.needSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isNew => $composableBuilder(
+    column: $table.isNew,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get info => $composableBuilder(
+    column: $table.info,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BuyerDeliveryPointsTableAnnotationComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointsTable> {
+  $$BuyerDeliveryPointsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get needSync =>
+      $composableBuilder(column: $table.needSync, builder: (column) => column);
+
+  GeneratedColumn<bool> get isNew =>
+      $composableBuilder(column: $table.isNew, builder: (column) => column);
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get info =>
+      $composableBuilder(column: $table.info, builder: (column) => column);
+}
+
+class $$BuyerDeliveryPointsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $BuyerDeliveryPointsTable,
+          BuyerDeliveryPoint,
+          $$BuyerDeliveryPointsTableFilterComposer,
+          $$BuyerDeliveryPointsTableOrderingComposer,
+          $$BuyerDeliveryPointsTableAnnotationComposer,
+          $$BuyerDeliveryPointsTableCreateCompanionBuilder,
+          $$BuyerDeliveryPointsTableUpdateCompanionBuilder,
+          (
+            BuyerDeliveryPoint,
+            BaseReferences<
+              _$AppDataStore,
+              $BuyerDeliveryPointsTable,
+              BuyerDeliveryPoint
+            >,
+          ),
+          BuyerDeliveryPoint,
+          PrefetchHooks Function()
+        > {
+  $$BuyerDeliveryPointsTableTableManager(
+    _$AppDataStore db,
+    $BuyerDeliveryPointsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$BuyerDeliveryPointsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$BuyerDeliveryPointsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$BuyerDeliveryPointsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<bool> isDeleted = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<int> buyerId = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String?> info = const Value.absent(),
+              }) => BuyerDeliveryPointsCompanion(
+                isDeleted: isDeleted,
+                timestamp: timestamp,
+                lastSyncTime: lastSyncTime,
+                id: id,
+                buyerId: buyerId,
+                phone: phone,
+                info: info,
+              ),
+          createCompanionCallback:
+              ({
+                Value<bool> isDeleted = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required int buyerId,
+                Value<String?> phone = const Value.absent(),
+                Value<String?> info = const Value.absent(),
+              }) => BuyerDeliveryPointsCompanion.insert(
+                isDeleted: isDeleted,
+                timestamp: timestamp,
+                lastSyncTime: lastSyncTime,
+                id: id,
+                buyerId: buyerId,
+                phone: phone,
+                info: info,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BuyerDeliveryPointsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $BuyerDeliveryPointsTable,
+      BuyerDeliveryPoint,
+      $$BuyerDeliveryPointsTableFilterComposer,
+      $$BuyerDeliveryPointsTableOrderingComposer,
+      $$BuyerDeliveryPointsTableAnnotationComposer,
+      $$BuyerDeliveryPointsTableCreateCompanionBuilder,
+      $$BuyerDeliveryPointsTableUpdateCompanionBuilder,
+      (
+        BuyerDeliveryPoint,
+        BaseReferences<
+          _$AppDataStore,
+          $BuyerDeliveryPointsTable,
+          BuyerDeliveryPoint
+        >,
+      ),
+      BuyerDeliveryPoint,
+      PrefetchHooks Function()
+    >;
+typedef $$BuyerDeliveryPointPhotosTableCreateCompanionBuilder =
+    BuyerDeliveryPointPhotosCompanion Function({
+      Value<bool> isDeleted,
+      Value<DateTime> timestamp,
+      Value<DateTime?> lastSyncTime,
+      Value<int> id,
+      required int buyerDeliveryPointId,
+      required String url,
+      required String key,
+    });
+typedef $$BuyerDeliveryPointPhotosTableUpdateCompanionBuilder =
+    BuyerDeliveryPointPhotosCompanion Function({
+      Value<bool> isDeleted,
+      Value<DateTime> timestamp,
+      Value<DateTime?> lastSyncTime,
+      Value<int> id,
+      Value<int> buyerDeliveryPointId,
+      Value<String> url,
+      Value<String> key,
+    });
+
+class $$BuyerDeliveryPointPhotosTableFilterComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointPhotosTable> {
+  $$BuyerDeliveryPointPhotosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get needSync => $composableBuilder(
+    column: $table.needSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isNew => $composableBuilder(
+    column: $table.isNew,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get buyerDeliveryPointId => $composableBuilder(
+    column: $table.buyerDeliveryPointId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BuyerDeliveryPointPhotosTableOrderingComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointPhotosTable> {
+  $$BuyerDeliveryPointPhotosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<bool> get isDeleted => $composableBuilder(
+    column: $table.isDeleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get needSync => $composableBuilder(
+    column: $table.needSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isNew => $composableBuilder(
+    column: $table.isNew,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get buyerDeliveryPointId => $composableBuilder(
+    column: $table.buyerDeliveryPointId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BuyerDeliveryPointPhotosTableAnnotationComposer
+    extends Composer<_$AppDataStore, $BuyerDeliveryPointPhotosTable> {
+  $$BuyerDeliveryPointPhotosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<bool> get isDeleted =>
+      $composableBuilder(column: $table.isDeleted, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncTime => $composableBuilder(
+    column: $table.lastSyncTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get needSync =>
+      $composableBuilder(column: $table.needSync, builder: (column) => column);
+
+  GeneratedColumn<bool> get isNew =>
+      $composableBuilder(column: $table.isNew, builder: (column) => column);
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerDeliveryPointId => $composableBuilder(
+    column: $table.buyerDeliveryPointId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+}
+
+class $$BuyerDeliveryPointPhotosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $BuyerDeliveryPointPhotosTable,
+          BuyerDeliveryPointPhoto,
+          $$BuyerDeliveryPointPhotosTableFilterComposer,
+          $$BuyerDeliveryPointPhotosTableOrderingComposer,
+          $$BuyerDeliveryPointPhotosTableAnnotationComposer,
+          $$BuyerDeliveryPointPhotosTableCreateCompanionBuilder,
+          $$BuyerDeliveryPointPhotosTableUpdateCompanionBuilder,
+          (
+            BuyerDeliveryPointPhoto,
+            BaseReferences<
+              _$AppDataStore,
+              $BuyerDeliveryPointPhotosTable,
+              BuyerDeliveryPointPhoto
+            >,
+          ),
+          BuyerDeliveryPointPhoto,
+          PrefetchHooks Function()
+        > {
+  $$BuyerDeliveryPointPhotosTableTableManager(
+    _$AppDataStore db,
+    $BuyerDeliveryPointPhotosTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$BuyerDeliveryPointPhotosTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$BuyerDeliveryPointPhotosTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$BuyerDeliveryPointPhotosTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<bool> isDeleted = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<int> buyerDeliveryPointId = const Value.absent(),
+                Value<String> url = const Value.absent(),
+                Value<String> key = const Value.absent(),
+              }) => BuyerDeliveryPointPhotosCompanion(
+                isDeleted: isDeleted,
+                timestamp: timestamp,
+                lastSyncTime: lastSyncTime,
+                id: id,
+                buyerDeliveryPointId: buyerDeliveryPointId,
+                url: url,
+                key: key,
+              ),
+          createCompanionCallback:
+              ({
+                Value<bool> isDeleted = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<DateTime?> lastSyncTime = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required int buyerDeliveryPointId,
+                required String url,
+                required String key,
+              }) => BuyerDeliveryPointPhotosCompanion.insert(
+                isDeleted: isDeleted,
+                timestamp: timestamp,
+                lastSyncTime: lastSyncTime,
+                id: id,
+                buyerDeliveryPointId: buyerDeliveryPointId,
+                url: url,
+                key: key,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BuyerDeliveryPointPhotosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $BuyerDeliveryPointPhotosTable,
+      BuyerDeliveryPointPhoto,
+      $$BuyerDeliveryPointPhotosTableFilterComposer,
+      $$BuyerDeliveryPointPhotosTableOrderingComposer,
+      $$BuyerDeliveryPointPhotosTableAnnotationComposer,
+      $$BuyerDeliveryPointPhotosTableCreateCompanionBuilder,
+      $$BuyerDeliveryPointPhotosTableUpdateCompanionBuilder,
+      (
+        BuyerDeliveryPointPhoto,
+        BaseReferences<
+          _$AppDataStore,
+          $BuyerDeliveryPointPhotosTable,
+          BuyerDeliveryPointPhoto
+        >,
+      ),
+      BuyerDeliveryPointPhoto,
+      PrefetchHooks Function()
+    >;
 typedef $$PrefsTableCreateCompanionBuilder =
     PrefsCompanion Function({Value<DateTime?> lastLoadTime, Value<int> rowid});
 typedef $$PrefsTableUpdateCompanionBuilder =
@@ -9722,6 +11351,13 @@ class $AppDataStoreManager {
       $$OrderLinePackErrorsTableTableManager(_db, _db.orderLinePackErrors);
   $$BuyerDeliveryMarksTableTableManager get buyerDeliveryMarks =>
       $$BuyerDeliveryMarksTableTableManager(_db, _db.buyerDeliveryMarks);
+  $$BuyerDeliveryPointsTableTableManager get buyerDeliveryPoints =>
+      $$BuyerDeliveryPointsTableTableManager(_db, _db.buyerDeliveryPoints);
+  $$BuyerDeliveryPointPhotosTableTableManager get buyerDeliveryPointPhotos =>
+      $$BuyerDeliveryPointPhotosTableTableManager(
+        _db,
+        _db.buyerDeliveryPointPhotos,
+      );
   $$PrefsTableTableManager get prefs =>
       $$PrefsTableTableManager(_db, _db.prefs);
 }
@@ -9743,8 +11379,16 @@ class AppInfoResult {
   });
 }
 
-mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
+mixin _$BuyersDaoMixin on DatabaseAccessor<AppDataStore> {
   $BuyersTable get buyers => attachedDatabase.buyers;
+  $BuyerDeliveryMarksTable get buyerDeliveryMarks =>
+      attachedDatabase.buyerDeliveryMarks;
+  $BuyerDeliveryPointsTable get buyerDeliveryPoints =>
+      attachedDatabase.buyerDeliveryPoints;
+  $BuyerDeliveryPointPhotosTable get buyerDeliveryPointPhotos =>
+      attachedDatabase.buyerDeliveryPointPhotos;
+}
+mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $IncomesTable get incomes => attachedDatabase.incomes;
   $ReceptsTable get recepts => attachedDatabase.recepts;
   $OrdersTable get orders => attachedDatabase.orders;
@@ -9754,8 +11398,6 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
       attachedDatabase.orderLineStorageCodes;
   $OrderLinePackErrorsTable get orderLinePackErrors =>
       attachedDatabase.orderLinePackErrors;
-  $BuyerDeliveryMarksTable get buyerDeliveryMarks =>
-      attachedDatabase.buyerDeliveryMarks;
 }
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;

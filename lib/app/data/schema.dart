@@ -1,5 +1,14 @@
 part of 'database.dart';
 
+mixin Syncable on Table {
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get lastSyncTime => dateTime().nullable()();
+  BoolColumn get needSync => boolean()
+    .generatedAs((isNew & isDeleted.not()) | (isNew.not() & lastSyncTime.isSmallerThan(timestamp)), stored: true)();
+  BoolColumn get isNew => boolean().generatedAs(lastSyncTime.isNull())();
+}
+
 class Prefs extends Table {
   DateTimeColumn get lastLoadTime => dateTime().nullable()();
 }
@@ -56,6 +65,26 @@ class BuyerDeliveryMarks extends Table {
 
   @override
   Set<Column> get primaryKey => {buyerId, deliveryId, type};
+}
+
+class BuyerDeliveryPoints extends Table with Syncable {
+  IntColumn get id => integer()();
+  IntColumn get buyerId => integer()();
+  TextColumn get phone => text().nullable()();
+  TextColumn get info => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class BuyerDeliveryPointPhotos extends Table with Syncable {
+  IntColumn get id => integer()();
+  IntColumn get buyerDeliveryPointId => integer()();
+  TextColumn get url => text()();
+  TextColumn get key => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }
 
 class CashPayments extends Table {
