@@ -13,6 +13,7 @@ import 'app/constants/strings.dart';
 import 'app/data/database.dart';
 import 'app/pages/landing/landing_page.dart';
 import 'app/repositories/app_repository.dart';
+import 'app/repositories/buyers_repository.dart';
 import 'app/repositories/orders_repository.dart';
 import 'app/repositories/payments_repository.dart';
 import 'app/repositories/users_repository.dart';
@@ -27,6 +28,7 @@ void main() async {
   AppDataStore dataStore = AppDataStore(logStatements: isDebug);
   AppRepository appRepository = AppRepository(dataStore, api);
   OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
+  BuyersRepository buyersRepository = BuyersRepository(dataStore, api);
   PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
   UsersRepository usersRepository = UsersRepository(dataStore, api);
 
@@ -55,6 +57,7 @@ void main() async {
         providers: [
           Provider.value(value: scaffoldMessengerKey),
           RepositoryProvider.value(value: appRepository),
+          RepositoryProvider.value(value: buyersRepository),
           RepositoryProvider.value(value: ordersRepository),
           RepositoryProvider.value(value: paymentsRepository),
           RepositoryProvider.value(value: usersRepository)

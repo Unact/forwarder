@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -14,6 +15,7 @@ import '/app/constants/strings.dart';
 
 part 'schema.dart';
 part 'database.g.dart';
+part 'buyers_dao.dart';
 part 'orders_dao.dart';
 part 'payments_dao.dart';
 part 'users_dao.dart';
@@ -32,9 +34,12 @@ part 'users_dao.dart';
     OrderLineStorageCodes,
     OrderLinePackErrors,
     BuyerDeliveryMarks,
+    BuyerDeliveryPoints,
+    BuyerDeliveryPointPhotos,
     Prefs
   ],
   daos: [
+    BuyersDao,
     OrdersDao,
     PaymentsDao,
     UsersDao
@@ -109,20 +114,48 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 23;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
-      for (final table in allTables) {
-        await m.deleteTable(table.actualTableName);
-        await m.createTable(table);
+      for (final entity in allSchemaEntities.reversed) {
+        await m.drop(entity);
       }
+
+      await m.createAll();
     },
     beforeOpen: (details) async {
       if (details.hadUpgrade || details.wasCreated) await _populateData();
     },
   );
+
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities {
+    final result = super.allSchemaEntities;
+
+    for (final table in result.whereType<TableInfo>().toList()) {
+      if (table is !Syncable) continue;
+
+      final name = table.entityName;
+      final triggerName = 'syncable_$name';
+      final systemColumns = ['last_sync_time', 'timestamp'];
+      final updateableColumns = table.columnsByName.keys.whereNot((e) => systemColumns.contains(e));
+
+      result.add(Trigger(
+        '''
+          CREATE TRIGGER IF NOT EXISTS "$triggerName"
+          AFTER UPDATE OF ${updateableColumns.join(',')} ON $name
+          BEGIN
+            UPDATE $name SET timestamp = CAST(STRFTIME('%s', CURRENT_TIMESTAMP) AS INTEGER) WHERE id = OLD.id;
+          END;
+        ''',
+        triggerName
+      ));
+    }
+
+    return result;
+  }
 }
 
 LazyDatabase _openConnection(bool logStatements) {
@@ -170,5 +203,5 @@ class OrderLineBarcode {
     int.parse(value.split('-').last)
   );
 
-  String toDart() => "$barcode-$rel";
+  String toDart() => '$barcode-$rel';
 }

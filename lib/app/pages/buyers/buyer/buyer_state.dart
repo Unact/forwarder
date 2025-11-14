@@ -10,7 +10,8 @@ enum BuyerStateStatus {
   inProgress,
   failure,
   success,
-  coordsCopied
+  coordsCopied,
+  deliveryPointOpened
 }
 
 class BuyerState {
@@ -22,7 +23,8 @@ class BuyerState {
     this.debts = const [],
     required this.confirmationCallback,
     this.debtsToPay = const [],
-    this.message = ''
+    this.message = '',
+    this.pointEx
   });
 
   final BuyerStateStatus status;
@@ -33,6 +35,7 @@ class BuyerState {
   final Function confirmationCallback;
   final List<Debt> debtsToPay;
   final String message;
+  final BuyerDeliveryPointEx? pointEx;
 
   double get debtsSum => debts.fold(0, (sum, debt) => sum + debt.debtSum);
   double get kkmSum => cashPayments.where((e) => e.kkmprinted).fold(0, (sum, payment) => sum + payment.summ);
@@ -47,7 +50,8 @@ class BuyerState {
     List<Debt>? debts,
     Function? confirmationCallback,
     List<Debt>? debtsToPay,
-    String? message
+    String? message,
+    BuyerDeliveryPointEx? pointEx
   }) {
     return BuyerState(
       status: status ?? this.status,
@@ -57,7 +61,8 @@ class BuyerState {
       debts: debts ?? this.debts,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       debtsToPay: debtsToPay ?? this.debtsToPay,
-      message: message ?? this.message
+      message: message ?? this.message,
+      pointEx: pointEx ?? this.pointEx
     );
   }
 }

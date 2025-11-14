@@ -2,27 +2,17 @@ part of 'database.dart';
 
 @DriftAccessor(
   tables: [
-    Buyers,
     Incomes,
     Recepts,
     Orders,
     OrderLines,
     OrderLineCodes,
     OrderLineStorageCodes,
-    OrderLinePackErrors,
-    BuyerDeliveryMarks
+    OrderLinePackErrors
   ]
 )
 class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
   OrdersDao(super.db);
-
-  Future<void> loadBuyers(List<Buyer> list, [bool clearTable = true]) async {
-    await db._loadData(buyers, list, clearTable);
-  }
-
-  Future<void> loadBuyerDeliveryMarks(List<BuyerDeliveryMark> list, [bool clearTable = true]) async {
-    await db._loadData(buyerDeliveryMarks, list, clearTable);
-  }
 
   Future<void> loadOrders(List<Order> list, [bool clearTable = true]) async {
     await db._loadData(orders, list, clearTable);
@@ -98,51 +88,6 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
     return select(recepts).watch();
   }
 
-  Stream<List<BuyerEx>> watchBuyerExList() {
-    final buyerStream = (
-      select(buyers)
-      ..orderBy([
-        (u) => OrderingTerm(expression: u.deliveryNdoc),
-        (u) => OrderingTerm(expression: u.ord),
-        (u) => OrderingTerm(expression: u.name)
-      ])
-    ).watch();
-    final buyerDeliveryMarksStream = select(buyerDeliveryMarks).watch();
-
-    return Rx.combineLatest2(
-      buyerStream,
-      buyerDeliveryMarksStream,
-      (buyerRows, buyerDeliveryMarkRows) {
-        return buyerRows.map(((e) => BuyerEx(
-          e,
-          buyerDeliveryMarkRows
-            .where((element) => element.deliveryId == e.deliveryId && element.buyerId == e.buyerId).toList(),
-        ))).toList();
-      }
-    );
-  }
-
-  Stream<BuyerEx> watchBuyerExById(int buyerId, int deliveryId) {
-    final buyerStream = (
-      select(buyers)
-      ..where((tbl) => tbl.buyerId.equals(buyerId))
-      ..where((tbl) => tbl.deliveryId.equals(deliveryId))
-    ).watchSingle();
-    final buyerDeliveryMarksStream = (
-      select(buyerDeliveryMarks)
-      ..where((tbl) => tbl.buyerId.equals(buyerId))
-      ..where((tbl) => tbl.deliveryId.equals(deliveryId))
-    ).watch();
-
-    return Rx.combineLatest2(
-      buyerStream,
-      buyerDeliveryMarksStream,
-      (buyerRow, buyerDeliveryMarkRows) {
-        return BuyerEx(buyerRow, buyerDeliveryMarkRows);
-      }
-    );
-  }
-
   Stream<List<Order>> watchOrdersByBuyerId(int buyerId, int deliveryId) {
     return (
       select(orders)
@@ -154,14 +99,6 @@ class OrdersDao extends DatabaseAccessor<AppDataStore> with _$OrdersDaoMixin {
 
   Stream<Order> watchOrderById(int id) {
     return (select(orders)..where((tbl) => tbl.id.equals(id))).watchSingle();
-  }
-
-  Future<List<BuyerDeliveryMark>> getBuyerDeliveryMarksForSync() async {
-    return (select(buyerDeliveryMarks)..where((tbl) => tbl.id.isNull())).get();
-  }
-
-  Future<int> upsertBuyerDeliveryMark(BuyerDeliveryMarksCompanion buyerDeliveryMark) {
-    return into(buyerDeliveryMarks).insertOnConflictUpdate(buyerDeliveryMark);
   }
 
   Future<int> upsertOrder(OrdersCompanion order) {
@@ -209,17 +146,4 @@ class OrderLineWithCode {
     this.orderLinePackErrors,
     this.orderLineStorageCodes
   );
-}
-
-class BuyerEx {
-  final Buyer buyer;
-  final List<BuyerDeliveryMark> buyerDeliveryMarks;
-
-  bool get missed => buyerDeliveryMarks.any((e) => e.type == BuyerDeliveryMarkType.missed);
-  bool get arrived => buyerDeliveryMarks.any((e) => e.type == BuyerDeliveryMarkType.arrival);
-  bool get departed => buyerDeliveryMarks.any((e) => e.type == BuyerDeliveryMarkType.departure);
-  bool get inProgress => arrived && !departed;
-  bool get visited => arrived && !missed;
-
-  BuyerEx(this.buyer, this.buyerDeliveryMarks);
 }

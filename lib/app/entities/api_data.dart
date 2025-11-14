@@ -3,6 +3,8 @@ part of 'entities.dart';
 class ApiData extends Equatable {
   final List<ApiBuyer> buyers;
   final List<ApiBuyerDeliveryMark> buyerDeliveryMarks;
+  final List<ApiBuyerDeliveryPoint> buyerDeliveryPoints;
+  final List<ApiBuyerDeliveryPointPhoto> buyerDeliveryPointPhotos;
   final List<ApiCashPayment> cashPayments;
   final List<ApiDebt> debts;
   final List<ApiOrder> orders;
@@ -16,6 +18,8 @@ class ApiData extends Equatable {
   const ApiData({
     required this.buyers,
     required this.buyerDeliveryMarks,
+    required this.buyerDeliveryPoints,
+    required this.buyerDeliveryPointPhotos,
     required this.cashPayments,
     required this.debts,
     required this.orders,
@@ -33,6 +37,10 @@ class ApiData extends Equatable {
     List<ApiBuyer> buyers = json['buyers'].map<ApiBuyer>((e) => ApiBuyer.fromJson(e)).toList();
     List<ApiBuyerDeliveryMark> buyerDeliveryMarks = json['buyer_delivery_marks']
       .map<ApiBuyerDeliveryMark>((e) => ApiBuyerDeliveryMark.fromJson(e)).toList();
+    List<ApiBuyerDeliveryPoint> buyerDeliveryPoints = json['buyer_delivery_points']
+      .map<ApiBuyerDeliveryPoint>((e) => ApiBuyerDeliveryPoint.fromJson(e)).toList();
+    List<ApiBuyerDeliveryPointPhoto> buyerDeliveryPointPhotos = json['buyer_delivery_point_photos']
+      .map<ApiBuyerDeliveryPointPhoto>((e) => ApiBuyerDeliveryPointPhoto.fromJson(e)).toList();
     List<ApiCashPayment> cashPayments =
       json['repayments'].map<ApiCashPayment>((e) => ApiCashPayment.fromJson(e)).toList();
     List<ApiDebt> debts = json['debts'].map<ApiDebt>((e) => ApiDebt.fromJson(e)).toList();
@@ -48,6 +56,8 @@ class ApiData extends Equatable {
     return ApiData(
       buyers: buyers,
       buyerDeliveryMarks: buyerDeliveryMarks,
+      buyerDeliveryPoints: buyerDeliveryPoints,
+      buyerDeliveryPointPhotos: buyerDeliveryPointPhotos,
       cashPayments: cashPayments,
       debts: debts,
       orders: orders,
@@ -64,6 +74,8 @@ class ApiData extends Equatable {
   List<Object> get props => [
     buyers,
     buyerDeliveryMarks,
+    buyerDeliveryPoints,
+    buyerDeliveryPointPhotos,
     cashPayments,
     debts,
     orders,
