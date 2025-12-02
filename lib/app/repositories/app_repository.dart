@@ -34,7 +34,9 @@ class AppRepository extends BaseRepository {
         final orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
         final orderLineStorageCodes = data.orderLineStorageCodes.map((e) => e.toDatabaseEnt()).toList();
         final debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
+        final deliveries = data.deliveries.map((e) => e.toDatabaseEnt()).toList();
 
+        await dataStore.buyersDao.loadDeliveries(deliveries);
         await dataStore.buyersDao.loadBuyers(buyers);
         await dataStore.buyersDao.loadBuyerDeliveryMarks(buyerDeliveryMarks);
         await dataStore.buyersDao.loadBuyerDeliveryPoints(buyerDeliveryPoints);

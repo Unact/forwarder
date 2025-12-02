@@ -14,11 +14,13 @@ class InfoState {
     this.message = '',
     this.user,
     this.appInfo,
-    this.cashPayments = const []
+    this.cashPayments = const [],
+    this.deliveries = const []
   });
 
   final InfoStateStatus status;
   final List<CashPayment> cashPayments;
+  final List<Delivery> deliveries;
   final String message;
   final User? user;
   final AppInfoResult? appInfo;
@@ -40,7 +42,8 @@ class InfoState {
     String? message,
     User? user,
     AppInfoResult? appInfo,
-    List<CashPayment>? cashPayments
+    List<CashPayment>? cashPayments,
+    List<Delivery>? deliveries
   }) {
     return InfoState(
       status: status ?? this.status,
@@ -48,6 +51,7 @@ class InfoState {
       user: user ?? this.user,
       appInfo: appInfo ?? this.appInfo,
       cashPayments: cashPayments ?? this.cashPayments,
+      deliveries: deliveries ?? this.deliveries
     );
   }
 }

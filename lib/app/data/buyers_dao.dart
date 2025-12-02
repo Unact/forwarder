@@ -3,6 +3,7 @@ part of 'database.dart';
 @DriftAccessor(
   tables: [
     Buyers,
+    Deliveries,
     BuyerDeliveryMarks,
     BuyerDeliveryPoints,
     BuyerDeliveryPointPhotos,
@@ -29,6 +30,10 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
     return _generateId(buyerDeliveryPointPhotos);
   }
 
+  Future<void> loadDeliveries(List<Delivery> list, [bool clearTable = true]) async {
+    await db._loadData(deliveries, list, clearTable);
+  }
+
   Future<void> loadBuyers(List<Buyer> list, [bool clearTable = true]) async {
     await db._loadData(buyers, list, clearTable);
   }
@@ -45,25 +50,32 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
     await db._loadData(buyerDeliveryPointPhotos, list, clearTable);
   }
 
+  Stream<List<Delivery>> watchDeliveries() {
+    return select(deliveries).watch();
+  }
+
   Stream<List<BuyerEx>> watchBuyerExList() {
     final buyerStream = (
       select(buyers)
       ..orderBy([
-        (u) => OrderingTerm(expression: u.deliveryNdoc),
+        (u) => OrderingTerm(expression: u.deliveryId),
         (u) => OrderingTerm(expression: u.ord),
         (u) => OrderingTerm(expression: u.name)
       ])
     ).watch();
     final buyerDeliveryMarksStream = select(buyerDeliveryMarks).watch();
+    final deliveriesStream = select(deliveries).watch();
 
-    return Rx.combineLatest2(
+    return Rx.combineLatest3(
       buyerStream,
       buyerDeliveryMarksStream,
-      (buyerRows, buyerDeliveryMarkRows) {
+      deliveriesStream,
+      (buyerRows, buyerDeliveryMarkRows, deliveryRows) {
         return buyerRows.map(((e) => BuyerEx(
           e,
           buyerDeliveryMarkRows
             .where((element) => element.deliveryId == e.deliveryId && element.buyerId == e.buyerId).toList(),
+          deliveryRows.firstWhere((element) => element.id == e.deliveryId)
         ))).toList();
       }
     );
@@ -80,12 +92,17 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
       ..where((tbl) => tbl.buyerId.equals(buyerId))
       ..where((tbl) => tbl.deliveryId.equals(deliveryId))
     ).watch();
+    final deliveryStream = (
+      select(deliveries)
+      ..where((tbl) => tbl.id.equals(deliveryId))
+    ).watchSingle();
 
-    return Rx.combineLatest2(
+    return Rx.combineLatest3(
       buyerStream,
       buyerDeliveryMarksStream,
-      (buyerRow, buyerDeliveryMarkRows) {
-        return BuyerEx(buyerRow, buyerDeliveryMarkRows);
+      deliveryStream,
+      (buyerRow, buyerDeliveryMarkRows, deliveryRow) {
+        return BuyerEx(buyerRow, buyerDeliveryMarkRows, deliveryRow);
       }
     );
   }
@@ -169,6 +186,7 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
 }
 
 class BuyerEx {
+  final Delivery delivery;
   final Buyer buyer;
   final List<BuyerDeliveryMark> buyerDeliveryMarks;
 
@@ -178,7 +196,7 @@ class BuyerEx {
   bool get inProgress => arrived && !departed;
   bool get visited => arrived && !missed;
 
-  BuyerEx(this.buyer, this.buyerDeliveryMarks);
+  BuyerEx(this.buyer, this.buyerDeliveryMarks, this.delivery);
 }
 
 class BuyerDeliveryPointEx {
