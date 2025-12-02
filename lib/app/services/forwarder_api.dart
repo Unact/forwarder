@@ -83,7 +83,7 @@ extension ForwarderApi on RenewApi {
     return ApiBuyerDeliveryPointData.fromJson(result);
   }
 
-  Future<ApiDeliveryData> deliverOrder(
+  Future<ApiOrderDeliveryData> deliverOrder(
     int orderId,
     List<Map<String, dynamic>> codes,
     List<Map<String, dynamic>> packErrors,
@@ -102,10 +102,10 @@ extension ForwarderApi on RenewApi {
       }
     );
 
-    return ApiDeliveryData.fromJson(result);
+    return ApiOrderDeliveryData.fromJson(result);
   }
 
-  Future<ApiDeliveryData> cancelOrderDelivery(int orderId) async {
+  Future<ApiOrderDeliveryData> cancelOrderDelivery(int orderId) async {
     final result = await post(
       'v1/forwarder/orders/cancel_delivery',
       dataGenerator: () => {
@@ -113,7 +113,7 @@ extension ForwarderApi on RenewApi {
       }
     );
 
-    return ApiDeliveryData.fromJson(result);
+    return ApiOrderDeliveryData.fromJson(result);
   }
 
   Future<ApiAcceptPaymentData> acceptPayment(

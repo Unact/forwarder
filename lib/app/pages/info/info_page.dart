@@ -11,6 +11,7 @@ import '/app/pages/home/home_page.dart';
 import '/app/pages/person/person_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
+import '/app/repositories/buyers_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/repositories/users_repository.dart';
 
@@ -27,6 +28,7 @@ class InfoPage extends StatelessWidget {
     return BlocProvider<InfoViewModel>(
       create: (context) => InfoViewModel(
         RepositoryProvider.of<AppRepository>(context),
+        RepositoryProvider.of<BuyersRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
         RepositoryProvider.of<UsersRepository>(context),
       ),
@@ -136,6 +138,7 @@ class _InfoViewState extends State<_InfoView> {
           subtitle: _buildPaymentsCard(context),
         ),
       ),
+      _buildDeliveriesCard(context),
       _buildHistoryCard(context),
       _buildInfoCard(context),
     ];
@@ -158,6 +161,28 @@ class _InfoViewState extends State<_InfoView> {
                 style: const TextStyle(fontSize: 12.0)
               )
             ]
+          )
+        )
+      ),
+    );
+  }
+
+  Widget _buildDeliveriesCard(BuildContext context) {
+    InfoViewModel vm = context.read<InfoViewModel>();
+
+    return Card(
+      child: ListTile(
+        isThreeLine: true,
+        title: const Text('Маршруты'),
+        subtitle: RichText(
+          text: TextSpan(
+            style: const TextStyle(color: Colors.grey),
+            children: vm.state.deliveries.map((e) =>
+              TextSpan(
+                text: 'Номер: ${e.ndoc} Выезд: ${e.ddateb != null ? Format.dateTimeStr(e.ddateb) : 'Не указан'}\n',
+                style: const TextStyle(fontSize: 12.0)
+              )
+            ).toList()
           )
         )
       ),

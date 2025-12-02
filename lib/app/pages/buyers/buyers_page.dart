@@ -56,7 +56,7 @@ class _BuyersViewState extends State<_BuyersView> {
             padding: const EdgeInsets.only(top: 24, left: 8, right: 8, bottom: 24),
             children: deliveryIds.fold([], (children, deliveryId) {
               String deliveryNdoc = vm.state.buyers
-                .firstWhere((buyer) => buyer.buyer.deliveryId == deliveryId).buyer.deliveryNdoc;
+                .firstWhere((buyer) => buyer.buyer.deliveryId == deliveryId).delivery.ndoc;
 
               children.add(
                 ListTile(

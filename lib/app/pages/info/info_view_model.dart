@@ -2,15 +2,18 @@ part of 'info_page.dart';
 
 class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
   final AppRepository appRepository;
+  final BuyersRepository buyersRepository;
   final PaymentsRepository paymentsRepository;
   final UsersRepository usersRepository;
 
   StreamSubscription<User>? userSubscription;
   StreamSubscription<AppInfoResult>? appInfoSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
+  StreamSubscription<List<Delivery>>? deliveriesSubscription;
 
   InfoViewModel(
     this.appRepository,
+    this.buyersRepository,
     this.paymentsRepository,
     this.usersRepository
   ) : super(InfoState());
@@ -31,6 +34,9 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
     cashPaymentsSubscription = paymentsRepository.watchCashPayments().listen((event) {
       emit(state.copyWith(status: InfoStateStatus.dataLoaded, cashPayments: event));
     });
+    deliveriesSubscription = buyersRepository.watchDeliveries().listen((event) {
+      emit(state.copyWith(status: InfoStateStatus.dataLoaded, deliveries: event));
+    });
   }
 
   @override
@@ -40,6 +46,7 @@ class InfoViewModel extends PageViewModel<InfoState, InfoStateStatus> {
     await userSubscription?.cancel();
     await appInfoSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
+    await deliveriesSubscription?.cancel();
   }
 
   Future<void> reverseDay() async {
