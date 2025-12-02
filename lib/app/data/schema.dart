@@ -35,10 +35,15 @@ class Incomes extends Table {
   RealColumn get summ => real()();
 }
 
+class Deliveries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get ndoc => text()();
+  DateTimeColumn get ddateb => dateTime().nullable()();
+}
+
 class Buyers extends Table {
   IntColumn get buyerId => integer()();
   IntColumn get deliveryId => integer()();
-  TextColumn get deliveryNdoc => text()();
   TextColumn get name => text()();
   TextColumn get address => text()();
   IntColumn get ord => integer()();

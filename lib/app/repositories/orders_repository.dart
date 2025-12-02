@@ -120,7 +120,7 @@ class OrdersRepository extends BaseRepository {
     };
 
     try {
-      final ApiDeliveryData data = await api.deliverOrder(
+      final ApiOrderDeliveryData data = await api.deliverOrder(
         updatedOrder.id.value,
         updatedOrderLineCodes,
         updatedOrderLinePackErrors,
@@ -153,7 +153,7 @@ class OrdersRepository extends BaseRepository {
     OrdersCompanion updatedOrder = order.toCompanion(false).copyWith(delivered: const Value.absent());
 
     try {
-      final ApiDeliveryData data = await api.cancelOrderDelivery(order.id);
+      final ApiOrderDeliveryData data = await api.cancelOrderDelivery(order.id);
 
       await dataStore.transaction(() async {
         final orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();

@@ -36,7 +36,8 @@ part 'users_dao.dart';
     BuyerDeliveryMarks,
     BuyerDeliveryPoints,
     BuyerDeliveryPointPhotos,
-    Prefs
+    Prefs,
+    Deliveries
   ],
   daos: [
     BuyersDao,
@@ -114,7 +115,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

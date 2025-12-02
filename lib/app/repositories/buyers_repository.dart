@@ -36,6 +36,10 @@ class BuyersRepository extends BaseRepository {
     return dataStore.buyersDao.watchBuyerExList();
   }
 
+  Stream<List<Delivery>> watchDeliveries() {
+    return dataStore.buyersDao.watchDeliveries();
+  }
+
   Stream<BuyerDeliveryPointEx> watchBuyerDeliveryPointById(int id) {
     return dataStore.buyersDao.watchBuyerDeliveryPointExById(id);
   }
