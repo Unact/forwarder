@@ -141,6 +141,8 @@ class _DeliveryPointViewState extends State<_DeliveryPointView> {
                 trailing: TextFormField(
                   initialValue: state.pointEx.point.info,
                   onFieldSubmitted: vm.updateInfo,
+                  minLines: 1,
+                  maxLines: null,
                   style: formStyle
                 )
               ),

@@ -57,26 +57,29 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
   Stream<List<BuyerEx>> watchBuyerExList() {
     final buyerStream = (
       select(buyers)
+      .join([innerJoin(deliveries, deliveries.id.equalsExp(buyers.deliveryId))])
       ..orderBy([
-        (u) => OrderingTerm(expression: u.deliveryId),
-        (u) => OrderingTerm(expression: u.ord),
-        (u) => OrderingTerm(expression: u.name)
+        OrderingTerm(expression: deliveries.ndoc),
+        OrderingTerm(expression: buyers.ord),
+        OrderingTerm(expression: buyers.name)
       ])
     ).watch();
     final buyerDeliveryMarksStream = select(buyerDeliveryMarks).watch();
-    final deliveriesStream = select(deliveries).watch();
 
-    return Rx.combineLatest3(
+    return Rx.combineLatest2(
       buyerStream,
       buyerDeliveryMarksStream,
-      deliveriesStream,
-      (buyerRows, buyerDeliveryMarkRows, deliveryRows) {
-        return buyerRows.map(((e) => BuyerEx(
-          e,
-          buyerDeliveryMarkRows
-            .where((element) => element.deliveryId == e.deliveryId && element.buyerId == e.buyerId).toList(),
-          deliveryRows.firstWhere((element) => element.id == e.deliveryId)
-        ))).toList();
+      (buyerRows, buyerDeliveryMarkRows) {
+        return buyerRows.map((e) {
+          final buyer = e.readTable(buyers);
+
+          return BuyerEx(
+            e.readTable(buyers),
+            buyerDeliveryMarkRows
+              .where((element) => element.deliveryId == buyer.deliveryId && element.buyerId == buyer.buyerId).toList(),
+            e.readTable(deliveries)
+          );
+        }).toList();
       }
     );
   }
@@ -84,25 +87,21 @@ class BuyersDao extends DatabaseAccessor<AppDataStore> with _$BuyersDaoMixin {
   Stream<BuyerEx> watchBuyerExById(int buyerId, int deliveryId) {
     final buyerStream = (
       select(buyers)
-      ..where((tbl) => tbl.buyerId.equals(buyerId))
-      ..where((tbl) => tbl.deliveryId.equals(deliveryId))
+      .join([innerJoin(deliveries, deliveries.id.equalsExp(buyers.deliveryId))])
+      ..where(buyers.buyerId.equals(buyerId))
+      ..where(buyers.deliveryId.equals(deliveryId))
     ).watchSingle();
     final buyerDeliveryMarksStream = (
       select(buyerDeliveryMarks)
       ..where((tbl) => tbl.buyerId.equals(buyerId))
       ..where((tbl) => tbl.deliveryId.equals(deliveryId))
     ).watch();
-    final deliveryStream = (
-      select(deliveries)
-      ..where((tbl) => tbl.id.equals(deliveryId))
-    ).watchSingle();
 
-    return Rx.combineLatest3(
+    return Rx.combineLatest2(
       buyerStream,
       buyerDeliveryMarksStream,
-      deliveryStream,
-      (buyerRow, buyerDeliveryMarkRows, deliveryRow) {
-        return BuyerEx(buyerRow, buyerDeliveryMarkRows, deliveryRow);
+      (buyerRow, buyerDeliveryMarkRows) {
+        return BuyerEx(buyerRow.readTable(buyers), buyerDeliveryMarkRows, buyerRow.readTable(deliveries));
       }
     );
   }
