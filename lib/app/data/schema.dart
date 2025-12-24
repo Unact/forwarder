@@ -132,6 +132,7 @@ class Orders extends Table {
   BoolColumn get physical => boolean()();
   BoolColumn get needScan => boolean()();
   BoolColumn get dovUnload => boolean()();
+  TextColumn get address => text().nullable()();
 }
 
 class OrderLines extends Table {
