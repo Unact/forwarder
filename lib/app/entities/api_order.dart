@@ -7,6 +7,7 @@ class ApiOrder extends Equatable {
   final int ord;
   final String ndoc;
   final String info;
+  final String? address;
   final int inc;
   final int goodsCnt;
   final double mc;
@@ -23,6 +24,7 @@ class ApiOrder extends Equatable {
     required this.ord,
     required this.ndoc,
     required this.info,
+    required this.address,
     required this.inc,
     required this.goodsCnt,
     required this.mc,
@@ -41,6 +43,7 @@ class ApiOrder extends Equatable {
       ord: json['ord'],
       ndoc: json['ndoc'],
       info: json['info'],
+      address: json['address'],
       inc: json['inc'],
       goodsCnt: json['goods_cnt'],
       mc: Parsing.parseDouble(json['mc'])!,
@@ -60,6 +63,7 @@ class ApiOrder extends Equatable {
       ord: ord,
       ndoc: ndoc,
       info: info,
+      address: address,
       isInc: inc == 1,
       goodsCnt: goodsCnt,
       mc: mc,
@@ -79,6 +83,7 @@ class ApiOrder extends Equatable {
     ord,
     ndoc,
     info,
+    address,
     inc,
     goodsCnt,
     mc,
