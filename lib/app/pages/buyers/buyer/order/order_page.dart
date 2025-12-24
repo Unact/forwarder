@@ -244,6 +244,11 @@ class _OrderViewState extends State<_OrderView> {
     List<Widget> children = [
       InfoRow(title: const Text('Номер'), trailing: Text(state.order.ndoc)),
       InfoRow(
+        title: const Text('Адрес'),
+        trailing: ExpandingText(state.order.address ?? ''),
+        trailingFlex: 2
+      ),
+      InfoRow(
         title: const Text('Комментарий'),
         trailing: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -2806,6 +2806,17 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       'CHECK ("dov_unload" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2822,6 +2833,7 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
     physical,
     needScan,
     dovUnload,
+    address,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2937,6 +2949,12 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
     } else if (isInserting) {
       context.missing(_dovUnloadMeta);
     }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
     return context;
   }
 
@@ -3015,6 +3033,10 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
             DriftSqlType.bool,
             data['${effectivePrefix}dov_unload'],
           )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
     );
   }
 
@@ -3039,6 +3061,7 @@ class Order extends DataClass implements Insertable<Order> {
   final bool physical;
   final bool needScan;
   final bool dovUnload;
+  final String? address;
   const Order({
     required this.id,
     required this.buyerId,
@@ -3054,6 +3077,7 @@ class Order extends DataClass implements Insertable<Order> {
     required this.physical,
     required this.needScan,
     required this.dovUnload,
+    this.address,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3074,6 +3098,9 @@ class Order extends DataClass implements Insertable<Order> {
     map['physical'] = Variable<bool>(physical);
     map['need_scan'] = Variable<bool>(needScan);
     map['dov_unload'] = Variable<bool>(dovUnload);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
     return map;
   }
 
@@ -3096,6 +3123,10 @@ class Order extends DataClass implements Insertable<Order> {
       physical: Value(physical),
       needScan: Value(needScan),
       dovUnload: Value(dovUnload),
+      address:
+          address == null && nullToAbsent
+              ? const Value.absent()
+              : Value(address),
     );
   }
 
@@ -3119,6 +3150,7 @@ class Order extends DataClass implements Insertable<Order> {
       physical: serializer.fromJson<bool>(json['physical']),
       needScan: serializer.fromJson<bool>(json['needScan']),
       dovUnload: serializer.fromJson<bool>(json['dovUnload']),
+      address: serializer.fromJson<String?>(json['address']),
     );
   }
   @override
@@ -3139,6 +3171,7 @@ class Order extends DataClass implements Insertable<Order> {
       'physical': serializer.toJson<bool>(physical),
       'needScan': serializer.toJson<bool>(needScan),
       'dovUnload': serializer.toJson<bool>(dovUnload),
+      'address': serializer.toJson<String?>(address),
     };
   }
 
@@ -3157,6 +3190,7 @@ class Order extends DataClass implements Insertable<Order> {
     bool? physical,
     bool? needScan,
     bool? dovUnload,
+    Value<String?> address = const Value.absent(),
   }) => Order(
     id: id ?? this.id,
     buyerId: buyerId ?? this.buyerId,
@@ -3172,6 +3206,7 @@ class Order extends DataClass implements Insertable<Order> {
     physical: physical ?? this.physical,
     needScan: needScan ?? this.needScan,
     dovUnload: dovUnload ?? this.dovUnload,
+    address: address.present ? address.value : this.address,
   );
   Order copyWithCompanion(OrdersCompanion data) {
     return Order(
@@ -3190,6 +3225,7 @@ class Order extends DataClass implements Insertable<Order> {
       physical: data.physical.present ? data.physical.value : this.physical,
       needScan: data.needScan.present ? data.needScan.value : this.needScan,
       dovUnload: data.dovUnload.present ? data.dovUnload.value : this.dovUnload,
+      address: data.address.present ? data.address.value : this.address,
     );
   }
 
@@ -3209,7 +3245,8 @@ class Order extends DataClass implements Insertable<Order> {
           ..write('paid: $paid, ')
           ..write('physical: $physical, ')
           ..write('needScan: $needScan, ')
-          ..write('dovUnload: $dovUnload')
+          ..write('dovUnload: $dovUnload, ')
+          ..write('address: $address')
           ..write(')'))
         .toString();
   }
@@ -3230,6 +3267,7 @@ class Order extends DataClass implements Insertable<Order> {
     physical,
     needScan,
     dovUnload,
+    address,
   );
   @override
   bool operator ==(Object other) =>
@@ -3248,7 +3286,8 @@ class Order extends DataClass implements Insertable<Order> {
           other.paid == this.paid &&
           other.physical == this.physical &&
           other.needScan == this.needScan &&
-          other.dovUnload == this.dovUnload);
+          other.dovUnload == this.dovUnload &&
+          other.address == this.address);
 }
 
 class OrdersCompanion extends UpdateCompanion<Order> {
@@ -3266,6 +3305,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   final Value<bool> physical;
   final Value<bool> needScan;
   final Value<bool> dovUnload;
+  final Value<String?> address;
   const OrdersCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
@@ -3281,6 +3321,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     this.physical = const Value.absent(),
     this.needScan = const Value.absent(),
     this.dovUnload = const Value.absent(),
+    this.address = const Value.absent(),
   });
   OrdersCompanion.insert({
     this.id = const Value.absent(),
@@ -3297,6 +3338,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     required bool physical,
     required bool needScan,
     required bool dovUnload,
+    this.address = const Value.absent(),
   }) : buyerId = Value(buyerId),
        deliveryId = Value(deliveryId),
        ord = Value(ord),
@@ -3324,6 +3366,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Expression<bool>? physical,
     Expression<bool>? needScan,
     Expression<bool>? dovUnload,
+    Expression<String>? address,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3340,6 +3383,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       if (physical != null) 'physical': physical,
       if (needScan != null) 'need_scan': needScan,
       if (dovUnload != null) 'dov_unload': dovUnload,
+      if (address != null) 'address': address,
     });
   }
 
@@ -3358,6 +3402,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Value<bool>? physical,
     Value<bool>? needScan,
     Value<bool>? dovUnload,
+    Value<String?>? address,
   }) {
     return OrdersCompanion(
       id: id ?? this.id,
@@ -3374,6 +3419,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       physical: physical ?? this.physical,
       needScan: needScan ?? this.needScan,
       dovUnload: dovUnload ?? this.dovUnload,
+      address: address ?? this.address,
     );
   }
 
@@ -3422,6 +3468,9 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     if (dovUnload.present) {
       map['dov_unload'] = Variable<bool>(dovUnload.value);
     }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
     return map;
   }
 
@@ -3441,7 +3490,8 @@ class OrdersCompanion extends UpdateCompanion<Order> {
           ..write('paid: $paid, ')
           ..write('physical: $physical, ')
           ..write('needScan: $needScan, ')
-          ..write('dovUnload: $dovUnload')
+          ..write('dovUnload: $dovUnload, ')
+          ..write('address: $address')
           ..write(')'))
         .toString();
   }
@@ -9031,6 +9081,7 @@ typedef $$OrdersTableCreateCompanionBuilder =
       required bool physical,
       required bool needScan,
       required bool dovUnload,
+      Value<String?> address,
     });
 typedef $$OrdersTableUpdateCompanionBuilder =
     OrdersCompanion Function({
@@ -9048,6 +9099,7 @@ typedef $$OrdersTableUpdateCompanionBuilder =
       Value<bool> physical,
       Value<bool> needScan,
       Value<bool> dovUnload,
+      Value<String?> address,
     });
 
 class $$OrdersTableFilterComposer
@@ -9126,6 +9178,11 @@ class $$OrdersTableFilterComposer
 
   ColumnFilters<bool> get dovUnload => $composableBuilder(
     column: $table.dovUnload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9208,6 +9265,11 @@ class $$OrdersTableOrderingComposer
     column: $table.dovUnload,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$OrdersTableAnnotationComposer
@@ -9262,6 +9324,9 @@ class $$OrdersTableAnnotationComposer
 
   GeneratedColumn<bool> get dovUnload =>
       $composableBuilder(column: $table.dovUnload, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
 }
 
 class $$OrdersTableTableManager
@@ -9306,6 +9371,7 @@ class $$OrdersTableTableManager
                 Value<bool> physical = const Value.absent(),
                 Value<bool> needScan = const Value.absent(),
                 Value<bool> dovUnload = const Value.absent(),
+                Value<String?> address = const Value.absent(),
               }) => OrdersCompanion(
                 id: id,
                 buyerId: buyerId,
@@ -9321,6 +9387,7 @@ class $$OrdersTableTableManager
                 physical: physical,
                 needScan: needScan,
                 dovUnload: dovUnload,
+                address: address,
               ),
           createCompanionCallback:
               ({
@@ -9338,6 +9405,7 @@ class $$OrdersTableTableManager
                 required bool physical,
                 required bool needScan,
                 required bool dovUnload,
+                Value<String?> address = const Value.absent(),
               }) => OrdersCompanion.insert(
                 id: id,
                 buyerId: buyerId,
@@ -9353,6 +9421,7 @@ class $$OrdersTableTableManager
                 physical: physical,
                 needScan: needScan,
                 dovUnload: dovUnload,
+                address: address,
               ),
           withReferenceMapper:
               (p0) =>
