@@ -313,6 +313,13 @@ class _BuyerViewState extends State<_BuyerView> {
               style: const TextStyle(color: Colors.grey, fontSize: 12.0),
             ),
             TextSpan(
+              text: order.address != null ? 'Адрес: ${order.address}\n' : null,
+              style: TextStyle(
+                color: order.address != vm.state.buyer.buyer.address ? Colors.red : Colors.grey,
+                fontSize: 12.0
+              )
+            ),
+            TextSpan(
               text: 'Доставлен: $delivered\n',
               style: const TextStyle(color: Colors.blue, fontSize: 12.0),
             ),
