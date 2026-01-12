@@ -18,6 +18,7 @@ part 'database.g.dart';
 part 'buyers_dao.dart';
 part 'orders_dao.dart';
 part 'payments_dao.dart';
+part 'tasks_dao.dart';
 part 'users_dao.dart';
 
 @DriftDatabase(
@@ -37,13 +38,15 @@ part 'users_dao.dart';
     BuyerDeliveryPoints,
     BuyerDeliveryPointPhotos,
     Prefs,
-    Deliveries
+    Deliveries,
+    Tasks
   ],
   daos: [
     BuyersDao,
     OrdersDao,
     PaymentsDao,
-    UsersDao
+    UsersDao,
+    TasksDao
   ],
    queries: {
     'appInfo': '''
@@ -115,7 +118,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 25;
+  int get schemaVersion => 26;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

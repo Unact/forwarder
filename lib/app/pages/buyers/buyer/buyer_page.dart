@@ -17,6 +17,7 @@ import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/buyers_repository.dart';
 import '/app/repositories/orders_repository.dart';
+import '/app/repositories/tasks_repository.dart';
 import '/app/repositories/payments_repository.dart';
 import '/app/utils/geo.dart';
 import '/app/widgets/widgets.dart';
@@ -39,6 +40,7 @@ class BuyerPage extends StatelessWidget {
         RepositoryProvider.of<AppRepository>(context),
         RepositoryProvider.of<BuyersRepository>(context),
         RepositoryProvider.of<OrdersRepository>(context),
+        RepositoryProvider.of<TasksRepository>(context),
         RepositoryProvider.of<PaymentsRepository>(context),
         buyer: buyer
       ),
@@ -117,7 +119,8 @@ class _BuyerViewState extends State<_BuyerView> {
             children: [
               _buildBuyerTile(context),
               _buildOrdersTile(context),
-              _buildDebtsTile(context)
+              _buildDebtsTile(context),
+              _buildTasksTile(context)
             ]
           )
         );
@@ -294,6 +297,20 @@ class _BuyerViewState extends State<_BuyerView> {
     );
   }
 
+  Widget _buildTasksTile(BuildContext context) {
+    BuyerViewModel vm = context.read<BuyerViewModel>();
+
+    return Column(
+      children: [
+        InfoRow(title: const Text('Задания', style: TextStyle(fontWeight: FontWeight.bold))),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(children: vm.state.tasks.map((e) => _buildTaskTile(context, e)).toList())
+        )
+      ],
+    );
+  }
+
   Widget _buildOrderTile(BuildContext context, Order order) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String delivered = order.isDelivered ? Strings.yes : (order.isUndelivered ? Strings.no : Strings.inProcess);
@@ -411,6 +428,38 @@ class _BuyerViewState extends State<_BuyerView> {
         );
         setState(() => _controllers.remove(debt.id));
       },
+    );
+  }
+
+  Widget _buildTaskTile(BuildContext context, Task task) {
+    BuyerViewModel vm = context.read<BuyerViewModel>();
+
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.only(left: 8),
+      trailing: task.status || !vm.state.buyer.visited ? null :
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            backgroundColor: Theme.of(context).colorScheme.primary
+          ),
+          onPressed: () => vm.tryFinishTask(task),
+          child: const Text('Завершить', style: TextStyle(color: Colors.white)),
+        ),
+      subtitle: RichText(
+        text: TextSpan(
+          children: <TextSpan>[
+            TextSpan(
+              text: '${task.taskTypeName}\n',
+              style: const TextStyle(color: Colors.black, fontSize: 14.0)
+            ),
+            TextSpan(
+              text: '${task.status ? 'Завершен' : 'Не завершен'}\n',
+              style: const TextStyle(color: Colors.grey, fontSize: 12.0),
+            )
+          ]
+        )
+      )
     );
   }
 

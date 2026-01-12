@@ -131,4 +131,15 @@ extension ForwarderApi on RenewApi {
 
     return ApiAcceptPaymentData.fromJson(result);
   }
+
+  Future<ApiFinishTaskData> finishTask(int id) async {
+    final result = await post(
+      'v1/forwarder/orders/finish_task',
+      dataGenerator: () => {
+        'id': id
+      }
+    );
+
+    return ApiFinishTaskData.fromJson(result);
+  }
 }
