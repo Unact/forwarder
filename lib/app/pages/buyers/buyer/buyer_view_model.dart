@@ -4,17 +4,20 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   final AppRepository appRepository;
   final BuyersRepository buyersRepository;
   final OrdersRepository ordersRepository;
+  final TasksRepository tasksRepository;
   final PaymentsRepository paymentsRepository;
 
   StreamSubscription<BuyerEx>? buyerSubscription;
   StreamSubscription<List<Order>>? orderSubscription;
   StreamSubscription<List<Debt>>? debtsSubscription;
+  StreamSubscription<List<Task>>? tasksSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
 
   BuyerViewModel(
     this.appRepository,
     this.buyersRepository,
     this.ordersRepository,
+    this.tasksRepository,
     this.paymentsRepository,
     {
       required BuyerEx buyer
@@ -40,6 +43,10 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     debtsSubscription = paymentsRepository.watchDebtsByBuyerId(state.buyer.buyer.buyerId).listen((event) {
       emit(state.copyWith(status: BuyerStateStatus.dataLoaded, debts: event.where((e) => !e.physical).toList()));
     });
+    tasksSubscription = tasksRepository.watchTasksByBuyerId(state.buyer.buyer.buyerId, state.buyer.buyer.deliveryId)
+      .listen((event) {
+        emit(state.copyWith(status: BuyerStateStatus.dataLoaded, tasks: event));
+      });
     cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.buyer.buyerId)
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
@@ -54,6 +61,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     await orderSubscription?.cancel();
     await debtsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
+    await tasksSubscription?.cancel();
   }
 
   Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {
@@ -105,6 +113,15 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     emit(state.copyWith(status: BuyerStateStatus.coordsCopied, message: 'Координаты точки скопированы'));
   }
 
+  void tryFinishTask(Task task) {
+    emit(state.copyWith(
+      status: BuyerStateStatus.needUserConfirmation,
+      confirmationCallback: finishTask,
+      taskToFinish: (value: task),
+      message: 'Вы уверены, что хотите завершить задание?'
+    ));
+  }
+
   void tryDepart() {
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
@@ -127,6 +144,20 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       confirmationCallback: missed,
       message: 'Вы уверены, что хотите отметить непосещение точки?'
     ));
+  }
+
+  Future<void> finishTask(bool confirmed) async {
+    if (!confirmed) return;
+
+    emit(state.copyWith(status: BuyerStateStatus.inProgress));
+
+    try {
+      await tasksRepository.finishTask(state.taskToFinish!);
+
+      emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно завершено'));
+    } on AppError catch(e) {
+      emit(state.copyWith(status: BuyerStateStatus.failure, message: e.message));
+    }
   }
 
   Future<void> missed(bool confirmed) async {

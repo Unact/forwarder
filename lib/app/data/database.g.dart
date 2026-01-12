@@ -7631,6 +7631,371 @@ class DeliveriesCompanion extends UpdateCompanion<Delivery> {
   }
 }
 
+class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _buyerIdMeta = const VerificationMeta(
+    'buyerId',
+  );
+  @override
+  late final GeneratedColumn<int> buyerId = GeneratedColumn<int>(
+    'buyer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deliveryIdMeta = const VerificationMeta(
+    'deliveryId',
+  );
+  @override
+  late final GeneratedColumn<int> deliveryId = GeneratedColumn<int>(
+    'delivery_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taskTypeNameMeta = const VerificationMeta(
+    'taskTypeName',
+  );
+  @override
+  late final GeneratedColumn<String> taskTypeName = GeneratedColumn<String>(
+    'task_type_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<bool> status = GeneratedColumn<bool>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("status" IN (0, 1))',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    buyerId,
+    deliveryId,
+    taskTypeName,
+    status,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Task> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('buyer_id')) {
+      context.handle(
+        _buyerIdMeta,
+        buyerId.isAcceptableOrUnknown(data['buyer_id']!, _buyerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_buyerIdMeta);
+    }
+    if (data.containsKey('delivery_id')) {
+      context.handle(
+        _deliveryIdMeta,
+        deliveryId.isAcceptableOrUnknown(data['delivery_id']!, _deliveryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deliveryIdMeta);
+    }
+    if (data.containsKey('task_type_name')) {
+      context.handle(
+        _taskTypeNameMeta,
+        taskTypeName.isAcceptableOrUnknown(
+          data['task_type_name']!,
+          _taskTypeNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_taskTypeNameMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Task map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Task(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      buyerId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}buyer_id'],
+          )!,
+      deliveryId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}delivery_id'],
+          )!,
+      taskTypeName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}task_type_name'],
+          )!,
+      status:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}status'],
+          )!,
+    );
+  }
+
+  @override
+  $TasksTable createAlias(String alias) {
+    return $TasksTable(attachedDatabase, alias);
+  }
+}
+
+class Task extends DataClass implements Insertable<Task> {
+  final int id;
+  final int buyerId;
+  final int deliveryId;
+  final String taskTypeName;
+  final bool status;
+  const Task({
+    required this.id,
+    required this.buyerId,
+    required this.deliveryId,
+    required this.taskTypeName,
+    required this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['buyer_id'] = Variable<int>(buyerId);
+    map['delivery_id'] = Variable<int>(deliveryId);
+    map['task_type_name'] = Variable<String>(taskTypeName);
+    map['status'] = Variable<bool>(status);
+    return map;
+  }
+
+  TasksCompanion toCompanion(bool nullToAbsent) {
+    return TasksCompanion(
+      id: Value(id),
+      buyerId: Value(buyerId),
+      deliveryId: Value(deliveryId),
+      taskTypeName: Value(taskTypeName),
+      status: Value(status),
+    );
+  }
+
+  factory Task.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Task(
+      id: serializer.fromJson<int>(json['id']),
+      buyerId: serializer.fromJson<int>(json['buyerId']),
+      deliveryId: serializer.fromJson<int>(json['deliveryId']),
+      taskTypeName: serializer.fromJson<String>(json['taskTypeName']),
+      status: serializer.fromJson<bool>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'buyerId': serializer.toJson<int>(buyerId),
+      'deliveryId': serializer.toJson<int>(deliveryId),
+      'taskTypeName': serializer.toJson<String>(taskTypeName),
+      'status': serializer.toJson<bool>(status),
+    };
+  }
+
+  Task copyWith({
+    int? id,
+    int? buyerId,
+    int? deliveryId,
+    String? taskTypeName,
+    bool? status,
+  }) => Task(
+    id: id ?? this.id,
+    buyerId: buyerId ?? this.buyerId,
+    deliveryId: deliveryId ?? this.deliveryId,
+    taskTypeName: taskTypeName ?? this.taskTypeName,
+    status: status ?? this.status,
+  );
+  Task copyWithCompanion(TasksCompanion data) {
+    return Task(
+      id: data.id.present ? data.id.value : this.id,
+      buyerId: data.buyerId.present ? data.buyerId.value : this.buyerId,
+      deliveryId:
+          data.deliveryId.present ? data.deliveryId.value : this.deliveryId,
+      taskTypeName:
+          data.taskTypeName.present
+              ? data.taskTypeName.value
+              : this.taskTypeName,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Task(')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('taskTypeName: $taskTypeName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, buyerId, deliveryId, taskTypeName, status);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Task &&
+          other.id == this.id &&
+          other.buyerId == this.buyerId &&
+          other.deliveryId == this.deliveryId &&
+          other.taskTypeName == this.taskTypeName &&
+          other.status == this.status);
+}
+
+class TasksCompanion extends UpdateCompanion<Task> {
+  final Value<int> id;
+  final Value<int> buyerId;
+  final Value<int> deliveryId;
+  final Value<String> taskTypeName;
+  final Value<bool> status;
+  const TasksCompanion({
+    this.id = const Value.absent(),
+    this.buyerId = const Value.absent(),
+    this.deliveryId = const Value.absent(),
+    this.taskTypeName = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  TasksCompanion.insert({
+    this.id = const Value.absent(),
+    required int buyerId,
+    required int deliveryId,
+    required String taskTypeName,
+    required bool status,
+  }) : buyerId = Value(buyerId),
+       deliveryId = Value(deliveryId),
+       taskTypeName = Value(taskTypeName),
+       status = Value(status);
+  static Insertable<Task> custom({
+    Expression<int>? id,
+    Expression<int>? buyerId,
+    Expression<int>? deliveryId,
+    Expression<String>? taskTypeName,
+    Expression<bool>? status,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (buyerId != null) 'buyer_id': buyerId,
+      if (deliveryId != null) 'delivery_id': deliveryId,
+      if (taskTypeName != null) 'task_type_name': taskTypeName,
+      if (status != null) 'status': status,
+    });
+  }
+
+  TasksCompanion copyWith({
+    Value<int>? id,
+    Value<int>? buyerId,
+    Value<int>? deliveryId,
+    Value<String>? taskTypeName,
+    Value<bool>? status,
+  }) {
+    return TasksCompanion(
+      id: id ?? this.id,
+      buyerId: buyerId ?? this.buyerId,
+      deliveryId: deliveryId ?? this.deliveryId,
+      taskTypeName: taskTypeName ?? this.taskTypeName,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (buyerId.present) {
+      map['buyer_id'] = Variable<int>(buyerId.value);
+    }
+    if (deliveryId.present) {
+      map['delivery_id'] = Variable<int>(deliveryId.value);
+    }
+    if (taskTypeName.present) {
+      map['task_type_name'] = Variable<String>(taskTypeName.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<bool>(status.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TasksCompanion(')
+          ..write('id: $id, ')
+          ..write('buyerId: $buyerId, ')
+          ..write('deliveryId: $deliveryId, ')
+          ..write('taskTypeName: $taskTypeName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDataStore extends GeneratedDatabase {
   _$AppDataStore(QueryExecutor e) : super(e);
   $AppDataStoreManager get managers => $AppDataStoreManager(this);
@@ -7655,10 +8020,12 @@ abstract class _$AppDataStore extends GeneratedDatabase {
       $BuyerDeliveryPointPhotosTable(this);
   late final $PrefsTable prefs = $PrefsTable(this);
   late final $DeliveriesTable deliveries = $DeliveriesTable(this);
+  late final $TasksTable tasks = $TasksTable(this);
   late final BuyersDao buyersDao = BuyersDao(this as AppDataStore);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
   late final UsersDao usersDao = UsersDao(this as AppDataStore);
+  late final TasksDao tasksDao = TasksDao(this as AppDataStore);
   Selectable<AppInfoResult> appInfo() {
     return customSelect(
       'SELECT prefs.*, (SELECT COUNT(*) FROM orders) AS orders_total, EXISTS (SELECT 1 AS _c0 FROM buyer_delivery_marks WHERE id IS NULL) AS has_unsynced, EXISTS (SELECT 1 AS _c1 FROM buyer_delivery_marks WHERE id IS NULL) OR EXISTS (SELECT 1 AS _c2 FROM order_line_codes WHERE id IS NULL) AS has_unsaved, (SELECT COUNT(*) FROM orders WHERE is_inc = 1) + (SELECT COUNT(*) FROM orders WHERE NOT EXISTS (SELECT 1 FROM buyers WHERE buyers.buyer_id = orders.buyer_id) = 1) AS inc_orders_total, (SELECT COUNT(*) FROM buyers) AS buyers_total FROM prefs',
@@ -7697,6 +8064,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     buyerDeliveryPointPhotos,
     prefs,
     deliveries,
+    tasks,
   ];
 }
 
@@ -11722,6 +12090,204 @@ typedef $$DeliveriesTableProcessedTableManager =
       Delivery,
       PrefetchHooks Function()
     >;
+typedef $$TasksTableCreateCompanionBuilder =
+    TasksCompanion Function({
+      Value<int> id,
+      required int buyerId,
+      required int deliveryId,
+      required String taskTypeName,
+      required bool status,
+    });
+typedef $$TasksTableUpdateCompanionBuilder =
+    TasksCompanion Function({
+      Value<int> id,
+      Value<int> buyerId,
+      Value<int> deliveryId,
+      Value<String> taskTypeName,
+      Value<bool> status,
+    });
+
+class $$TasksTableFilterComposer extends Composer<_$AppDataStore, $TasksTable> {
+  $$TasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get taskTypeName => $composableBuilder(
+    column: $table.taskTypeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TasksTableOrderingComposer
+    extends Composer<_$AppDataStore, $TasksTable> {
+  $$TasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get buyerId => $composableBuilder(
+    column: $table.buyerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get taskTypeName => $composableBuilder(
+    column: $table.taskTypeName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TasksTableAnnotationComposer
+    extends Composer<_$AppDataStore, $TasksTable> {
+  $$TasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get buyerId =>
+      $composableBuilder(column: $table.buyerId, builder: (column) => column);
+
+  GeneratedColumn<int> get deliveryId => $composableBuilder(
+    column: $table.deliveryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get taskTypeName => $composableBuilder(
+    column: $table.taskTypeName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$TasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $TasksTable,
+          Task,
+          $$TasksTableFilterComposer,
+          $$TasksTableOrderingComposer,
+          $$TasksTableAnnotationComposer,
+          $$TasksTableCreateCompanionBuilder,
+          $$TasksTableUpdateCompanionBuilder,
+          (Task, BaseReferences<_$AppDataStore, $TasksTable, Task>),
+          Task,
+          PrefetchHooks Function()
+        > {
+  $$TasksTableTableManager(_$AppDataStore db, $TasksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$TasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$TasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$TasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> buyerId = const Value.absent(),
+                Value<int> deliveryId = const Value.absent(),
+                Value<String> taskTypeName = const Value.absent(),
+                Value<bool> status = const Value.absent(),
+              }) => TasksCompanion(
+                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                taskTypeName: taskTypeName,
+                status: status,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int buyerId,
+                required int deliveryId,
+                required String taskTypeName,
+                required bool status,
+              }) => TasksCompanion.insert(
+                id: id,
+                buyerId: buyerId,
+                deliveryId: deliveryId,
+                taskTypeName: taskTypeName,
+                status: status,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $TasksTable,
+      Task,
+      $$TasksTableFilterComposer,
+      $$TasksTableOrderingComposer,
+      $$TasksTableAnnotationComposer,
+      $$TasksTableCreateCompanionBuilder,
+      $$TasksTableUpdateCompanionBuilder,
+      (Task, BaseReferences<_$AppDataStore, $TasksTable, Task>),
+      Task,
+      PrefetchHooks Function()
+    >;
 
 class $AppDataStoreManager {
   final _$AppDataStore _db;
@@ -11761,6 +12327,8 @@ class $AppDataStoreManager {
       $$PrefsTableTableManager(_db, _db.prefs);
   $$DeliveriesTableTableManager get deliveries =>
       $$DeliveriesTableTableManager(_db, _db.deliveries);
+  $$TasksTableTableManager get tasks =>
+      $$TasksTableTableManager(_db, _db.tasks);
 }
 
 class AppInfoResult {
@@ -11807,4 +12375,7 @@ mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
 }
 mixin _$UsersDaoMixin on DatabaseAccessor<AppDataStore> {
   $UsersTable get users => attachedDatabase.users;
+}
+mixin _$TasksDaoMixin on DatabaseAccessor<AppDataStore> {
+  $TasksTable get tasks => attachedDatabase.tasks;
 }

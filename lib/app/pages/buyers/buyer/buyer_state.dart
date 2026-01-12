@@ -21,10 +21,12 @@ class BuyerState {
     this.cashPayments = const [],
     this.orders = const [],
     this.debts = const [],
+    this.tasks = const [],
     required this.confirmationCallback,
     this.debtsToPay = const [],
     this.message = '',
-    this.pointEx
+    this.pointEx,
+    this.taskToFinish
   });
 
   final BuyerStateStatus status;
@@ -32,8 +34,10 @@ class BuyerState {
   final List<CashPayment> cashPayments;
   final List<Order> orders;
   final List<Debt> debts;
+  final List<Task> tasks;
   final Function confirmationCallback;
   final List<Debt> debtsToPay;
+  final Task? taskToFinish;
   final String message;
   final BuyerDeliveryPointEx? pointEx;
 
@@ -48,10 +52,12 @@ class BuyerState {
     List<CashPayment>? cashPayments,
     List<Order>? orders,
     List<Debt>? debts,
+    List<Task>? tasks,
     Function? confirmationCallback,
     List<Debt>? debtsToPay,
     String? message,
-    BuyerDeliveryPointEx? pointEx
+    BuyerDeliveryPointEx? pointEx,
+    ({ Task? value })? taskToFinish
   }) {
     return BuyerState(
       status: status ?? this.status,
@@ -59,10 +65,12 @@ class BuyerState {
       cashPayments: cashPayments ?? this.cashPayments,
       orders: orders ?? this.orders,
       debts: debts ?? this.debts,
+      tasks: tasks ?? this.tasks,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       debtsToPay: debtsToPay ?? this.debtsToPay,
       message: message ?? this.message,
-      pointEx: pointEx ?? this.pointEx
+      pointEx: pointEx ?? this.pointEx,
+      taskToFinish: taskToFinish != null ? taskToFinish.value : this.taskToFinish
     );
   }
 }

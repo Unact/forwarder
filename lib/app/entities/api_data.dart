@@ -15,6 +15,7 @@ class ApiData extends Equatable {
   final List<ApiIncome> incomes;
   final List<ApiRecept> recepts;
   final List<ApiDelivery> deliveries;
+  final List<ApiTask> tasks;
 
   const ApiData({
     required this.buyers,
@@ -30,7 +31,8 @@ class ApiData extends Equatable {
     required this.orderLineCodes,
     required this.orderLinePackErrors,
     required this.orderLineStorageCodes,
-    required this.deliveries
+    required this.deliveries,
+    required this.tasks
   });
 
   factory ApiData.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class ApiData extends Equatable {
     List<ApiOrderLineStorageCode> orderLineStorageCodes = json['order_line_storage_codes']
       .map<ApiOrderLineStorageCode>((e) => ApiOrderLineStorageCode.fromJson(e)).toList();
     List<ApiDelivery> deliveries = json['deliveries'].map<ApiDelivery>((e) => ApiDelivery.fromJson(e)).toList();
+    List<ApiTask> tasks = json['tasks'].map<ApiTask>((e) => ApiTask.fromJson(e)).toList();
 
     return ApiData(
       buyers: buyers,
@@ -70,7 +73,8 @@ class ApiData extends Equatable {
       orderLineCodes: orderLineCodes,
       orderLinePackErrors: orderLinePackErrors,
       orderLineStorageCodes: orderLineStorageCodes,
-      deliveries: deliveries
+      deliveries: deliveries,
+      tasks: tasks
     );
   }
 
@@ -89,6 +93,7 @@ class ApiData extends Equatable {
     orderLineCodes,
     orderLinePackErrors,
     orderLineStorageCodes,
-    deliveries
+    deliveries,
+    tasks
   ];
 }
