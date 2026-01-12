@@ -14,7 +14,6 @@ class TasksRepository extends BaseRepository {
   }
 
   Future<void> finishTask(Task task) async {
-
     try {
       final ApiFinishTaskData data = await api.finishTask(task.id);
 
