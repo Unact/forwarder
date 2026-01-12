@@ -35,6 +35,7 @@ class AppRepository extends BaseRepository {
         final orderLineStorageCodes = data.orderLineStorageCodes.map((e) => e.toDatabaseEnt()).toList();
         final debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
         final deliveries = data.deliveries.map((e) => e.toDatabaseEnt()).toList();
+        final tasks = data.tasks.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.buyersDao.loadDeliveries(deliveries);
         await dataStore.buyersDao.loadBuyers(buyers);
@@ -50,6 +51,7 @@ class AppRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrderLineStorageCodes(orderLineStorageCodes);
         await dataStore.paymentsDao.loadDebts(debts);
         await dataStore.paymentsDao.loadCashPayments(cashPayments);
+        await dataStore.tasksDao.loadTasks(tasks);
         await dataStore.updatePref(PrefsCompanion(lastLoadTime: Value(lastLoadTime)));
       });
     } on ApiException catch(e) {

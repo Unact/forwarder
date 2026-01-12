@@ -92,6 +92,14 @@ class BuyerDeliveryPointPhotos extends Table with Syncable {
   Set<Column> get primaryKey => {id};
 }
 
+class Tasks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get buyerId => integer()();
+  IntColumn get deliveryId => integer()();
+  TextColumn get taskTypeName => text()();
+  BoolColumn get status => boolean()();
+}
+
 class CashPayments extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get buyerId => integer()();

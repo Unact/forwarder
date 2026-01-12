@@ -16,6 +16,7 @@ import 'app/repositories/app_repository.dart';
 import 'app/repositories/buyers_repository.dart';
 import 'app/repositories/orders_repository.dart';
 import 'app/repositories/payments_repository.dart';
+import 'app/repositories/tasks_repository.dart';
 import 'app/repositories/users_repository.dart';
 
 void main() async {
@@ -30,6 +31,7 @@ void main() async {
   OrdersRepository ordersRepository = OrdersRepository(dataStore, api);
   BuyersRepository buyersRepository = BuyersRepository(dataStore, api);
   PaymentsRepository paymentsRepository = PaymentsRepository(dataStore, api);
+  TasksRepository tasksRepository = TasksRepository(dataStore, api);
   UsersRepository usersRepository = UsersRepository(dataStore, api);
 
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -60,6 +62,7 @@ void main() async {
           RepositoryProvider.value(value: buyersRepository),
           RepositoryProvider.value(value: ordersRepository),
           RepositoryProvider.value(value: paymentsRepository),
+          RepositoryProvider.value(value: tasksRepository),
           RepositoryProvider.value(value: usersRepository)
         ],
         child: MaterialApp(
