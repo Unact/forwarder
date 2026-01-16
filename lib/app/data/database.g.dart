@@ -1039,6 +1039,28 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _groupNameMeta = const VerificationMeta(
+    'groupName',
+  );
+  @override
+  late final GeneratedColumn<String> groupName = GeneratedColumn<String>(
+    'group_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _groupPhoneMeta = const VerificationMeta(
+    'groupPhone',
+  );
+  @override
+  late final GeneratedColumn<String> groupPhone = GeneratedColumn<String>(
+    'group_phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     buyerId,
@@ -1049,6 +1071,8 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
     needInc,
     latitude,
     longitude,
+    groupName,
+    groupPhone,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1122,6 +1146,18 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
         longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
       );
     }
+    if (data.containsKey('group_name')) {
+      context.handle(
+        _groupNameMeta,
+        groupName.isAcceptableOrUnknown(data['group_name']!, _groupNameMeta),
+      );
+    }
+    if (data.containsKey('group_phone')) {
+      context.handle(
+        _groupPhoneMeta,
+        groupPhone.isAcceptableOrUnknown(data['group_phone']!, _groupPhoneMeta),
+      );
+    }
     return context;
   }
 
@@ -1169,6 +1205,14 @@ class $BuyersTable extends Buyers with TableInfo<$BuyersTable, Buyer> {
         DriftSqlType.double,
         data['${effectivePrefix}longitude'],
       ),
+      groupName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_name'],
+      ),
+      groupPhone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_phone'],
+      ),
     );
   }
 
@@ -1187,6 +1231,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
   final bool needInc;
   final double? latitude;
   final double? longitude;
+  final String? groupName;
+  final String? groupPhone;
   const Buyer({
     required this.buyerId,
     required this.deliveryId,
@@ -1196,6 +1242,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     required this.needInc,
     this.latitude,
     this.longitude,
+    this.groupName,
+    this.groupPhone,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1211,6 +1259,12 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     }
     if (!nullToAbsent || longitude != null) {
       map['longitude'] = Variable<double>(longitude);
+    }
+    if (!nullToAbsent || groupName != null) {
+      map['group_name'] = Variable<String>(groupName);
+    }
+    if (!nullToAbsent || groupPhone != null) {
+      map['group_phone'] = Variable<String>(groupPhone);
     }
     return map;
   }
@@ -1231,6 +1285,14 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           longitude == null && nullToAbsent
               ? const Value.absent()
               : Value(longitude),
+      groupName:
+          groupName == null && nullToAbsent
+              ? const Value.absent()
+              : Value(groupName),
+      groupPhone:
+          groupPhone == null && nullToAbsent
+              ? const Value.absent()
+              : Value(groupPhone),
     );
   }
 
@@ -1248,6 +1310,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       needInc: serializer.fromJson<bool>(json['needInc']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
+      groupName: serializer.fromJson<String?>(json['groupName']),
+      groupPhone: serializer.fromJson<String?>(json['groupPhone']),
     );
   }
   @override
@@ -1262,6 +1326,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       'needInc': serializer.toJson<bool>(needInc),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
+      'groupName': serializer.toJson<String?>(groupName),
+      'groupPhone': serializer.toJson<String?>(groupPhone),
     };
   }
 
@@ -1274,6 +1340,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     bool? needInc,
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
+    Value<String?> groupName = const Value.absent(),
+    Value<String?> groupPhone = const Value.absent(),
   }) => Buyer(
     buyerId: buyerId ?? this.buyerId,
     deliveryId: deliveryId ?? this.deliveryId,
@@ -1283,6 +1351,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     needInc: needInc ?? this.needInc,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
+    groupName: groupName.present ? groupName.value : this.groupName,
+    groupPhone: groupPhone.present ? groupPhone.value : this.groupPhone,
   );
   Buyer copyWithCompanion(BuyersCompanion data) {
     return Buyer(
@@ -1295,6 +1365,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
       needInc: data.needInc.present ? data.needInc.value : this.needInc,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      groupName: data.groupName.present ? data.groupName.value : this.groupName,
+      groupPhone:
+          data.groupPhone.present ? data.groupPhone.value : this.groupPhone,
     );
   }
 
@@ -1308,7 +1381,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           ..write('ord: $ord, ')
           ..write('needInc: $needInc, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('groupName: $groupName, ')
+          ..write('groupPhone: $groupPhone')
           ..write(')'))
         .toString();
   }
@@ -1323,6 +1398,8 @@ class Buyer extends DataClass implements Insertable<Buyer> {
     needInc,
     latitude,
     longitude,
+    groupName,
+    groupPhone,
   );
   @override
   bool operator ==(Object other) =>
@@ -1335,7 +1412,9 @@ class Buyer extends DataClass implements Insertable<Buyer> {
           other.ord == this.ord &&
           other.needInc == this.needInc &&
           other.latitude == this.latitude &&
-          other.longitude == this.longitude);
+          other.longitude == this.longitude &&
+          other.groupName == this.groupName &&
+          other.groupPhone == this.groupPhone);
 }
 
 class BuyersCompanion extends UpdateCompanion<Buyer> {
@@ -1347,6 +1426,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
   final Value<bool> needInc;
   final Value<double?> latitude;
   final Value<double?> longitude;
+  final Value<String?> groupName;
+  final Value<String?> groupPhone;
   final Value<int> rowid;
   const BuyersCompanion({
     this.buyerId = const Value.absent(),
@@ -1357,6 +1438,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     this.needInc = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.groupName = const Value.absent(),
+    this.groupPhone = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BuyersCompanion.insert({
@@ -1368,6 +1451,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     required bool needInc,
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.groupName = const Value.absent(),
+    this.groupPhone = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : buyerId = Value(buyerId),
        deliveryId = Value(deliveryId),
@@ -1384,6 +1469,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Expression<bool>? needInc,
     Expression<double>? latitude,
     Expression<double>? longitude,
+    Expression<String>? groupName,
+    Expression<String>? groupPhone,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1395,6 +1482,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       if (needInc != null) 'need_inc': needInc,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
+      if (groupName != null) 'group_name': groupName,
+      if (groupPhone != null) 'group_phone': groupPhone,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1408,6 +1497,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     Value<bool>? needInc,
     Value<double?>? latitude,
     Value<double?>? longitude,
+    Value<String?>? groupName,
+    Value<String?>? groupPhone,
     Value<int>? rowid,
   }) {
     return BuyersCompanion(
@@ -1419,6 +1510,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
       needInc: needInc ?? this.needInc,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      groupName: groupName ?? this.groupName,
+      groupPhone: groupPhone ?? this.groupPhone,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1450,6 +1543,12 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
     if (longitude.present) {
       map['longitude'] = Variable<double>(longitude.value);
     }
+    if (groupName.present) {
+      map['group_name'] = Variable<String>(groupName.value);
+    }
+    if (groupPhone.present) {
+      map['group_phone'] = Variable<String>(groupPhone.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1467,6 +1566,8 @@ class BuyersCompanion extends UpdateCompanion<Buyer> {
           ..write('needInc: $needInc, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
+          ..write('groupName: $groupName, ')
+          ..write('groupPhone: $groupPhone, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8610,6 +8711,8 @@ typedef $$BuyersTableCreateCompanionBuilder =
       required bool needInc,
       Value<double?> latitude,
       Value<double?> longitude,
+      Value<String?> groupName,
+      Value<String?> groupPhone,
       Value<int> rowid,
     });
 typedef $$BuyersTableUpdateCompanionBuilder =
@@ -8622,6 +8725,8 @@ typedef $$BuyersTableUpdateCompanionBuilder =
       Value<bool> needInc,
       Value<double?> latitude,
       Value<double?> longitude,
+      Value<String?> groupName,
+      Value<String?> groupPhone,
       Value<int> rowid,
     });
 
@@ -8671,6 +8776,16 @@ class $$BuyersTableFilterComposer
 
   ColumnFilters<double> get longitude => $composableBuilder(
     column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupName => $composableBuilder(
+    column: $table.groupName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupPhone => $composableBuilder(
+    column: $table.groupPhone,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8723,6 +8838,16 @@ class $$BuyersTableOrderingComposer
     column: $table.longitude,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get groupName => $composableBuilder(
+    column: $table.groupName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupPhone => $composableBuilder(
+    column: $table.groupPhone,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BuyersTableAnnotationComposer
@@ -8759,6 +8884,14 @@ class $$BuyersTableAnnotationComposer
 
   GeneratedColumn<double> get longitude =>
       $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get groupName =>
+      $composableBuilder(column: $table.groupName, builder: (column) => column);
+
+  GeneratedColumn<String> get groupPhone => $composableBuilder(
+    column: $table.groupPhone,
+    builder: (column) => column,
+  );
 }
 
 class $$BuyersTableTableManager
@@ -8797,6 +8930,8 @@ class $$BuyersTableTableManager
                 Value<bool> needInc = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
+                Value<String?> groupName = const Value.absent(),
+                Value<String?> groupPhone = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion(
                 buyerId: buyerId,
@@ -8807,6 +8942,8 @@ class $$BuyersTableTableManager
                 needInc: needInc,
                 latitude: latitude,
                 longitude: longitude,
+                groupName: groupName,
+                groupPhone: groupPhone,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8819,6 +8956,8 @@ class $$BuyersTableTableManager
                 required bool needInc,
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
+                Value<String?> groupName = const Value.absent(),
+                Value<String?> groupPhone = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BuyersCompanion.insert(
                 buyerId: buyerId,
@@ -8829,6 +8968,8 @@ class $$BuyersTableTableManager
                 needInc: needInc,
                 latitude: latitude,
                 longitude: longitude,
+                groupName: groupName,
+                groupPhone: groupPhone,
                 rowid: rowid,
               ),
           withReferenceMapper:
