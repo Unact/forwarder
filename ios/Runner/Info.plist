@@ -72,5 +72,9 @@
 	<string>Для подключения сканера кодов маркировки</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Для подключения сканера кодов маркировки</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 </dict>
 </plist>

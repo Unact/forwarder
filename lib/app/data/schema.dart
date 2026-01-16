@@ -50,6 +50,8 @@ class Buyers extends Table {
   BoolColumn get needInc => boolean()();
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
+  TextColumn get groupName => text().nullable()();
+  TextColumn get groupPhone => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {buyerId, deliveryId};

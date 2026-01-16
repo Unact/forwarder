@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:u_app_utils/u_app_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -245,7 +246,7 @@ class _BuyerViewState extends State<_BuyerView> {
               InfoRow(
                 title: const Text('Адрес'),
                 trailing: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Flexible(child: ExpandingText(state.buyer.buyer.address)),
@@ -253,6 +254,27 @@ class _BuyerViewState extends State<_BuyerView> {
                       icon: const Icon(Icons.gps_fixed),
                       onPressed: vm.copyCoords,
                       tooltip: 'Копировать координаты точки'
+                    )
+                  ]
+                ),
+                trailingFlex: 2
+              ),
+              InfoRow(
+                title: const Text('ТП'),
+                trailing: Text(state.buyer.buyer.groupName ?? ''),
+                trailingFlex: 2
+              ),
+              InfoRow(
+                title: const Text('Телефон ТП'),
+                trailing: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(child: Text(state.buyer.buyer.groupPhone ?? '')),
+                    IconButton(
+                      icon: const Icon(Icons.phone),
+                      onPressed: vm.callGroupPhone,
+                      tooltip: 'Позвонить'
                     )
                   ]
                 ),
