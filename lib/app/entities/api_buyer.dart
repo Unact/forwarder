@@ -9,6 +9,8 @@ class ApiBuyer extends Equatable {
   final bool needInc;
   final double? latitude;
   final double? longitude;
+  final String? groupName;
+  final String? groupPhone;
 
   const ApiBuyer({
     required this.buyerId,
@@ -18,7 +20,9 @@ class ApiBuyer extends Equatable {
     required this.ord,
     required this.needInc,
     required this.latitude,
-    required this.longitude
+    required this.longitude,
+    required this.groupName,
+    required this.groupPhone
   });
 
   factory ApiBuyer.fromJson(dynamic json) {
@@ -31,6 +35,8 @@ class ApiBuyer extends Equatable {
       needInc: json['need_inc'],
       latitude: Parsing.parseDouble(json['latitude']),
       longitude: Parsing.parseDouble(json['longitude']),
+      groupName: json['group_name'],
+      groupPhone: json['group_phone'],
     );
   }
 
@@ -43,7 +49,9 @@ class ApiBuyer extends Equatable {
       ord: ord,
       needInc: needInc,
       latitude: latitude,
-      longitude: longitude
+      longitude: longitude,
+      groupName: groupName,
+      groupPhone: groupPhone
     );
   }
 
@@ -56,6 +64,8 @@ class ApiBuyer extends Equatable {
     ord,
     needInc,
     latitude,
-    longitude
+    longitude,
+    groupName,
+    groupPhone
   ];
 }

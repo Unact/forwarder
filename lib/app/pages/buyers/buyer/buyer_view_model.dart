@@ -113,6 +113,16 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     emit(state.copyWith(status: BuyerStateStatus.coordsCopied, message: 'Координаты точки скопированы'));
   }
 
+  Future<void> callGroupPhone() async {
+    final url = Uri(scheme: 'tel', path: state.buyer.buyer.groupPhone ?? '');
+
+    if (await canLaunchUrl(url)) {
+      launchUrl(url);
+    } else {
+      emit(state.copyWith(status: BuyerStateStatus.failure, message: 'Не удается сделать звонок'));
+    }
+  }
+
   void tryFinishTask(Task task) {
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
