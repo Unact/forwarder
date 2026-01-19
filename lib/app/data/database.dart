@@ -118,7 +118,7 @@ class AppDataStore extends _$AppDataStore {
   }
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -180,6 +180,12 @@ extension OrderX on Order {
   bool get isDelivered => didDelivery && delivered! == true;
   bool get isUndelivered => didDelivery && delivered! == false;
   bool get didDelivery => delivered != null;
+}
+
+extension TaskX on Task {
+  bool get isCompleted => didCompletion && completed! == true;
+  bool get isUncompleted => didCompletion && completed! == false;
+  bool get didCompletion => completed != null;
 }
 
 extension UserX on User {

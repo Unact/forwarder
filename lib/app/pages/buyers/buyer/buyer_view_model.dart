@@ -123,12 +123,13 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     }
   }
 
-  void tryFinishTask(Task task) {
+  void tryFinishTask(Task task, bool completed) {
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
       confirmationCallback: finishTask,
       taskToFinish: (value: task),
-      message: 'Вы уверены, что хотите завершить задание?'
+      completed: completed,
+      message: 'Вы уверены, что хотите отметить задание ${completed ? 'завершенным' : 'не завершенным'}?'
     ));
   }
 
@@ -162,9 +163,11 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     emit(state.copyWith(status: BuyerStateStatus.inProgress));
 
     try {
-      await tasksRepository.finishTask(state.taskToFinish!);
+      final location = await Geo.getCurrentPosition();
 
-      emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно завершено'));
+      await tasksRepository.finishTask(state.taskToFinish!, state.completed, location);
+
+      emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно отмечено'));
     } on AppError catch(e) {
       emit(state.copyWith(status: BuyerStateStatus.failure, message: e.message));
     }

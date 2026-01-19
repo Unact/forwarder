@@ -26,7 +26,8 @@ class BuyerState {
     this.debtsToPay = const [],
     this.message = '',
     this.pointEx,
-    this.taskToFinish
+    this.taskToFinish,
+    this.completed = false,
   });
 
   final BuyerStateStatus status;
@@ -40,6 +41,7 @@ class BuyerState {
   final Task? taskToFinish;
   final String message;
   final BuyerDeliveryPointEx? pointEx;
+  final bool completed;
 
   double get debtsSum => debts.fold(0, (sum, debt) => sum + debt.debtSum);
   double get kkmSum => cashPayments.where((e) => e.kkmprinted).fold(0, (sum, payment) => sum + payment.summ);
@@ -57,7 +59,8 @@ class BuyerState {
     List<Debt>? debtsToPay,
     String? message,
     BuyerDeliveryPointEx? pointEx,
-    ({ Task? value })? taskToFinish
+    ({ Task? value })? taskToFinish,
+    bool? completed
   }) {
     return BuyerState(
       status: status ?? this.status,
@@ -70,7 +73,8 @@ class BuyerState {
       debtsToPay: debtsToPay ?? this.debtsToPay,
       message: message ?? this.message,
       pointEx: pointEx ?? this.pointEx,
-      taskToFinish: taskToFinish != null ? taskToFinish.value : this.taskToFinish
+      taskToFinish: taskToFinish != null ? taskToFinish.value : this.taskToFinish,
+      completed: completed ?? this.completed
     );
   }
 }

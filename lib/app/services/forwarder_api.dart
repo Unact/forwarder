@@ -132,11 +132,14 @@ extension ForwarderApi on RenewApi {
     return ApiAcceptPaymentData.fromJson(result);
   }
 
-  Future<ApiFinishTaskData> finishTask(int id) async {
+  Future<ApiFinishTaskData> finishTask(int id, bool completed, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/orders/finish_task',
       dataGenerator: () => {
-        'id': id
+        'id': id,
+        'completed': completed,
+        'location': location,
+        'local_ts': DateTime.now().toIso8601String()
       }
     );
 

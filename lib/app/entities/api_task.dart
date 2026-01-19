@@ -5,14 +5,18 @@ class ApiTask extends Equatable {
   final int buyerId;
   final int deliveryId;
   final String taskTypeName;
-  final bool status;
+  final String taskNumber;
+  final String? info;
+  final bool? completed;
 
   const ApiTask({
     required this.id,
     required this.buyerId,
     required this.deliveryId,
     required this.taskTypeName,
-    required this.status,
+    required this.taskNumber,
+    this.info,
+    required this.completed,
   });
 
   factory ApiTask.fromJson(dynamic json) {
@@ -21,7 +25,9 @@ class ApiTask extends Equatable {
       buyerId: json['buyer_id'],
       deliveryId: json['delivery_id'],
       taskTypeName: json['task_type_name'],
-      status: Parsing.parseBool(json['status'])!
+      taskNumber: json['task_number'],
+      info: json['info'],
+      completed: json['completed']
     );
   }
 
@@ -31,16 +37,20 @@ class ApiTask extends Equatable {
       buyerId: buyerId,
       deliveryId: deliveryId,
       taskTypeName: taskTypeName,
-      status: status
+      taskNumber: taskNumber,
+      info: info,
+      completed: completed
     );
   }
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     id,
     buyerId,
     deliveryId,
     taskTypeName,
-    status
+    taskNumber,
+    info,
+    completed
   ];
 }

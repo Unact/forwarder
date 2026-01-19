@@ -348,7 +348,7 @@ class _BuyerViewState extends State<_BuyerView> {
               style: const TextStyle(color: Colors.black, fontSize: 14.0)
             ),
             TextSpan(
-              text: '${order.info}\n',
+              text: order.info.isNotEmpty ? '${order.info}\n' : null,
               style: const TextStyle(color: Colors.grey, fontSize: 12.0),
             ),
             TextSpan(
@@ -455,29 +455,55 @@ class _BuyerViewState extends State<_BuyerView> {
 
   Widget _buildTaskTile(BuildContext context, Task task) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
+    String completed = task.isCompleted ? Strings.yes : task.isUncompleted ? Strings.no : Strings.inProcess;
 
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.only(left: 8),
-      trailing: task.status || !vm.state.buyer.visited ? null :
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-            backgroundColor: Theme.of(context).colorScheme.primary
-          ),
-          onPressed: () => vm.tryFinishTask(task),
-          child: const Text('Завершить', style: TextStyle(color: Colors.white)),
+      trailing: task.didCompletion || !vm.state.buyer.visited ? null :
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                backgroundColor: Theme.of(context).colorScheme.primary
+              ),
+              onPressed: () => vm.tryFinishTask(task, true),
+              icon: Icon(Icons.check),
+              tooltip: 'Отметить как выполнен',
+            ),
+            IconButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                backgroundColor: Theme.of(context).colorScheme.primary
+              ),
+              onPressed: () => vm.tryFinishTask(task, false),
+              icon: Icon(Icons.close),
+              tooltip: 'Отметить как не выполнен',
+            )
+          ]
         ),
       subtitle: RichText(
         text: TextSpan(
           children: <TextSpan>[
             TextSpan(
-              text: '${task.taskTypeName}\n',
+              text: '${task.taskNumber}\n',
               style: const TextStyle(color: Colors.black, fontSize: 14.0)
             ),
             TextSpan(
-              text: '${task.status ? 'Завершен' : 'Не завершен'}\n',
+              text: '${task.taskTypeName}\n',
               style: const TextStyle(color: Colors.grey, fontSize: 12.0),
+            ),
+            TextSpan(
+              text: task.info != null ? '${task.info}\n' : null,
+              style: const TextStyle(color: Colors.grey, fontSize: 12.0),
+            ),
+            TextSpan(
+              text: 'Завершен: $completed\n',
+              style: const TextStyle(color: Colors.blue, fontSize: 12.0),
             )
           ]
         )
