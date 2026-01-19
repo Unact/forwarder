@@ -1,4 +1,5 @@
 import 'package:u_app_utils/u_app_utils.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '/app/constants/strings.dart';
 import '/app/data/database.dart';
@@ -13,9 +14,19 @@ class TasksRepository extends BaseRepository {
     return dataStore.tasksDao.watchTasksByBuyerId(buyerId, deliveryId);
   }
 
-  Future<void> finishTask(Task task) async {
+  Future<void> finishTask(Task task, bool completed, Position position) async {
+    Map<String, dynamic> location = {
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'accuracy': position.accuracy,
+      'altitude': position.altitude,
+      'speed': position.speed,
+      'heading': position.heading,
+      'point_ts': position.timestamp.toIso8601String()
+    };
+
     try {
-      final ApiFinishTaskData data = await api.finishTask(task.id);
+      final ApiFinishTaskData data = await api.finishTask(task.id, completed, location);
 
       await dataStore.transaction(() async {
         await dataStore.tasksDao.loadTasks([data.task.toDatabaseEnt()], false);

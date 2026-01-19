@@ -7783,16 +7783,38 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  static const VerificationMeta _taskNumberMeta = const VerificationMeta(
+    'taskNumber',
+  );
   @override
-  late final GeneratedColumn<bool> status = GeneratedColumn<bool>(
-    'status',
+  late final GeneratedColumn<String> taskNumber = GeneratedColumn<String>(
+    'task_number',
     aliasedName,
     false,
-    type: DriftSqlType.bool,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _infoMeta = const VerificationMeta('info');
+  @override
+  late final GeneratedColumn<String> info = GeneratedColumn<String>(
+    'info',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _completedMeta = const VerificationMeta(
+    'completed',
+  );
+  @override
+  late final GeneratedColumn<bool> completed = GeneratedColumn<bool>(
+    'completed',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("status" IN (0, 1))',
+      'CHECK ("completed" IN (0, 1))',
     ),
   );
   @override
@@ -7801,7 +7823,9 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     buyerId,
     deliveryId,
     taskTypeName,
-    status,
+    taskNumber,
+    info,
+    completed,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7845,13 +7869,25 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     } else if (isInserting) {
       context.missing(_taskTypeNameMeta);
     }
-    if (data.containsKey('status')) {
+    if (data.containsKey('task_number')) {
       context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+        _taskNumberMeta,
+        taskNumber.isAcceptableOrUnknown(data['task_number']!, _taskNumberMeta),
       );
     } else if (isInserting) {
-      context.missing(_statusMeta);
+      context.missing(_taskNumberMeta);
+    }
+    if (data.containsKey('info')) {
+      context.handle(
+        _infoMeta,
+        info.isAcceptableOrUnknown(data['info']!, _infoMeta),
+      );
+    }
+    if (data.containsKey('completed')) {
+      context.handle(
+        _completedMeta,
+        completed.isAcceptableOrUnknown(data['completed']!, _completedMeta),
+      );
     }
     return context;
   }
@@ -7882,11 +7918,19 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
             DriftSqlType.string,
             data['${effectivePrefix}task_type_name'],
           )!,
-      status:
+      taskNumber:
           attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}status'],
+            DriftSqlType.string,
+            data['${effectivePrefix}task_number'],
           )!,
+      info: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}info'],
+      ),
+      completed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}completed'],
+      ),
     );
   }
 
@@ -7901,13 +7945,17 @@ class Task extends DataClass implements Insertable<Task> {
   final int buyerId;
   final int deliveryId;
   final String taskTypeName;
-  final bool status;
+  final String taskNumber;
+  final String? info;
+  final bool? completed;
   const Task({
     required this.id,
     required this.buyerId,
     required this.deliveryId,
     required this.taskTypeName,
-    required this.status,
+    required this.taskNumber,
+    this.info,
+    this.completed,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7916,7 +7964,13 @@ class Task extends DataClass implements Insertable<Task> {
     map['buyer_id'] = Variable<int>(buyerId);
     map['delivery_id'] = Variable<int>(deliveryId);
     map['task_type_name'] = Variable<String>(taskTypeName);
-    map['status'] = Variable<bool>(status);
+    map['task_number'] = Variable<String>(taskNumber);
+    if (!nullToAbsent || info != null) {
+      map['info'] = Variable<String>(info);
+    }
+    if (!nullToAbsent || completed != null) {
+      map['completed'] = Variable<bool>(completed);
+    }
     return map;
   }
 
@@ -7926,7 +7980,12 @@ class Task extends DataClass implements Insertable<Task> {
       buyerId: Value(buyerId),
       deliveryId: Value(deliveryId),
       taskTypeName: Value(taskTypeName),
-      status: Value(status),
+      taskNumber: Value(taskNumber),
+      info: info == null && nullToAbsent ? const Value.absent() : Value(info),
+      completed:
+          completed == null && nullToAbsent
+              ? const Value.absent()
+              : Value(completed),
     );
   }
 
@@ -7940,7 +7999,9 @@ class Task extends DataClass implements Insertable<Task> {
       buyerId: serializer.fromJson<int>(json['buyerId']),
       deliveryId: serializer.fromJson<int>(json['deliveryId']),
       taskTypeName: serializer.fromJson<String>(json['taskTypeName']),
-      status: serializer.fromJson<bool>(json['status']),
+      taskNumber: serializer.fromJson<String>(json['taskNumber']),
+      info: serializer.fromJson<String?>(json['info']),
+      completed: serializer.fromJson<bool?>(json['completed']),
     );
   }
   @override
@@ -7951,7 +8012,9 @@ class Task extends DataClass implements Insertable<Task> {
       'buyerId': serializer.toJson<int>(buyerId),
       'deliveryId': serializer.toJson<int>(deliveryId),
       'taskTypeName': serializer.toJson<String>(taskTypeName),
-      'status': serializer.toJson<bool>(status),
+      'taskNumber': serializer.toJson<String>(taskNumber),
+      'info': serializer.toJson<String?>(info),
+      'completed': serializer.toJson<bool?>(completed),
     };
   }
 
@@ -7960,13 +8023,17 @@ class Task extends DataClass implements Insertable<Task> {
     int? buyerId,
     int? deliveryId,
     String? taskTypeName,
-    bool? status,
+    String? taskNumber,
+    Value<String?> info = const Value.absent(),
+    Value<bool?> completed = const Value.absent(),
   }) => Task(
     id: id ?? this.id,
     buyerId: buyerId ?? this.buyerId,
     deliveryId: deliveryId ?? this.deliveryId,
     taskTypeName: taskTypeName ?? this.taskTypeName,
-    status: status ?? this.status,
+    taskNumber: taskNumber ?? this.taskNumber,
+    info: info.present ? info.value : this.info,
+    completed: completed.present ? completed.value : this.completed,
   );
   Task copyWithCompanion(TasksCompanion data) {
     return Task(
@@ -7978,7 +8045,10 @@ class Task extends DataClass implements Insertable<Task> {
           data.taskTypeName.present
               ? data.taskTypeName.value
               : this.taskTypeName,
-      status: data.status.present ? data.status.value : this.status,
+      taskNumber:
+          data.taskNumber.present ? data.taskNumber.value : this.taskNumber,
+      info: data.info.present ? data.info.value : this.info,
+      completed: data.completed.present ? data.completed.value : this.completed,
     );
   }
 
@@ -7989,14 +8059,23 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('buyerId: $buyerId, ')
           ..write('deliveryId: $deliveryId, ')
           ..write('taskTypeName: $taskTypeName, ')
-          ..write('status: $status')
+          ..write('taskNumber: $taskNumber, ')
+          ..write('info: $info, ')
+          ..write('completed: $completed')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, buyerId, deliveryId, taskTypeName, status);
+  int get hashCode => Object.hash(
+    id,
+    buyerId,
+    deliveryId,
+    taskTypeName,
+    taskNumber,
+    info,
+    completed,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -8005,7 +8084,9 @@ class Task extends DataClass implements Insertable<Task> {
           other.buyerId == this.buyerId &&
           other.deliveryId == this.deliveryId &&
           other.taskTypeName == this.taskTypeName &&
-          other.status == this.status);
+          other.taskNumber == this.taskNumber &&
+          other.info == this.info &&
+          other.completed == this.completed);
 }
 
 class TasksCompanion extends UpdateCompanion<Task> {
@@ -8013,37 +8094,47 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<int> buyerId;
   final Value<int> deliveryId;
   final Value<String> taskTypeName;
-  final Value<bool> status;
+  final Value<String> taskNumber;
+  final Value<String?> info;
+  final Value<bool?> completed;
   const TasksCompanion({
     this.id = const Value.absent(),
     this.buyerId = const Value.absent(),
     this.deliveryId = const Value.absent(),
     this.taskTypeName = const Value.absent(),
-    this.status = const Value.absent(),
+    this.taskNumber = const Value.absent(),
+    this.info = const Value.absent(),
+    this.completed = const Value.absent(),
   });
   TasksCompanion.insert({
     this.id = const Value.absent(),
     required int buyerId,
     required int deliveryId,
     required String taskTypeName,
-    required bool status,
+    required String taskNumber,
+    this.info = const Value.absent(),
+    this.completed = const Value.absent(),
   }) : buyerId = Value(buyerId),
        deliveryId = Value(deliveryId),
        taskTypeName = Value(taskTypeName),
-       status = Value(status);
+       taskNumber = Value(taskNumber);
   static Insertable<Task> custom({
     Expression<int>? id,
     Expression<int>? buyerId,
     Expression<int>? deliveryId,
     Expression<String>? taskTypeName,
-    Expression<bool>? status,
+    Expression<String>? taskNumber,
+    Expression<String>? info,
+    Expression<bool>? completed,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (buyerId != null) 'buyer_id': buyerId,
       if (deliveryId != null) 'delivery_id': deliveryId,
       if (taskTypeName != null) 'task_type_name': taskTypeName,
-      if (status != null) 'status': status,
+      if (taskNumber != null) 'task_number': taskNumber,
+      if (info != null) 'info': info,
+      if (completed != null) 'completed': completed,
     });
   }
 
@@ -8052,14 +8143,18 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<int>? buyerId,
     Value<int>? deliveryId,
     Value<String>? taskTypeName,
-    Value<bool>? status,
+    Value<String>? taskNumber,
+    Value<String?>? info,
+    Value<bool?>? completed,
   }) {
     return TasksCompanion(
       id: id ?? this.id,
       buyerId: buyerId ?? this.buyerId,
       deliveryId: deliveryId ?? this.deliveryId,
       taskTypeName: taskTypeName ?? this.taskTypeName,
-      status: status ?? this.status,
+      taskNumber: taskNumber ?? this.taskNumber,
+      info: info ?? this.info,
+      completed: completed ?? this.completed,
     );
   }
 
@@ -8078,8 +8173,14 @@ class TasksCompanion extends UpdateCompanion<Task> {
     if (taskTypeName.present) {
       map['task_type_name'] = Variable<String>(taskTypeName.value);
     }
-    if (status.present) {
-      map['status'] = Variable<bool>(status.value);
+    if (taskNumber.present) {
+      map['task_number'] = Variable<String>(taskNumber.value);
+    }
+    if (info.present) {
+      map['info'] = Variable<String>(info.value);
+    }
+    if (completed.present) {
+      map['completed'] = Variable<bool>(completed.value);
     }
     return map;
   }
@@ -8091,7 +8192,9 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('buyerId: $buyerId, ')
           ..write('deliveryId: $deliveryId, ')
           ..write('taskTypeName: $taskTypeName, ')
-          ..write('status: $status')
+          ..write('taskNumber: $taskNumber, ')
+          ..write('info: $info, ')
+          ..write('completed: $completed')
           ..write(')'))
         .toString();
   }
@@ -12237,7 +12340,9 @@ typedef $$TasksTableCreateCompanionBuilder =
       required int buyerId,
       required int deliveryId,
       required String taskTypeName,
-      required bool status,
+      required String taskNumber,
+      Value<String?> info,
+      Value<bool?> completed,
     });
 typedef $$TasksTableUpdateCompanionBuilder =
     TasksCompanion Function({
@@ -12245,7 +12350,9 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<int> buyerId,
       Value<int> deliveryId,
       Value<String> taskTypeName,
-      Value<bool> status,
+      Value<String> taskNumber,
+      Value<String?> info,
+      Value<bool?> completed,
     });
 
 class $$TasksTableFilterComposer extends Composer<_$AppDataStore, $TasksTable> {
@@ -12276,8 +12383,18 @@ class $$TasksTableFilterComposer extends Composer<_$AppDataStore, $TasksTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get status => $composableBuilder(
-    column: $table.status,
+  ColumnFilters<String> get taskNumber => $composableBuilder(
+    column: $table.taskNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get info => $composableBuilder(
+    column: $table.info,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get completed => $composableBuilder(
+    column: $table.completed,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -12311,8 +12428,18 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get status => $composableBuilder(
-    column: $table.status,
+  ColumnOrderings<String> get taskNumber => $composableBuilder(
+    column: $table.taskNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get info => $composableBuilder(
+    column: $table.info,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get completed => $composableBuilder(
+    column: $table.completed,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -12342,8 +12469,16 @@ class $$TasksTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<bool> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
+  GeneratedColumn<String> get taskNumber => $composableBuilder(
+    column: $table.taskNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get info =>
+      $composableBuilder(column: $table.info, builder: (column) => column);
+
+  GeneratedColumn<bool> get completed =>
+      $composableBuilder(column: $table.completed, builder: (column) => column);
 }
 
 class $$TasksTableTableManager
@@ -12378,13 +12513,17 @@ class $$TasksTableTableManager
                 Value<int> buyerId = const Value.absent(),
                 Value<int> deliveryId = const Value.absent(),
                 Value<String> taskTypeName = const Value.absent(),
-                Value<bool> status = const Value.absent(),
+                Value<String> taskNumber = const Value.absent(),
+                Value<String?> info = const Value.absent(),
+                Value<bool?> completed = const Value.absent(),
               }) => TasksCompanion(
                 id: id,
                 buyerId: buyerId,
                 deliveryId: deliveryId,
                 taskTypeName: taskTypeName,
-                status: status,
+                taskNumber: taskNumber,
+                info: info,
+                completed: completed,
               ),
           createCompanionCallback:
               ({
@@ -12392,13 +12531,17 @@ class $$TasksTableTableManager
                 required int buyerId,
                 required int deliveryId,
                 required String taskTypeName,
-                required bool status,
+                required String taskNumber,
+                Value<String?> info = const Value.absent(),
+                Value<bool?> completed = const Value.absent(),
               }) => TasksCompanion.insert(
                 id: id,
                 buyerId: buyerId,
                 deliveryId: deliveryId,
                 taskTypeName: taskTypeName,
-                status: status,
+                taskNumber: taskNumber,
+                info: info,
+                completed: completed,
               ),
           withReferenceMapper:
               (p0) =>

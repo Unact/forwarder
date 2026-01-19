@@ -99,7 +99,9 @@ class Tasks extends Table {
   IntColumn get buyerId => integer()();
   IntColumn get deliveryId => integer()();
   TextColumn get taskTypeName => text()();
-  BoolColumn get status => boolean()();
+  TextColumn get taskNumber => text()();
+  TextColumn get info => text().nullable()();
+  BoolColumn get completed => boolean().nullable()();
 }
 
 class CashPayments extends Table {
