@@ -129,7 +129,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       confirmationCallback: finishTask,
       taskToFinish: (value: task),
       completed: completed,
-      message: 'Вы уверены, что хотите отметить задание ${completed ? 'выполненным' : 'не выполненным'}?'
+      message: 'Вы уверены, что хотите отметить задание ${completed ? 'завершенным' : 'не завершенным'}?'
     ));
   }
 
