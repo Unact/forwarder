@@ -196,6 +196,7 @@ class BuyersRepository extends BaseRepository {
         final orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
         final orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
         final buyerDeliveryMarks = data.buyerDeliveryMarks.map((e) => e.toDatabaseEnt()).toList();
+        final tasks = data.tasks.map((e) => e.toDatabaseEnt()).toList();
         final debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.buyersDao.loadBuyerDeliveryMarks(buyerDeliveryMarks, false);
@@ -205,6 +206,7 @@ class BuyersRepository extends BaseRepository {
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
         await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
+        await dataStore.tasksDao.loadTasks(tasks, false);
         await dataStore.paymentsDao.loadDebts(debts, false);
       });
     } on ApiException catch(e) {
