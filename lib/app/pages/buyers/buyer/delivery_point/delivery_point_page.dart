@@ -119,7 +119,7 @@ class _DeliveryPointViewState extends State<_DeliveryPointView> {
                 title: const Text('Контактный телефон', style: formStyle),
                 trailing: NumTextField(
                   initialValue: state.pointEx.point.phone,
-                  onFieldSubmitted: vm.updatePhone,
+                  onChanged: vm.updatePhone,
                   textAlign: TextAlign.start,
                   style: formStyle,
                   keyboardType: TextInputType.number,
@@ -140,7 +140,7 @@ class _DeliveryPointViewState extends State<_DeliveryPointView> {
                 title: const Text('Примечание', style: formStyle),
                 trailing: TextFormField(
                   initialValue: state.pointEx.point.info,
-                  onFieldSubmitted: vm.updateInfo,
+                  onChanged: vm.updateInfo,
                   keyboardType: TextInputType.text,
                   minLines: 1,
                   maxLines: null,
