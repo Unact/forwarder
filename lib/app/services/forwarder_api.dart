@@ -20,7 +20,7 @@ extension ForwarderApi on RenewApi {
   Future<void> closeDay(bool closed) async {
     await post(
       'v1/forwarder/close_day',
-      dataGenerator: () => {
+      data: {
         'closed': closed
       }
     );
@@ -29,7 +29,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiBuyerOrderData> missed(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/buyers/missed',
-      dataGenerator: () => {
+      data: {
         'buyer_id': buyerId,
         'delivery_id': deliveryId,
         'location': location,
@@ -43,7 +43,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiBuyerDeliveryMarksData> arrive(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/buyers/arrive',
-      dataGenerator: () => {
+      data: {
         'buyer_id': buyerId,
         'delivery_id': deliveryId,
         'location': location,
@@ -57,7 +57,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiBuyerDeliveryMarksData> depart(int buyerId, int deliveryId, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/buyers/depart',
-      dataGenerator: () => {
+      data: {
         'buyer_id': buyerId,
         'delivery_id': deliveryId,
         'location': location,
@@ -74,7 +74,7 @@ extension ForwarderApi on RenewApi {
   ) async {
     final result = await post(
       'v1/forwarder/buyers/save_delivery_point',
-      dataGenerator: () => {
+      data: {
         'buyer_delivery_point': buyerDeliveryPointData,
         'buyer_delivery_point_photos': buyerDeliveryPointPhotosData
       }
@@ -92,7 +92,7 @@ extension ForwarderApi on RenewApi {
   ) async {
     final result = await post(
       'v1/forwarder/orders/confirm_delivery',
-      dataGenerator: () => {
+      data: {
         'sale_order_id': orderId,
         'codes': codes,
         'pack_errors': packErrors,
@@ -108,7 +108,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiOrderDeliveryData> cancelOrderDelivery(int orderId) async {
     final result = await post(
       'v1/forwarder/orders/cancel_delivery',
-      dataGenerator: () => {
+      data: {
         'sale_order_id': orderId
       }
     );
@@ -122,7 +122,7 @@ extension ForwarderApi on RenewApi {
   ) async {
     final result = await post(
       'v1/forwarder/orders/save',
-      dataGenerator: () => {
+      data: {
         'payments': payments,
         'location': location,
         'local_ts': DateTime.now().toIso8601String()
@@ -135,7 +135,7 @@ extension ForwarderApi on RenewApi {
   Future<ApiFinishTaskData> finishTask(int id, bool completed, Map<String, dynamic> location) async {
     final result = await post(
       'v1/forwarder/orders/finish_task',
-      dataGenerator: () => {
+      data: {
         'id': id,
         'completed': completed,
         'location': location,
