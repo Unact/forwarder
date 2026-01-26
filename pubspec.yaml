@@ -38,7 +38,7 @@ dependencies:
   u_app_utils:
     git:
       url: git@github.com:Unact/u_app_utils.git
-      ref: 3309d3e
+      ref: 09ff3ce
   url_launcher: ^6.3.0
 
 dev_dependencies:
