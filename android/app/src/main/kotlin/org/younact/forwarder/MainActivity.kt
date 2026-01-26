@@ -1,4 +1,4 @@
-package com.selvis.forwarder
+package org.younact.forwarder
 
 import io.flutter.embedding.android.FlutterActivity
 
