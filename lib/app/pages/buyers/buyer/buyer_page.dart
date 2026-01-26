@@ -397,6 +397,7 @@ class _BuyerViewState extends State<_BuyerView> {
         width: 124,
         height: 48,
         child: !vm.state.buyer.visited ? null : NumTextField(
+          keyboardType: TextInputType.numberWithOptions(signed: true),
           textAlign: TextAlign.end,
           controller: controller,
           enabled: debtIsEditable,
