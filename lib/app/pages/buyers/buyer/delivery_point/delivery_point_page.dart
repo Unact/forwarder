@@ -122,7 +122,7 @@ class _DeliveryPointViewState extends State<_DeliveryPointView> {
                   onChanged: vm.updatePhone,
                   textAlign: TextAlign.start,
                   style: formStyle,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.numberWithOptions(signed: true),
                   decoration: const InputDecoration(
                     hintText: '+7 (###) ###-##-##'
                   ),

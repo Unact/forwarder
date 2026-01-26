@@ -139,6 +139,7 @@ class _DebtViewState extends State<_DebtView> {
                 trailing: !vm.state.isEditable ?
                   Text(Format.numberStr(state.debt.debtSum), style: defaultTextStyle) :
                   NumTextField(
+                    keyboardType: TextInputType.numberWithOptions(signed: true),
                     textAlign: TextAlign.end,
                     controller: _controller,
                     enabled: vm.state.isEditable,
