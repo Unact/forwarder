@@ -112,7 +112,7 @@ class _OrderViewState extends State<_OrderView> {
                   ),
                   SizedBox(height: 8),
                   TextField(
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: false, signed: true),
                     autofocus: true,
                     enableInteractiveSelection: false,
                     onChanged: (newVolume) => setState(() => volume = double.tryParse(newVolume)),
