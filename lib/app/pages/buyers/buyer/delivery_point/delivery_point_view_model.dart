@@ -79,14 +79,8 @@ class DeliveryPointViewModel extends PageViewModel<DeliveryPointState, DeliveryP
     emit(state.copyWith(status: DeliveryPointStateStatus.inProgress));
 
     try {
+      await pointExSubscription?.cancel();
       final updatedPoint = await buyersRepository.save(state.pointEx);
-
-      if (updatedPoint != null) {
-        await pointExSubscription?.cancel();
-        pointExSubscription = buyersRepository.watchBuyerDeliveryPointById(updatedPoint.point.id).listen((event) {
-          emit(state.copyWith(status: DeliveryPointStateStatus.dataLoaded, pointEx: event));
-        });
-      }
 
       emit(state.copyWith(
         status: DeliveryPointStateStatus.success,
@@ -95,6 +89,10 @@ class DeliveryPointViewModel extends PageViewModel<DeliveryPointState, DeliveryP
       ));
     } on AppError catch(e) {
       emit(state.copyWith(status: DeliveryPointStateStatus.failure, message: e.message));
+    } finally {
+      pointExSubscription = buyersRepository.watchBuyerDeliveryPointById(state.pointEx.point.id).listen((event) {
+        emit(state.copyWith(status: DeliveryPointStateStatus.dataLoaded, pointEx: event));
+      });
     }
   }
 }

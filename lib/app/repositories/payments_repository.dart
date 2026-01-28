@@ -27,8 +27,8 @@ class PaymentsRepository extends BaseRepository {
     return dataStore.paymentsDao.watchDebtById(id);
   }
 
-  Stream<Debt?> watchDebtByOrderId(int orderId) {
-    return dataStore.paymentsDao.watchDebtByOrderId(orderId);
+  Stream<List<Debt>> watchDebtsByOrderId(int orderId) {
+    return dataStore.paymentsDao.watchDebtsByOrderId(orderId);
   }
 
   Stream<List<CashPayment>> watchCashPaymentsByBuyerId(int buyerId) {

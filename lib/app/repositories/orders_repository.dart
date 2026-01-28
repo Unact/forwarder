@@ -132,12 +132,13 @@ class OrdersRepository extends BaseRepository {
         final orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
         final orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
         final orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
+        final debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
         await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
-        if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
+        await dataStore.paymentsDao.loadDebts(debts, false);
       });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
@@ -159,12 +160,13 @@ class OrdersRepository extends BaseRepository {
         final orderLines = data.orderLines.map((e) => e.toDatabaseEnt()).toList();
         final orderLineCodes = data.orderLineCodes.map((e) => e.toDatabaseEnt()).toList();
         final orderLinePackErrors = data.orderLinePackErrors.map((e) => e.toDatabaseEnt()).toList();
+        final debts = data.debts.map((e) => e.toDatabaseEnt()).toList();
 
         await dataStore.ordersDao.loadOrders([data.order.toDatabaseEnt()], false);
         await dataStore.ordersDao.loadOrderLines(orderLines, false);
         await dataStore.ordersDao.loadOrderLineCodes(orderLineCodes, false);
         await dataStore.ordersDao.loadOrderLinePackErrors(orderLinePackErrors, false);
-        if (data.debt != null) await dataStore.paymentsDao.loadDebts([data.debt!.toDatabaseEnt()], false);
+        await dataStore.paymentsDao.loadDebts(debts, false);
       });
     } on ApiException catch(e) {
       throw AppError(e.errorMsg);
