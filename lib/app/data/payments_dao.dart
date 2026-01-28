@@ -25,8 +25,8 @@ class PaymentsDao extends DatabaseAccessor<AppDataStore> with _$PaymentsDaoMixin
     return select(debts).watch();
   }
 
-  Stream<Debt?> watchDebtByOrderId(int orderId) {
-    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).watchSingleOrNull();
+  Stream<List<Debt>> watchDebtsByOrderId(int orderId) {
+    return (select(debts)..where((tbl) => tbl.orderId.equals(orderId))).watch();
   }
 
   Stream<Debt> watchDebtById(int id) {

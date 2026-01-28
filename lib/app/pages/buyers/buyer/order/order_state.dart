@@ -22,7 +22,7 @@ class OrderState {
     this.codeLines = const [],
     this.message = '',
     this.delivered = false,
-    this.debt
+    this.debts = const []
   });
 
   final OrderStateStatus status;
@@ -31,10 +31,11 @@ class OrderState {
   final Function confirmationCallback;
   final String message;
   final bool delivered;
-  final Debt? debt;
+  final List<Debt> debts;
 
-  bool get needPayment => debt != null && debt!.paymentSum != null && debt!.paidSum == 0;
-
+  bool get needPayment => debts.isNotEmpty &&
+    debts.every((e) => e.paymentSum != null) &&
+    debts.every((e) => e.paidSum == 0);
   double get totalSum => codeLines.map((e) => e.orderLine.vol * e.orderLine.price).fold<double>(0, (sum, e) => sum + e);
   double get scannedSum => codeLines
     .map((e) => e.orderLineCodes.fold<double>(0, (sum, ei) => sum + ei.amount) * e.orderLine.price)
@@ -47,12 +48,12 @@ class OrderState {
     Function? confirmationCallback,
     String? message,
     bool? delivered,
-    Debt? debt
+    List<Debt>? debts
   }) {
     return OrderState(
       status: status ?? this.status,
       order: order ?? this.order,
-      debt: debt ?? this.debt,
+      debts: debts ?? this.debts,
       codeLines: codeLines ?? this.codeLines,
       confirmationCallback: confirmationCallback ?? this.confirmationCallback,
       message: message ?? this.message,

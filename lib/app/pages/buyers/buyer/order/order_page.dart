@@ -169,7 +169,7 @@ class _OrderViewState extends State<_OrderView> {
     String result = await showDialog(
       context: context,
       builder: (_) => AcceptPaymentPage(
-        debts: [vm.state.debt!]
+        debts: vm.state.debts
       ),
       barrierDismissible: false
     ) ?? 'Платеж отменен';
@@ -270,8 +270,11 @@ class _OrderViewState extends State<_OrderView> {
       InfoRow(title: const Text('Итого'), trailing: Text(Format.numberStr(state.totalSum)))
     ];
 
-    if (vm.state.debt != null) {
-      children.add(InfoRow(title: const Text('Оплачено'), trailing: Text(Format.numberStr(state.debt!.paidSum))));
+    if (vm.state.debts.isNotEmpty) {
+      children.add(InfoRow(
+        title: const Text('Оплачено'),
+        trailing: Text(Format.numberStr(state.debts.fold<double>(0, (sum, debt) => sum + (debt.paidSum ?? 0))))
+      ));
     }
 
     if (!vm.state.order.isDelivered && vm.state.order.physical) {
@@ -279,7 +282,10 @@ class _OrderViewState extends State<_OrderView> {
     }
 
     if (vm.state.order.isDelivered && vm.state.needPayment) {
-      children.add(InfoRow(title: const Text('К оплате'), trailing: Text(Format.numberStr(state.debt!.paymentSum))));
+      children.add(InfoRow(
+        title: const Text('К оплате'),
+        trailing: Text(Format.numberStr(state.debts.fold<double>(0, (sum, debt) => sum + (debt.paymentSum ?? 0))))
+      ));
     }
 
     return ListView(

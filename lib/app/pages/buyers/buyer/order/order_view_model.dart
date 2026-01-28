@@ -7,7 +7,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
 
   StreamSubscription<List<OrderLineWithCode>>? orderLineWithCodeListSubscription;
   StreamSubscription<Order>? orderSubscription;
-  StreamSubscription<Debt?>? debtSubscription;
+  StreamSubscription<List<Debt>>? debtsSubscription;
 
   OrderViewModel(this.appRepository, this.ordersRepository, this.paymentsRepository, {required Order order}) :
     super(OrderState(order: order, confirmationCallback: () {}));
@@ -25,8 +25,8 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
     orderSubscription = ordersRepository.watchOrderById(state.order.id).listen((event) {
       emit(state.copyWith(status: OrderStateStatus.dataLoaded, order: event));
     });
-    debtSubscription = paymentsRepository.watchDebtByOrderId(state.order.id).listen((event) {
-      emit(state.copyWith(status: OrderStateStatus.dataLoaded, debt: event));
+    debtsSubscription = paymentsRepository.watchDebtsByOrderId(state.order.id).listen((event) {
+      emit(state.copyWith(status: OrderStateStatus.dataLoaded, debts: event));
     });
   }
 
@@ -36,7 +36,7 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
 
     await orderLineWithCodeListSubscription?.cancel();
     await orderSubscription?.cancel();
-    await debtSubscription?.cancel();
+    await debtsSubscription?.cancel();
   }
 
   Future<void> clearOrderLineCodes(OrderLineWithCode codeLine) async {
@@ -145,16 +145,17 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
   }
 
   void tryStartPayment() {
-    if (state.debt == null) {
-      emit(state.copyWith(status: OrderStateStatus.paymentFailure, message: 'Не найдена задолженность для заказа'));
+    if (state.debts.isEmpty) {
+      emit(state.copyWith(status: OrderStateStatus.paymentFailure, message: 'Не найдены задолженности для заказа'));
 
       return;
     }
 
+    final paymentSumStr = Format.numberStr(state.debts.fold<double>(0, (sum, debt) => sum + (debt.paymentSum ?? 0)));
+
     emit(state.copyWith(
       status: OrderStateStatus.needUserConfirmation,
-      message: 'Вы уверены, что хотите внести оплату ${Format.numberStr(state.debt!.paymentSum)} руб.?\n'
-        'Изменить потом будет нельзя.',
+      message: 'Вы уверены, что хотите внести оплату $paymentSumStr руб.?\nИзменить потом будет нельзя.',
       confirmationCallback: startPayment
     ));
   }
