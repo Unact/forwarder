@@ -28,6 +28,7 @@ class BuyerState {
     this.pointEx,
     this.taskToFinish,
     this.completed = false,
+    this.allStorageCodeLines = const []
   });
 
   final BuyerStateStatus status;
@@ -42,6 +43,7 @@ class BuyerState {
   final String message;
   final BuyerDeliveryPointEx? pointEx;
   final bool completed;
+  final List<OrderLineStorageCode> allStorageCodeLines;
 
   double get debtsSum => debts.fold(0, (sum, debt) => sum + debt.debtSum);
   double get kkmSum => cashPayments.where((e) => e.kkmprinted).fold(0, (sum, payment) => sum + payment.summ);
@@ -60,7 +62,8 @@ class BuyerState {
     String? message,
     BuyerDeliveryPointEx? pointEx,
     ({ Task? value })? taskToFinish,
-    bool? completed
+    bool? completed,
+    List<OrderLineStorageCode>? allStorageCodeLines,
   }) {
     return BuyerState(
       status: status ?? this.status,
@@ -74,7 +77,8 @@ class BuyerState {
       message: message ?? this.message,
       pointEx: pointEx ?? this.pointEx,
       taskToFinish: taskToFinish != null ? taskToFinish.value : this.taskToFinish,
-      completed: completed ?? this.completed
+      completed: completed ?? this.completed,
+      allStorageCodeLines: allStorageCodeLines ?? this.allStorageCodeLines
     );
   }
 }
