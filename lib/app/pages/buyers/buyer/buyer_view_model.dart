@@ -12,6 +12,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   StreamSubscription<List<Debt>>? debtsSubscription;
   StreamSubscription<List<Task>>? tasksSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
+  StreamSubscription<List<OrderLineStorageCode>>? orderLineStorageCodesSubscription;
 
   BuyerViewModel(
     this.appRepository,
@@ -51,6 +52,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
       });
+    orderLineStorageCodesSubscription = ordersRepository.watchOrderLineStorageCodes().listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, allStorageCodeLines: event));
+    });
   }
 
   @override
@@ -62,6 +66,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     await debtsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
     await tasksSubscription?.cancel();
+    await orderLineStorageCodesSubscription?.cancel();
   }
 
   Future<void> updateDebtPaymentSum(Debt debt, double? newValue) async {

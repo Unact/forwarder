@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -336,6 +337,9 @@ class _BuyerViewState extends State<_BuyerView> {
   Widget _buildOrderTile(BuildContext context, Order order) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String delivered = order.isDelivered ? Strings.yes : (order.isUndelivered ? Strings.no : Strings.inProcess);
+    final needScanError = order.needScan &&
+      !order.physical &&
+      vm.state.allStorageCodeLines.none((e) => e.orderId == order.id);
 
     return ListTile(
       dense: true,
@@ -345,7 +349,7 @@ class _BuyerViewState extends State<_BuyerView> {
           children: <TextSpan>[
             TextSpan(
               text: '${order.ndoc}\n',
-              style: const TextStyle(color: Colors.black, fontSize: 14.0)
+              style: TextStyle(color: needScanError ? Colors.red : Colors.black, fontSize: 14.0)
             ),
             TextSpan(
               text: order.info.isNotEmpty ? '${order.info}\n' : null,
