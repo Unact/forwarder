@@ -2893,6 +2893,20 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
       'CHECK ("need_scan" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _needStorageScanMeta = const VerificationMeta(
+    'needStorageScan',
+  );
+  @override
+  late final GeneratedColumn<bool> needStorageScan = GeneratedColumn<bool>(
+    'need_storage_scan',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("need_storage_scan" IN (0, 1))',
+    ),
+  );
   static const VerificationMeta _dovUnloadMeta = const VerificationMeta(
     'dovUnload',
   );
@@ -2933,6 +2947,7 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
     paid,
     physical,
     needScan,
+    needStorageScan,
     dovUnload,
     address,
   ];
@@ -3042,6 +3057,17 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
     } else if (isInserting) {
       context.missing(_needScanMeta);
     }
+    if (data.containsKey('need_storage_scan')) {
+      context.handle(
+        _needStorageScanMeta,
+        needStorageScan.isAcceptableOrUnknown(
+          data['need_storage_scan']!,
+          _needStorageScanMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_needStorageScanMeta);
+    }
     if (data.containsKey('dov_unload')) {
       context.handle(
         _dovUnloadMeta,
@@ -3129,6 +3155,11 @@ class $OrdersTable extends Orders with TableInfo<$OrdersTable, Order> {
             DriftSqlType.bool,
             data['${effectivePrefix}need_scan'],
           )!,
+      needStorageScan:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}need_storage_scan'],
+          )!,
       dovUnload:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -3161,6 +3192,7 @@ class Order extends DataClass implements Insertable<Order> {
   final bool paid;
   final bool physical;
   final bool needScan;
+  final bool needStorageScan;
   final bool dovUnload;
   final String? address;
   const Order({
@@ -3177,6 +3209,7 @@ class Order extends DataClass implements Insertable<Order> {
     required this.paid,
     required this.physical,
     required this.needScan,
+    required this.needStorageScan,
     required this.dovUnload,
     this.address,
   });
@@ -3198,6 +3231,7 @@ class Order extends DataClass implements Insertable<Order> {
     map['paid'] = Variable<bool>(paid);
     map['physical'] = Variable<bool>(physical);
     map['need_scan'] = Variable<bool>(needScan);
+    map['need_storage_scan'] = Variable<bool>(needStorageScan);
     map['dov_unload'] = Variable<bool>(dovUnload);
     if (!nullToAbsent || address != null) {
       map['address'] = Variable<String>(address);
@@ -3223,6 +3257,7 @@ class Order extends DataClass implements Insertable<Order> {
       paid: Value(paid),
       physical: Value(physical),
       needScan: Value(needScan),
+      needStorageScan: Value(needStorageScan),
       dovUnload: Value(dovUnload),
       address:
           address == null && nullToAbsent
@@ -3250,6 +3285,7 @@ class Order extends DataClass implements Insertable<Order> {
       paid: serializer.fromJson<bool>(json['paid']),
       physical: serializer.fromJson<bool>(json['physical']),
       needScan: serializer.fromJson<bool>(json['needScan']),
+      needStorageScan: serializer.fromJson<bool>(json['needStorageScan']),
       dovUnload: serializer.fromJson<bool>(json['dovUnload']),
       address: serializer.fromJson<String?>(json['address']),
     );
@@ -3271,6 +3307,7 @@ class Order extends DataClass implements Insertable<Order> {
       'paid': serializer.toJson<bool>(paid),
       'physical': serializer.toJson<bool>(physical),
       'needScan': serializer.toJson<bool>(needScan),
+      'needStorageScan': serializer.toJson<bool>(needStorageScan),
       'dovUnload': serializer.toJson<bool>(dovUnload),
       'address': serializer.toJson<String?>(address),
     };
@@ -3290,6 +3327,7 @@ class Order extends DataClass implements Insertable<Order> {
     bool? paid,
     bool? physical,
     bool? needScan,
+    bool? needStorageScan,
     bool? dovUnload,
     Value<String?> address = const Value.absent(),
   }) => Order(
@@ -3306,6 +3344,7 @@ class Order extends DataClass implements Insertable<Order> {
     paid: paid ?? this.paid,
     physical: physical ?? this.physical,
     needScan: needScan ?? this.needScan,
+    needStorageScan: needStorageScan ?? this.needStorageScan,
     dovUnload: dovUnload ?? this.dovUnload,
     address: address.present ? address.value : this.address,
   );
@@ -3325,6 +3364,10 @@ class Order extends DataClass implements Insertable<Order> {
       paid: data.paid.present ? data.paid.value : this.paid,
       physical: data.physical.present ? data.physical.value : this.physical,
       needScan: data.needScan.present ? data.needScan.value : this.needScan,
+      needStorageScan:
+          data.needStorageScan.present
+              ? data.needStorageScan.value
+              : this.needStorageScan,
       dovUnload: data.dovUnload.present ? data.dovUnload.value : this.dovUnload,
       address: data.address.present ? data.address.value : this.address,
     );
@@ -3346,6 +3389,7 @@ class Order extends DataClass implements Insertable<Order> {
           ..write('paid: $paid, ')
           ..write('physical: $physical, ')
           ..write('needScan: $needScan, ')
+          ..write('needStorageScan: $needStorageScan, ')
           ..write('dovUnload: $dovUnload, ')
           ..write('address: $address')
           ..write(')'))
@@ -3367,6 +3411,7 @@ class Order extends DataClass implements Insertable<Order> {
     paid,
     physical,
     needScan,
+    needStorageScan,
     dovUnload,
     address,
   );
@@ -3387,6 +3432,7 @@ class Order extends DataClass implements Insertable<Order> {
           other.paid == this.paid &&
           other.physical == this.physical &&
           other.needScan == this.needScan &&
+          other.needStorageScan == this.needStorageScan &&
           other.dovUnload == this.dovUnload &&
           other.address == this.address);
 }
@@ -3405,6 +3451,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
   final Value<bool> paid;
   final Value<bool> physical;
   final Value<bool> needScan;
+  final Value<bool> needStorageScan;
   final Value<bool> dovUnload;
   final Value<String?> address;
   const OrdersCompanion({
@@ -3421,6 +3468,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     this.paid = const Value.absent(),
     this.physical = const Value.absent(),
     this.needScan = const Value.absent(),
+    this.needStorageScan = const Value.absent(),
     this.dovUnload = const Value.absent(),
     this.address = const Value.absent(),
   });
@@ -3438,6 +3486,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     required bool paid,
     required bool physical,
     required bool needScan,
+    required bool needStorageScan,
     required bool dovUnload,
     this.address = const Value.absent(),
   }) : buyerId = Value(buyerId),
@@ -3451,6 +3500,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
        paid = Value(paid),
        physical = Value(physical),
        needScan = Value(needScan),
+       needStorageScan = Value(needStorageScan),
        dovUnload = Value(dovUnload);
   static Insertable<Order> custom({
     Expression<int>? id,
@@ -3466,6 +3516,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Expression<bool>? paid,
     Expression<bool>? physical,
     Expression<bool>? needScan,
+    Expression<bool>? needStorageScan,
     Expression<bool>? dovUnload,
     Expression<String>? address,
   }) {
@@ -3483,6 +3534,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       if (paid != null) 'paid': paid,
       if (physical != null) 'physical': physical,
       if (needScan != null) 'need_scan': needScan,
+      if (needStorageScan != null) 'need_storage_scan': needStorageScan,
       if (dovUnload != null) 'dov_unload': dovUnload,
       if (address != null) 'address': address,
     });
@@ -3502,6 +3554,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     Value<bool>? paid,
     Value<bool>? physical,
     Value<bool>? needScan,
+    Value<bool>? needStorageScan,
     Value<bool>? dovUnload,
     Value<String?>? address,
   }) {
@@ -3519,6 +3572,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
       paid: paid ?? this.paid,
       physical: physical ?? this.physical,
       needScan: needScan ?? this.needScan,
+      needStorageScan: needStorageScan ?? this.needStorageScan,
       dovUnload: dovUnload ?? this.dovUnload,
       address: address ?? this.address,
     );
@@ -3566,6 +3620,9 @@ class OrdersCompanion extends UpdateCompanion<Order> {
     if (needScan.present) {
       map['need_scan'] = Variable<bool>(needScan.value);
     }
+    if (needStorageScan.present) {
+      map['need_storage_scan'] = Variable<bool>(needStorageScan.value);
+    }
     if (dovUnload.present) {
       map['dov_unload'] = Variable<bool>(dovUnload.value);
     }
@@ -3591,6 +3648,7 @@ class OrdersCompanion extends UpdateCompanion<Order> {
           ..write('paid: $paid, ')
           ..write('physical: $physical, ')
           ..write('needScan: $needScan, ')
+          ..write('needStorageScan: $needStorageScan, ')
           ..write('dovUnload: $dovUnload, ')
           ..write('address: $address')
           ..write(')'))
@@ -9692,6 +9750,7 @@ typedef $$OrdersTableCreateCompanionBuilder =
       required bool paid,
       required bool physical,
       required bool needScan,
+      required bool needStorageScan,
       required bool dovUnload,
       Value<String?> address,
     });
@@ -9710,6 +9769,7 @@ typedef $$OrdersTableUpdateCompanionBuilder =
       Value<bool> paid,
       Value<bool> physical,
       Value<bool> needScan,
+      Value<bool> needStorageScan,
       Value<bool> dovUnload,
       Value<String?> address,
     });
@@ -9785,6 +9845,11 @@ class $$OrdersTableFilterComposer
 
   ColumnFilters<bool> get needScan => $composableBuilder(
     column: $table.needScan,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get needStorageScan => $composableBuilder(
+    column: $table.needStorageScan,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9873,6 +9938,11 @@ class $$OrdersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get needStorageScan => $composableBuilder(
+    column: $table.needStorageScan,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get dovUnload => $composableBuilder(
     column: $table.dovUnload,
     builder: (column) => ColumnOrderings(column),
@@ -9934,6 +10004,11 @@ class $$OrdersTableAnnotationComposer
   GeneratedColumn<bool> get needScan =>
       $composableBuilder(column: $table.needScan, builder: (column) => column);
 
+  GeneratedColumn<bool> get needStorageScan => $composableBuilder(
+    column: $table.needStorageScan,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get dovUnload =>
       $composableBuilder(column: $table.dovUnload, builder: (column) => column);
 
@@ -9982,6 +10057,7 @@ class $$OrdersTableTableManager
                 Value<bool> paid = const Value.absent(),
                 Value<bool> physical = const Value.absent(),
                 Value<bool> needScan = const Value.absent(),
+                Value<bool> needStorageScan = const Value.absent(),
                 Value<bool> dovUnload = const Value.absent(),
                 Value<String?> address = const Value.absent(),
               }) => OrdersCompanion(
@@ -9998,6 +10074,7 @@ class $$OrdersTableTableManager
                 paid: paid,
                 physical: physical,
                 needScan: needScan,
+                needStorageScan: needStorageScan,
                 dovUnload: dovUnload,
                 address: address,
               ),
@@ -10016,6 +10093,7 @@ class $$OrdersTableTableManager
                 required bool paid,
                 required bool physical,
                 required bool needScan,
+                required bool needStorageScan,
                 required bool dovUnload,
                 Value<String?> address = const Value.absent(),
               }) => OrdersCompanion.insert(
@@ -10032,6 +10110,7 @@ class $$OrdersTableTableManager
                 paid: paid,
                 physical: physical,
                 needScan: needScan,
+                needStorageScan: needStorageScan,
                 dovUnload: dovUnload,
                 address: address,
               ),
