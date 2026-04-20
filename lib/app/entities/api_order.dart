@@ -15,6 +15,7 @@ class ApiOrder extends Equatable {
   final bool physical;
   final bool paid;
   final bool needScan;
+  final bool needStorageScan;
   final bool dovUnload;
 
   const ApiOrder({
@@ -32,6 +33,7 @@ class ApiOrder extends Equatable {
     required this.physical,
     required this.paid,
     required this.needScan,
+    required this.needStorageScan,
     required this.dovUnload
   });
 
@@ -51,6 +53,7 @@ class ApiOrder extends Equatable {
       physical: json['physical'],
       paid: json['paid'],
       needScan: json['need_scan'],
+      needStorageScan: json['need_storage_scan'],
       dovUnload: json['dov_unload']
     );
   }
@@ -71,6 +74,7 @@ class ApiOrder extends Equatable {
       physical: physical,
       paid: paid,
       needScan: needScan,
+      needStorageScan: needStorageScan,
       dovUnload: dovUnload
     );
   }
@@ -91,6 +95,7 @@ class ApiOrder extends Equatable {
     physical,
     paid,
     needScan,
+    needStorageScan,
     dovUnload
   ];
 }
