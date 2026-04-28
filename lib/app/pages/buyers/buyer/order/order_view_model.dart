@@ -77,8 +77,19 @@ class OrderViewModel extends PageViewModel<OrderState, OrderStateStatus> {
       0,
       (acc, e) => acc + e.orderLine.vol
     );
+    double storageVolScanned = state.codeLines.fold(
+      0,
+      (acc, e) => acc + e.orderLineStorageCodes.fold(0, (v, el) => v + el.amount)
+    );
 
-    if (delivered && state.order.needScan && volScanned != totalVolScanned) {
+    if (
+      delivered &&
+      state.order.needScan &&
+      (
+        (state.order.physical && volScanned != totalVolScanned) ||
+        (!state.order.physical && volScanned != storageVolScanned)
+      )
+    ) {
       emit(state.copyWith(
         status: OrderStateStatus.needUserConfirmation,
         delivered: delivered,

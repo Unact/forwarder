@@ -354,59 +354,88 @@ class _OrderViewState extends State<_OrderView> {
     }).toList();
   }
 
-  Widget _buildPhysicalOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
+  Widget _buildDeliveryInProgressOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
     OrderViewModel vm = context.read<OrderViewModel>();
+    bool needLineScan = vm.state.order.physical || codeLine.orderLineStorageCodes.isNotEmpty;
     int amount = codeLine.orderLineCodes.fold<int>(0, (v, el) => v + el.amount);
 
-    return Dismissible(
-      key: Key(codeLine.hashCode.toString()),
-      background: Container(color: Colors.red[500]),
-      onDismissed: (direction) => vm.clearOrderLineCodes(codeLine),
-      child: ListTile(
-        dense: true,
-        title: Text(codeLine.orderLine.name),
-        subtitle: RichText(
-          text: TextSpan(
-            children: <TextSpan>[
-              TextSpan(
-                text: "Стоимость: ${Format.numberStr(codeLine.orderLine.price)}\n",
-                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
-              ),
-              TextSpan(
-                text: "Итого: ${Format.numberStr(codeLine.orderLine.price * codeLine.orderLine.vol)}\n",
-                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
-              ),
-              TextSpan(
-                text: "К оплате: ${Format.numberStr(codeLine.orderLine.price * amount)}",
-                style: const TextStyle(color: Colors.grey, fontSize: 12.0)
-              ),
+    if (needLineScan) {
+      return Dismissible(
+        key: Key(codeLine.hashCode.toString()),
+        background: Container(color: Colors.red[500]),
+        onDismissed: (direction) => vm.clearOrderLineCodes(codeLine),
+        child: ListTile(
+          dense: true,
+          title: Text(codeLine.orderLine.name),
+
+          subtitle: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: "Стоимость: ${Format.numberStr(codeLine.orderLine.price)}\n",
+                  style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+                ),
+                TextSpan(
+                  text: "Итого: ${Format.numberStr(codeLine.orderLine.price * codeLine.orderLine.vol)}\n",
+                  style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+                ),
+                TextSpan(
+                  text: "К оплате: ${Format.numberStr(codeLine.orderLine.price * amount)}",
+                  style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+                ),
+              ]
+            )
+          ),
+          trailing: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("$amount из ${codeLine.orderLine.vol.toInt()}"),
+              Icon(Icons.qr_code_scanner)
             ]
           )
-        ),
-        trailing: Text("$amount из ${codeLine.orderLine.vol.toInt()}")
-      )
+        )
+      );
+    }
+
+    return ListTile(
+      dense: true,
+      title: Text(codeLine.orderLine.name),
+      subtitle: RichText(
+        text: TextSpan(
+          children: <TextSpan>[
+            TextSpan(
+              text: "Стоимость: ${Format.numberStr(codeLine.orderLine.price)}\n",
+              style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+            ),
+            TextSpan(
+              text: "Итого: ${Format.numberStr(codeLine.orderLine.price * codeLine.orderLine.vol)}\n",
+              style: const TextStyle(color: Colors.grey, fontSize: 12.0)
+            ),
+          ]
+        )
+      ),
+      trailing: Text("${codeLine.orderLine.vol.toInt()} из ${codeLine.orderLine.vol.toInt()}")
     );
   }
 
   Widget _buildOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
     OrderViewModel vm = context.read<OrderViewModel>();
+
+    if (vm.state.order.didDelivery) return _buildDeliveryFinishedOrderLineTile(context, codeLine);
+
+    return _buildDeliveryInProgressOrderLineTile(context, codeLine);
+  }
+
+  Widget _buildDeliveryFinishedOrderLineTile(BuildContext context, OrderLineWithCode codeLine) {
     List<Widget> trailingWidgets = [];
+    trailingWidgets.add(Text("${codeLine.orderLine.deliveredVol.toInt()} из ${codeLine.orderLine.vol.toInt()}"));
 
-    if (!vm.state.order.didDelivery && vm.state.order.needScan) {
-      return _buildPhysicalOrderLineTile(context, codeLine);
-    }
-
-    if (vm.state.order.didDelivery) {
-      trailingWidgets.add(Text("${codeLine.orderLine.deliveredVol.toInt()} из ${codeLine.orderLine.vol.toInt()}"));
-
-      if (codeLine.orderLine.deliveredVol != codeLine.orderLine.vol) {
-        trailingWidgets.add(const Text(
-          "!",
-          style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14)
-        ));
-      }
-    } else {
-      trailingWidgets.add(Text("${codeLine.orderLine.vol.toInt()}"));
+    if (codeLine.orderLine.deliveredVol != codeLine.orderLine.vol) {
+      trailingWidgets.add(const Text(
+        "!",
+        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14)
+      ));
     }
 
     return ListTile(
@@ -427,7 +456,6 @@ class _OrderViewState extends State<_OrderView> {
         )
       ),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: trailingWidgets)
-
     );
   }
 
@@ -436,7 +464,6 @@ class _OrderViewState extends State<_OrderView> {
 
     if (vm.state.order.isDelivered && vm.state.needPayment) return _buildPayButtons(context);
     if (!vm.state.order.didDelivery) return _buildDeliveryButtons(context);
-
 
     return [];
   }
