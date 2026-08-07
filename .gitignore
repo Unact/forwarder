@@ -30,6 +30,10 @@
 .pub-cache/
 .pub/
 /build/
+.build/
+.swiftpm/
+**/ios/.swiftpm/
+**/macos/.swiftpm/
 
 # Web related
 lib/generated_plugin_registrant.dart

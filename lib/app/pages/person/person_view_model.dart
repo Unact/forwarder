@@ -95,7 +95,8 @@ class PersonViewModel extends PageViewModel<PersonState, PersonStateStatus> {
   Future<void> launchAppUpdate() async {
     Misc.launchAppUpdate(
       repoName: Strings.repoName,
-      version: state.user!.version,
+      iosUri: 'itms-services://?action=download-manifest&url=${Strings.downloadUri}/${Strings.repoName}/manifest.plist',
+      androidUri: '${Strings.downloadUri}/bundles/${Strings.repoName}/app-release.apk',
       onError: () => emit(state.copyWith(status: PersonStateStatus.failure, message: Strings.genericErrorMsg))
     );
   }

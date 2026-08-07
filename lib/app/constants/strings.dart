@@ -1,4 +1,5 @@
 class Strings {
+  static const downloadUri = 'https://api.unact.ru/ios-apps';
   static const appName = 'Forwarder';
   static const repoName = 'forwarder';
   static const ruAppName = 'Экспедитор';
