@@ -13,7 +13,7 @@ class TasksDao extends DatabaseAccessor<AppDataStore> with _$TasksDaoMixin {
     await db._loadData(tasks, list, clearTable);
   }
 
-  Future<void> loadTaskReturnedLineCodes(List<TaskReturnedLine> list, [bool clearTable = true]) async {
+  Future<void> loadTaskReturnedLines(List<TaskReturnedLine> list, [bool clearTable = true]) async {
     await db._loadData(taskReturnedLines, list, clearTable);
   }
 

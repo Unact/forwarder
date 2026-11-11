@@ -187,9 +187,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
     try {
       final location = await Geo.getCurrentPosition();
-      final returnedLineCodes = state.taskReturnedLines.where((e) => e.taskId == state.taskToFinish!.id).toList();
+      final returnedLines = state.taskReturnedLines.where((e) => e.taskId == state.taskToFinish!.id).toList();
 
-      await tasksRepository.finishTask(state.taskToFinish!, returnedLineCodes, state.completed, location);
+      await tasksRepository.finishTask(state.taskToFinish!, returnedLines, state.completed, location);
 
       emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно отмечено'));
     } on AppError catch(e) {

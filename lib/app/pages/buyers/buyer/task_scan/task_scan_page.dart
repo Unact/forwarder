@@ -53,34 +53,35 @@ class _TaskScanViewState extends State<_TaskScanView> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                autofocus: true,
-                enableInteractiveSelection: false,
-                onChanged: (newCode) => setState(() => code = newCode),
-                decoration: const InputDecoration(labelText: 'Код'),
-              )
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: code.isEmpty ? null : () async {
-                Navigator.of(context).pop(code);
-              },
-              child: const Text('Подтвердить')
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop('');
-              },
-              child: const Text('Отменить')
-            )
-          ]
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    autofocus: true,
+                    enableInteractiveSelection: false,
+                    onChanged: (newCode) => setState(() => code = newCode),
+                    decoration: const InputDecoration(labelText: 'Код'),
+                  )
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: code.isEmpty ? null : () async {
+                    Navigator.of(context).pop(code);
+                  },
+                  child: const Text('Подтвердить')
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop('');
+                  },
+                  child: const Text('Отменить')
+                )
+              ]
+            );
+          }
         );
-          });
       }
     ) ?? '';
   }

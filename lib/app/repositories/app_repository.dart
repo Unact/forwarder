@@ -53,7 +53,7 @@ class AppRepository extends BaseRepository {
         await dataStore.paymentsDao.loadDebts(debts);
         await dataStore.paymentsDao.loadCashPayments(cashPayments);
         await dataStore.tasksDao.loadTasks(tasks);
-        await dataStore.tasksDao.loadTaskReturnedLineCodes(taskReturnedLines);
+        await dataStore.tasksDao.loadTaskReturnedLines(taskReturnedLines);
         await dataStore.updatePref(PrefsCompanion(lastLoadTime: Value(lastLoadTime)));
       });
     } on ApiException catch(e) {

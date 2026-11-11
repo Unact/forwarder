@@ -61,7 +61,7 @@ class TasksRepository extends BaseRepository {
 
       await dataStore.transaction(() async {
         await dataStore.tasksDao.loadTasks([data.task.toDatabaseEnt()], false);
-        await dataStore.tasksDao.loadTaskReturnedLineCodes(
+        await dataStore.tasksDao.loadTaskReturnedLines(
           data.taskReturnedLines.map((e) => e.toDatabaseEnt()).toList(),
           false
         );
