@@ -36,7 +36,7 @@ class TaskScanViewModel extends PageViewModel<TaskScanState, TaskScanStateStatus
       return;
     }
 
-    await tasksRepository.scanTaskReturnedLineCode(taskReturnedLine);
+    await tasksRepository.scanTaskReturnedLine(taskReturnedLine);
 
     emit(state.copyWith(
       status: TaskScanStateStatus.success,

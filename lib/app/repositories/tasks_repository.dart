@@ -29,7 +29,7 @@ class TasksRepository extends BaseRepository {
     );
   }
 
-  Future<void> scanTaskReturnedLineCode(TaskReturnedLine taskReturnedLine) async {
+  Future<void> scanTaskReturnedLine(TaskReturnedLine taskReturnedLine) async {
     await dataStore.tasksDao.updateTaskReturnedLine(
       taskReturnedLine.id,
       taskReturnedLine.copyWith(deliveryScanned: Value(DateTime.now())).toCompanion(true)
@@ -51,13 +51,13 @@ class TasksRepository extends BaseRepository {
       'heading': position.heading,
       'point_ts': position.timestamp.toIso8601String()
     };
-    List<Map<String, dynamic>> codes = taskReturnedLines.map((e) => {
+    List<Map<String, dynamic>> lines = taskReturnedLines.map((e) => {
       'id': e.id,
       'delivery_scanned': e.deliveryScanned?.toIso8601String()
     }).toList();
 
     try {
-      final ApiFinishTaskData data = await api.finishTask(task.id, completed, codes, location);
+      final ApiFinishTaskData data = await api.finishTask(task.id, completed, lines, location);
 
       await dataStore.transaction(() async {
         await dataStore.tasksDao.loadTasks([data.task.toDatabaseEnt()], false);
