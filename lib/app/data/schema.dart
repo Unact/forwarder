@@ -104,6 +104,14 @@ class Tasks extends Table {
   BoolColumn get completed => boolean().nullable()();
 }
 
+class TaskReturnedLines extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get taskId => integer()();
+  TextColumn get code => text()();
+  TextColumn get name => text()();
+  DateTimeColumn get deliveryScanned => dateTime().nullable()();
+}
+
 class CashPayments extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get buyerId => integer()();
