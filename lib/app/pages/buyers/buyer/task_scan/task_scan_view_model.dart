@@ -29,18 +29,18 @@ class TaskScanViewModel extends PageViewModel<TaskScanState, TaskScanStateStatus
   }
 
   Future<void> readCode(String code) async {
-    TaskReturnedLine? returnedLine = state.taskReturnedLines.firstWhereOrNull((e) => e.code == code);
+    TaskReturnedLine? taskReturnedLine = state.taskReturnedLines.firstWhereOrNull((e) => e.code == code);
 
-    if (returnedLine == null) {
+    if (taskReturnedLine == null) {
       emit(state.copyWith(status: TaskScanStateStatus.failure, message: 'Код не найден. $code'));
       return;
     }
 
-    await tasksRepository.scanTaskReturnedLineCode(returnedLine);
+    await tasksRepository.scanTaskReturnedLineCode(taskReturnedLine);
 
     emit(state.copyWith(
       status: TaskScanStateStatus.success,
-      lastScannedTaskReturnedLine: (value: returnedLine),
+      lastScannedTaskReturnedLine: (value: taskReturnedLine),
       message: 'Код успешно отсканирован'
     ));
   }

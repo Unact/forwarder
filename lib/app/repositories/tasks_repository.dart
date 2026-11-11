@@ -38,7 +38,7 @@ class TasksRepository extends BaseRepository {
 
   Future<void> finishTask(
     Task task,
-    List<TaskReturnedLine> returnedLines,
+    List<TaskReturnedLine> taskReturnedLines,
     bool completed,
     Position position
   ) async {
@@ -51,7 +51,7 @@ class TasksRepository extends BaseRepository {
       'heading': position.heading,
       'point_ts': position.timestamp.toIso8601String()
     };
-    List<Map<String, dynamic>> codes = returnedLines.map((e) => {
+    List<Map<String, dynamic>> codes = taskReturnedLines.map((e) => {
       'id': e.id,
       'delivery_scanned': e.deliveryScanned?.toIso8601String()
     }).toList();

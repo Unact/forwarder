@@ -135,9 +135,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
   void tryFinishTask(Task task, bool completed) {
     String message = 'Вы уверены, что хотите отметить задание ${completed ? 'завершенным' : 'не завершенным'}?';
-    bool hasReturnedLines = state.taskReturnedLines.any((e) => e.taskId == task.id);
+    bool hasReturnedTaskNoScan = state.taskReturnedLines.any((e) => e.taskId == task.id && e.deliveryScanned == null);
 
-    if (completed && hasReturnedLines && state.taskReturnedLines.any((e) => e.deliveryScanned == null)) {
+    if (completed && hasReturnedTaskNoScan) {
       message = 'Количество отсканированного не равно количеству в акте. Вы точно хотите завершить?';
     }
 
@@ -187,9 +187,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
     try {
       final location = await Geo.getCurrentPosition();
-      final returnedLines = state.taskReturnedLines.where((e) => e.taskId == state.taskToFinish!.id).toList();
+      final taskReturnedLines = state.taskReturnedLines.where((e) => e.taskId == state.taskToFinish!.id).toList();
 
-      await tasksRepository.finishTask(state.taskToFinish!, returnedLines, state.completed, location);
+      await tasksRepository.finishTask(state.taskToFinish!, taskReturnedLines, state.completed, location);
 
       emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно отмечено'));
     } on AppError catch(e) {

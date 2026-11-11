@@ -472,7 +472,7 @@ class _BuyerViewState extends State<_BuyerView> {
   Widget _buildTaskTile(BuildContext context, Task task) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String completed = task.isCompleted ? Strings.yes : task.isUncompleted ? Strings.no : Strings.inProcess;
-    bool hasReturnedLineCodes = vm.state.taskReturnedLines.any((e) => e.taskId == task.id);
+    bool hasReturnedLines = vm.state.taskReturnedLines.any((e) => e.taskId == task.id);
 
     return ListTile(
       dense: true,
@@ -483,7 +483,7 @@ class _BuyerViewState extends State<_BuyerView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            !hasReturnedLineCodes ?
+            !hasReturnedLines ?
               Container() :
               IconButton(
                 style: ElevatedButton.styleFrom(
@@ -494,7 +494,7 @@ class _BuyerViewState extends State<_BuyerView> {
                 icon: Icon(Icons.qr_code_scanner),
                 tooltip: 'Сканировать коды акта возврата',
               ),
-            !hasReturnedLineCodes ?
+            !hasReturnedLines ?
               Container() :
               IconButton(
                 style: ElevatedButton.styleFrom(
