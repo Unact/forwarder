@@ -35,8 +35,8 @@ class TasksDao extends DatabaseAccessor<AppDataStore> with _$TasksDaoMixin {
     await (update(taskReturnedLines)..where((tbl) => tbl.id.equals(id))).write(taskReturnedLine);
   }
 
-  Future<void> updateTaskReturnedLinesByTaskId(TaskReturnedLinesCompanion taskReturnedLine) async {
-    await update(taskReturnedLines).replace(taskReturnedLine);
+  Future<void> updateTaskReturnedLinesByTaskId(int id, TaskReturnedLinesCompanion taskReturnedLine) async {
+    await (update(taskReturnedLines)..where((tbl) => tbl.taskId.equals(id))).write(taskReturnedLine);
   }
 
   Stream<List<TaskReturnedLine>> watchTaskReturnedLines() {

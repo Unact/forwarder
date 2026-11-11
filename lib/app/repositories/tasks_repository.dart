@@ -25,6 +25,7 @@ class TasksRepository extends BaseRepository {
 
   Future<void> removeTaskReturnedLineScans(Task task) async {
     await dataStore.tasksDao.updateTaskReturnedLinesByTaskId(
+      task.id,
       TaskReturnedLinesCompanion(deliveryScanned: Value(null))
     );
   }

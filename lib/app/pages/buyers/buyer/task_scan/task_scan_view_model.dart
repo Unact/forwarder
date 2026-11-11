@@ -36,6 +36,11 @@ class TaskScanViewModel extends PageViewModel<TaskScanState, TaskScanStateStatus
       return;
     }
 
+    if (taskReturnedLine.deliveryScanned != null) {
+      emit(state.copyWith(status: TaskScanStateStatus.failure, message: 'Код уже отсканирован. $code'));
+      return;
+    }
+
     await tasksRepository.scanTaskReturnedLine(taskReturnedLine);
 
     emit(state.copyWith(
