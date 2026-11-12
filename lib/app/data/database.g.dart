@@ -8258,6 +8258,367 @@ class TasksCompanion extends UpdateCompanion<Task> {
   }
 }
 
+class $TaskReturnedLinesTable extends TaskReturnedLines
+    with TableInfo<$TaskReturnedLinesTable, TaskReturnedLine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskReturnedLinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<int> taskId = GeneratedColumn<int>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deliveryScannedMeta = const VerificationMeta(
+    'deliveryScanned',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deliveryScanned =
+      GeneratedColumn<DateTime>(
+        'delivery_scanned',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    taskId,
+    code,
+    name,
+    deliveryScanned,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_returned_lines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaskReturnedLine> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('delivery_scanned')) {
+      context.handle(
+        _deliveryScannedMeta,
+        deliveryScanned.isAcceptableOrUnknown(
+          data['delivery_scanned']!,
+          _deliveryScannedMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaskReturnedLine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskReturnedLine(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
+      taskId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}task_id'],
+          )!,
+      code:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}code'],
+          )!,
+      name:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}name'],
+          )!,
+      deliveryScanned: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}delivery_scanned'],
+      ),
+    );
+  }
+
+  @override
+  $TaskReturnedLinesTable createAlias(String alias) {
+    return $TaskReturnedLinesTable(attachedDatabase, alias);
+  }
+}
+
+class TaskReturnedLine extends DataClass
+    implements Insertable<TaskReturnedLine> {
+  final int id;
+  final int taskId;
+  final String code;
+  final String name;
+  final DateTime? deliveryScanned;
+  const TaskReturnedLine({
+    required this.id,
+    required this.taskId,
+    required this.code,
+    required this.name,
+    this.deliveryScanned,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['task_id'] = Variable<int>(taskId);
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || deliveryScanned != null) {
+      map['delivery_scanned'] = Variable<DateTime>(deliveryScanned);
+    }
+    return map;
+  }
+
+  TaskReturnedLinesCompanion toCompanion(bool nullToAbsent) {
+    return TaskReturnedLinesCompanion(
+      id: Value(id),
+      taskId: Value(taskId),
+      code: Value(code),
+      name: Value(name),
+      deliveryScanned:
+          deliveryScanned == null && nullToAbsent
+              ? const Value.absent()
+              : Value(deliveryScanned),
+    );
+  }
+
+  factory TaskReturnedLine.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskReturnedLine(
+      id: serializer.fromJson<int>(json['id']),
+      taskId: serializer.fromJson<int>(json['taskId']),
+      code: serializer.fromJson<String>(json['code']),
+      name: serializer.fromJson<String>(json['name']),
+      deliveryScanned: serializer.fromJson<DateTime?>(json['deliveryScanned']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'taskId': serializer.toJson<int>(taskId),
+      'code': serializer.toJson<String>(code),
+      'name': serializer.toJson<String>(name),
+      'deliveryScanned': serializer.toJson<DateTime?>(deliveryScanned),
+    };
+  }
+
+  TaskReturnedLine copyWith({
+    int? id,
+    int? taskId,
+    String? code,
+    String? name,
+    Value<DateTime?> deliveryScanned = const Value.absent(),
+  }) => TaskReturnedLine(
+    id: id ?? this.id,
+    taskId: taskId ?? this.taskId,
+    code: code ?? this.code,
+    name: name ?? this.name,
+    deliveryScanned:
+        deliveryScanned.present ? deliveryScanned.value : this.deliveryScanned,
+  );
+  TaskReturnedLine copyWithCompanion(TaskReturnedLinesCompanion data) {
+    return TaskReturnedLine(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      code: data.code.present ? data.code.value : this.code,
+      name: data.name.present ? data.name.value : this.name,
+      deliveryScanned:
+          data.deliveryScanned.present
+              ? data.deliveryScanned.value
+              : this.deliveryScanned,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskReturnedLine(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('deliveryScanned: $deliveryScanned')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, taskId, code, name, deliveryScanned);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskReturnedLine &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.code == this.code &&
+          other.name == this.name &&
+          other.deliveryScanned == this.deliveryScanned);
+}
+
+class TaskReturnedLinesCompanion extends UpdateCompanion<TaskReturnedLine> {
+  final Value<int> id;
+  final Value<int> taskId;
+  final Value<String> code;
+  final Value<String> name;
+  final Value<DateTime?> deliveryScanned;
+  const TaskReturnedLinesCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+    this.deliveryScanned = const Value.absent(),
+  });
+  TaskReturnedLinesCompanion.insert({
+    this.id = const Value.absent(),
+    required int taskId,
+    required String code,
+    required String name,
+    this.deliveryScanned = const Value.absent(),
+  }) : taskId = Value(taskId),
+       code = Value(code),
+       name = Value(name);
+  static Insertable<TaskReturnedLine> custom({
+    Expression<int>? id,
+    Expression<int>? taskId,
+    Expression<String>? code,
+    Expression<String>? name,
+    Expression<DateTime>? deliveryScanned,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+      if (deliveryScanned != null) 'delivery_scanned': deliveryScanned,
+    });
+  }
+
+  TaskReturnedLinesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? taskId,
+    Value<String>? code,
+    Value<String>? name,
+    Value<DateTime?>? deliveryScanned,
+  }) {
+    return TaskReturnedLinesCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      deliveryScanned: deliveryScanned ?? this.deliveryScanned,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<int>(taskId.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (deliveryScanned.present) {
+      map['delivery_scanned'] = Variable<DateTime>(deliveryScanned.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskReturnedLinesCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('deliveryScanned: $deliveryScanned')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDataStore extends GeneratedDatabase {
   _$AppDataStore(QueryExecutor e) : super(e);
   $AppDataStoreManager get managers => $AppDataStoreManager(this);
@@ -8283,6 +8644,8 @@ abstract class _$AppDataStore extends GeneratedDatabase {
   late final $PrefsTable prefs = $PrefsTable(this);
   late final $DeliveriesTable deliveries = $DeliveriesTable(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $TaskReturnedLinesTable taskReturnedLines =
+      $TaskReturnedLinesTable(this);
   late final BuyersDao buyersDao = BuyersDao(this as AppDataStore);
   late final OrdersDao ordersDao = OrdersDao(this as AppDataStore);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDataStore);
@@ -8327,6 +8690,7 @@ abstract class _$AppDataStore extends GeneratedDatabase {
     prefs,
     deliveries,
     tasks,
+    taskReturnedLines,
   ];
 }
 
@@ -12651,6 +13015,228 @@ typedef $$TasksTableProcessedTableManager =
       Task,
       PrefetchHooks Function()
     >;
+typedef $$TaskReturnedLinesTableCreateCompanionBuilder =
+    TaskReturnedLinesCompanion Function({
+      Value<int> id,
+      required int taskId,
+      required String code,
+      required String name,
+      Value<DateTime?> deliveryScanned,
+    });
+typedef $$TaskReturnedLinesTableUpdateCompanionBuilder =
+    TaskReturnedLinesCompanion Function({
+      Value<int> id,
+      Value<int> taskId,
+      Value<String> code,
+      Value<String> name,
+      Value<DateTime?> deliveryScanned,
+    });
+
+class $$TaskReturnedLinesTableFilterComposer
+    extends Composer<_$AppDataStore, $TaskReturnedLinesTable> {
+  $$TaskReturnedLinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deliveryScanned => $composableBuilder(
+    column: $table.deliveryScanned,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TaskReturnedLinesTableOrderingComposer
+    extends Composer<_$AppDataStore, $TaskReturnedLinesTable> {
+  $$TaskReturnedLinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deliveryScanned => $composableBuilder(
+    column: $table.deliveryScanned,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TaskReturnedLinesTableAnnotationComposer
+    extends Composer<_$AppDataStore, $TaskReturnedLinesTable> {
+  $$TaskReturnedLinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deliveryScanned => $composableBuilder(
+    column: $table.deliveryScanned,
+    builder: (column) => column,
+  );
+}
+
+class $$TaskReturnedLinesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDataStore,
+          $TaskReturnedLinesTable,
+          TaskReturnedLine,
+          $$TaskReturnedLinesTableFilterComposer,
+          $$TaskReturnedLinesTableOrderingComposer,
+          $$TaskReturnedLinesTableAnnotationComposer,
+          $$TaskReturnedLinesTableCreateCompanionBuilder,
+          $$TaskReturnedLinesTableUpdateCompanionBuilder,
+          (
+            TaskReturnedLine,
+            BaseReferences<
+              _$AppDataStore,
+              $TaskReturnedLinesTable,
+              TaskReturnedLine
+            >,
+          ),
+          TaskReturnedLine,
+          PrefetchHooks Function()
+        > {
+  $$TaskReturnedLinesTableTableManager(
+    _$AppDataStore db,
+    $TaskReturnedLinesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$TaskReturnedLinesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer:
+              () => $$TaskReturnedLinesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$TaskReturnedLinesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> taskId = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime?> deliveryScanned = const Value.absent(),
+              }) => TaskReturnedLinesCompanion(
+                id: id,
+                taskId: taskId,
+                code: code,
+                name: name,
+                deliveryScanned: deliveryScanned,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int taskId,
+                required String code,
+                required String name,
+                Value<DateTime?> deliveryScanned = const Value.absent(),
+              }) => TaskReturnedLinesCompanion.insert(
+                id: id,
+                taskId: taskId,
+                code: code,
+                name: name,
+                deliveryScanned: deliveryScanned,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TaskReturnedLinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDataStore,
+      $TaskReturnedLinesTable,
+      TaskReturnedLine,
+      $$TaskReturnedLinesTableFilterComposer,
+      $$TaskReturnedLinesTableOrderingComposer,
+      $$TaskReturnedLinesTableAnnotationComposer,
+      $$TaskReturnedLinesTableCreateCompanionBuilder,
+      $$TaskReturnedLinesTableUpdateCompanionBuilder,
+      (
+        TaskReturnedLine,
+        BaseReferences<
+          _$AppDataStore,
+          $TaskReturnedLinesTable,
+          TaskReturnedLine
+        >,
+      ),
+      TaskReturnedLine,
+      PrefetchHooks Function()
+    >;
 
 class $AppDataStoreManager {
   final _$AppDataStore _db;
@@ -12692,6 +13278,8 @@ class $AppDataStoreManager {
       $$DeliveriesTableTableManager(_db, _db.deliveries);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
+  $$TaskReturnedLinesTableTableManager get taskReturnedLines =>
+      $$TaskReturnedLinesTableTableManager(_db, _db.taskReturnedLines);
 }
 
 class AppInfoResult {
@@ -12720,7 +13308,33 @@ mixin _$BuyersDaoMixin on DatabaseAccessor<AppDataStore> {
       attachedDatabase.buyerDeliveryPoints;
   $BuyerDeliveryPointPhotosTable get buyerDeliveryPointPhotos =>
       attachedDatabase.buyerDeliveryPointPhotos;
+  BuyersDaoManager get managers => BuyersDaoManager(this);
 }
+
+class BuyersDaoManager {
+  final _$BuyersDaoMixin _db;
+  BuyersDaoManager(this._db);
+  $$BuyersTableTableManager get buyers =>
+      $$BuyersTableTableManager(_db.attachedDatabase, _db.buyers);
+  $$DeliveriesTableTableManager get deliveries =>
+      $$DeliveriesTableTableManager(_db.attachedDatabase, _db.deliveries);
+  $$BuyerDeliveryMarksTableTableManager get buyerDeliveryMarks =>
+      $$BuyerDeliveryMarksTableTableManager(
+        _db.attachedDatabase,
+        _db.buyerDeliveryMarks,
+      );
+  $$BuyerDeliveryPointsTableTableManager get buyerDeliveryPoints =>
+      $$BuyerDeliveryPointsTableTableManager(
+        _db.attachedDatabase,
+        _db.buyerDeliveryPoints,
+      );
+  $$BuyerDeliveryPointPhotosTableTableManager get buyerDeliveryPointPhotos =>
+      $$BuyerDeliveryPointPhotosTableTableManager(
+        _db.attachedDatabase,
+        _db.buyerDeliveryPointPhotos,
+      );
+}
+
 mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
   $IncomesTable get incomes => attachedDatabase.incomes;
   $ReceptsTable get recepts => attachedDatabase.recepts;
@@ -12731,14 +13345,79 @@ mixin _$OrdersDaoMixin on DatabaseAccessor<AppDataStore> {
       attachedDatabase.orderLineStorageCodes;
   $OrderLinePackErrorsTable get orderLinePackErrors =>
       attachedDatabase.orderLinePackErrors;
+  OrdersDaoManager get managers => OrdersDaoManager(this);
 }
+
+class OrdersDaoManager {
+  final _$OrdersDaoMixin _db;
+  OrdersDaoManager(this._db);
+  $$IncomesTableTableManager get incomes =>
+      $$IncomesTableTableManager(_db.attachedDatabase, _db.incomes);
+  $$ReceptsTableTableManager get recepts =>
+      $$ReceptsTableTableManager(_db.attachedDatabase, _db.recepts);
+  $$OrdersTableTableManager get orders =>
+      $$OrdersTableTableManager(_db.attachedDatabase, _db.orders);
+  $$OrderLinesTableTableManager get orderLines =>
+      $$OrderLinesTableTableManager(_db.attachedDatabase, _db.orderLines);
+  $$OrderLineCodesTableTableManager get orderLineCodes =>
+      $$OrderLineCodesTableTableManager(
+        _db.attachedDatabase,
+        _db.orderLineCodes,
+      );
+  $$OrderLineStorageCodesTableTableManager get orderLineStorageCodes =>
+      $$OrderLineStorageCodesTableTableManager(
+        _db.attachedDatabase,
+        _db.orderLineStorageCodes,
+      );
+  $$OrderLinePackErrorsTableTableManager get orderLinePackErrors =>
+      $$OrderLinePackErrorsTableTableManager(
+        _db.attachedDatabase,
+        _db.orderLinePackErrors,
+      );
+}
+
 mixin _$PaymentsDaoMixin on DatabaseAccessor<AppDataStore> {
   $DebtsTable get debts => attachedDatabase.debts;
   $CashPaymentsTable get cashPayments => attachedDatabase.cashPayments;
+  PaymentsDaoManager get managers => PaymentsDaoManager(this);
 }
+
+class PaymentsDaoManager {
+  final _$PaymentsDaoMixin _db;
+  PaymentsDaoManager(this._db);
+  $$DebtsTableTableManager get debts =>
+      $$DebtsTableTableManager(_db.attachedDatabase, _db.debts);
+  $$CashPaymentsTableTableManager get cashPayments =>
+      $$CashPaymentsTableTableManager(_db.attachedDatabase, _db.cashPayments);
+}
+
 mixin _$UsersDaoMixin on DatabaseAccessor<AppDataStore> {
   $UsersTable get users => attachedDatabase.users;
+  UsersDaoManager get managers => UsersDaoManager(this);
 }
+
+class UsersDaoManager {
+  final _$UsersDaoMixin _db;
+  UsersDaoManager(this._db);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db.attachedDatabase, _db.users);
+}
+
 mixin _$TasksDaoMixin on DatabaseAccessor<AppDataStore> {
   $TasksTable get tasks => attachedDatabase.tasks;
+  $TaskReturnedLinesTable get taskReturnedLines =>
+      attachedDatabase.taskReturnedLines;
+  TasksDaoManager get managers => TasksDaoManager(this);
+}
+
+class TasksDaoManager {
+  final _$TasksDaoMixin _db;
+  TasksDaoManager(this._db);
+  $$TasksTableTableManager get tasks =>
+      $$TasksTableTableManager(_db.attachedDatabase, _db.tasks);
+  $$TaskReturnedLinesTableTableManager get taskReturnedLines =>
+      $$TaskReturnedLinesTableTableManager(
+        _db.attachedDatabase,
+        _db.taskReturnedLines,
+      );
 }

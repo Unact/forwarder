@@ -15,6 +15,7 @@ import '/app/pages/buyers/buyer/accept_payment/accept_payment_page.dart';
 import '/app/pages/buyers/buyer/debt/debt_page.dart';
 import '/app/pages/buyers/buyer/delivery_point/delivery_point_page.dart';
 import '/app/pages/buyers/buyer/order/order_page.dart';
+import '/app/pages/buyers/buyer/task_scan/task_scan_page.dart';
 import '/app/pages/shared/page_view_model.dart';
 import '/app/repositories/app_repository.dart';
 import '/app/repositories/buyers_repository.dart';
@@ -159,6 +160,16 @@ class _BuyerViewState extends State<_BuyerView> {
         default:
       }
       }
+    );
+  }
+
+  Future<void> openTaskScanPage(Task task) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => TaskScanPage(task: task),
+        fullscreenDialog: true
+      )
     );
   }
 
@@ -461,6 +472,7 @@ class _BuyerViewState extends State<_BuyerView> {
   Widget _buildTaskTile(BuildContext context, Task task) {
     BuyerViewModel vm = context.read<BuyerViewModel>();
     String completed = task.isCompleted ? Strings.yes : task.isUncompleted ? Strings.no : Strings.inProcess;
+    bool hasReturnedLines = vm.state.taskReturnedLines.any((e) => e.taskId == task.id);
 
     return ListTile(
       dense: true,
@@ -471,6 +483,28 @@ class _BuyerViewState extends State<_BuyerView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
+            !hasReturnedLines ?
+              Container() :
+              IconButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                  backgroundColor: Theme.of(context).colorScheme.primary
+                ),
+                onPressed: () => openTaskScanPage(task),
+                icon: Icon(Icons.qr_code_scanner),
+                tooltip: 'Сканировать коды акта возврата',
+              ),
+            !hasReturnedLines ?
+              Container() :
+              IconButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                  backgroundColor: Theme.of(context).colorScheme.primary
+                ),
+                onPressed: () => vm.deleteTaskReturnedLines(task),
+                icon: Icon(Icons.delete_outline),
+                tooltip: 'Удалить коды акта возврата',
+              ),
             IconButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),

@@ -24,6 +24,7 @@ part 'api_order_line_storage_code.dart';
 part 'api_order_line.dart';
 part 'api_order.dart';
 part 'api_recept.dart';
+part 'api_task_returned_line.dart';
 part 'api_task.dart';
 part 'api_user_data.dart';
 part 'app_error.dart';

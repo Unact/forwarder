@@ -11,7 +11,8 @@ enum BuyerStateStatus {
   failure,
   success,
   coordsCopied,
-  deliveryPointOpened
+  deliveryPointOpened,
+  taskScanOpened
 }
 
 class BuyerState {
@@ -28,7 +29,8 @@ class BuyerState {
     this.pointEx,
     this.taskToFinish,
     this.completed = false,
-    this.allStorageCodeLines = const []
+    this.allStorageCodeLines = const [],
+    this.taskReturnedLines = const []
   });
 
   final BuyerStateStatus status;
@@ -44,6 +46,7 @@ class BuyerState {
   final BuyerDeliveryPointEx? pointEx;
   final bool completed;
   final List<OrderLineStorageCode> allStorageCodeLines;
+  final List<TaskReturnedLine> taskReturnedLines;
 
   double get debtsSum => debts.fold(0, (sum, debt) => sum + debt.debtSum);
   double get kkmSum => cashPayments.where((e) => e.kkmprinted).fold(0, (sum, payment) => sum + payment.summ);
@@ -64,6 +67,7 @@ class BuyerState {
     ({ Task? value })? taskToFinish,
     bool? completed,
     List<OrderLineStorageCode>? allStorageCodeLines,
+    List<TaskReturnedLine>? taskReturnedLines,
   }) {
     return BuyerState(
       status: status ?? this.status,
@@ -78,7 +82,8 @@ class BuyerState {
       pointEx: pointEx ?? this.pointEx,
       taskToFinish: taskToFinish != null ? taskToFinish.value : this.taskToFinish,
       completed: completed ?? this.completed,
-      allStorageCodeLines: allStorageCodeLines ?? this.allStorageCodeLines
+      allStorageCodeLines: allStorageCodeLines ?? this.allStorageCodeLines,
+      taskReturnedLines: taskReturnedLines ?? this.taskReturnedLines
     );
   }
 }

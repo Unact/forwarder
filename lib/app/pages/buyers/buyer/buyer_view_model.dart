@@ -11,6 +11,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   StreamSubscription<List<Order>>? orderSubscription;
   StreamSubscription<List<Debt>>? debtsSubscription;
   StreamSubscription<List<Task>>? tasksSubscription;
+  StreamSubscription<List<TaskReturnedLine>>? taskReturnedLinesSubscription;
   StreamSubscription<List<CashPayment>>? cashPaymentsSubscription;
   StreamSubscription<List<OrderLineStorageCode>>? orderLineStorageCodesSubscription;
 
@@ -48,6 +49,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, tasks: event));
       });
+    taskReturnedLinesSubscription = tasksRepository.watchTaskReturnedLines().listen((event) {
+      emit(state.copyWith(status: BuyerStateStatus.dataLoaded, taskReturnedLines: event));
+    });
     cashPaymentsSubscription = paymentsRepository.watchCashPaymentsByBuyerId(state.buyer.buyer.buyerId)
       .listen((event) {
         emit(state.copyWith(status: BuyerStateStatus.dataLoaded, cashPayments: event));
@@ -66,6 +70,7 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     await debtsSubscription?.cancel();
     await cashPaymentsSubscription?.cancel();
     await tasksSubscription?.cancel();
+    await taskReturnedLinesSubscription?.cancel();
     await orderLineStorageCodesSubscription?.cancel();
   }
 
@@ -129,12 +134,19 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
   }
 
   void tryFinishTask(Task task, bool completed) {
+    String message = 'Вы уверены, что хотите отметить задание ${completed ? 'завершенным' : 'не завершенным'}?';
+    bool hasReturnedTaskNoScan = state.taskReturnedLines.any((e) => e.taskId == task.id && e.deliveryScanned == null);
+
+    if (completed && hasReturnedTaskNoScan) {
+      message = 'Количество отсканированного не равно количеству в акте. Вы точно хотите завершить?';
+    }
+
     emit(state.copyWith(
       status: BuyerStateStatus.needUserConfirmation,
       confirmationCallback: finishTask,
       taskToFinish: (value: task),
       completed: completed,
-      message: 'Вы уверены, что хотите отметить задание ${completed ? 'завершенным' : 'не завершенным'}?'
+      message: message
     ));
   }
 
@@ -162,6 +174,12 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
     ));
   }
 
+  Future<void> deleteTaskReturnedLines(Task task) async {
+    await tasksRepository.removeTaskReturnedLineScans(task);
+
+    emit(state.copyWith(status: BuyerStateStatus.success, message: 'Коды акта возврата успешно удалены'));
+  }
+
   Future<void> finishTask(bool confirmed) async {
     if (!confirmed) return;
 
@@ -169,8 +187,9 @@ class BuyerViewModel extends PageViewModel<BuyerState, BuyerStateStatus> {
 
     try {
       final location = await Geo.getCurrentPosition();
+      final taskReturnedLines = state.taskReturnedLines.where((e) => e.taskId == state.taskToFinish!.id).toList();
 
-      await tasksRepository.finishTask(state.taskToFinish!, state.completed, location);
+      await tasksRepository.finishTask(state.taskToFinish!, taskReturnedLines, state.completed, location);
 
       emit(state.copyWith(status: BuyerStateStatus.success, message: 'Задание успешно отмечено'));
     } on AppError catch(e) {
