@@ -130,7 +130,6 @@ class _CodeScanViewState extends State<_CodeScanView> {
         switch (state.status) {
           case CodeScanStateStatus.success:
             player.play(AssetSource('beep_success.mp3'));
-            if (state.lastScannedOrderLine == null) await showInfoDialog(context, 'Успех', state.message);
 
             setState(() => scanPaused = false);
             break;

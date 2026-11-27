@@ -128,7 +128,6 @@ class _TaskScanViewState extends State<_TaskScanView> {
         switch (state.status) {
           case TaskScanStateStatus.success:
             player.play(AssetSource('beep_success.mp3'));
-            await showInfoDialog(context, 'Успех', state.message);
 
             setState(() => scanPaused = false);
             break;
@@ -162,6 +161,7 @@ class _TaskScanViewState extends State<_TaskScanView> {
 
   Widget _lastCodeInfoWidget(BuildContext context) {
     TaskScanViewModel vm = context.read<TaskScanViewModel>();
+    final amount = vm.state.taskReturnedLines.where((e) => e.deliveryScanned != null).length;
 
     if (vm.state.lastScannedTaskReturnedLine == null) {
       return Container(
@@ -170,9 +170,27 @@ class _TaskScanViewState extends State<_TaskScanView> {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(vm.state.lastScannedTaskReturnedLine!.name, textAlign: TextAlign.center, style: textStyle)
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(vm.state.lastScannedTaskReturnedLine!.name, textAlign: TextAlign.center, style: textStyle)
+              )
+            )
+          ]
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            "$amount из ${vm.state.taskReturnedLines.length.toInt()}",
+            style: textStyle
+          )
+        )
+      ]
     );
   }
 }
